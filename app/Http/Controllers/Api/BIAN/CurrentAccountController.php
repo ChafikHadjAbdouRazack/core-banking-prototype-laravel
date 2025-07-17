@@ -52,10 +52,13 @@ class CurrentAccountController extends Controller
      *     summary="Initiate new current account",
      *     description="Creates a new current account fulfillment arrangement following BIAN standards",
      *     security={{"sanctum": {}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"customerReference", "accountName", "accountType"},
+     *
      * @OA\Property(property="customerReference", type="string", format="uuid", description="Customer UUID reference"),
      * @OA\Property(property="accountName",       type="string", maxLength=255, description="Account name"),
      * @OA\Property(property="accountType",       type="string", enum={"current", "checking"}, description="Account type"),
@@ -63,10 +66,13 @@ class CurrentAccountController extends Controller
      * @OA\Property(property="currency",          type="string", pattern="^[A-Z]{3}$", default="USD", description="Currency code")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Account created successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="currentAccountFulfillmentArrangement",
      *                 type="object",
@@ -90,6 +96,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error"
@@ -104,11 +111,11 @@ class CurrentAccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'customerReference' => 'required|uuid',
-            'accountName'       => 'required|string|max:255',
-            'accountType'       => 'required|in:current,checking',
-            'initialDeposit'    => 'sometimes|integer|min:0',
-            'currency'          => 'sometimes|string|size:3',
+                'customerReference' => 'required|uuid',
+                'accountName' => 'required|string|max:255',
+                'accountType' => 'required|in:current,checking',
+                'initialDeposit' => 'sometimes|integer|min:0',
+                'currency' => 'sometimes|string|size:3',
             ]
         );
 
@@ -137,30 +144,30 @@ class CurrentAccountController extends Controller
         // Create the account record for immediate response
         $account = Account::create(
             [
-            'uuid'      => $crReferenceId,
-            'user_uuid' => $validated['customerReference'],
-            'name'      => $validated['accountName'],
-            'balance'   => $validated['initialDeposit'] ?? 0,
+                'uuid' => $crReferenceId,
+                'user_uuid' => $validated['customerReference'],
+                'name' => $validated['accountName'],
+                'balance' => $validated['initialDeposit'] ?? 0,
             ]
         );
 
         return response()->json(
             [
-            'currentAccountFulfillmentArrangement' => [
-                'crReferenceId'     => $crReferenceId,
-                'customerReference' => $validated['customerReference'],
-                'accountName'       => $validated['accountName'],
-                'accountType'       => $validated['accountType'] ?? 'current',
-                'accountStatus'     => 'active',
-                'accountBalance'    => [
-                    'amount'   => $validated['initialDeposit'] ?? 0,
-                    'currency' => $validated['currency'] ?? 'USD',
+                'currentAccountFulfillmentArrangement' => [
+                    'crReferenceId' => $crReferenceId,
+                    'customerReference' => $validated['customerReference'],
+                    'accountName' => $validated['accountName'],
+                    'accountType' => $validated['accountType'] ?? 'current',
+                    'accountStatus' => 'active',
+                    'accountBalance' => [
+                        'amount' => $validated['initialDeposit'] ?? 0,
+                        'currency' => $validated['currency'] ?? 'USD',
+                    ],
+                    'dateType' => [
+                        'date' => now()->toIso8601String(),
+                        'dateTypeName' => 'AccountOpeningDate',
+                    ],
                 ],
-                'dateType' => [
-                    'date'         => now()->toIso8601String(),
-                    'dateTypeName' => 'AccountOpeningDate',
-                ],
-            ],
             ],
             201
         );
@@ -180,17 +187,22 @@ class CurrentAccountController extends Controller
      *     summary="Retrieve current account details",
      *     description="Retrieves the details of a current account fulfillment arrangement",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                  format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account details retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="currentAccountFulfillmentArrangement",
      *                 type="object",
@@ -214,6 +226,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -230,21 +243,21 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'currentAccountFulfillmentArrangement' => [
-                'crReferenceId'     => $account->uuid,
-                'customerReference' => $account->user_uuid,
-                'accountName'       => $account->name,
-                'accountType'       => 'current',
-                'accountStatus'     => 'active',
-                'accountBalance'    => [
-                    'amount'   => $account->balance,
-                    'currency' => 'USD',
+                'currentAccountFulfillmentArrangement' => [
+                    'crReferenceId' => $account->uuid,
+                    'customerReference' => $account->user_uuid,
+                    'accountName' => $account->name,
+                    'accountType' => 'current',
+                    'accountStatus' => 'active',
+                    'accountBalance' => [
+                        'amount' => $account->balance,
+                        'currency' => 'USD',
+                    ],
+                    'dateType' => [
+                        'date' => $account->created_at->toIso8601String(),
+                        'dateTypeName' => 'AccountOpeningDate',
+                    ],
                 ],
-                'dateType' => [
-                    'date'         => $account->created_at->toIso8601String(),
-                    'dateTypeName' => 'AccountOpeningDate',
-                ],
-            ],
             ]
         );
     }
@@ -263,24 +276,32 @@ class CurrentAccountController extends Controller
      *     summary="Update current account",
      *     description="Updates the properties of a current account fulfillment arrangement",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                  format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="accountName",       type="string", maxLength=255),
      * @OA\Property(property="accountStatus",     type="string", enum={"active", "dormant", "closed"})
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account updated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="currentAccountFulfillmentArrangement",
      *                 type="object",
@@ -293,6 +314,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -313,8 +335,8 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-            'accountName'   => 'sometimes|string|max:255',
-            'accountStatus' => 'sometimes|in:active,dormant,closed',
+                'accountName' => 'sometimes|string|max:255',
+                'accountStatus' => 'sometimes|in:active,dormant,closed',
             ]
         );
 
@@ -324,14 +346,14 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'currentAccountFulfillmentArrangement' => [
-                'crReferenceId'     => $account->uuid,
-                'customerReference' => $account->user_uuid,
-                'accountName'       => $account->name,
-                'accountType'       => 'current',
-                'accountStatus'     => $validated['accountStatus'] ?? 'active',
-                'updateResult'      => 'successful',
-            ],
+                'currentAccountFulfillmentArrangement' => [
+                    'crReferenceId' => $account->uuid,
+                    'customerReference' => $account->user_uuid,
+                    'accountName' => $account->name,
+                    'accountType' => 'current',
+                    'accountStatus' => $validated['accountStatus'] ?? 'active',
+                    'updateResult' => 'successful',
+                ],
             ]
         );
     }
@@ -350,25 +372,33 @@ class CurrentAccountController extends Controller
      *     summary="Control account status",
      *     description="Controls the status of a current account (freeze, unfreeze, suspend, reactivate)",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"controlAction", "controlReason"},
+     *
      * @OA\Property(property="controlAction",   type="string", enum={"freeze", "unfreeze", "suspend", "reactivate"}),
      * @OA\Property(property="controlReason",   type="string", maxLength=500)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Control action executed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="currentAccountFulfillmentControlRecord",
      *                 type="object",
@@ -380,6 +410,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -400,8 +431,8 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-            'controlAction' => 'required|in:freeze,unfreeze,suspend,reactivate',
-            'controlReason' => 'required|string|max:500',
+                'controlAction' => 'required|in:freeze,unfreeze,suspend,reactivate',
+                'controlReason' => 'required|string|max:500',
             ]
         );
 
@@ -424,13 +455,13 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'currentAccountFulfillmentControlRecord' => [
-                'crReferenceId'   => $crReferenceId,
-                'controlAction'   => $validated['controlAction'],
-                'controlReason'   => $validated['controlReason'],
-                'controlStatus'   => $status ?? 'unknown',
-                'controlDateTime' => now()->toIso8601String(),
-            ],
+                'currentAccountFulfillmentControlRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'controlAction' => $validated['controlAction'],
+                    'controlReason' => $validated['controlReason'],
+                    'controlStatus' => $status ?? 'unknown',
+                    'controlDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -450,26 +481,34 @@ class CurrentAccountController extends Controller
      *     summary="Execute payment/withdrawal",
      *     description="Executes a payment or withdrawal from the current account",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                   format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"paymentAmount", "paymentType"},
+     *
      * @OA\Property(property="paymentAmount",      type="integer", minimum=1, description="Amount in cents"),
      * @OA\Property(property="paymentType",        type="string", enum={"withdrawal", "payment", "transfer"}),
      * @OA\Property(property="paymentDescription", type="string", maxLength=500)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment executed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentExecutionRecord",
      *                 type="object",
@@ -484,10 +523,13 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Insufficient funds",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentExecutionRecord",
      *                 type="object",
@@ -496,6 +538,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -512,23 +555,23 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-            'paymentAmount'      => 'required|integer|min:1',
-            'paymentType'        => 'required|in:withdrawal,payment,transfer',
-            'paymentDescription' => 'sometimes|string|max:500',
+                'paymentAmount' => 'required|integer|min:1',
+                'paymentType' => 'required|in:withdrawal,payment,transfer',
+                'paymentDescription' => 'sometimes|string|max:500',
             ]
         );
 
         if ($account->balance < $validated['paymentAmount']) {
             return response()->json(
                 [
-                'paymentExecutionRecord' => [
-                    'crReferenceId'   => $crReferenceId,
-                    'bqReferenceId'   => Str::uuid()->toString(),
-                    'executionStatus' => 'rejected',
-                    'executionReason' => 'Insufficient funds',
-                    'accountBalance'  => $account->balance,
-                    'requestedAmount' => $validated['paymentAmount'],
-                ],
+                    'paymentExecutionRecord' => [
+                        'crReferenceId' => $crReferenceId,
+                        'bqReferenceId' => Str::uuid()->toString(),
+                        'executionStatus' => 'rejected',
+                        'executionReason' => 'Insufficient funds',
+                        'accountBalance' => $account->balance,
+                        'requestedAmount' => $validated['paymentAmount'],
+                    ],
                 ],
                 422
             );
@@ -544,16 +587,16 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'paymentExecutionRecord' => [
-                'crReferenceId'      => $crReferenceId,
-                'bqReferenceId'      => Str::uuid()->toString(),
-                'executionStatus'    => 'completed',
-                'paymentAmount'      => $validated['paymentAmount'],
-                'paymentType'        => $validated['paymentType'],
-                'paymentDescription' => $validated['paymentDescription'] ?? null,
-                'accountBalance'     => $account->balance,
-                'executionDateTime'  => now()->toIso8601String(),
-            ],
+                'paymentExecutionRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'executionStatus' => 'completed',
+                    'paymentAmount' => $validated['paymentAmount'],
+                    'paymentType' => $validated['paymentType'],
+                    'paymentDescription' => $validated['paymentDescription'] ?? null,
+                    'accountBalance' => $account->balance,
+                    'executionDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -573,26 +616,34 @@ class CurrentAccountController extends Controller
      *     summary="Execute deposit",
      *     description="Executes a deposit to the current account",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                   format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"depositAmount", "depositType"},
+     *
      * @OA\Property(property="depositAmount",      type="integer", minimum=1, description="Amount in cents"),
      * @OA\Property(property="depositType",        type="string", enum={"cash", "check", "transfer", "direct"}),
      * @OA\Property(property="depositDescription", type="string", maxLength=500)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Deposit executed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="depositExecutionRecord",
      *                 type="object",
@@ -607,6 +658,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -627,9 +679,9 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-            'depositAmount'      => 'required|integer|min:1',
-            'depositType'        => 'required|in:cash,check,transfer,direct',
-            'depositDescription' => 'sometimes|string|max:500',
+                'depositAmount' => 'required|integer|min:1',
+                'depositType' => 'required|in:cash,check,transfer,direct',
+                'depositDescription' => 'sometimes|string|max:500',
             ]
         );
 
@@ -643,16 +695,16 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'depositExecutionRecord' => [
-                'crReferenceId'      => $crReferenceId,
-                'bqReferenceId'      => Str::uuid()->toString(),
-                'executionStatus'    => 'completed',
-                'depositAmount'      => $validated['depositAmount'],
-                'depositType'        => $validated['depositType'],
-                'depositDescription' => $validated['depositDescription'] ?? null,
-                'accountBalance'     => $account->balance,
-                'executionDateTime'  => now()->toIso8601String(),
-            ],
+                'depositExecutionRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'executionStatus' => 'completed',
+                    'depositAmount' => $validated['depositAmount'],
+                    'depositType' => $validated['depositType'],
+                    'depositDescription' => $validated['depositDescription'] ?? null,
+                    'accountBalance' => $account->balance,
+                    'executionDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -672,17 +724,22 @@ class CurrentAccountController extends Controller
      *     summary="Retrieve account balance",
      *     description="Retrieves the current balance of the account",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Balance retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="accountBalanceRecord",
      *                 type="object",
@@ -695,6 +752,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -711,14 +769,14 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'accountBalanceRecord' => [
-                'crReferenceId'   => $crReferenceId,
-                'bqReferenceId'   => Str::uuid()->toString(),
-                'balanceAmount'   => $account->balance,
-                'balanceCurrency' => 'USD',
-                'balanceType'     => 'available',
-                'balanceDateTime' => now()->toIso8601String(),
-            ],
+                'accountBalanceRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'balanceAmount' => $account->balance,
+                    'balanceCurrency' => 'USD',
+                    'balanceType' => 'available',
+                    'balanceDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -738,38 +796,49 @@ class CurrentAccountController extends Controller
      *     summary="Retrieve transaction report",
      *     description="Retrieves a report of account transactions for a specified period",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                       format="uuid")
      *     ),
+     *
      * @OA\Parameter(
      *         name="fromDate",
      *         in="query",
      *         required=false,
      *         description="Start date for transaction report",
+     *
      * @OA\Schema(type="string",                       format="date")
      *     ),
+     *
      * @OA\Parameter(
      *         name="toDate",
      *         in="query",
      *         required=false,
      *         description="End date for transaction report",
+     *
      * @OA\Schema(type="string",                       format="date")
      *     ),
+     *
      * @OA\Parameter(
      *         name="transactionType",
      *         in="query",
      *         required=false,
      *         description="Filter by transaction type",
+     *
      * @OA\Schema(type="string",                       enum={"all", "credit", "debit"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Transaction report retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="transactionReportRecord",
      *                 type="object",
@@ -784,7 +853,9 @@ class CurrentAccountController extends Controller
      * @OA\Property(
      *                     property="transactions",
      *                     type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="transactionReference",   type="string"),
      * @OA\Property(property="transactionType",        type="string", enum={"credit", "debit"}),
      * @OA\Property(property="transactionAmount",      type="integer"),
@@ -797,6 +868,7 @@ class CurrentAccountController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -817,9 +889,9 @@ class CurrentAccountController extends Controller
 
         $validated = $request->validate(
             [
-            'fromDate'        => 'sometimes|date',
-            'toDate'          => 'sometimes|date|after_or_equal:fromDate',
-            'transactionType' => 'sometimes|in:all,credit,debit',
+                'fromDate' => 'sometimes|date',
+                'toDate' => 'sometimes|date|after_or_equal:fromDate',
+                'transactionType' => 'sometimes|in:all,credit,debit',
             ]
         );
 
@@ -829,8 +901,8 @@ class CurrentAccountController extends Controller
             ->whereIn(
                 'event_class',
                 [
-                'App\Domain\Account\Events\MoneyAdded',
-                'App\Domain\Account\Events\MoneySubtracted',
+                    'App\Domain\Account\Events\MoneyAdded',
+                    'App\Domain\Account\Events\MoneySubtracted',
                 ]
             );
 
@@ -850,11 +922,11 @@ class CurrentAccountController extends Controller
                 $eventClass = class_basename($event->event_class);
 
                 return [
-                'transactionReference'   => $event->aggregate_uuid,
-                'transactionType'        => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',
-                'transactionAmount'      => $properties['money']['amount'] ?? 0,
-                'transactionDateTime'    => $event->created_at,
-                'transactionDescription' => $eventClass === 'MoneyAdded' ? 'Deposit' : 'Withdrawal',
+                    'transactionReference' => $event->aggregate_uuid,
+                    'transactionType' => $eventClass === 'MoneyAdded' ? 'credit' : 'debit',
+                    'transactionAmount' => $properties['money']['amount'] ?? 0,
+                    'transactionDateTime' => $event->created_at,
+                    'transactionDescription' => $eventClass === 'MoneyAdded' ? 'Deposit' : 'Withdrawal',
                 ];
             }
         );
@@ -869,17 +941,17 @@ class CurrentAccountController extends Controller
 
         return response()->json(
             [
-            'transactionReportRecord' => [
-                'crReferenceId' => $crReferenceId,
-                'bqReferenceId' => Str::uuid()->toString(),
-                'reportPeriod'  => [
-                    'fromDate' => $validated['fromDate'] ?? $account->created_at->toDateString(),
-                    'toDate'   => $validated['toDate'] ?? now()->toDateString(),
+                'transactionReportRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'reportPeriod' => [
+                        'fromDate' => $validated['fromDate'] ?? $account->created_at->toDateString(),
+                        'toDate' => $validated['toDate'] ?? now()->toDateString(),
+                    ],
+                    'transactions' => $transactions->values(),
+                    'transactionCount' => $transactions->count(),
+                    'reportDateTime' => now()->toIso8601String(),
                 ],
-                'transactions'     => $transactions->values(),
-                'transactionCount' => $transactions->count(),
-                'reportDateTime'   => now()->toIso8601String(),
-            ],
             ]
         );
     }

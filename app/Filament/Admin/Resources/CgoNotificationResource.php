@@ -27,16 +27,16 @@ class CgoNotificationResource extends Resource
         return $form
             ->schema(
                 [
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('ip_address')
-                    ->maxLength(45)
-                    ->disabled(),
-                Forms\Components\Textarea::make('user_agent')
-                    ->rows(3)
-                    ->disabled(),
+                    Forms\Components\TextInput::make('email')
+                        ->email()
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\TextInput::make('ip_address')
+                        ->maxLength(45)
+                        ->disabled(),
+                    Forms\Components\Textarea::make('user_agent')
+                        ->rows(3)
+                        ->disabled(),
                 ]
             );
     }
@@ -46,41 +46,41 @@ class CgoNotificationResource extends Resource
         return $table
             ->columns(
                 [
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable()
-                    ->sortable()
-                    ->copyable()
-                    ->icon('heroicon-m-envelope'),
-                Tables\Columns\TextColumn::make('ip_address')
-                    ->label('IP Address')
-                    ->toggleable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Signed Up')
-                    ->dateTime()
-                    ->sortable()
-                    ->since(),
+                    Tables\Columns\TextColumn::make('email')
+                        ->searchable()
+                        ->sortable()
+                        ->copyable()
+                        ->icon('heroicon-m-envelope'),
+                    Tables\Columns\TextColumn::make('ip_address')
+                        ->label('IP Address')
+                        ->toggleable(),
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->label('Signed Up')
+                        ->dateTime()
+                        ->sortable()
+                        ->since(),
                 ]
             )
             ->defaultSort('created_at', 'desc')
             ->filters(
                 [
-                //
+                    //
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make(),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ExportBulkAction::make(),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make(),
+                            Tables\Actions\ExportBulkAction::make(),
+                        ]
+                    ),
                 ]
             );
     }

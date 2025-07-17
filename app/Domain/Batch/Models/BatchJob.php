@@ -60,13 +60,13 @@ class BatchJob extends Model
     ];
 
     protected $casts = [
-        'total_items'     => 'integer',
+        'total_items' => 'integer',
         'processed_items' => 'integer',
-        'failed_items'    => 'integer',
-        'scheduled_at'    => 'datetime',
-        'started_at'      => 'datetime',
-        'completed_at'    => 'datetime',
-        'metadata'        => 'array',
+        'failed_items' => 'integer',
+        'scheduled_at' => 'datetime',
+        'started_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     /**

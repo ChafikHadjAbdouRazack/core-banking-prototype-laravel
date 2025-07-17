@@ -42,10 +42,13 @@ class PaymentInitiationController extends Controller
      *     summary="Initiate new payment transaction",
      *     description="Creates a new payment transaction following BIAN Payment Initiation standards",
      *     security={{"sanctum": {}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"payerReference", "payeeReference", "paymentAmount", "paymentType"},
+     *
      * @OA\Property(property="payerReference",  type="string", format="uuid", description="Payer account UUID"),
      * @OA\Property(property="payeeReference",  type="string", format="uuid", description="Payee account UUID"),
      * @OA\Property(property="paymentAmount",   type="integer", minimum=1, description="Payment amount in cents"),
@@ -55,10 +58,13 @@ class PaymentInitiationController extends Controller
      * @OA\Property(property="valueDate",       type="string", format="date", description="For scheduled payments")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Payment initiated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentInitiationTransaction",
      *                 type="object",
@@ -91,10 +97,13 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Insufficient funds or validation error",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentInitiationTransaction",
      *                 type="object",
@@ -103,6 +112,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
@@ -113,13 +123,13 @@ class PaymentInitiationController extends Controller
     {
         $validated = $request->validate(
             [
-            'payerReference'  => 'required|uuid|exists:accounts,uuid',
-            'payeeReference'  => 'required|uuid|exists:accounts,uuid|different:payerReference',
-            'paymentAmount'   => 'required|integer|min:1',
-            'paymentCurrency' => 'sometimes|string|size:3',
-            'paymentPurpose'  => 'sometimes|string|max:500',
-            'paymentType'     => 'required|in:internal,external,instant,scheduled',
-            'valueDate'       => 'sometimes|date|after_or_equal:today',
+                'payerReference' => 'required|uuid|exists:accounts,uuid',
+                'payeeReference' => 'required|uuid|exists:accounts,uuid|different:payerReference',
+                'paymentAmount' => 'required|integer|min:1',
+                'paymentCurrency' => 'sometimes|string|size:3',
+                'paymentPurpose' => 'sometimes|string|max:500',
+                'paymentType' => 'required|in:internal,external,instant,scheduled',
+                'valueDate' => 'sometimes|date|after_or_equal:today',
             ]
         );
 
@@ -133,13 +143,13 @@ class PaymentInitiationController extends Controller
         if ($payerBalance < $validated['paymentAmount']) {
             return response()->json(
                 [
-                'paymentInitiationTransaction' => [
-                    'crReferenceId'         => Str::uuid()->toString(),
-                    'paymentStatus'         => 'rejected',
-                    'statusReason'          => 'Insufficient funds',
-                    'payerAvailableBalance' => $payerBalance,
-                    'requestedAmount'       => $validated['paymentAmount'],
-                ],
+                    'paymentInitiationTransaction' => [
+                        'crReferenceId' => Str::uuid()->toString(),
+                        'paymentStatus' => 'rejected',
+                        'statusReason' => 'Insufficient funds',
+                        'payerAvailableBalance' => $payerBalance,
+                        'requestedAmount' => $validated['paymentAmount'],
+                    ],
                 ],
                 422
             );
@@ -176,28 +186,28 @@ class PaymentInitiationController extends Controller
 
         return response()->json(
             [
-            'paymentInitiationTransaction' => [
-                'crReferenceId'  => $crReferenceId,
-                'paymentStatus'  => $status,
-                'paymentDetails' => [
-                    'payerReference'  => $validated['payerReference'],
-                    'payerName'       => $payerAccount->name,
-                    'payeeReference'  => $validated['payeeReference'],
-                    'payeeName'       => $payeeAccount->name,
-                    'paymentAmount'   => $validated['paymentAmount'],
-                    'paymentCurrency' => $validated['paymentCurrency'] ?? 'USD',
-                    'paymentPurpose'  => $validated['paymentPurpose'] ?? null,
-                    'paymentType'     => $validated['paymentType'],
+                'paymentInitiationTransaction' => [
+                    'crReferenceId' => $crReferenceId,
+                    'paymentStatus' => $status,
+                    'paymentDetails' => [
+                        'payerReference' => $validated['payerReference'],
+                        'payerName' => $payerAccount->name,
+                        'payeeReference' => $validated['payeeReference'],
+                        'payeeName' => $payeeAccount->name,
+                        'paymentAmount' => $validated['paymentAmount'],
+                        'paymentCurrency' => $validated['paymentCurrency'] ?? 'USD',
+                        'paymentPurpose' => $validated['paymentPurpose'] ?? null,
+                        'paymentType' => $validated['paymentType'],
+                    ],
+                    'paymentSchedule' => [
+                        'initiationDate' => now()->toIso8601String(),
+                        'valueDate' => $validated['valueDate'] ?? now()->toDateString(),
+                    ],
+                    'balanceAfterPayment' => [
+                        'payerBalance' => $payerAccount->getBalance('USD'),
+                        'payeeBalance' => $payeeAccount->getBalance('USD'),
+                    ],
                 ],
-                'paymentSchedule' => [
-                    'initiationDate' => now()->toIso8601String(),
-                    'valueDate'      => $validated['valueDate'] ?? now()->toDateString(),
-                ],
-                'balanceAfterPayment' => [
-                    'payerBalance' => $payerAccount->getBalance('USD'),
-                    'payeeBalance' => $payeeAccount->getBalance('USD'),
-                ],
-            ],
             ],
             201
         );
@@ -217,25 +227,33 @@ class PaymentInitiationController extends Controller
      *     summary="Update payment transaction",
      *     description="Updates the status of a payment transaction (cancel, suspend, resume)",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",               format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"paymentStatus", "statusReason"},
+     *
      * @OA\Property(property="paymentStatus",  type="string", enum={"cancelled", "suspended", "resumed"}),
      * @OA\Property(property="statusReason",   type="string", maxLength=500)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment updated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentInitiationTransaction",
      *                 type="object",
@@ -247,6 +265,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Payment transaction not found"
@@ -265,8 +284,8 @@ class PaymentInitiationController extends Controller
     {
         $validated = $request->validate(
             [
-            'paymentStatus' => 'required|in:cancelled,suspended,resumed',
-            'statusReason'  => 'required|string|max:500',
+                'paymentStatus' => 'required|in:cancelled,suspended,resumed',
+                'statusReason' => 'required|string|max:500',
             ]
         );
 
@@ -274,13 +293,13 @@ class PaymentInitiationController extends Controller
         // For now, we'll return a simulated response
         return response()->json(
             [
-            'paymentInitiationTransaction' => [
-                'crReferenceId'  => $crReferenceId,
-                'updateAction'   => $validated['paymentStatus'],
-                'updateReason'   => $validated['statusReason'],
-                'updateStatus'   => 'successful',
-                'updateDateTime' => now()->toIso8601String(),
-            ],
+                'paymentInitiationTransaction' => [
+                    'crReferenceId' => $crReferenceId,
+                    'updateAction' => $validated['paymentStatus'],
+                    'updateReason' => $validated['statusReason'],
+                    'updateStatus' => 'successful',
+                    'updateDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -299,17 +318,22 @@ class PaymentInitiationController extends Controller
      *     summary="Retrieve payment details",
      *     description="Retrieves the details of a specific payment transaction",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                 format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment details retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentInitiationTransaction",
      *                 type="object",
@@ -333,6 +357,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Payment transaction not found"
@@ -359,21 +384,21 @@ class PaymentInitiationController extends Controller
 
         return response()->json(
             [
-            'paymentInitiationTransaction' => [
-                'crReferenceId'  => $crReferenceId,
-                'paymentStatus'  => 'completed',
-                'paymentDetails' => [
-                    'payerReference'  => $properties['from_uuid'] ?? $event->aggregate_uuid,
-                    'payeeReference'  => $properties['to_uuid'] ?? null,
-                    'paymentAmount'   => $properties['money']['amount'] ?? 0,
-                    'paymentCurrency' => 'USD',
+                'paymentInitiationTransaction' => [
+                    'crReferenceId' => $crReferenceId,
+                    'paymentStatus' => 'completed',
+                    'paymentDetails' => [
+                        'payerReference' => $properties['from_uuid'] ?? $event->aggregate_uuid,
+                        'payeeReference' => $properties['to_uuid'] ?? null,
+                        'paymentAmount' => $properties['money']['amount'] ?? 0,
+                        'paymentCurrency' => 'USD',
+                    ],
+                    'paymentSchedule' => [
+                        'initiationDate' => $event->created_at,
+                        'completionDate' => $event->created_at,
+                    ],
+                    'paymentReference' => $properties['hash']['hash'] ?? null,
                 ],
-                'paymentSchedule' => [
-                    'initiationDate' => $event->created_at,
-                    'completionDate' => $event->created_at,
-                ],
-                'paymentReference' => $properties['hash']['hash'] ?? null,
-            ],
             ]
         );
     }
@@ -392,24 +417,32 @@ class PaymentInitiationController extends Controller
      *     summary="Execute payment transaction",
      *     description="Executes a scheduled or pending payment transaction",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                  format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"executionMode"},
+     *
      * @OA\Property(property="executionMode",     type="string", enum={"immediate", "retry", "force"})
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment executed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentExecutionRecord",
      *                 type="object",
@@ -420,6 +453,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Payment transaction not found"
@@ -438,19 +472,19 @@ class PaymentInitiationController extends Controller
     {
         $validated = $request->validate(
             [
-            'executionMode' => 'required|in:immediate,retry,force',
+                'executionMode' => 'required|in:immediate,retry,force',
             ]
         );
 
         // In a real implementation, this would execute a scheduled/pending payment
         return response()->json(
             [
-            'paymentExecutionRecord' => [
-                'crReferenceId'     => $crReferenceId,
-                'executionMode'     => $validated['executionMode'],
-                'executionStatus'   => 'completed',
-                'executionDateTime' => now()->toIso8601String(),
-            ],
+                'paymentExecutionRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'executionMode' => $validated['executionMode'],
+                    'executionStatus' => 'completed',
+                    'executionDateTime' => now()->toIso8601String(),
+                ],
             ]
         );
     }
@@ -470,17 +504,22 @@ class PaymentInitiationController extends Controller
      *     summary="Request payment status",
      *     description="Requests the current status of a payment transaction",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="crReferenceId",
      *         in="path",
      *         required=true,
      *         description="Control Record Reference ID",
+     *
      * @OA\Schema(type="string",                    format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment status retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentStatusRecord",
      *                 type="object",
@@ -492,6 +531,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
@@ -506,9 +546,9 @@ class PaymentInitiationController extends Controller
             ->whereIn(
                 'event_class',
                 [
-                'App\Domain\Account\Events\MoneyTransferred',
-                'App\Domain\Account\Events\MoneyAdded',
-                'App\Domain\Account\Events\MoneySubtracted',
+                    'App\Domain\Account\Events\MoneyTransferred',
+                    'App\Domain\Account\Events\MoneyAdded',
+                    'App\Domain\Account\Events\MoneySubtracted',
                 ]
             )
             ->orderBy('created_at', 'desc')
@@ -518,13 +558,13 @@ class PaymentInitiationController extends Controller
 
         return response()->json(
             [
-            'paymentStatusRecord' => [
-                'crReferenceId'       => $crReferenceId,
-                'bqReferenceId'       => Str::uuid()->toString(),
-                'paymentStatus'       => $status,
-                'statusCheckDateTime' => now()->toIso8601String(),
-                'eventCount'          => $events->count(),
-            ],
+                'paymentStatusRecord' => [
+                    'crReferenceId' => $crReferenceId,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'paymentStatus' => $status,
+                    'statusCheckDateTime' => now()->toIso8601String(),
+                    'eventCount' => $events->count(),
+                ],
             ]
         );
     }
@@ -544,38 +584,49 @@ class PaymentInitiationController extends Controller
      *     summary="Retrieve payment history",
      *     description="Retrieves the payment history for a specific account",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="accountReference",
      *         in="path",
      *         required=true,
      *         description="Account UUID reference",
+     *
      * @OA\Schema(type="string",                  format="uuid")
      *     ),
+     *
      * @OA\Parameter(
      *         name="fromDate",
      *         in="query",
      *         required=false,
      *         description="Start date for payment history",
+     *
      * @OA\Schema(type="string",                  format="date")
      *     ),
+     *
      * @OA\Parameter(
      *         name="toDate",
      *         in="query",
      *         required=false,
      *         description="End date for payment history",
+     *
      * @OA\Schema(type="string",                  format="date")
      *     ),
+     *
      * @OA\Parameter(
      *         name="paymentDirection",
      *         in="query",
      *         required=false,
      *         description="Filter by payment direction",
+     *
      * @OA\Schema(type="string",                  enum={"sent", "received", "all"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Payment history retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="paymentHistoryRecord",
      *                 type="object",
@@ -590,7 +641,9 @@ class PaymentInitiationController extends Controller
      * @OA\Property(
      *                     property="payments",
      *                     type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="paymentReference",  type="string"),
      * @OA\Property(property="paymentDirection",  type="string", enum={"sent", "received"}),
      * @OA\Property(property="payerReference",    type="string"),
@@ -605,6 +658,7 @@ class PaymentInitiationController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found"
@@ -625,9 +679,9 @@ class PaymentInitiationController extends Controller
 
         $validated = $request->validate(
             [
-            'fromDate'         => 'sometimes|date',
-            'toDate'           => 'sometimes|date|after_or_equal:fromDate',
-            'paymentDirection' => 'sometimes|in:sent,received,all',
+                'fromDate' => 'sometimes|date',
+                'toDate' => 'sometimes|date|after_or_equal:fromDate',
+                'paymentDirection' => 'sometimes|in:sent,received,all',
             ]
         );
 
@@ -659,13 +713,13 @@ class PaymentInitiationController extends Controller
                 $toUuid = $properties['to_uuid'] ?? null;
 
                 return [
-                'paymentReference' => $event->aggregate_uuid,
-                'paymentDirection' => $fromUuid === $accountReference ? 'sent' : 'received',
-                'payerReference'   => $fromUuid,
-                'payeeReference'   => $toUuid,
-                'paymentAmount'    => $properties['money']['amount'] ?? 0,
-                'paymentDateTime'  => $event->created_at,
-                'paymentHash'      => $properties['hash']['hash'] ?? null,
+                    'paymentReference' => $event->aggregate_uuid,
+                    'paymentDirection' => $fromUuid === $accountReference ? 'sent' : 'received',
+                    'payerReference' => $fromUuid,
+                    'payeeReference' => $toUuid,
+                    'paymentAmount' => $properties['money']['amount'] ?? 0,
+                    'paymentDateTime' => $event->created_at,
+                    'paymentHash' => $properties['hash']['hash'] ?? null,
                 ];
             }
         );
@@ -680,17 +734,17 @@ class PaymentInitiationController extends Controller
 
         return response()->json(
             [
-            'paymentHistoryRecord' => [
-                'accountReference' => $accountReference,
-                'bqReferenceId'    => Str::uuid()->toString(),
-                'historyPeriod'    => [
-                    'fromDate' => $validated['fromDate'] ?? $account->created_at->toDateString(),
-                    'toDate'   => $validated['toDate'] ?? now()->toDateString(),
+                'paymentHistoryRecord' => [
+                    'accountReference' => $accountReference,
+                    'bqReferenceId' => Str::uuid()->toString(),
+                    'historyPeriod' => [
+                        'fromDate' => $validated['fromDate'] ?? $account->created_at->toDateString(),
+                        'toDate' => $validated['toDate'] ?? now()->toDateString(),
+                    ],
+                    'payments' => $payments->values(),
+                    'paymentCount' => $payments->count(),
+                    'retrievalDateTime' => now()->toIso8601String(),
                 ],
-                'payments'          => $payments->values(),
-                'paymentCount'      => $payments->count(),
-                'retrievalDateTime' => now()->toIso8601String(),
-            ],
             ]
         );
     }

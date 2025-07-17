@@ -16,10 +16,10 @@ class ProcessBatchItemActivity extends Activity
     {
         try {
             $result = match ($item['type']) {
-                'transfer'   => $this->processTransfer($item),
-                'payment'    => $this->processPayment($item),
+                'transfer' => $this->processTransfer($item),
+                'payment' => $this->processPayment($item),
                 'conversion' => $this->processConversion($item),
-                default      => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
+                default => throw new \InvalidArgumentException("Unknown item type: {$item['type']}")
             };
 
             // Record success
@@ -78,7 +78,7 @@ class ProcessBatchItemActivity extends Activity
 
         return [
             'transfer_id' => $transferUuid,
-            'status'      => 'completed',
+            'status' => 'completed',
         ];
     }
 
@@ -124,9 +124,9 @@ class ProcessBatchItemActivity extends Activity
         $conversionUuid = (string) Str::uuid();
 
         return [
-            'conversion_id'    => $conversionUuid,
+            'conversion_id' => $conversionUuid,
             'converted_amount' => $convertedAmount,
-            'rate'             => $rate,
+            'rate' => $rate,
         ];
     }
 }

@@ -11,7 +11,7 @@ class CheckTokenExpiration
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -24,7 +24,7 @@ class CheckTokenExpiration
 
                 return response()->json(
                     [
-                    'message' => 'Token has expired',
+                        'message' => 'Token has expired',
                     ],
                     401
                 );

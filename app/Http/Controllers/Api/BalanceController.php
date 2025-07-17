@@ -28,23 +28,30 @@ class BalanceController extends Controller
      *     summary="Get account balance",
      *     description="Retrieves the current balance and turnover information for an account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Balance information retrieved",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     ref="#/components/schemas/Balance")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -68,18 +75,18 @@ class BalanceController extends Controller
 
         return response()->json(
             [
-            'data' => [
-                'account_uuid' => $uuid,
-                'balance'      => $balance,
-                'frozen'       => $account->frozen ?? false,
-                'last_updated' => $account->updated_at,
-                'turnover'     => $turnover ? [
-                    'debit'        => $turnover->debit,
-                    'credit'       => $turnover->credit,
-                    'period_start' => $turnover->created_at,
-                    'period_end'   => $turnover->updated_at,
-                ] : null,
-            ],
+                'data' => [
+                    'account_uuid' => $uuid,
+                    'balance' => $balance,
+                    'frozen' => $account->frozen ?? false,
+                    'last_updated' => $account->updated_at,
+                    'turnover' => $turnover ? [
+                        'debit' => $turnover->debit,
+                        'credit' => $turnover->credit,
+                        'period_start' => $turnover->created_at,
+                        'period_end' => $turnover->updated_at,
+                    ] : null,
+                ],
             ]
         );
     }
@@ -92,17 +99,22 @@ class BalanceController extends Controller
      *     summary="Get account balance summary",
      *     description="Retrieves detailed balance statistics including 12-month turnover data",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Balance summary retrieved",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     type="object",
      * @OA\Property(property="account_uuid",             type="string", format="uuid"),
      * @OA\Property(property="current_balance",          type="integer", example=50000),
@@ -115,7 +127,9 @@ class BalanceController extends Controller
      * @OA\Property(property="months_analyzed",          type="integer", example=12)
      *                 ),
      * @OA\Property(property="monthly_turnovers",        type="array",
+     *
      * @OA\Items(type="object",
+     *
      * @OA\Property(property="month",                    type="integer", example=1),
      * @OA\Property(property="year",                     type="integer", example=2024),
      * @OA\Property(property="debit",                    type="integer", example=10000),
@@ -125,9 +139,11 @@ class BalanceController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -149,28 +165,28 @@ class BalanceController extends Controller
 
         return response()->json(
             [
-            'data' => [
-                'account_uuid'    => $uuid,
-                'current_balance' => $account->balance,
-                'frozen'          => $account->frozen ?? false,
-                'statistics'      => [
-                    'total_debit_12_months'  => $statistics['total_debit'],
-                    'total_credit_12_months' => $statistics['total_credit'],
-                    'average_monthly_debit'  => (int) $statistics['average_monthly_debit'],
-                    'average_monthly_credit' => (int) $statistics['average_monthly_credit'],
-                    'months_analyzed'        => $statistics['months_analyzed'],
+                'data' => [
+                    'account_uuid' => $uuid,
+                    'current_balance' => $account->balance,
+                    'frozen' => $account->frozen ?? false,
+                    'statistics' => [
+                        'total_debit_12_months' => $statistics['total_debit'],
+                        'total_credit_12_months' => $statistics['total_credit'],
+                        'average_monthly_debit' => (int) $statistics['average_monthly_debit'],
+                        'average_monthly_credit' => (int) $statistics['average_monthly_credit'],
+                        'months_analyzed' => $statistics['months_analyzed'],
+                    ],
+                    'monthly_turnovers' => $turnovers->map(
+                        function ($turnover) {
+                            return [
+                                'month' => $turnover->created_at->format('Y-m'),
+                                'debit' => $turnover->debit,
+                                'credit' => $turnover->credit,
+                                'net' => $turnover->credit - $turnover->debit,
+                            ];
+                        }
+                    ),
                 ],
-                'monthly_turnovers' => $turnovers->map(
-                    function ($turnover) {
-                        return [
-                        'month'  => $turnover->created_at->format('Y-m'),
-                        'debit'  => $turnover->debit,
-                        'credit' => $turnover->credit,
-                        'net'    => $turnover->credit - $turnover->debit,
-                        ];
-                    }
-                ),
-            ],
             ]
         );
     }

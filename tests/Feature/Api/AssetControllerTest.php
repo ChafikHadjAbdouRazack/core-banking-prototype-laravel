@@ -13,16 +13,16 @@ beforeEach(function () {
     $this->btc = Asset::firstOrCreate(
         ['code' => 'BTC'],
         [
-            'name'      => 'Bitcoin',
-            'type'      => 'crypto',
+            'name' => 'Bitcoin',
+            'type' => 'crypto',
             'precision' => 8,
             'is_active' => true,
-            'metadata'  => [
-                'symbol'           => '₿',
-                'decimals'         => 8,
+            'metadata' => [
+                'symbol' => '₿',
+                'decimals' => 8,
                 'contract_address' => null,
-                'network'          => 'bitcoin',
-                'market_cap_rank'  => 1,
+                'network' => 'bitcoin',
+                'market_cap_rank' => 1,
             ],
         ]
     );
@@ -30,16 +30,16 @@ beforeEach(function () {
     $this->eth = Asset::firstOrCreate(
         ['code' => 'ETH'],
         [
-            'name'      => 'Ethereum',
-            'type'      => 'crypto',
+            'name' => 'Ethereum',
+            'type' => 'crypto',
             'precision' => 18,
             'is_active' => true,
-            'metadata'  => [
-                'symbol'           => 'Ξ',
-                'decimals'         => 18,
+            'metadata' => [
+                'symbol' => 'Ξ',
+                'decimals' => 18,
                 'contract_address' => null,
-                'network'          => 'ethereum',
-                'market_cap_rank'  => 2,
+                'network' => 'ethereum',
+                'market_cap_rank' => 2,
             ],
         ]
     );
@@ -47,15 +47,15 @@ beforeEach(function () {
     $this->usd = Asset::firstOrCreate(
         ['code' => 'USD'],
         [
-            'name'      => 'US Dollar',
-            'type'      => 'fiat',
+            'name' => 'US Dollar',
+            'type' => 'fiat',
             'precision' => 2,
             'is_active' => true,
-            'metadata'  => [
-                'symbol'   => '$',
+            'metadata' => [
+                'symbol' => '$',
                 'decimals' => 2,
                 'iso_code' => 'USD',
-                'country'  => 'United States',
+                'country' => 'United States',
             ],
         ]
     );
@@ -63,8 +63,8 @@ beforeEach(function () {
     $this->inactiveAsset = Asset::firstOrCreate(
         ['code' => 'INACTIVE'],
         [
-            'name'      => 'Inactive Token',
-            'type'      => 'crypto',
+            'name' => 'Inactive Token',
+            'type' => 'crypto',
             'is_active' => false,
         ]
     );
@@ -255,11 +255,11 @@ describe('Asset API - Public Endpoints', function () {
         $this->btc->update([
             'metadata' => array_merge($this->btc->metadata ?? [], [
                 'market_data' => [
-                    'price_usd'        => 45000.50,
-                    'market_cap_usd'   => 850000000000,
-                    'volume_24h_usd'   => 25000000000,
+                    'price_usd' => 45000.50,
+                    'market_cap_usd' => 850000000000,
+                    'volume_24h_usd' => 25000000000,
                     'price_change_24h' => 2.5,
-                    'last_updated'     => now()->toISOString(),
+                    'last_updated' => now()->toISOString(),
                 ],
             ]),
         ]);
@@ -278,7 +278,7 @@ describe('Asset API - Public Endpoints', function () {
                 'supported_networks' => ['ethereum', 'polygon', 'arbitrum'],
                 'contract_addresses' => [
                     'ethereum' => null, // Native token
-                    'polygon'  => '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+                    'polygon' => '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
                     'arbitrum' => '0x82aF49447D8a07e3bd95BD0d56f35241523fBab1',
                 ],
             ]),
@@ -306,8 +306,8 @@ describe('Asset API - Public Endpoints', function () {
 
     test('handles asset search with special characters', function () {
         Asset::factory()->create([
-            'code'      => 'SPECIAL',
-            'name'      => 'Asset with special chars: $%#',
+            'code' => 'SPECIAL',
+            'name' => 'Asset with special chars: $%#',
             'is_active' => true,
         ]);
 

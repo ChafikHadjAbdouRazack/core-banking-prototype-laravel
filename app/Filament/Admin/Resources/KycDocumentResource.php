@@ -20,7 +20,7 @@ class KycDocumentResource extends Resource
         return $form
             ->schema(
                 [
-                //
+                    //
                 ]
             );
     }
@@ -30,26 +30,26 @@ class KycDocumentResource extends Resource
         return $table
             ->columns(
                 [
-                //
+                    //
                 ]
             )
             ->filters(
                 [
-                //
+                    //
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\EditAction::make(),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make(),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make(),
+                        ]
+                    ),
                 ]
             );
     }
@@ -64,9 +64,9 @@ class KycDocumentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListKycDocuments::route('/'),
+            'index' => Pages\ListKycDocuments::route('/'),
             'create' => Pages\CreateKycDocument::route('/create'),
-            'edit'   => Pages\EditKycDocument::route('/{record}/edit'),
+            'edit' => Pages\EditKycDocument::route('/{record}/edit'),
         ];
     }
 }

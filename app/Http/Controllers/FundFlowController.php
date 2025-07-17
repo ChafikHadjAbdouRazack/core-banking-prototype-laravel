@@ -23,8 +23,8 @@ class FundFlowController extends Controller
 
         // Get filter parameters
         $filters = [
-            'period'    => $request->get('period', '7days'),
-            'account'   => $request->get('account', 'all'),
+            'period' => $request->get('period', '7days'),
+            'account' => $request->get('account', 'all'),
             'flow_type' => $request->get('flow_type', 'all'),
         ];
 
@@ -46,12 +46,12 @@ class FundFlowController extends Controller
         return Inertia::render(
             'FundFlow/Visualization',
             [
-            'accounts'    => $accounts,
-            'flowData'    => $flowData,
-            'statistics'  => $statistics,
-            'networkData' => $networkData,
-            'chartData'   => $chartData,
-            'filters'     => $filters,
+                'accounts' => $accounts,
+                'flowData' => $flowData,
+                'statistics' => $statistics,
+                'networkData' => $networkData,
+                'chartData' => $chartData,
+                'filters' => $filters,
             ]
         );
     }
@@ -78,11 +78,11 @@ class FundFlowController extends Controller
         return Inertia::render(
             'FundFlow/AccountDetail',
             [
-            'account'        => $account->load('balances.asset'),
-            'inflows'        => $inflows,
-            'outflows'       => $outflows,
-            'flowBalance'    => $flowBalance,
-            'counterparties' => $counterparties,
+                'account' => $account->load('balances.asset'),
+                'inflows' => $inflows,
+                'outflows' => $outflows,
+                'flowBalance' => $flowBalance,
+                'counterparties' => $counterparties,
             ]
         );
     }
@@ -95,8 +95,8 @@ class FundFlowController extends Controller
         $user = Auth::user();
         /** @var User $user */
         $filters = [
-            'period'    => $request->get('period', '7days'),
-            'account'   => $request->get('account', 'all'),
+            'period' => $request->get('period', '7days'),
+            'account' => $request->get('account', 'all'),
             'flow_type' => $request->get('flow_type', 'all'),
         ];
 
@@ -105,9 +105,9 @@ class FundFlowController extends Controller
 
         return response()->json(
             [
-            'flows'        => $flowData,
-            'period'       => $filters['period'],
-            'generated_at' => now()->toIso8601String(),
+                'flows' => $flowData,
+                'period' => $filters['period'],
+                'generated_at' => now()->toIso8601String(),
             ]
         );
     }
@@ -143,7 +143,7 @@ class FundFlowController extends Controller
 
         return [
             'start' => $start,
-            'end'   => $end,
+            'end' => $end,
         ];
     }
 
@@ -179,14 +179,14 @@ class FundFlowController extends Controller
         // Process transactions into flows
         foreach ($transactionData as $transaction) {
             $flow = [
-                'id'          => $transaction->id,
-                'type'        => $transaction->type,
-                'amount'      => $transaction->amount,
-                'currency'    => $transaction->currency,
-                'from'        => $this->getFlowSource($transaction),
-                'to'          => $this->getFlowDestination($transaction),
-                'timestamp'   => $transaction->created_at,
-                'status'      => $transaction->status,
+                'id' => $transaction->id,
+                'type' => $transaction->type,
+                'amount' => $transaction->amount,
+                'currency' => $transaction->currency,
+                'from' => $this->getFlowSource($transaction),
+                'to' => $this->getFlowDestination($transaction),
+                'timestamp' => $transaction->created_at,
+                'status' => $transaction->status,
                 'description' => $this->getFlowDescription($transaction),
             ];
 
@@ -259,10 +259,10 @@ class FundFlowController extends Controller
         $accounts = $user->accounts()->get();
         foreach ($accounts as $account) {
             $nodes[] = [
-                'id'      => 'account_' . $account->uuid,
-                'label'   => $account->name,
-                'type'    => 'account',
-                'group'   => 'internal',
+                'id' => 'account_' . $account->uuid,
+                'label' => $account->name,
+                'type' => 'account',
+                'group' => 'internal',
                 'balance' => $account->balances->sum('balance'),
             ];
         }
@@ -275,9 +275,9 @@ class FundFlowController extends Controller
             // Create nodes for external entities
             if ($flow['from']['type'] === 'external' && ! isset($externalNodes[$flow['from']['id']])) {
                 $nodes[] = [
-                    'id'    => $flow['from']['id'],
+                    'id' => $flow['from']['id'],
                     'label' => $flow['from']['name'],
-                    'type'  => 'external',
+                    'type' => 'external',
                     'group' => $flow['from']['group'] ?? 'bank',
                 ];
                 $externalNodes[$flow['from']['id']] = true;
@@ -285,9 +285,9 @@ class FundFlowController extends Controller
 
             if ($flow['to']['type'] === 'external' && ! isset($externalNodes[$flow['to']['id']])) {
                 $nodes[] = [
-                    'id'    => $flow['to']['id'],
+                    'id' => $flow['to']['id'],
                     'label' => $flow['to']['name'],
-                    'type'  => 'external',
+                    'type' => 'external',
                     'group' => $flow['to']['group'] ?? 'bank',
                 ];
                 $externalNodes[$flow['to']['id']] = true;
@@ -295,12 +295,12 @@ class FundFlowController extends Controller
 
             // Create edge
             $edges[] = [
-                'id'        => 'edge_' . $flow['id'],
-                'source'    => $flow['from']['id'],
-                'target'    => $flow['to']['id'],
-                'value'     => $flow['amount'],
-                'currency'  => $flow['currency'],
-                'type'      => $flow['type'],
+                'id' => 'edge_' . $flow['id'],
+                'source' => $flow['from']['id'],
+                'target' => $flow['to']['id'],
+                'value' => $flow['amount'],
+                'currency' => $flow['currency'],
+                'type' => $flow['type'],
                 'timestamp' => $flow['timestamp'],
             ];
         }
@@ -349,10 +349,10 @@ class FundFlowController extends Controller
             $dayData = $dailyData->firstWhere('date', $dateStr);
 
             $chartData[] = [
-                'date'         => $dateStr,
-                'inflow'       => $dayData ? $dayData->inflow : 0,
-                'outflow'      => $dayData ? $dayData->outflow : 0,
-                'net'          => $dayData ? ($dayData->inflow - $dayData->outflow) : 0,
+                'date' => $dateStr,
+                'inflow' => $dayData ? $dayData->inflow : 0,
+                'outflow' => $dayData ? $dayData->outflow : 0,
+                'net' => $dayData ? ($dayData->inflow - $dayData->outflow) : 0,
                 'transactions' => $dayData ? $dayData->transaction_count : 0,
             ];
 
@@ -400,10 +400,10 @@ class FundFlowController extends Controller
         $totalOutflow = abs($outflows->sum('amount'));
 
         return [
-            'total_inflow'  => $totalInflow,
+            'total_inflow' => $totalInflow,
             'total_outflow' => $totalOutflow,
-            'net_flow'      => $totalInflow - $totalOutflow,
-            'flow_ratio'    => $totalOutflow > 0 ? round($totalInflow / $totalOutflow, 2) : null,
+            'net_flow' => $totalInflow - $totalOutflow,
+            'flow_ratio' => $totalOutflow > 0 ? round($totalInflow / $totalOutflow, 2) : null,
         ];
     }
 
@@ -415,8 +415,8 @@ class FundFlowController extends Controller
         // This would analyze transaction metadata to identify frequent counterparties
         // For now, return mock data
         return [
-            'top_sources'       => [],
-            'top_destinations'  => [],
+            'top_sources' => [],
+            'top_destinations' => [],
             'frequent_patterns' => [],
         ];
     }
@@ -429,17 +429,17 @@ class FundFlowController extends Controller
         if ($transaction->type === 'deposit') {
             // External source
             return [
-                'id'    => 'external_' . ($transaction->source_id ?? 'bank'),
-                'name'  => $transaction->source_name ?? 'External Bank',
-                'type'  => 'external',
+                'id' => 'external_' . ($transaction->source_id ?? 'bank'),
+                'name' => $transaction->source_name ?? 'External Bank',
+                'type' => 'external',
                 'group' => 'bank',
             ];
         } else {
             // Internal account
             return [
-                'id'    => 'account_' . $transaction->account_uuid,
-                'name'  => $transaction->account_name,
-                'type'  => 'account',
+                'id' => 'account_' . $transaction->account_uuid,
+                'name' => $transaction->account_name,
+                'type' => 'account',
                 'group' => 'internal',
             ];
         }
@@ -453,17 +453,17 @@ class FundFlowController extends Controller
         if ($transaction->type === 'withdrawal') {
             // External destination
             return [
-                'id'    => 'external_' . ($transaction->destination_id ?? 'bank'),
-                'name'  => $transaction->destination_name ?? 'External Bank',
-                'type'  => 'external',
+                'id' => 'external_' . ($transaction->destination_id ?? 'bank'),
+                'name' => $transaction->destination_name ?? 'External Bank',
+                'type' => 'external',
                 'group' => 'bank',
             ];
         } else {
             // Internal account
             return [
-                'id'    => 'account_' . $transaction->account_uuid,
-                'name'  => $transaction->account_name,
-                'type'  => 'account',
+                'id' => 'account_' . $transaction->account_uuid,
+                'name' => $transaction->account_name,
+                'type' => 'account',
                 'group' => 'internal',
             ];
         }
@@ -475,10 +475,10 @@ class FundFlowController extends Controller
     private function getFlowDescription($transaction)
     {
         $descriptions = [
-            'deposit'    => 'Deposit from external source',
+            'deposit' => 'Deposit from external source',
             'withdrawal' => 'Withdrawal to external destination',
-            'transfer'   => 'Internal transfer',
-            'exchange'   => 'Currency exchange',
+            'transfer' => 'Internal transfer',
+            'exchange' => 'Currency exchange',
         ];
 
         return $descriptions[$transaction->type] ?? $transaction->type;
@@ -527,13 +527,13 @@ class FundFlowController extends Controller
 
             if (! isset($aggregated[$key])) {
                 $aggregated[$key] = [
-                    'id'       => 'agg_' . md5($key),
-                    'source'   => $edge['source'],
-                    'target'   => $edge['target'],
-                    'value'    => 0,
+                    'id' => 'agg_' . md5($key),
+                    'source' => $edge['source'],
+                    'target' => $edge['target'],
+                    'value' => 0,
                     'currency' => $edge['currency'],
-                    'count'    => 0,
-                    'types'    => [],
+                    'count' => 0,
+                    'types' => [],
                 ];
             }
 

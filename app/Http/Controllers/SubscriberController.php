@@ -26,7 +26,7 @@ class SubscriberController extends Controller
                 return view(
                     'subscriber.unsubscribed',
                     [
-                    'message' => 'You have been successfully unsubscribed from our mailing list.',
+                        'message' => 'You have been successfully unsubscribed from our mailing list.',
                     ]
                 );
             }
@@ -34,14 +34,14 @@ class SubscriberController extends Controller
             return view(
                 'subscriber.unsubscribed',
                 [
-                'message' => 'You are already unsubscribed or we could not find your subscription.',
+                    'message' => 'You are already unsubscribed or we could not find your subscription.',
                 ]
             );
         } catch (\Exception $e) {
             return view(
                 'subscriber.unsubscribed',
                 [
-                'message' => 'Invalid unsubscribe link. Please contact support if you need assistance.',
+                    'message' => 'Invalid unsubscribe link. Please contact support if you need assistance.',
                 ]
             );
         }
@@ -54,8 +54,8 @@ class SubscriberController extends Controller
     {
         $validated = $request->validate(
             [
-            'email' => 'required|email',
-            'tags'  => 'array',
+                'email' => 'required|email',
+                'tags' => 'array',
             ]
         );
 
@@ -70,15 +70,15 @@ class SubscriberController extends Controller
 
             return response()->json(
                 [
-                'success' => true,
-                'message' => 'Thank you for subscribing! Please check your email.',
+                    'success' => true,
+                    'message' => 'Thank you for subscribing! Please check your email.',
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'An error occurred. Please try again later.',
+                    'success' => false,
+                    'message' => 'An error occurred. Please try again later.',
                 ],
                 500
             );

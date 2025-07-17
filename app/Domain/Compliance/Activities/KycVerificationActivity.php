@@ -50,11 +50,11 @@ class KycVerificationActivity extends Activity
             $this->kycService->verifyKyc($user, $verifiedBy, $options);
 
             return [
-                'user_uuid'   => $userUuid,
-                'status'      => 'approved',
+                'user_uuid' => $userUuid,
+                'status' => 'approved',
                 'verified_by' => $verifiedBy,
                 'verified_at' => now()->toISOString(),
-                'options'     => $options,
+                'options' => $options,
             ];
         } else {
             $reason = $input['reason'] ?? null;
@@ -65,11 +65,11 @@ class KycVerificationActivity extends Activity
             $this->kycService->rejectKyc($user, $reason, $verifiedBy);
 
             return [
-                'user_uuid'   => $userUuid,
-                'status'      => 'rejected',
+                'user_uuid' => $userUuid,
+                'status' => 'rejected',
                 'rejected_by' => $verifiedBy,
                 'rejected_at' => now()->toISOString(),
-                'reason'      => $reason,
+                'reason' => $reason,
             ];
         }
     }

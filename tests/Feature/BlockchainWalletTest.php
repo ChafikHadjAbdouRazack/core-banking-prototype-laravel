@@ -48,9 +48,9 @@ class BlockchainWalletTest extends DomainTestCase
         // Check database projection
         $this->assertDatabaseHas('blockchain_wallets', [
             'wallet_id' => $wallet->getWalletId(),
-            'user_id'   => $this->user->id,
-            'type'      => 'custodial',
-            'status'    => 'active',
+            'user_id' => $this->user->id,
+            'type' => 'custodial',
+            'status' => 'active',
         ]);
     }
 
@@ -84,17 +84,17 @@ class BlockchainWalletTest extends DomainTestCase
         // Check that addresses were generated for major chains
         $this->assertDatabaseHas('wallet_addresses', [
             'wallet_id' => $wallet->getWalletId(),
-            'chain'     => 'ethereum',
+            'chain' => 'ethereum',
         ]);
 
         $this->assertDatabaseHas('wallet_addresses', [
             'wallet_id' => $wallet->getWalletId(),
-            'chain'     => 'polygon',
+            'chain' => 'polygon',
         ]);
 
         $this->assertDatabaseHas('wallet_addresses', [
             'wallet_id' => $wallet->getWalletId(),
-            'chain'     => 'bsc',
+            'chain' => 'bsc',
         ]);
     }
 
@@ -120,8 +120,8 @@ class BlockchainWalletTest extends DomainTestCase
         // Check database
         $this->assertDatabaseHas('wallet_addresses', [
             'wallet_id' => $wallet->getWalletId(),
-            'chain'     => 'ethereum',
-            'label'     => 'Trading Address',
+            'chain' => 'ethereum',
+            'label' => 'Trading Address',
         ]);
     }
 
@@ -136,7 +136,7 @@ class BlockchainWalletTest extends DomainTestCase
         $updatedWallet = $this->walletService->updateSettings(
             walletId: $wallet->getWalletId(),
             settings: [
-                'daily_limit'  => '5000',
+                'daily_limit' => '5000',
                 'requires_2fa' => true,
             ]
         );
@@ -165,7 +165,7 @@ class BlockchainWalletTest extends DomainTestCase
 
         $this->assertDatabaseHas('blockchain_wallets', [
             'wallet_id' => $wallet->getWalletId(),
-            'status'    => 'frozen',
+            'status' => 'frozen',
         ]);
 
         // Try to generate address on frozen wallet
@@ -262,8 +262,8 @@ class BlockchainWalletTest extends DomainTestCase
         $walletAggregate->persist();
 
         $this->assertDatabaseHas('wallet_backups', [
-            'wallet_id'     => $wallet->getWalletId(),
-            'backup_id'     => $backup['backup_id'],
+            'wallet_id' => $wallet->getWalletId(),
+            'backup_id' => $backup['backup_id'],
             'backup_method' => 'encrypted_json',
         ]);
     }
@@ -278,14 +278,14 @@ class BlockchainWalletTest extends DomainTestCase
 
         // Simulate some transactions
         DB::table('blockchain_transactions')->insert([
-            'wallet_id'        => $wallet->getWalletId(),
-            'chain'            => 'ethereum',
+            'wallet_id' => $wallet->getWalletId(),
+            'chain' => 'ethereum',
             'transaction_hash' => '0x123',
-            'from_address'     => '0xabc',
-            'to_address'       => '0xdef',
-            'amount'           => '1000000000000000000', // 1 ETH
-            'status'           => 'confirmed',
-            'created_at'       => now(),
+            'from_address' => '0xabc',
+            'to_address' => '0xdef',
+            'amount' => '1000000000000000000', // 1 ETH
+            'status' => 'confirmed',
+            'created_at' => now(),
         ]);
 
         $history = $this->walletService->getTransactionHistory($wallet->getWalletId());

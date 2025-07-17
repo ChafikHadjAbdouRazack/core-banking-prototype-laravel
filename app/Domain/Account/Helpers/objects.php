@@ -13,9 +13,7 @@ if (! function_exists('hydrate')) {
      *
      * @template T of DataObjectContract
      *
-     * @param class-string<T> $class
-     * @param array           $properties
-     *
+     * @param  class-string<T>  $class
      * @return T
      */
     function hydrate(string $class, array $properties): DataObjectContract
@@ -32,11 +30,6 @@ if (! function_exists('hydrate')) {
 }
 
 if (! function_exists('__account')) {
-    /**
-     * @param Account|array $account
-     *
-     * @return Account
-     */
     function __account(Account|array $account): Account
     {
         if ($account instanceof Account) {
@@ -51,11 +44,6 @@ if (! function_exists('__account')) {
 }
 
 if (! function_exists('__money')) {
-    /**
-     * @param Money|int $amount
-     *
-     * @return Money
-     */
     function __money(Money|int $amount): Money
     {
         if ($amount instanceof Money) {
@@ -72,11 +60,6 @@ if (! function_exists('__money')) {
 }
 
 if (! function_exists('__account_uuid')) {
-    /**
-     * @param Account|AccountModel|AccountUuid|string $uuid
-     *
-     * @return AccountUuid
-     */
     function __account_uuid(Account|AccountModel|AccountUuid|string $uuid): AccountUuid
     {
         if ($uuid instanceof AccountUuid) {
@@ -101,11 +84,6 @@ if (! function_exists('__account_uuid')) {
 }
 
 if (! function_exists('__account__uuid')) {
-    /**
-     * @param Account|AccountModel|AccountUuid|string $uuid
-     *
-     * @return string
-     */
     function __account__uuid(Account|AccountModel|AccountUuid|string $uuid): string
     {
         if ($uuid instanceof AccountUuid) {

@@ -8,9 +8,6 @@ enum DefaultAccountNames: string
     case SAVINGS = 'Savings';
     case LOAN = 'Loan';
 
-    /**
-     * @return self
-     */
     public static function default(): self
     {
         return self::MAIN;
@@ -18,8 +15,6 @@ enum DefaultAccountNames: string
 
     /**
      * Get the translation for the account name.
-     *
-     * @return string
      */
     public function label(): string
     {

@@ -26,11 +26,11 @@ class StatusController extends Controller
 
         return response()->json(
             [
-            'status'    => $status,
-            'services'  => $this->getServicesStatus(),
-            'uptime'    => $this->calculateUptime(),
-            'incidents' => $this->getRecentIncidents(true),
-            'timestamp' => now()->toIso8601String(),
+                'status' => $status,
+                'services' => $this->getServicesStatus(),
+                'uptime' => $this->calculateUptime(),
+                'incidents' => $this->getRecentIncidents(true),
+                'timestamp' => now()->toIso8601String(),
             ]
         );
     }
@@ -43,9 +43,9 @@ class StatusController extends Controller
         // Perform real-time checks for critical services
         $realtimeChecks = [
             'database' => $this->checkDatabase(),
-            'cache'    => $this->checkCache(),
-            'queue'    => $this->checkQueue(),
-            'storage'  => $this->checkStorage(),
+            'cache' => $this->checkCache(),
+            'queue' => $this->checkQueue(),
+            'storage' => $this->checkStorage(),
         ];
 
         // Merge with database records
@@ -56,12 +56,12 @@ class StatusController extends Controller
             // Record the check
             SystemHealthCheck::create(
                 [
-                'service'       => $service,
-                'check_type'    => 'realtime',
-                'status'        => $check['status'],
-                'response_time' => $check['response_time'] ?? null,
-                'error_message' => $check['status'] !== 'operational' ? ($check['message'] ?? null) : null,
-                'checked_at'    => now(),
+                    'service' => $service,
+                    'check_type' => 'realtime',
+                    'status' => $check['status'],
+                    'response_time' => $check['response_time'] ?? null,
+                    'error_message' => $check['status'] !== 'operational' ? ($check['message'] ?? null) : null,
+                    'checked_at' => now(),
                 ]
             );
         }
@@ -70,9 +70,9 @@ class StatusController extends Controller
         foreach ($latestChecks as $service => $healthCheck) {
             if (! isset($checks[$service])) {
                 $checks[$service] = [
-                    'status'        => $healthCheck->status,
+                    'status' => $healthCheck->status,
                     'response_time' => $healthCheck->response_time,
-                    'message'       => $healthCheck->error_message ?? 'Service status from monitoring',
+                    'message' => $healthCheck->error_message ?? 'Service status from monitoring',
                 ];
             }
         }
@@ -81,10 +81,10 @@ class StatusController extends Controller
         $hasDown = collect($checks)->contains(fn ($check) => $check['status'] === 'down');
 
         return [
-            'overall'       => $hasDown ? 'down' : ($allOperational ? 'operational' : 'degraded'),
-            'checks'        => $checks,
+            'overall' => $hasDown ? 'down' : ($allOperational ? 'operational' : 'degraded'),
+            'checks' => $checks,
             'response_time' => $this->measureResponseTime(),
-            'last_checked'  => now(),
+            'last_checked' => now(),
         ];
     }
 
@@ -98,15 +98,15 @@ class StatusController extends Controller
             $status = $time > 100 ? 'degraded' : 'operational';
 
             return [
-                'status'        => $status,
+                'status' => $status,
                 'response_time' => $time,
-                'message'       => $status === 'operational' ? 'Database connection successful' : 'Database response slow',
+                'message' => $status === 'operational' ? 'Database connection successful' : 'Database response slow',
             ];
         } catch (\Exception $e) {
             return [
-                'status'        => 'down',
+                'status' => 'down',
                 'response_time' => null,
-                'message'       => 'Database connection failed',
+                'message' => 'Database connection failed',
             ];
         }
     }
@@ -120,12 +120,12 @@ class StatusController extends Controller
             Cache::forget($key);
 
             return [
-                'status'  => $result ? 'operational' : 'degraded',
+                'status' => $result ? 'operational' : 'degraded',
                 'message' => $result ? 'Cache working properly' : 'Cache issues detected',
             ];
         } catch (\Exception $e) {
             return [
-                'status'  => 'down',
+                'status' => 'down',
                 'message' => 'Cache service unavailable',
             ];
         }
@@ -148,14 +148,14 @@ class StatusController extends Controller
             }
 
             return [
-                'status'       => $status,
-                'failed_jobs'  => $failedJobs,
+                'status' => $status,
+                'failed_jobs' => $failedJobs,
                 'pending_jobs' => $pendingJobs,
-                'message'      => $failedJobs > 0 ? "$failedJobs failed jobs" : 'Queue processing normally',
+                'message' => $failedJobs > 0 ? "$failedJobs failed jobs" : 'Queue processing normally',
             ];
         } catch (\Exception $e) {
             return [
-                'status'  => 'unknown',
+                'status' => 'unknown',
                 'message' => 'Unable to check queue status',
             ];
         }
@@ -170,13 +170,13 @@ class StatusController extends Controller
             $used_percentage = round(($total - $free) / $total * 100, 2);
 
             return [
-                'status'  => $used_percentage > 90 ? 'degraded' : 'operational',
-                'usage'   => $used_percentage . '%',
+                'status' => $used_percentage > 90 ? 'degraded' : 'operational',
+                'usage' => $used_percentage . '%',
                 'message' => "Disk usage: $used_percentage%",
             ];
         } catch (\Exception $e) {
             return [
-                'status'  => 'unknown',
+                'status' => 'unknown',
                 'message' => 'Unable to check storage',
             ];
         }
@@ -197,27 +197,27 @@ class StatusController extends Controller
     {
         $services = [
             'web' => [
-                'name'        => 'Web Application',
+                'name' => 'Web Application',
                 'description' => 'Main platform interface',
             ],
             'api' => [
-                'name'        => 'API Services',
+                'name' => 'API Services',
                 'description' => 'REST API endpoints and webhooks',
             ],
             'database' => [
-                'name'        => 'Database Cluster',
+                'name' => 'Database Cluster',
                 'description' => 'Primary and replica databases',
             ],
             'queue' => [
-                'name'        => 'Queue Workers',
+                'name' => 'Queue Workers',
                 'description' => 'Background job processing',
             ],
             'cache' => [
-                'name'        => 'CDN & Cache',
+                'name' => 'CDN & Cache',
                 'description' => 'Content delivery and caching',
             ],
             'email' => [
-                'name'        => 'Email Service',
+                'name' => 'Email Service',
                 'description' => 'Transactional email delivery',
             ],
         ];
@@ -233,10 +233,10 @@ class StatusController extends Controller
             $uptime = SystemHealthCheck::calculateUptime($serviceKey, 30);
 
             $result[] = [
-                'name'        => $serviceInfo['name'],
+                'name' => $serviceInfo['name'],
                 'description' => $serviceInfo['description'],
-                'status'      => $status,
-                'uptime'      => $uptime . '%',
+                'status' => $status,
+                'uptime' => $uptime . '%',
             ];
         }
 
@@ -254,22 +254,22 @@ class StatusController extends Controller
             return $incidents->map(
                 function ($incident) {
                     return [
-                    'id'          => $incident->id,
-                    'title'       => $incident->title,
-                    'status'      => $incident->status,
-                    'impact'      => $incident->impact,
-                    'started_at'  => $incident->started_at->toIso8601String(),
-                    'resolved_at' => $incident->resolved_at?->toIso8601String(),
-                    'duration'    => $incident->duration,
-                    'updates'     => $incident->updates->map(
-                        function ($update) {
-                            return [
-                            'status'     => $update->status,
-                            'message'    => $update->message,
-                            'created_at' => $update->created_at->toIso8601String(),
-                            ];
-                        }
-                    ),
+                        'id' => $incident->id,
+                        'title' => $incident->title,
+                        'status' => $incident->status,
+                        'impact' => $incident->impact,
+                        'started_at' => $incident->started_at->toIso8601String(),
+                        'resolved_at' => $incident->resolved_at?->toIso8601String(),
+                        'duration' => $incident->duration,
+                        'updates' => $incident->updates->map(
+                            function ($update) {
+                                return [
+                                    'status' => $update->status,
+                                    'message' => $update->message,
+                                    'created_at' => $update->created_at->toIso8601String(),
+                                ];
+                            }
+                        ),
                     ];
                 }
             );
@@ -305,8 +305,8 @@ class StatusController extends Controller
         $downtimeMinutes = $failedChecks;
 
         return [
-            'percentage'       => round($overallUptime, 2),
-            'period'           => '30 days',
+            'percentage' => round($overallUptime, 2),
+            'period' => '30 days',
             'downtime_minutes' => $downtimeMinutes,
         ];
     }

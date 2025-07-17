@@ -33,7 +33,7 @@ class AssetBalanceAddedTest extends DomainTestCase
     {
         $hash = Hash::fromData('test-hash-with-metadata');
         $metadata = [
-            'source'    => 'bank_transfer',
+            'source' => 'bank_transfer',
             'reference' => 'TX123456',
             'timestamp' => '2024-01-15T10:30:00Z',
         ];

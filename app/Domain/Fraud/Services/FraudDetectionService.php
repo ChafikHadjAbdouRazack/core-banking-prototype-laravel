@@ -55,17 +55,17 @@ class FraudDetectionService
                 // Create fraud score record
                 $fraudScore = FraudScore::create(
                     [
-                        'entity_id'        => $transaction->id,
-                        'entity_type'      => Transaction::class,
-                        'score_type'       => FraudScore::SCORE_TYPE_REAL_TIME,
-                        'entity_snapshot'  => $this->createEntitySnapshot($transaction),
-                        'total_score'      => 0, // Will be updated after analysis
-                        'risk_level'       => 'low', // Will be updated after analysis
-                        'score_breakdown'  => [], // Will be updated after analysis
-                        'triggered_rules'  => [], // Will be updated after analysis
-                        'decision'         => 'review', // Will be updated after analysis
+                        'entity_id' => $transaction->id,
+                        'entity_type' => Transaction::class,
+                        'score_type' => FraudScore::SCORE_TYPE_REAL_TIME,
+                        'entity_snapshot' => $this->createEntitySnapshot($transaction),
+                        'total_score' => 0, // Will be updated after analysis
+                        'risk_level' => 'low', // Will be updated after analysis
+                        'score_breakdown' => [], // Will be updated after analysis
+                        'triggered_rules' => [], // Will be updated after analysis
+                        'decision' => 'review', // Will be updated after analysis
                         'decision_factors' => [], // Will be updated after analysis
-                        'decision_at'      => now(),
+                        'decision_at' => now(),
                     ]
                 );
 
@@ -100,20 +100,20 @@ class FraudDetectionService
                     // 7. Update fraud score
                     $fraudScore->update(
                         [
-                            'total_score'        => $totalScore,
-                            'risk_level'         => $riskLevel,
-                            'score_breakdown'    => $this->createScoreBreakdown($ruleResults, $behavioralResults, $deviceResults, $mlResults),
-                            'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
+                            'total_score' => $totalScore,
+                            'risk_level' => $riskLevel,
+                            'score_breakdown' => $this->createScoreBreakdown($ruleResults, $behavioralResults, $deviceResults, $mlResults),
+                            'triggered_rules' => $ruleResults['triggered_rules'] ?? [],
                             'behavioral_factors' => $behavioralResults,
-                            'device_factors'     => $deviceResults,
-                            'network_factors'    => $this->extractNetworkFactors($analysisContext),
-                            'ml_score'           => $mlResults['score'] ?? null,
-                            'ml_model_version'   => $mlResults['model_version'] ?? null,
-                            'ml_features'        => $mlResults['features'] ?? null,
-                            'ml_explanation'     => $mlResults['explanation'] ?? null,
-                            'decision'           => $decision,
-                            'decision_factors'   => $this->extractDecisionFactors($totalScore, $ruleResults),
-                            'decision_at'        => now(),
+                            'device_factors' => $deviceResults,
+                            'network_factors' => $this->extractNetworkFactors($analysisContext),
+                            'ml_score' => $mlResults['score'] ?? null,
+                            'ml_model_version' => $mlResults['model_version'] ?? null,
+                            'ml_features' => $mlResults['features'] ?? null,
+                            'ml_explanation' => $mlResults['explanation'] ?? null,
+                            'decision' => $decision,
+                            'decision_factors' => $this->extractDecisionFactors($totalScore, $ruleResults),
+                            'decision_at' => now(),
                         ]
                     );
 
@@ -129,18 +129,18 @@ class FraudDetectionService
                         'Fraud detection failed',
                         [
                             'transaction_id' => $transaction->id,
-                            'error'          => $e->getMessage(),
+                            'error' => $e->getMessage(),
                         ]
                     );
 
                     // Fail-safe: allow transaction but flag for review
                     $fraudScore->update(
                         [
-                            'total_score'      => 50,
-                            'risk_level'       => FraudScore::RISK_LEVEL_MEDIUM,
-                            'decision'         => FraudScore::DECISION_REVIEW,
+                            'total_score' => 50,
+                            'risk_level' => FraudScore::RISK_LEVEL_MEDIUM,
+                            'decision' => FraudScore::DECISION_REVIEW,
                             'decision_factors' => ['error' => 'Detection system error - flagged for manual review'],
-                            'decision_at'      => now(),
+                            'decision_at' => now(),
                         ]
                     );
 
@@ -158,30 +158,30 @@ class FraudDetectionService
         $analysisContext = array_merge(
             $context,
             [
-                'user'                => $user,
-                'account_age_days'    => $user->created_at->diffInDays(now()),
+                'user' => $user,
+                'account_age_days' => $user->created_at->diffInDays(now()),
                 'transaction_history' => $this->getTransactionHistory($user),
             ]
         );
 
         $fraudScore = FraudScore::create(
             [
-                'entity_id'       => $user->id,
-                'entity_type'     => User::class,
-                'score_type'      => FraudScore::SCORE_TYPE_BATCH,
+                'entity_id' => $user->id,
+                'entity_type' => User::class,
+                'score_type' => FraudScore::SCORE_TYPE_BATCH,
                 'entity_snapshot' => [
-                    'user_id'     => $user->id,
-                    'created_at'  => $user->created_at->toIso8601String(),
-                    'kyc_level'   => $user->kyc_level,
+                    'user_id' => $user->id,
+                    'created_at' => $user->created_at->toIso8601String(),
+                    'kyc_level' => $user->kyc_level,
                     'risk_rating' => $user->risk_rating,
                 ],
-                'total_score'      => 0, // Will be updated after analysis
-                'risk_level'       => 'low', // Will be updated after analysis
-                'score_breakdown'  => [], // Will be updated after analysis
-                'triggered_rules'  => [], // Will be updated after analysis
-                'decision'         => 'review', // Will be updated after analysis
+                'total_score' => 0, // Will be updated after analysis
+                'risk_level' => 'low', // Will be updated after analysis
+                'score_breakdown' => [], // Will be updated after analysis
+                'triggered_rules' => [], // Will be updated after analysis
+                'decision' => 'review', // Will be updated after analysis
                 'decision_factors' => [], // Will be updated after analysis
-                'decision_at'      => now(),
+                'decision_at' => now(),
             ]
         );
 
@@ -190,12 +190,12 @@ class FraudDetectionService
 
         $fraudScore->update(
             [
-                'total_score'      => $results['total_score'],
-                'risk_level'       => $results['risk_level'],
-                'score_breakdown'  => $results['breakdown'],
-                'decision'         => $results['decision'],
+                'total_score' => $results['total_score'],
+                'risk_level' => $results['risk_level'],
+                'score_breakdown' => $results['breakdown'],
+                'decision' => $results['decision'],
                 'decision_factors' => $results['factors'],
-                'decision_at'      => now(),
+                'decision_at' => now(),
             ]
         );
 
@@ -210,27 +210,27 @@ class FraudDetectionService
         return array_merge(
             [
                 'transaction' => $transaction->toArray(),
-                'user'        => $user->toArray(),
-                'account'     => $transaction->account->toArray(),
-                'amount'      => $transaction->event_properties['amount'] ?? 0,
-                'currency'    => $transaction->event_properties['assetCode'] ?? 'USD',
-                'type'        => $transaction->meta_data['type'] ?? 'unknown',
-                'timestamp'   => $transaction->created_at,
-                'metadata'    => $transaction->event_properties['metadata'] ?? [],
+                'user' => $user->toArray(),
+                'account' => $transaction->account->toArray(),
+                'amount' => $transaction->event_properties['amount'] ?? 0,
+                'currency' => $transaction->event_properties['assetCode'] ?? 'USD',
+                'type' => $transaction->meta_data['type'] ?? 'unknown',
+                'timestamp' => $transaction->created_at,
+                'metadata' => $transaction->event_properties['metadata'] ?? [],
 
                 // Velocity metrics
-                'daily_transaction_count'  => $this->getDailyTransactionCount($user),
+                'daily_transaction_count' => $this->getDailyTransactionCount($user),
                 'daily_transaction_volume' => $this->getDailyTransactionVolume($user),
                 'hourly_transaction_count' => $this->getHourlyTransactionCount($user),
 
                 // Historical data
                 'user_transaction_count' => $user->transactions()->count(),
-                'account_balance'        => $transaction->account->getBalance($transaction->event_properties['assetCode'] ?? 'USD'),
+                'account_balance' => $transaction->account->getBalance($transaction->event_properties['assetCode'] ?? 'USD'),
 
                 // Time-based features
-                'hour_of_day'                 => $transaction->created_at->hour,
-                'day_of_week'                 => $transaction->created_at->dayOfWeek,
-                'is_weekend'                  => $transaction->created_at->isWeekend(),
+                'hour_of_day' => $transaction->created_at->hour,
+                'day_of_week' => $transaction->created_at->dayOfWeek,
+                'is_weekend' => $transaction->created_at->isWeekend(),
                 'time_since_last_transaction' => $this->getTimeSinceLastTransaction($user),
             ],
             $additionalContext
@@ -244,14 +244,14 @@ class FraudDetectionService
     {
         return [
             'transaction_id' => $transaction->id,
-            'amount'         => $transaction->event_properties['amount'] ?? 0,
-            'currency'       => $transaction->event_properties['assetCode'] ?? 'USD',
-            'type'           => $transaction->meta_data['type'] ?? 'unknown',
-            'status'         => $transaction->meta_data['status'] ?? 'completed',
-            'account_id'     => $transaction->aggregate_uuid,
-            'user_id'        => $transaction->account->user_uuid,
-            'created_at'     => $transaction->created_at->toIso8601String(),
-            'metadata'       => $transaction->event_properties['metadata'] ?? [],
+            'amount' => $transaction->event_properties['amount'] ?? 0,
+            'currency' => $transaction->event_properties['assetCode'] ?? 'USD',
+            'type' => $transaction->meta_data['type'] ?? 'unknown',
+            'status' => $transaction->meta_data['status'] ?? 'completed',
+            'account_id' => $transaction->aggregate_uuid,
+            'user_id' => $transaction->account->user_uuid,
+            'created_at' => $transaction->created_at->toIso8601String(),
+            'metadata' => $transaction->event_properties['metadata'] ?? [],
         ];
     }
 
@@ -265,10 +265,10 @@ class FraudDetectionService
         ?array $mlResults
     ): float {
         $weights = [
-            'rules'      => 0.35,
+            'rules' => 0.35,
             'behavioral' => 0.25,
-            'device'     => 0.20,
-            'ml'         => 0.20,
+            'device' => 0.20,
+            'ml' => 0.20,
         ];
 
         $score = 0;
@@ -351,14 +351,14 @@ class FraudDetectionService
     {
         $transaction->update(
             [
-                'status'   => 'blocked',
+                'status' => 'blocked',
                 'metadata' => array_merge(
                     $transaction->metadata ?? [],
                     [
-                        'blocked_at'     => now()->toIso8601String(),
-                        'block_reason'   => 'Fraud detection system',
+                        'blocked_at' => now()->toIso8601String(),
+                        'block_reason' => 'Fraud detection system',
                         'fraud_score_id' => $fraudScore->id,
-                        'risk_level'     => $fraudScore->risk_level,
+                        'risk_level' => $fraudScore->risk_level,
                     ]
                 ),
             ]
@@ -378,10 +378,10 @@ class FraudDetectionService
                 'metadata' => array_merge(
                     $transaction->metadata ?? [],
                     [
-                        'requires_review'     => true,
+                        'requires_review' => true,
                         'review_requested_at' => now()->toIso8601String(),
-                        'fraud_score_id'      => $fraudScore->id,
-                        'risk_level'          => $fraudScore->risk_level,
+                        'fraud_score_id' => $fraudScore->id,
+                        'risk_level' => $fraudScore->risk_level,
                     ]
                 ),
             ]
@@ -398,13 +398,13 @@ class FraudDetectionService
     {
         $transaction->update(
             [
-                'status'   => 'pending_challenge',
+                'status' => 'pending_challenge',
                 'metadata' => array_merge(
                     $transaction->metadata ?? [],
                     [
                         'challenge_requested_at' => now()->toIso8601String(),
-                        'challenge_reason'       => 'Additional verification required',
-                        'fraud_score_id'         => $fraudScore->id,
+                        'challenge_reason' => 'Additional verification required',
+                        'fraud_score_id' => $fraudScore->id,
                     ]
                 ),
             ]
@@ -522,9 +522,9 @@ class FraudDetectionService
         foreach ($ruleResults['rule_scores'] ?? [] as $ruleCode => $score) {
             $breakdown[] = [
                 'component' => 'rule',
-                'name'      => $ruleCode,
-                'score'     => $score,
-                'severity'  => $ruleResults['rule_details'][$ruleCode]['severity'] ?? 'medium',
+                'name' => $ruleCode,
+                'score' => $score,
+                'severity' => $ruleResults['rule_details'][$ruleCode]['severity'] ?? 'medium',
             ];
         }
 
@@ -532,9 +532,9 @@ class FraudDetectionService
         if (isset($behavioralResults['risk_score'])) {
             $breakdown[] = [
                 'component' => 'behavioral',
-                'name'      => 'Behavioral Analysis',
-                'score'     => $behavioralResults['risk_score'],
-                'factors'   => $behavioralResults['risk_factors'] ?? [],
+                'name' => 'Behavioral Analysis',
+                'score' => $behavioralResults['risk_score'],
+                'factors' => $behavioralResults['risk_factors'] ?? [],
             ];
         }
 
@@ -542,18 +542,18 @@ class FraudDetectionService
         if (isset($deviceResults['risk_score'])) {
             $breakdown[] = [
                 'component' => 'device',
-                'name'      => 'Device Risk',
-                'score'     => $deviceResults['risk_score'],
-                'factors'   => $deviceResults['risk_factors'] ?? [],
+                'name' => 'Device Risk',
+                'score' => $deviceResults['risk_score'],
+                'factors' => $deviceResults['risk_factors'] ?? [],
             ];
         }
 
         // Add ML score
         if ($mlResults && isset($mlResults['score'])) {
             $breakdown[] = [
-                'component'  => 'ml',
-                'name'       => 'Machine Learning Model',
-                'score'      => $mlResults['score'],
+                'component' => 'ml',
+                'name' => 'Machine Learning Model',
+                'score' => $mlResults['score'],
                 'confidence' => $mlResults['confidence'] ?? null,
             ];
         }
@@ -569,11 +569,11 @@ class FraudDetectionService
         return [
             'ip_address' => $context['ip_address'] ?? null,
             'ip_country' => $context['ip_country'] ?? null,
-            'ip_region'  => $context['ip_region'] ?? null,
-            'isp'        => $context['isp'] ?? null,
-            'is_vpn'     => $context['is_vpn'] ?? false,
-            'is_proxy'   => $context['is_proxy'] ?? false,
-            'is_tor'     => $context['is_tor'] ?? false,
+            'ip_region' => $context['ip_region'] ?? null,
+            'isp' => $context['isp'] ?? null,
+            'is_vpn' => $context['is_vpn'] ?? false,
+            'is_proxy' => $context['is_proxy'] ?? false,
+            'is_tor' => $context['is_tor'] ?? false,
         ];
     }
 
@@ -583,9 +583,9 @@ class FraudDetectionService
     protected function extractDecisionFactors(float $score, array $ruleResults): array
     {
         $factors = [
-            'total_score'     => $score,
+            'total_score' => $score,
             'rules_triggered' => count($ruleResults['triggered_rules'] ?? []),
-            'blocking_rules'  => $ruleResults['blocking_rules'] ?? [],
+            'blocking_rules' => $ruleResults['blocking_rules'] ?? [],
         ];
 
         // Add top contributing factors
@@ -634,10 +634,10 @@ class FraudDetectionService
 
         return [
             'total_score' => $totalScore,
-            'risk_level'  => $riskLevel,
-            'breakdown'   => $scores,
-            'decision'    => $totalScore >= 60 ? FraudScore::DECISION_REVIEW : FraudScore::DECISION_ALLOW,
-            'factors'     => array_keys($scores),
+            'risk_level' => $riskLevel,
+            'breakdown' => $scores,
+            'decision' => $totalScore >= 60 ? FraudScore::DECISION_REVIEW : FraudScore::DECISION_ALLOW,
+            'factors' => array_keys($scores),
         ];
     }
 

@@ -16,20 +16,27 @@ class VotingController extends Controller
      *     path="/api/v2/gcu/voting/proposals",
      *     summary="Get voting proposals",
      *     tags={"GCU Voting"},
+     *
      * @OA\Parameter(
      *         name="status",
      *         in="query",
      *         description="Filter by status (active, upcoming, past)",
      *         required=false,
+     *
      * @OA\Schema(type="string",                   enum={"active", "upcoming", "past"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="List of voting proposals",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",             type="string", example="success"),
      * @OA\Property(property="data",               type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="id",                 type="integer"),
      * @OA\Property(property="title",              type="string"),
      * @OA\Property(property="description",        type="string"),
@@ -65,29 +72,29 @@ class VotingController extends Controller
         $proposals = $query->get()->map(
             function ($proposal) {
                 return [
-                'id'                    => $proposal->id,
-                'title'                 => $proposal->title,
-                'description'           => $proposal->description,
-                'status'                => $proposal->status,
-                'proposed_composition'  => $proposal->proposed_composition,
-                'current_composition'   => $proposal->current_composition,
-                'voting_starts_at'      => $proposal->voting_starts_at->toIso8601String(),
-                'voting_ends_at'        => $proposal->voting_ends_at->toIso8601String(),
-                'participation_rate'    => round($proposal->participation_rate, 2),
-                'approval_rate'         => round($proposal->approval_rate, 2),
-                'minimum_participation' => $proposal->minimum_participation,
-                'minimum_approval'      => $proposal->minimum_approval,
-                'votes_for'             => $proposal->votes_for,
-                'votes_against'         => $proposal->votes_against,
-                'total_votes_cast'      => $proposal->total_votes_cast,
+                    'id' => $proposal->id,
+                    'title' => $proposal->title,
+                    'description' => $proposal->description,
+                    'status' => $proposal->status,
+                    'proposed_composition' => $proposal->proposed_composition,
+                    'current_composition' => $proposal->current_composition,
+                    'voting_starts_at' => $proposal->voting_starts_at->toIso8601String(),
+                    'voting_ends_at' => $proposal->voting_ends_at->toIso8601String(),
+                    'participation_rate' => round($proposal->participation_rate, 2),
+                    'approval_rate' => round($proposal->approval_rate, 2),
+                    'minimum_participation' => $proposal->minimum_participation,
+                    'minimum_approval' => $proposal->minimum_approval,
+                    'votes_for' => $proposal->votes_for,
+                    'votes_against' => $proposal->votes_against,
+                    'total_votes_cast' => $proposal->total_votes_cast,
                 ];
             }
         );
 
         return response()->json(
             [
-            'status' => 'success',
-            'data'   => $proposals,
+                'status' => 'success',
+                'data' => $proposals,
             ]
         );
     }
@@ -97,17 +104,22 @@ class VotingController extends Controller
      *     path="/api/v2/gcu/voting/proposals/{id}",
      *     summary="Get proposal details",
      *     tags={"GCU Voting"},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Proposal ID",
      *         required=true,
+     *
      * @OA\Schema(type="integer")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Proposal details",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status", type="string", example="success"),
      * @OA\Property(property="data",   type="object")
      *         )
@@ -120,28 +132,28 @@ class VotingController extends Controller
 
         return response()->json(
             [
-            'status' => 'success',
-            'data'   => [
-                'id'                    => $proposal->id,
-                'title'                 => $proposal->title,
-                'description'           => $proposal->description,
-                'rationale'             => $proposal->rationale,
-                'status'                => $proposal->status,
-                'proposed_composition'  => $proposal->proposed_composition,
-                'current_composition'   => $proposal->current_composition,
-                'voting_starts_at'      => $proposal->voting_starts_at->toIso8601String(),
-                'voting_ends_at'        => $proposal->voting_ends_at->toIso8601String(),
-                'participation_rate'    => round($proposal->participation_rate, 2),
-                'approval_rate'         => round($proposal->approval_rate, 2),
-                'minimum_participation' => $proposal->minimum_participation,
-                'minimum_approval'      => $proposal->minimum_approval,
-                'votes_for'             => $proposal->votes_for,
-                'votes_against'         => $proposal->votes_against,
-                'total_votes_cast'      => $proposal->total_votes_cast,
-                'total_gcu_supply'      => $proposal->total_gcu_supply,
-                'is_voting_active'      => $proposal->isVotingActive(),
-                'time_remaining'        => $proposal->time_remaining,
-            ],
+                'status' => 'success',
+                'data' => [
+                    'id' => $proposal->id,
+                    'title' => $proposal->title,
+                    'description' => $proposal->description,
+                    'rationale' => $proposal->rationale,
+                    'status' => $proposal->status,
+                    'proposed_composition' => $proposal->proposed_composition,
+                    'current_composition' => $proposal->current_composition,
+                    'voting_starts_at' => $proposal->voting_starts_at->toIso8601String(),
+                    'voting_ends_at' => $proposal->voting_ends_at->toIso8601String(),
+                    'participation_rate' => round($proposal->participation_rate, 2),
+                    'approval_rate' => round($proposal->approval_rate, 2),
+                    'minimum_participation' => $proposal->minimum_participation,
+                    'minimum_approval' => $proposal->minimum_approval,
+                    'votes_for' => $proposal->votes_for,
+                    'votes_against' => $proposal->votes_against,
+                    'total_votes_cast' => $proposal->total_votes_cast,
+                    'total_gcu_supply' => $proposal->total_gcu_supply,
+                    'is_voting_active' => $proposal->isVotingActive(),
+                    'time_remaining' => $proposal->time_remaining,
+                ],
             ]
         );
     }
@@ -152,23 +164,31 @@ class VotingController extends Controller
      *     summary="Cast a vote",
      *     tags={"GCU Voting"},
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         description="Proposal ID",
      *         required=true,
+     *
      * @OA\Schema(type="integer")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="vote",         type="string", enum={"for", "against", "abstain"})
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Vote cast successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",       type="string", example="success"),
      * @OA\Property(property="message",      type="string"),
      * @OA\Property(property="data",         type="object",
@@ -186,8 +206,8 @@ class VotingController extends Controller
         if (! $proposal->isVotingActive()) {
             return response()->json(
                 [
-                'status'  => 'error',
-                'message' => 'Voting is not active for this proposal',
+                    'status' => 'error',
+                    'message' => 'Voting is not active for this proposal',
                 ],
                 400
             );
@@ -195,7 +215,7 @@ class VotingController extends Controller
 
         $request->validate(
             [
-            'vote' => 'required|in:for,against,abstain',
+                'vote' => 'required|in:for,against,abstain',
             ]
         );
 
@@ -210,8 +230,8 @@ class VotingController extends Controller
         if (! $gcuAccount || $gcuAccount->balance <= 0) {
             return response()->json(
                 [
-                'status'  => 'error',
-                'message' => 'You need GCU holdings to vote',
+                    'status' => 'error',
+                    'message' => 'You need GCU holdings to vote',
                 ],
                 400
             );
@@ -222,12 +242,12 @@ class VotingController extends Controller
                 // Create or update vote
                 $vote = GcuVote::updateOrCreate(
                     [
-                    'proposal_id' => $proposal->id,
-                    'user_uuid'   => $user->uuid,
+                        'proposal_id' => $proposal->id,
+                        'user_uuid' => $user->uuid,
                     ],
                     [
-                    'vote'         => $request->vote,
-                    'voting_power' => $gcuAccount->balance,
+                        'vote' => $request->vote,
+                        'voting_power' => $gcuAccount->balance,
                     ]
                 );
 
@@ -242,12 +262,12 @@ class VotingController extends Controller
 
         return response()->json(
             [
-            'status'  => 'success',
-            'message' => 'Your vote has been recorded',
-            'data'    => [
-                'vote'         => $request->vote,
-                'voting_power' => $gcuAccount->balance,
-            ],
+                'status' => 'success',
+                'message' => 'Your vote has been recorded',
+                'data' => [
+                    'vote' => $request->vote,
+                    'voting_power' => $gcuAccount->balance,
+                ],
             ]
         );
     }
@@ -258,13 +278,18 @@ class VotingController extends Controller
      *     summary="Get user's voting history",
      *     tags={"GCU Voting"},
      *     security={{"sanctum": {}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="User's voting history",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",         type="string", example="success"),
      * @OA\Property(property="data",           type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="proposal_id",    type="integer"),
      * @OA\Property(property="proposal_title", type="string"),
      * @OA\Property(property="vote",           type="string"),
@@ -285,19 +310,19 @@ class VotingController extends Controller
             ->map(
                 function ($vote) {
                     return [
-                    'proposal_id'    => $vote->proposal_id,
-                    'proposal_title' => $vote->proposal->title,
-                    'vote'           => $vote->vote,
-                    'voting_power'   => $vote->voting_power,
-                    'voted_at'       => $vote->created_at->toIso8601String(),
+                        'proposal_id' => $vote->proposal_id,
+                        'proposal_title' => $vote->proposal->title,
+                        'vote' => $vote->vote,
+                        'voting_power' => $vote->voting_power,
+                        'voted_at' => $vote->created_at->toIso8601String(),
                     ];
                 }
             );
 
         return response()->json(
             [
-            'status' => 'success',
-            'data'   => $votes,
+                'status' => 'success',
+                'data' => $votes,
             ]
         );
     }
@@ -312,9 +337,9 @@ class VotingController extends Controller
 
         $proposal->update(
             [
-            'votes_for'        => $votesFor,
-            'votes_against'    => $votesAgainst,
-            'total_votes_cast' => $totalVotes,
+                'votes_for' => $votesFor,
+                'votes_against' => $votesAgainst,
+                'total_votes_cast' => $totalVotes,
             ]
         );
     }

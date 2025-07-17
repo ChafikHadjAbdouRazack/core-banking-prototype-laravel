@@ -66,8 +66,8 @@ class MintStablecoinActivityTest extends DomainTestCase
     {
         // Create stablecoin with mint fee
         $stablecoin = Stablecoin::factory()->create([
-            'code'         => 'USDS',
-            'mint_fee'     => 0.002, // 0.2% mint fee
+            'code' => 'USDS',
+            'mint_fee' => 0.002, // 0.2% mint fee
             'total_supply' => 1000000000000, // 1 million USDS
         ]);
 
@@ -86,8 +86,8 @@ class MintStablecoinActivityTest extends DomainTestCase
     public function test_zero_mint_fee_calculation(): void
     {
         $stablecoin = Stablecoin::factory()->create([
-            'code'         => 'NOFEE',
-            'mint_fee'     => 0.0,
+            'code' => 'NOFEE',
+            'mint_fee' => 0.0,
             'total_supply' => 100000000000,
         ]);
 

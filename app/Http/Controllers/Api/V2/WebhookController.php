@@ -28,12 +28,17 @@ class WebhookController extends Controller
      *     summary="List webhooks",
      *     description="Get a list of all configured webhooks for the authenticated user",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="List of webhooks",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",              type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="id",                type="string", format="uuid"),
      * @OA\Property(property="url",               type="string", format="url"),
      * @OA\Property(property="events",            type="array", @OA\Items(type="string")),
@@ -55,19 +60,19 @@ class WebhookController extends Controller
 
         return response()->json(
             [
-            'data' => $webhooks->map(
-                function ($webhook) {
-                    return [
-                    'id'                => $webhook->uuid,
-                    'url'               => $webhook->url,
-                    'events'            => $webhook->events,
-                    'is_active'         => $webhook->is_active,
-                    'description'       => $webhook->description,
-                    'created_at'        => $webhook->created_at->toIso8601String(),
-                    'last_triggered_at' => $webhook->last_triggered_at?->toIso8601String(),
-                    ];
-                }
-            ),
+                'data' => $webhooks->map(
+                    function ($webhook) {
+                        return [
+                            'id' => $webhook->uuid,
+                            'url' => $webhook->url,
+                            'events' => $webhook->events,
+                            'is_active' => $webhook->is_active,
+                            'description' => $webhook->description,
+                            'created_at' => $webhook->created_at->toIso8601String(),
+                            'last_triggered_at' => $webhook->last_triggered_at?->toIso8601String(),
+                        ];
+                    }
+                ),
             ]
         );
     }
@@ -80,20 +85,26 @@ class WebhookController extends Controller
      *     summary="Create webhook",
      *     description="Create a new webhook endpoint",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"url", "events"},
+     *
      * @OA\Property(property="url",         type="string", format="url", example="https://example.com/webhook"),
      * @OA\Property(property="events",      type="array", @OA\Items(type="string"), example={"account.created", "transaction.completed"}),
      * @OA\Property(property="description", type="string", example="Production webhook for transaction notifications"),
      * @OA\Property(property="is_active",   type="boolean", default=true)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Webhook created",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",        type="object",
      * @OA\Property(property="id",          type="string", format="uuid"),
      * @OA\Property(property="url",         type="string"),
@@ -110,11 +121,11 @@ class WebhookController extends Controller
     {
         $validated = $request->validate(
             [
-            'url'         => 'required|url|https',
-            'events'      => 'required|array|min:1',
-            'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
-            'description' => 'nullable|string|max:255',
-            'is_active'   => 'boolean',
+                'url' => 'required|url|https',
+                'events' => 'required|array|min:1',
+                'events.*' => ['required', 'string', Rule::in($this->getAvailableEvents())],
+                'description' => 'nullable|string|max:255',
+                'is_active' => 'boolean',
             ]
         );
 
@@ -122,26 +133,26 @@ class WebhookController extends Controller
 
         $webhook = Webhook::create(
             [
-            'uuid'        => Str::uuid(),
-            'name'        => $validated['description'] ?? 'Webhook',
-            'url'         => $validated['url'],
-            'events'      => $validated['events'],
-            'secret'      => $secret,
-            'description' => $validated['description'] ?? null,
-            'is_active'   => $validated['is_active'] ?? true,
+                'uuid' => Str::uuid(),
+                'name' => $validated['description'] ?? 'Webhook',
+                'url' => $validated['url'],
+                'events' => $validated['events'],
+                'secret' => $secret,
+                'description' => $validated['description'] ?? null,
+                'is_active' => $validated['is_active'] ?? true,
             ]
         );
 
         return response()->json(
             [
-            'data' => [
-                'id'         => $webhook->uuid,
-                'url'        => $webhook->url,
-                'events'     => $webhook->events,
-                'secret'     => $secret, // Only shown once at creation
-                'is_active'  => $webhook->is_active,
-                'created_at' => $webhook->created_at->toIso8601String(),
-            ],
+                'data' => [
+                    'id' => $webhook->uuid,
+                    'url' => $webhook->url,
+                    'events' => $webhook->events,
+                    'secret' => $secret, // Only shown once at creation
+                    'is_active' => $webhook->is_active,
+                    'created_at' => $webhook->created_at->toIso8601String(),
+                ],
             ],
             201
         );
@@ -155,17 +166,22 @@ class WebhookController extends Controller
      *     summary="Get webhook details",
      *     description="Get details of a specific webhook",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Webhook ID",
+     *
      * @OA\Schema(type="string",                      format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Webhook details",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                  type="object",
      * @OA\Property(property="id",                    type="string", format="uuid"),
      * @OA\Property(property="url",                   type="string"),
@@ -189,23 +205,23 @@ class WebhookController extends Controller
         $webhook = Webhook::findOrFail($id);
 
         $statistics = [
-            'total_deliveries'      => $webhook->deliveries()->count(),
+            'total_deliveries' => $webhook->deliveries()->count(),
             'successful_deliveries' => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_SUCCESS)->count(),
-            'failed_deliveries'     => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_FAILED)->count(),
-            'last_triggered_at'     => $webhook->last_triggered_at?->toIso8601String(),
+            'failed_deliveries' => $webhook->deliveries()->where('status', WebhookDelivery::STATUS_FAILED)->count(),
+            'last_triggered_at' => $webhook->last_triggered_at?->toIso8601String(),
         ];
 
         return response()->json(
             [
-            'data' => [
-                'id'          => $webhook->uuid,
-                'url'         => $webhook->url,
-                'events'      => $webhook->events,
-                'is_active'   => $webhook->is_active,
-                'description' => $webhook->description,
-                'created_at'  => $webhook->created_at->toIso8601String(),
-                'statistics'  => $statistics,
-            ],
+                'data' => [
+                    'id' => $webhook->uuid,
+                    'url' => $webhook->url,
+                    'events' => $webhook->events,
+                    'is_active' => $webhook->is_active,
+                    'description' => $webhook->description,
+                    'created_at' => $webhook->created_at->toIso8601String(),
+                    'statistics' => $statistics,
+                ],
             ]
         );
     }
@@ -218,22 +234,28 @@ class WebhookController extends Controller
      *     summary="Update webhook",
      *     description="Update webhook configuration",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Webhook ID",
+     *
      * @OA\Schema(type="string",            format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="url",         type="string", format="url"),
      * @OA\Property(property="events",      type="array", @OA\Items(type="string")),
      * @OA\Property(property="description", type="string"),
      * @OA\Property(property="is_active",   type="boolean")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Webhook updated"
@@ -246,11 +268,11 @@ class WebhookController extends Controller
 
         $validated = $request->validate(
             [
-            'url'         => 'sometimes|url|https',
-            'events'      => 'sometimes|array|min:1',
-            'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
-            'description' => 'nullable|string|max:255',
-            'is_active'   => 'boolean',
+                'url' => 'sometimes|url|https',
+                'events' => 'sometimes|array|min:1',
+                'events.*' => ['required', 'string', Rule::in($this->getAvailableEvents())],
+                'description' => 'nullable|string|max:255',
+                'is_active' => 'boolean',
             ]
         );
 
@@ -258,13 +280,13 @@ class WebhookController extends Controller
 
         return response()->json(
             [
-            'data' => [
-                'id'         => $webhook->uuid,
-                'url'        => $webhook->url,
-                'events'     => $webhook->events,
-                'is_active'  => $webhook->is_active,
-                'updated_at' => $webhook->updated_at->toIso8601String(),
-            ],
+                'data' => [
+                    'id' => $webhook->uuid,
+                    'url' => $webhook->url,
+                    'events' => $webhook->events,
+                    'is_active' => $webhook->is_active,
+                    'updated_at' => $webhook->updated_at->toIso8601String(),
+                ],
             ]
         );
     }
@@ -277,13 +299,16 @@ class WebhookController extends Controller
      *     summary="Delete webhook",
      *     description="Delete a webhook endpoint",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Webhook ID",
+     *
      * @OA\Schema(type="string", format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=204,
      *         description="Webhook deleted"
@@ -307,20 +332,25 @@ class WebhookController extends Controller
      *     summary="List webhook deliveries",
      *     description="Get delivery history for a webhook",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Webhook ID",
+     *
      * @OA\Schema(type="string", format="uuid")
      *     ),
+     *
      * @OA\Parameter(
      *         name="status",
      *         in="query",
      *         required=false,
      *         description="Filter by status",
+     *
      * @OA\Schema(type="string", enum={"pending", "success", "failed"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Webhook deliveries"
@@ -342,13 +372,13 @@ class WebhookController extends Controller
 
         return response()->json(
             [
-            'data' => $deliveries->items(),
-            'meta' => [
-                'current_page' => $deliveries->currentPage(),
-                'last_page'    => $deliveries->lastPage(),
-                'per_page'     => $deliveries->perPage(),
-                'total'        => $deliveries->total(),
-            ],
+                'data' => $deliveries->items(),
+                'meta' => [
+                    'current_page' => $deliveries->currentPage(),
+                    'last_page' => $deliveries->lastPage(),
+                    'per_page' => $deliveries->perPage(),
+                    'total' => $deliveries->total(),
+                ],
             ]
         );
     }
@@ -360,10 +390,13 @@ class WebhookController extends Controller
      *     tags={"Webhooks"},
      *     summary="List available webhook events",
      *     description="Get a list of all available webhook events that can be subscribed to",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Available webhook events",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",        type="object",
      * @OA\Property(property="account",     type="array", @OA\Items(type="string")),
      * @OA\Property(property="transaction", type="array", @OA\Items(type="string")),
@@ -379,41 +412,41 @@ class WebhookController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'account' => [
-                    'account.created',
-                    'account.updated',
-                    'account.frozen',
-                    'account.unfrozen',
-                    'account.closed',
+                'data' => [
+                    'account' => [
+                        'account.created',
+                        'account.updated',
+                        'account.frozen',
+                        'account.unfrozen',
+                        'account.closed',
+                    ],
+                    'transaction' => [
+                        'transaction.created',
+                        'transaction.completed',
+                        'transaction.failed',
+                        'transaction.reversed',
+                    ],
+                    'transfer' => [
+                        'transfer.initiated',
+                        'transfer.completed',
+                        'transfer.failed',
+                    ],
+                    'basket' => [
+                        'basket.created',
+                        'basket.rebalanced',
+                        'basket.decomposed',
+                    ],
+                    'governance' => [
+                        'poll.created',
+                        'poll.activated',
+                        'poll.completed',
+                        'vote.cast',
+                    ],
+                    'exchange_rate' => [
+                        'rate.updated',
+                        'rate.stale',
+                    ],
                 ],
-                'transaction' => [
-                    'transaction.created',
-                    'transaction.completed',
-                    'transaction.failed',
-                    'transaction.reversed',
-                ],
-                'transfer' => [
-                    'transfer.initiated',
-                    'transfer.completed',
-                    'transfer.failed',
-                ],
-                'basket' => [
-                    'basket.created',
-                    'basket.rebalanced',
-                    'basket.decomposed',
-                ],
-                'governance' => [
-                    'poll.created',
-                    'poll.activated',
-                    'poll.completed',
-                    'vote.cast',
-                ],
-                'exchange_rate' => [
-                    'rate.updated',
-                    'rate.stale',
-                ],
-            ],
             ]
         );
     }

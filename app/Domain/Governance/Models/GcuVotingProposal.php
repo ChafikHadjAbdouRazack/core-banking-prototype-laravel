@@ -83,18 +83,18 @@ class GcuVotingProposal extends Model
     ];
 
     protected $casts = [
-        'proposed_composition'   => 'array',
-        'current_composition'    => 'array',
+        'proposed_composition' => 'array',
+        'current_composition' => 'array',
         'implementation_details' => 'array',
-        'voting_starts_at'       => 'datetime',
-        'voting_ends_at'         => 'datetime',
-        'implemented_at'         => 'datetime',
-        'minimum_participation'  => 'decimal:2',
-        'minimum_approval'       => 'decimal:2',
-        'total_gcu_supply'       => 'decimal:4',
-        'total_votes_cast'       => 'decimal:4',
-        'votes_for'              => 'decimal:4',
-        'votes_against'          => 'decimal:4',
+        'voting_starts_at' => 'datetime',
+        'voting_ends_at' => 'datetime',
+        'implemented_at' => 'datetime',
+        'minimum_participation' => 'decimal:2',
+        'minimum_approval' => 'decimal:2',
+        'total_gcu_supply' => 'decimal:4',
+        'total_votes_cast' => 'decimal:4',
+        'votes_for' => 'decimal:4',
+        'votes_against' => 'decimal:4',
     ];
 
     /**
@@ -177,8 +177,8 @@ class GcuVotingProposal extends Model
         return now()->diffForHumans(
             $this->voting_ends_at,
             [
-            'parts' => 2,
-            'short' => true,
+                'parts' => 2,
+                'short' => true,
             ]
         );
     }
@@ -209,7 +209,6 @@ class GcuVotingProposal extends Model
     {
         return $query->whereIn('status', ['closed', 'implemented', 'rejected']);
     }
-
 
     public function load($relations)
     {

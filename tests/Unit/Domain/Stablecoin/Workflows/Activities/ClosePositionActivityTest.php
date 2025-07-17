@@ -59,13 +59,13 @@ class ClosePositionActivityTest extends DomainTestCase
     {
         // Test various close reasons
         $reasons = [
-            'user_closed'             => 'Default reason when user closes position',
-            'liquidated'              => 'Position liquidated due to low collateral',
-            'emergency_close'         => 'Emergency closure',
-            'system_maintenance'      => 'Closed for system maintenance',
-            'position_expired'        => 'Position reached expiry',
+            'user_closed' => 'Default reason when user closes position',
+            'liquidated' => 'Position liquidated due to low collateral',
+            'emergency_close' => 'Emergency closure',
+            'system_maintenance' => 'Closed for system maintenance',
+            'position_expired' => 'Position reached expiry',
             'insufficient_collateral' => 'Not enough collateral',
-            'admin_action'            => 'Closed by administrator',
+            'admin_action' => 'Closed by administrator',
         ];
 
         foreach ($reasons as $reason => $description) {

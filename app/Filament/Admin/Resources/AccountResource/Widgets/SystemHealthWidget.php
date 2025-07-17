@@ -174,10 +174,10 @@ class SystemHealthWidget extends BaseWidget
         $status = $this->getQueueStatus();
 
         return match ($status) {
-            'Idle'   => 'success',
+            'Idle' => 'success',
             'Active' => 'info',
-            'Busy'   => 'warning',
-            default  => 'gray',
+            'Busy' => 'warning',
+            default => 'gray',
         };
     }
 

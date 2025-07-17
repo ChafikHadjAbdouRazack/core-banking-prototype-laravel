@@ -22,10 +22,13 @@ class PublicApiController extends Controller
      *     tags={"Public API"},
      *     summary="Get API information",
      *     description="Returns information about the API including version, status, and available endpoints",
+     *
      * @OA\Response(
      *         response=200,
      *         description="API information",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="name",           type="string", example="FinAegis Public API"),
      * @OA\Property(property="version",        type="string", example="2.0.0"),
      * @OA\Property(property="description",    type="string"),
@@ -47,36 +50,36 @@ class PublicApiController extends Controller
     {
         return response()->json(
             [
-            'name'        => 'FinAegis Public API',
-            'version'     => '2.0.0',
-            'description' => 'Public API for the FinAegis GCU Platform',
-            'status'      => 'operational',
-            'endpoints'   => [
-                'accounts'       => '/v2/accounts',
-                'assets'         => '/v2/assets',
-                'exchange_rates' => '/v2/exchange-rates',
-                'baskets'        => '/v2/baskets',
-                'transactions'   => '/v2/transactions',
-                'transfers'      => '/v2/transfers',
-                'webhooks'       => '/v2/webhooks',
-                'gcu'            => '/v2/gcu',
-            ],
-            'features' => [
-                'multi_asset_support' => true,
-                'basket_assets'       => true,
-                'webhooks'            => true,
-                'real_time_rates'     => true,
-                'bank_integration'    => true,
-                'governance_voting'   => true,
-            ],
-            'rate_limits' => [
-                'requests_per_minute' => 60,
-                'requests_per_hour'   => 1000,
-                'burst_limit'         => 100,
-            ],
-            'documentation' => 'https://docs.finaegis.org',
-            'support'       => 'api@finaegis.org',
-            'sandbox'       => 'https://sandbox.api.finaegis.org',
+                'name' => 'FinAegis Public API',
+                'version' => '2.0.0',
+                'description' => 'Public API for the FinAegis GCU Platform',
+                'status' => 'operational',
+                'endpoints' => [
+                    'accounts' => '/v2/accounts',
+                    'assets' => '/v2/assets',
+                    'exchange_rates' => '/v2/exchange-rates',
+                    'baskets' => '/v2/baskets',
+                    'transactions' => '/v2/transactions',
+                    'transfers' => '/v2/transfers',
+                    'webhooks' => '/v2/webhooks',
+                    'gcu' => '/v2/gcu',
+                ],
+                'features' => [
+                    'multi_asset_support' => true,
+                    'basket_assets' => true,
+                    'webhooks' => true,
+                    'real_time_rates' => true,
+                    'bank_integration' => true,
+                    'governance_voting' => true,
+                ],
+                'rate_limits' => [
+                    'requests_per_minute' => 60,
+                    'requests_per_hour' => 1000,
+                    'burst_limit' => 100,
+                ],
+                'documentation' => 'https://docs.finaegis.org',
+                'support' => 'api@finaegis.org',
+                'sandbox' => 'https://sandbox.api.finaegis.org',
             ]
         );
     }
@@ -88,10 +91,13 @@ class PublicApiController extends Controller
      *     tags={"Public API"},
      *     summary="Get API status",
      *     description="Returns the current operational status of the API and its components",
+     *
      * @OA\Response(
      *         response=200,
      *         description="API status",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",            type="string", example="operational"),
      * @OA\Property(property="timestamp",         type="string", format="date-time"),
      * @OA\Property(property="components",        type="object",
@@ -118,9 +124,9 @@ class PublicApiController extends Controller
 
         // Check component status
         $components = [
-            'api'             => 'operational',
-            'database'        => $this->checkDatabaseStatus(),
-            'redis'           => $this->checkRedisStatus(),
+            'api' => 'operational',
+            'database' => $this->checkDatabaseStatus(),
+            'redis' => $this->checkRedisStatus(),
             'bank_connectors' => $this->checkBankConnectorsStatus(),
         ];
 
@@ -128,13 +134,13 @@ class PublicApiController extends Controller
 
         return response()->json(
             [
-            'status'     => $overallStatus,
-            'timestamp'  => now()->toIso8601String(),
-            'components' => $components,
-            'metrics'    => [
-                'response_time_ms'  => round((microtime(true) - $startTime) * 1000),
-                'uptime_percentage' => 99.95, // In production, calculate from monitoring data
-            ],
+                'status' => $overallStatus,
+                'timestamp' => now()->toIso8601String(),
+                'components' => $components,
+                'metrics' => [
+                    'response_time_ms' => round((microtime(true) - $startTime) * 1000),
+                    'uptime_percentage' => 99.95, // In production, calculate from monitoring data
+                ],
             ]
         );
     }
@@ -169,10 +175,10 @@ class PublicApiController extends Controller
         $status = [];
         foreach ($allHealth as $custodian => $health) {
             $status[$custodian] = match ($health['status']) {
-                'healthy'   => 'operational',
-                'degraded'  => 'degraded',
+                'healthy' => 'operational',
+                'degraded' => 'degraded',
                 'unhealthy' => 'down',
-                default     => 'unknown',
+                default => 'unknown',
             };
         }
 

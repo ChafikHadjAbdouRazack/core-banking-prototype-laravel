@@ -79,21 +79,21 @@ class ExchangeServiceTest extends ServiceTestCase
         $account = Account::factory()->create();
 
         Asset::create([
-            'code'         => 'BTC',
-            'name'         => 'Bitcoin',
-            'type'         => 'crypto',
-            'is_active'    => true,
+            'code' => 'BTC',
+            'name' => 'Bitcoin',
+            'type' => 'crypto',
+            'is_active' => true,
             'is_tradeable' => false,
-            'precision'    => 8,
+            'precision' => 8,
         ]);
 
         Asset::create([
-            'code'         => 'USDT',
-            'name'         => 'Tether',
-            'type'         => 'crypto',
-            'is_active'    => true,
+            'code' => 'USDT',
+            'name' => 'Tether',
+            'type' => 'crypto',
+            'is_active' => true,
             'is_tradeable' => true,
-            'precision'    => 2,
+            'precision' => 2,
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -249,15 +249,15 @@ class ExchangeServiceTest extends ServiceTestCase
     public function test_cancel_order_validates_order_can_be_cancelled(): void
     {
         OrderProjection::create([
-            'order_id'       => 'completed-order',
-            'account_id'     => 'account-123',
-            'type'           => 'buy',
-            'order_type'     => 'market',
-            'base_currency'  => 'BTC',
+            'order_id' => 'completed-order',
+            'account_id' => 'account-123',
+            'type' => 'buy',
+            'order_type' => 'market',
+            'base_currency' => 'BTC',
             'quote_currency' => 'USDT',
-            'amount'         => '0.1',
-            'filled_amount'  => '0.1',
-            'status'         => 'completed',
+            'amount' => '0.1',
+            'filled_amount' => '0.1',
+            'status' => 'completed',
         ]);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -270,16 +270,16 @@ class ExchangeServiceTest extends ServiceTestCase
     public function test_cancel_order_cancels_successfully(): void
     {
         OrderProjection::create([
-            'order_id'       => 'active-order',
-            'account_id'     => 'account-123',
-            'type'           => 'buy',
-            'order_type'     => 'limit',
-            'base_currency'  => 'BTC',
+            'order_id' => 'active-order',
+            'account_id' => 'account-123',
+            'type' => 'buy',
+            'order_type' => 'limit',
+            'base_currency' => 'BTC',
             'quote_currency' => 'USDT',
-            'amount'         => '0.1',
-            'price'          => '40000',
-            'filled_amount'  => '0',
-            'status'         => 'pending',
+            'amount' => '0.1',
+            'price' => '40000',
+            'filled_amount' => '0',
+            'status' => 'pending',
         ]);
 
         // Use fake aggregates for event sourcing
@@ -308,10 +308,10 @@ class ExchangeServiceTest extends ServiceTestCase
     public function test_get_order_book_returns_formatted_data(): void
     {
         OrderBookProjection::create([
-            'order_book_id'  => 'btc-usdt-book',
-            'base_currency'  => 'BTC',
+            'order_book_id' => 'btc-usdt-book',
+            'base_currency' => 'BTC',
             'quote_currency' => 'USDT',
-            'bids'           => [
+            'bids' => [
                 ['price' => '42000', 'amount' => '0.5', 'order_count' => 2],
                 ['price' => '41900', 'amount' => '1.0', 'order_count' => 3],
             ],
@@ -319,10 +319,10 @@ class ExchangeServiceTest extends ServiceTestCase
                 ['price' => '42100', 'amount' => '0.3', 'order_count' => 1],
                 ['price' => '42200', 'amount' => '0.7', 'order_count' => 2],
             ],
-            'last_price'    => '42050',
-            'volume_24h'    => '125.5',
-            'high_24h'      => '43000',
-            'low_24h'       => '41000',
+            'last_price' => '42050',
+            'volume_24h' => '125.5',
+            'high_24h' => '43000',
+            'low_24h' => '41000',
             'bid_liquidity' => '1.5',
             'ask_liquidity' => '1.0',
         ]);
@@ -347,22 +347,22 @@ class ExchangeServiceTest extends ServiceTestCase
         Asset::firstOrCreate(
             ['code' => 'BTC'],
             [
-                'name'         => 'Bitcoin',
-                'type'         => 'crypto',
-                'is_active'    => true,
+                'name' => 'Bitcoin',
+                'type' => 'crypto',
+                'is_active' => true,
                 'is_tradeable' => true,
-                'precision'    => 8,
+                'precision' => 8,
             ]
         );
 
         Asset::firstOrCreate(
             ['code' => 'USDT'],
             [
-                'name'         => 'Tether',
-                'type'         => 'crypto',
-                'is_active'    => true,
+                'name' => 'Tether',
+                'type' => 'crypto',
+                'is_active' => true,
                 'is_tradeable' => true,
-                'precision'    => 2,
+                'precision' => 2,
             ]
         );
     }

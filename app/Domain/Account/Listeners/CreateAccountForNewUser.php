@@ -33,8 +33,8 @@ class CreateAccountForNewUser
             Log::info(
                 'Created default account for new user',
                 [
-                'user_uuid'  => $user->uuid,
-                'user_email' => $user->email,
+                    'user_uuid' => $user->uuid,
+                    'user_email' => $user->email,
                 ]
             );
         } catch (\Exception $e) {
@@ -42,9 +42,9 @@ class CreateAccountForNewUser
             Log::error(
                 'Failed to create account for new user',
                 [
-                'user_uuid' => $user->uuid ?? 'unknown',
-                'error'     => $e->getMessage(),
-                'trace'     => $e->getTraceAsString(),
+                    'user_uuid' => $user->uuid ?? 'unknown',
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
                 ]
             );
         }

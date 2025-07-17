@@ -53,9 +53,9 @@ class Vote extends Model
 
     protected $casts = [
         'selected_options' => 'array',
-        'voting_power'     => 'integer',
-        'voted_at'         => 'datetime',
-        'metadata'         => 'array',
+        'voting_power' => 'integer',
+        'voted_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     protected static function boot()
@@ -109,11 +109,11 @@ class Vote extends Model
     public function generateSignature(): string
     {
         $data = [
-            'poll_id'          => $this->poll_id,
-            'user_uuid'        => $this->user_uuid,
+            'poll_id' => $this->poll_id,
+            'user_uuid' => $this->user_uuid,
             'selected_options' => $this->selected_options,
-            'voting_power'     => $this->voting_power,
-            'voted_at'         => $this->voted_at?->toISOString(),
+            'voting_power' => $this->voting_power,
+            'voted_at' => $this->voted_at?->toISOString(),
         ];
 
         return hash_hmac('sha256', json_encode($data), config('app.key'));
@@ -174,9 +174,9 @@ class Vote extends Model
             parent::toArray(),
             [
                 'selected_options_string' => $this->getSelectedOptionsAsString(),
-                'selected_option_count'   => $this->getSelectedOptionCount(),
-                'voting_power_weight'     => $this->getVotingPowerWeight(),
-                'is_valid'                => $this->isValid(),
+                'selected_option_count' => $this->getSelectedOptionCount(),
+                'voting_power_weight' => $this->getVotingPowerWeight(),
+                'is_valid' => $this->isValid(),
             ]
         );
     }

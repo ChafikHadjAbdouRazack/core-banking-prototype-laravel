@@ -29,17 +29,22 @@ class TransactionReversalController extends Controller
      *     summary="Reverse a transaction",
      *     description="Reverse a completed transaction with audit trail for error recovery",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         required=true,
      *         description="Account UUID",
+     *
      * @OA\Schema(type="string",                        format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"amount", "asset_code", "transaction_type", "reversal_reason"},
+     *
      * @OA\Property(property="amount",                  type="number", format="float", minimum=0.01, example=100.50),
      * @OA\Property(property="asset_code",              type="string", example="USD"),
      * @OA\Property(property="transaction_type",        type="string", enum={"debit", "credit"}, example="debit"),
@@ -48,10 +53,13 @@ class TransactionReversalController extends Controller
      * @OA\Property(property="authorized_by",           type="string", example="manager@example.com")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Transaction reversal initiated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",                 type="string", example="Transaction reversal initiated successfully"),
      * @OA\Property(property="data",                    type="object",
      * @OA\Property(property="reversal_id",             type="string", example="rev_987654321"),
@@ -65,6 +73,7 @@ class TransactionReversalController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=403,
      *         description="Forbidden - Account does not belong to user"
@@ -83,12 +92,12 @@ class TransactionReversalController extends Controller
     {
         $validated = $request->validate(
             [
-            'amount'                  => 'required|numeric|min:0.01',
-            'asset_code'              => 'required|string|exists:assets,code',
-            'transaction_type'        => ['required', 'string', Rule::in(['debit', 'credit'])],
-            'reversal_reason'         => 'required|string|max:500',
-            'original_transaction_id' => 'nullable|string|max:255',
-            'authorized_by'           => 'nullable|string|max:255',
+                'amount' => 'required|numeric|min:0.01',
+                'asset_code' => 'required|string|exists:assets,code',
+                'transaction_type' => ['required', 'string', Rule::in(['debit', 'credit'])],
+                'reversal_reason' => 'required|string|max:500',
+                'original_transaction_id' => 'nullable|string|max:255',
+                'authorized_by' => 'nullable|string|max:255',
             ]
         );
 
@@ -120,19 +129,19 @@ class TransactionReversalController extends Controller
 
             return response()->json(
                 [
-                'message' => 'Transaction reversal initiated successfully',
-                'data'    => [
-                    'reversal_id'             => $reversalId,
-                    'account_uuid'            => $account->uuid,
-                    'amount'                  => $validated['amount'],
-                    'asset_code'              => $validated['asset_code'],
-                    'transaction_type'        => $validated['transaction_type'],
-                    'reversal_reason'         => $validated['reversal_reason'],
-                    'original_transaction_id' => $validated['original_transaction_id'] ?? null,
-                    'authorized_by'           => $validated['authorized_by'] ?? Auth::user()->email,
-                    'status'                  => 'initiated',
-                    'created_at'              => now()->toISOString(),
-                ],
+                    'message' => 'Transaction reversal initiated successfully',
+                    'data' => [
+                        'reversal_id' => $reversalId,
+                        'account_uuid' => $account->uuid,
+                        'amount' => $validated['amount'],
+                        'asset_code' => $validated['asset_code'],
+                        'transaction_type' => $validated['transaction_type'],
+                        'reversal_reason' => $validated['reversal_reason'],
+                        'original_transaction_id' => $validated['original_transaction_id'] ?? null,
+                        'authorized_by' => $validated['authorized_by'] ?? Auth::user()->email,
+                        'status' => 'initiated',
+                        'created_at' => now()->toISOString(),
+                    ],
                 ],
                 200
             );
@@ -140,18 +149,18 @@ class TransactionReversalController extends Controller
             logger()->error(
                 'Transaction reversal API failed',
                 [
-                'account_uuid' => $uuid,
-                'amount'       => $validated['amount'],
-                'asset_code'   => $validated['asset_code'],
-                'error'        => $e->getMessage(),
-                'user_id'      => Auth::id(),
+                    'account_uuid' => $uuid,
+                    'amount' => $validated['amount'],
+                    'asset_code' => $validated['asset_code'],
+                    'error' => $e->getMessage(),
+                    'user_id' => Auth::id(),
                 ]
             );
 
             return response()->json(
                 [
-                'message' => 'Transaction reversal failed',
-                'error'   => $e->getMessage(),
+                    'message' => 'Transaction reversal failed',
+                    'error' => $e->getMessage(),
                 ],
                 500
             );
@@ -165,31 +174,42 @@ class TransactionReversalController extends Controller
      *     summary="Get transaction reversal history",
      *     description="Get list of transaction reversals for an account",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         required=true,
      *         description="Account UUID",
+     *
      * @OA\Schema(type="string",                 format="uuid")
      *     ),
+     *
      * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         description="Number of results to return",
+     *
      * @OA\Schema(type="integer",                minimum=1, maximum=100, default=20)
      *     ),
+     *
      * @OA\Parameter(
      *         name="offset",
      *         in="query",
      *         description="Number of results to skip",
+     *
      * @OA\Schema(type="integer",                minimum=0, default=0)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Reversal history retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",             type="array",
+     *
      * @OA\Items(type="object",
+     *
      * @OA\Property(property="reversal_id",      type="string", example="rev_987654321"),
      * @OA\Property(property="amount",           type="number", example=100.50),
      * @OA\Property(property="asset_code",       type="string", example="USD"),
@@ -213,8 +233,8 @@ class TransactionReversalController extends Controller
     {
         $validated = $request->validate(
             [
-            'limit'  => 'integer|min:1|max:100',
-            'offset' => 'integer|min:0',
+                'limit' => 'integer|min:1|max:100',
+                'offset' => 'integer|min:0',
             ]
         );
 
@@ -231,39 +251,39 @@ class TransactionReversalController extends Controller
         // For now, return mock data structure
         $mockReversals = [
             [
-                'reversal_id'             => 'rev_' . uniqid(),
-                'amount'                  => 150.00,
-                'asset_code'              => 'USD',
-                'transaction_type'        => 'debit',
-                'reversal_reason'         => 'Unauthorized transaction detected by fraud system',
+                'reversal_id' => 'rev_' . uniqid(),
+                'amount' => 150.00,
+                'asset_code' => 'USD',
+                'transaction_type' => 'debit',
+                'reversal_reason' => 'Unauthorized transaction detected by fraud system',
                 'original_transaction_id' => 'txn_123456789',
-                'authorized_by'           => 'security@finaegis.org',
-                'status'                  => 'completed',
-                'created_at'              => now()->subDays(2)->toISOString(),
-                'completed_at'            => now()->subDays(2)->addMinutes(5)->toISOString(),
+                'authorized_by' => 'security@finaegis.org',
+                'status' => 'completed',
+                'created_at' => now()->subDays(2)->toISOString(),
+                'completed_at' => now()->subDays(2)->addMinutes(5)->toISOString(),
             ],
             [
-                'reversal_id'             => 'rev_' . uniqid(),
-                'amount'                  => 75.50,
-                'asset_code'              => 'EUR',
-                'transaction_type'        => 'credit',
-                'reversal_reason'         => 'Duplicate transaction',
+                'reversal_id' => 'rev_' . uniqid(),
+                'amount' => 75.50,
+                'asset_code' => 'EUR',
+                'transaction_type' => 'credit',
+                'reversal_reason' => 'Duplicate transaction',
                 'original_transaction_id' => 'txn_987654321',
-                'authorized_by'           => Auth::user()->email,
-                'status'                  => 'pending',
-                'created_at'              => now()->subHours(6)->toISOString(),
-                'completed_at'            => null,
+                'authorized_by' => Auth::user()->email,
+                'status' => 'pending',
+                'created_at' => now()->subHours(6)->toISOString(),
+                'completed_at' => null,
             ],
         ];
 
         return response()->json(
             [
-            'data'       => array_slice($mockReversals, $offset, $limit),
-            'pagination' => [
-                'total'  => count($mockReversals),
-                'limit'  => $limit,
-                'offset' => $offset,
-            ],
+                'data' => array_slice($mockReversals, $offset, $limit),
+                'pagination' => [
+                    'total' => count($mockReversals),
+                    'limit' => $limit,
+                    'offset' => $offset,
+                ],
             ]
         );
     }
@@ -275,30 +295,38 @@ class TransactionReversalController extends Controller
      *     summary="Get reversal status",
      *     description="Check the status of a specific transaction reversal",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="reversalId",
      *         in="path",
      *         required=true,
      *         description="Reversal ID",
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Reversal status retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",            type="object",
      * @OA\Property(property="reversal_id",     type="string", example="rev_987654321"),
      * @OA\Property(property="status",          type="string", example="completed"),
      * @OA\Property(property="progress",        type="integer", example=100),
      * @OA\Property(property="steps_completed", type="array",
+     *
      * @OA\Items(type="string",                 example="validation")
      *                 ),
+     *
      * @OA\Property(property="error_message",   type="string", nullable=true),
      * @OA\Property(property="created_at",      type="string", format="date-time"),
      * @OA\Property(property="updated_at",      type="string", format="date-time")
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Reversal not found"
@@ -310,9 +338,9 @@ class TransactionReversalController extends Controller
         // TODO: In a real implementation, fetch from reversal tracking table
         // For now, return mock status data
         $mockStatus = [
-            'reversal_id'     => $reversalId,
-            'status'          => 'completed',
-            'progress'        => 100,
+            'reversal_id' => $reversalId,
+            'status' => 'completed',
+            'progress' => 100,
             'steps_completed' => [
                 'validation',
                 'authorization_check',
@@ -321,13 +349,13 @@ class TransactionReversalController extends Controller
                 'audit_logging',
             ],
             'error_message' => null,
-            'created_at'    => now()->subMinutes(30)->toISOString(),
-            'updated_at'    => now()->subMinutes(25)->toISOString(),
+            'created_at' => now()->subMinutes(30)->toISOString(),
+            'updated_at' => now()->subMinutes(25)->toISOString(),
         ];
 
         return response()->json(
             [
-            'data' => $mockStatus,
+                'data' => $mockStatus,
             ]
         );
     }

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Account\Workflows;
 
-use Illuminate\Support\Str;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
@@ -29,7 +28,7 @@ class BatchProcessingWorkflow extends Workflow
 
                 $completedOperations[] = [
                     'operation' => $operation,
-                    'result'    => $result,
+                    'result' => $result,
                 ];
 
                 // Add compensation for this specific operation
@@ -59,10 +58,10 @@ class BatchProcessingWorkflow extends Workflow
             logger()->error(
                 'Batch processing failed - compensations executed',
                 [
-                    'batch_id'             => $batchId,
-                    'operations'           => $operations,
+                    'batch_id' => $batchId,
+                    'operations' => $operations,
                     'completed_operations' => $completedOperations,
-                    'error'                => $th->getMessage(),
+                    'error' => $th->getMessage(),
                 ]
             );
 

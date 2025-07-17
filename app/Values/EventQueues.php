@@ -10,9 +10,6 @@ enum EventQueues: string
     case TRANSFERS = 'transfers';
     case LIQUIDITY_POOLS = 'liquidity_pools';
 
-    /**
-     * @return self
-     */
     public static function default(): self
     {
         return self::EVENTS;

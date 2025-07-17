@@ -22,14 +22,14 @@ class ValuesRelationManager extends RelationManager
         return $form
             ->schema(
                 [
-                Forms\Components\TextInput::make('value')
-                    ->required()
-                    ->numeric()
-                    ->disabled(),
+                    Forms\Components\TextInput::make('value')
+                        ->required()
+                        ->numeric()
+                        ->disabled(),
 
-                Forms\Components\DateTimePicker::make('calculated_at')
-                    ->required()
-                    ->disabled(),
+                    Forms\Components\DateTimePicker::make('calculated_at')
+                        ->required()
+                        ->disabled(),
                 ]
             );
     }
@@ -40,63 +40,63 @@ class ValuesRelationManager extends RelationManager
             ->recordTitleAttribute('value')
             ->columns(
                 [
-                Tables\Columns\TextColumn::make('value')
-                    ->label('Value (USD)')
-                    ->numeric(decimalPlaces: 4)
-                    ->prefix('$')
-                    ->weight('bold')
-                    ->color('primary'),
+                    Tables\Columns\TextColumn::make('value')
+                        ->label('Value (USD)')
+                        ->numeric(decimalPlaces: 4)
+                        ->prefix('$')
+                        ->weight('bold')
+                        ->color('primary'),
 
-                Tables\Columns\TextColumn::make('calculated_at')
-                    ->label('Calculated At')
-                    ->dateTime()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('calculated_at')
+                        ->label('Calculated At')
+                        ->dateTime()
+                        ->sortable(),
 
-                Tables\Columns\TextColumn::make('calculated_at')
-                    ->label('Age')
-                    ->since()
-                    ->color(
-                        fn ($state) => match (true) {
-                        $state->diffInMinutes() < 5 => 'success',
-                        $state->diffInHours() < 1   => 'warning',
-                        default                     => 'gray',
-                        }
-                    ),
+                    Tables\Columns\TextColumn::make('calculated_at')
+                        ->label('Age')
+                        ->since()
+                        ->color(
+                            fn ($state) => match (true) {
+                                $state->diffInMinutes() < 5 => 'success',
+                                $state->diffInHours() < 1 => 'warning',
+                                default => 'gray',
+                            }
+                        ),
 
-                Tables\Columns\ViewColumn::make('component_values')
-                    ->label('Components')
-                    ->view('filament.tables.columns.basket-component-values'),
+                    Tables\Columns\ViewColumn::make('component_values')
+                        ->label('Components')
+                        ->view('filament.tables.columns.basket-component-values'),
                 ]
             )
             ->filters(
                 [
-                Tables\Filters\Filter::make('last_24_hours')
-                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subDay())),
+                    Tables\Filters\Filter::make('last_24_hours')
+                        ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subDay())),
 
-                Tables\Filters\Filter::make('last_7_days')
-                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subWeek())),
+                    Tables\Filters\Filter::make('last_7_days')
+                        ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subWeek())),
 
-                Tables\Filters\Filter::make('last_30_days')
-                    ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subMonth())),
+                    Tables\Filters\Filter::make('last_30_days')
+                        ->query(fn (Builder $query): Builder => $query->where('calculated_at', '>=', now()->subMonth())),
                 ]
             )
             ->defaultSort('calculated_at', 'desc')
             ->paginated([10, 25, 50, 100])
             ->actions(
                 [
-                // Values are read-only
+                    // Values are read-only
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->label('Delete Old Values')
-                        ->requiresConfirmation()
-                        ->modalDescription('This will delete the selected historical values. Recent values should be preserved for analytics.'),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make()
+                                ->label('Delete Old Values')
+                                ->requiresConfirmation()
+                                ->modalDescription('This will delete the selected historical values. Recent values should be preserved for analytics.'),
+                        ]
+                    ),
                 ]
             );
     }

@@ -33,10 +33,13 @@ class CustodianWebhookController extends Controller
      *     tags={"Custodian Webhooks"},
      *     summary="Receive Paysera webhook",
      *     description="Endpoint for receiving webhook notifications from Paysera bank",
+     *
      * @OA\RequestBody(
      *         required=true,
      *         description="Webhook payload from Paysera",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="event",     type="string", example="transaction.completed"),
      * @OA\Property(property="event_id",  type="string", example="evt_123456"),
      * @OA\Property(
@@ -46,21 +49,28 @@ class CustodianWebhookController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=202,
      *         description="Webhook accepted for processing",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",    type="string", example="accepted"),
      * @OA\Property(property="duplicate", type="boolean", example=false)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Invalid signature",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="error",     type="string", example="Invalid signature")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid payload"
@@ -85,10 +95,13 @@ class CustodianWebhookController extends Controller
      *     tags={"Custodian Webhooks"},
      *     summary="Receive Santander webhook",
      *     description="Endpoint for receiving webhook notifications from Santander bank",
+     *
      * @OA\RequestBody(
      *         required=true,
      *         description="Webhook payload from Santander",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="event_type", type="string", example="payment.received"),
      * @OA\Property(property="id",         type="string", example="wh_987654"),
      * @OA\Property(
@@ -98,13 +111,17 @@ class CustodianWebhookController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=202,
      *         description="Webhook accepted for processing",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",     type="string", example="accepted")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Invalid signature"
@@ -129,10 +146,13 @@ class CustodianWebhookController extends Controller
      *     tags={"Custodian Webhooks"},
      *     summary="Receive Mock Bank webhook",
      *     description="Endpoint for receiving webhook notifications from Mock Bank (for testing)",
+     *
      * @OA\RequestBody(
      *         required=true,
      *         description="Webhook payload from Mock Bank",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="type",       type="string", example="balance.updated"),
      * @OA\Property(property="id",         type="string", example="mock_123"),
      * @OA\Property(
@@ -144,6 +164,7 @@ class CustodianWebhookController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=202,
      *         description="Webhook accepted for processing"
@@ -173,10 +194,10 @@ class CustodianWebhookController extends Controller
 
         // Extract signature based on custodian
         $signature = match ($custodianName) {
-            'paysera'   => $request->header('X-Paysera-Signature', ''),
+            'paysera' => $request->header('X-Paysera-Signature', ''),
             'santander' => $request->header('X-Santander-Signature', ''),
-            'mock'      => 'mock-signature',
-            default     => '',
+            'mock' => 'mock-signature',
+            default => '',
         };
 
         // Convert header arrays to single values for webhook verification
@@ -190,8 +211,8 @@ class CustodianWebhookController extends Controller
             Log::warning(
                 'Invalid webhook signature',
                 [
-                'custodian' => $custodianName,
-                'signature' => $signature,
+                    'custodian' => $custodianName,
+                    'signature' => $signature,
                 ]
             );
 
@@ -205,8 +226,8 @@ class CustodianWebhookController extends Controller
             Log::error(
                 'Invalid webhook payload',
                 [
-                'custodian' => $custodianName,
-                'error'     => json_last_error_msg(),
+                    'custodian' => $custodianName,
+                    'error' => json_last_error_msg(),
                 ]
             );
 
@@ -221,13 +242,13 @@ class CustodianWebhookController extends Controller
         try {
             $webhook = CustodianWebhook::create(
                 [
-                'custodian_name' => $custodianName,
-                'event_type'     => $eventType,
-                'event_id'       => $eventId,
-                'headers'        => $headers,
-                'payload'        => $data,
-                'signature'      => $signature,
-                'status'         => 'pending',
+                    'custodian_name' => $custodianName,
+                    'event_type' => $eventType,
+                    'event_id' => $eventId,
+                    'headers' => $headers,
+                    'payload' => $data,
+                    'signature' => $signature,
+                    'status' => 'pending',
                 ]
             );
 
@@ -237,9 +258,9 @@ class CustodianWebhookController extends Controller
             Log::info(
                 'Webhook received and queued',
                 [
-                'custodian'  => $custodianName,
-                'event_type' => $eventType,
-                'webhook_id' => $webhook->id,
+                    'custodian' => $custodianName,
+                    'event_type' => $eventType,
+                    'webhook_id' => $webhook->id,
                 ]
             );
 
@@ -250,8 +271,8 @@ class CustodianWebhookController extends Controller
                 Log::info(
                     'Duplicate webhook received',
                     [
-                    'custodian' => $custodianName,
-                    'event_id'  => $eventId,
+                        'custodian' => $custodianName,
+                        'event_id' => $eventId,
                     ]
                 );
 
@@ -264,8 +285,8 @@ class CustodianWebhookController extends Controller
             Log::error(
                 'Failed to store webhook',
                 [
-                'custodian' => $custodianName,
-                'error'     => $e->getMessage(),
+                    'custodian' => $custodianName,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -279,10 +300,10 @@ class CustodianWebhookController extends Controller
     private function extractEventType(string $custodianName, array $data): string
     {
         return match ($custodianName) {
-            'paysera'   => $data['event'] ?? 'unknown',
+            'paysera' => $data['event'] ?? 'unknown',
             'santander' => $data['event_type'] ?? 'unknown',
-            'mock'      => $data['type'] ?? 'unknown',
-            default     => 'unknown',
+            'mock' => $data['type'] ?? 'unknown',
+            default => 'unknown',
         };
     }
 
@@ -292,10 +313,10 @@ class CustodianWebhookController extends Controller
     private function extractEventId(string $custodianName, array $data): ?string
     {
         return match ($custodianName) {
-            'paysera'   => $data['event_id'] ?? null,
+            'paysera' => $data['event_id'] ?? null,
             'santander' => $data['id'] ?? null,
-            'mock'      => $data['id'] ?? null,
-            default     => null,
+            'mock' => $data['id'] ?? null,
+            default => null,
         };
     }
 }

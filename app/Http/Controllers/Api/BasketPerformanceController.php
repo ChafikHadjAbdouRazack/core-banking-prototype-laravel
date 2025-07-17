@@ -32,28 +32,35 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Get performance metrics for a basket",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",                  example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
+     *
      * @OA\Schema(
      *             type="string",
      *             enum={"hour", "day", "week", "month", "quarter", "year", "all_time"},
      *             default="month"
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Performance data",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",              type="object",
      * @OA\Property(property="basket_code",       type="string"),
      * @OA\Property(property="period_type",       type="string"),
@@ -71,7 +78,7 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year', 'all_time'])],
+                'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year', 'all_time'])],
             ]
         );
 
@@ -87,12 +94,12 @@ class BasketPerformanceController extends Controller
             // Try to calculate it
             $now = now();
             [$periodStart, $periodEnd] = match ($period) {
-                'hour'     => [$now->copy()->subHour(), $now],
-                'day'      => [$now->copy()->subDay(), $now],
-                'week'     => [$now->copy()->subWeek(), $now],
-                'month'    => [$now->copy()->subMonth(), $now],
-                'quarter'  => [$now->copy()->subQuarter(), $now],
-                'year'     => [$now->copy()->subYear(), $now],
+                'hour' => [$now->copy()->subHour(), $now],
+                'day' => [$now->copy()->subDay(), $now],
+                'week' => [$now->copy()->subWeek(), $now],
+                'month' => [$now->copy()->subMonth(), $now],
+                'quarter' => [$now->copy()->subQuarter(), $now],
+                'year' => [$now->copy()->subYear(), $now],
                 'all_time' => [
                     $basket->values()->orderBy('calculated_at')->first()?->calculated_at ?? $now->copy()->subYear(),
                     $now,
@@ -110,8 +117,8 @@ class BasketPerformanceController extends Controller
         if (! $performance) {
             return response()->json(
                 [
-                'data'    => null,
-                'message' => 'Insufficient data to calculate performance',
+                    'data' => null,
+                    'message' => 'Insufficient data to calculate performance',
                 ],
                 404
             );
@@ -119,7 +126,7 @@ class BasketPerformanceController extends Controller
 
         return response()->json(
             [
-            'data' => new BasketPerformanceResource($performance),
+                'data' => new BasketPerformanceResource($performance),
             ]
         );
     }
@@ -130,32 +137,42 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformanceHistory",
      *     tags={"Basket Performance"},
      *     summary="Get historical performance data for a basket",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",                               example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period_type",
      *         in="query",
      *         required=false,
      *         description="Filter by period type",
+     *
      * @OA\Schema(type="string",                               enum={"hour", "day", "week", "month", "quarter", "year"})
      *     ),
+     *
      * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of records to return",
+     *
      * @OA\Schema(type="integer",                              default=30)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Historical performance data",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                           type="array",
+     *
      * @OA\Items(ref="#/components/schemas/BasketPerformance")
      *             )
      *         )
@@ -167,8 +184,8 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period_type' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
-            'limit'       => ['sometimes', 'integer', 'min:1', 'max:365'],
+                'period_type' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
+                'limit' => ['sometimes', 'integer', 'min:1', 'max:365'],
             ]
         );
 
@@ -196,17 +213,22 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketPerformanceSummary",
      *     tags={"Basket Performance"},
      *     summary="Get performance summary across multiple periods",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",              example="GCU")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Performance summary",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",          type="object",
      * @OA\Property(property="basket_code",   type="string"),
      * @OA\Property(property="basket_name",   type="string"),
@@ -230,7 +252,7 @@ class BasketPerformanceController extends Controller
 
         return response()->json(
             [
-            'data' => $summary,
+                'data' => $summary,
             ]
         );
     }
@@ -241,29 +263,37 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketComponentPerformance",
      *     tags={"Basket Performance"},
      *     summary="Get component-level performance breakdown",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",                                  example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
+     *
      * @OA\Schema(
      *             type="string",
      *             enum={"hour", "day", "week", "month", "quarter", "year"},
      *             default="month"
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Component performance data",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                              type="array",
+     *
      * @OA\Items(ref="#/components/schemas/ComponentPerformance")
      *             )
      *         )
@@ -275,7 +305,7 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
+                'period' => ['sometimes', Rule::in(['hour', 'day', 'week', 'month', 'quarter', 'year'])],
             ]
         );
 
@@ -304,27 +334,34 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketTopPerformers",
      *     tags={"Basket Performance"},
      *     summary="Get top performing components",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",  example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
+     *
      * @OA\Schema(type="string",  default="month")
      *     ),
+     *
      * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of components to return",
+     *
      * @OA\Schema(type="integer", default=5)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Top performing components"
@@ -336,8 +373,8 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period' => ['sometimes', 'string'],
-            'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
+                'period' => ['sometimes', 'string'],
+                'limit' => ['sometimes', 'integer', 'min:1', 'max:20'],
             ]
         );
 
@@ -357,27 +394,34 @@ class BasketPerformanceController extends Controller
      *     operationId="getBasketWorstPerformers",
      *     tags={"Basket Performance"},
      *     summary="Get worst performing components",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",  example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         required=false,
      *         description="Performance period",
+     *
      * @OA\Schema(type="string",  default="month")
      *     ),
+     *
      * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of components to return",
+     *
      * @OA\Schema(type="integer", default=5)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Worst performing components"
@@ -389,8 +433,8 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period' => ['sometimes', 'string'],
-            'limit'  => ['sometimes', 'integer', 'min:1', 'max:20'],
+                'period' => ['sometimes', 'string'],
+                'limit' => ['sometimes', 'integer', 'min:1', 'max:20'],
             ]
         );
 
@@ -410,23 +454,31 @@ class BasketPerformanceController extends Controller
      *     operationId="calculateBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Trigger performance calculation for a basket",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string",                   example="GCU")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=false,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="period",             type="string", enum={"all", "hour", "day", "week", "month", "quarter", "year"})
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Calculation triggered",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",            type="string"),
      * @OA\Property(property="calculated_periods", type="array", @OA\Items(type="string"))
      *         )
@@ -438,7 +490,7 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'period' => ['sometimes', Rule::in(['all', 'hour', 'day', 'week', 'month', 'quarter', 'year'])],
+                'period' => ['sometimes', Rule::in(['all', 'hour', 'day', 'week', 'month', 'quarter', 'year'])],
             ]
         );
 
@@ -451,12 +503,12 @@ class BasketPerformanceController extends Controller
         } else {
             $now = now();
             [$periodStart, $periodEnd] = match ($period) {
-                'hour'    => [$now->copy()->subHour(), $now],
-                'day'     => [$now->copy()->subDay(), $now],
-                'week'    => [$now->copy()->subWeek(), $now],
-                'month'   => [$now->copy()->subMonth(), $now],
+                'hour' => [$now->copy()->subHour(), $now],
+                'day' => [$now->copy()->subDay(), $now],
+                'week' => [$now->copy()->subWeek(), $now],
+                'month' => [$now->copy()->subMonth(), $now],
                 'quarter' => [$now->copy()->subQuarter(), $now],
-                'year'    => [$now->copy()->subYear(), $now],
+                'year' => [$now->copy()->subYear(), $now],
             };
 
             $performance = $this->performanceService->calculatePerformance(
@@ -471,8 +523,8 @@ class BasketPerformanceController extends Controller
 
         return response()->json(
             [
-            'message'            => 'Performance calculation completed',
-            'calculated_periods' => $calculatedPeriods,
+                'message' => 'Performance calculation completed',
+                'calculated_periods' => $calculatedPeriods,
             ]
         );
     }
@@ -483,20 +535,25 @@ class BasketPerformanceController extends Controller
      *     operationId="compareBasketPerformance",
      *     tags={"Basket Performance"},
      *     summary="Compare basket performance against benchmarks",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         required=true,
      *         description="Basket asset code",
+     *
      * @OA\Schema(type="string", example="GCU")
      *     ),
+     *
      * @OA\Parameter(
      *         name="benchmarks",
      *         in="query",
      *         required=true,
      *         description="Comma-separated list of benchmark basket codes",
+     *
      * @OA\Schema(type="string", example="USD_STABLE,EUR_STABLE")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Performance comparison data"
@@ -508,7 +565,7 @@ class BasketPerformanceController extends Controller
     {
         $request->validate(
             [
-            'benchmarks' => ['required', 'string'],
+                'benchmarks' => ['required', 'string'],
             ]
         );
 
@@ -519,7 +576,7 @@ class BasketPerformanceController extends Controller
 
         return response()->json(
             [
-            'data' => $comparison,
+                'data' => $comparison,
             ]
         );
     }

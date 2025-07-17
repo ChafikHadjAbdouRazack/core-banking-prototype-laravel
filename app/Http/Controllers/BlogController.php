@@ -27,10 +27,10 @@ class BlogController extends Controller
             ->get();
 
         $categories = [
-            'platform'   => \App\Models\BlogPost::published()->category('platform')->count(),
-            'security'   => \App\Models\BlogPost::published()->category('security')->count(),
-            'developer'  => \App\Models\BlogPost::published()->category('developer')->count(),
-            'industry'   => \App\Models\BlogPost::published()->category('industry')->count(),
+            'platform' => \App\Models\BlogPost::published()->category('platform')->count(),
+            'security' => \App\Models\BlogPost::published()->category('security')->count(),
+            'developer' => \App\Models\BlogPost::published()->category('developer')->count(),
+            'industry' => \App\Models\BlogPost::published()->category('industry')->count(),
             'compliance' => \App\Models\BlogPost::published()->category('compliance')->count(),
         ];
 
@@ -63,7 +63,7 @@ class BlogController extends Controller
     {
         $validated = $request->validate(
             [
-            'email' => 'required|email',
+                'email' => 'required|email',
             ]
         );
 
@@ -82,23 +82,23 @@ class BlogController extends Controller
 
             return response()->json(
                 [
-                'success' => true,
-                'message' => 'Thank you for subscribing! Check your email for confirmation.',
+                    'success' => true,
+                    'message' => 'Thank you for subscribing! Check your email for confirmation.',
                 ]
             );
         } catch (\Exception $e) {
             Log::error(
                 'Subscription error',
                 [
-                'error' => $e->getMessage(),
-                'email' => $validated['email'],
+                    'error' => $e->getMessage(),
+                    'email' => $validated['email'],
                 ]
             );
 
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'An error occurred. Please try again later.',
+                    'success' => false,
+                    'message' => 'An error occurred. Please try again later.',
                 ],
                 500
             );
@@ -124,17 +124,17 @@ class BlogController extends Controller
                 ->post(
                     "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members",
                     [
-                    'email_address' => $email,
-                    'status'        => 'subscribed',
-                    'tags'          => ['blog_subscriber', 'finaegis_demo'],
+                        'email_address' => $email,
+                        'status' => 'subscribed',
+                        'tags' => ['blog_subscriber', 'finaegis_demo'],
                     ]
                 );
         } catch (\Exception $e) {
             Log::warning(
                 'Mailchimp sync failed (non-critical)',
                 [
-                'error' => $e->getMessage(),
-                'email' => $email,
+                    'error' => $e->getMessage(),
+                    'email' => $email,
                 ]
             );
         }

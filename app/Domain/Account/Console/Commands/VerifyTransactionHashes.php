@@ -25,12 +25,6 @@ class VerifyTransactionHashes extends Command
      */
     protected $description = 'Verify the hashes of all transaction events to ensure data integrity';
 
-    /**
-     * @param TransactionRepository $transactionRepository
-     * @param AccountRepository     $accountRepository
-     * @param array                 $erroneous_accounts
-     * @param array                 $erroneous_transactions
-     */
     public function __construct(
         protected TransactionRepository $transactionRepository,
         protected AccountRepository $accountRepository,
@@ -40,9 +34,6 @@ class VerifyTransactionHashes extends Command
         parent::__construct();
     }
 
-    /**
-     * @return int
-     */
     public function handle(): int
     {
         $this->info('Verifying transaction event hashes...');

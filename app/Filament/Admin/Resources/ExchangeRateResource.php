@@ -33,87 +33,87 @@ class ExchangeRateResource extends Resource
         return $form
             ->schema(
                 [
-                Forms\Components\Section::make('Exchange Rate Information')
-                    ->schema(
-                        [
-                        Forms\Components\Select::make('from_asset_code')
-                            ->label('From Asset')
-                            ->relationship('fromAsset', 'code')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->reactive(),
+                    Forms\Components\Section::make('Exchange Rate Information')
+                        ->schema(
+                            [
+                                Forms\Components\Select::make('from_asset_code')
+                                    ->label('From Asset')
+                                    ->relationship('fromAsset', 'code')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->reactive(),
 
-                        Forms\Components\Select::make('to_asset_code')
-                            ->label('To Asset')
-                            ->relationship('toAsset', 'code')
-                            ->searchable()
-                            ->preload()
-                            ->required()
-                            ->different('from_asset_code')
-                            ->helperText('Must be different from the source asset'),
+                                Forms\Components\Select::make('to_asset_code')
+                                    ->label('To Asset')
+                                    ->relationship('toAsset', 'code')
+                                    ->searchable()
+                                    ->preload()
+                                    ->required()
+                                    ->different('from_asset_code')
+                                    ->helperText('Must be different from the source asset'),
 
-                        Forms\Components\TextInput::make('rate')
-                            ->label('Exchange Rate')
-                            ->numeric()
-                            ->step(0.0000000001)
-                            ->required()
-                            ->minValue(0.0000000001)
-                            ->helperText('Rate for converting from source to target asset'),
-                        ]
-                    )
-                    ->columns(3),
+                                Forms\Components\TextInput::make('rate')
+                                    ->label('Exchange Rate')
+                                    ->numeric()
+                                    ->step(0.0000000001)
+                                    ->required()
+                                    ->minValue(0.0000000001)
+                                    ->helperText('Rate for converting from source to target asset'),
+                            ]
+                        )
+                        ->columns(3),
 
-                Forms\Components\Section::make('Rate Configuration')
-                    ->schema(
-                        [
-                        Forms\Components\Select::make('source')
-                            ->label('Rate Source')
-                            ->options(
-                                [
-                                ExchangeRate::SOURCE_MANUAL => 'Manual Entry',
-                                ExchangeRate::SOURCE_API    => 'API Feed',
-                                ExchangeRate::SOURCE_ORACLE => 'Oracle Service',
-                                ExchangeRate::SOURCE_MARKET => 'Market Data',
-                                ]
-                            )
-                            ->default(ExchangeRate::SOURCE_MANUAL)
-                            ->required()
-                            ->reactive()
-                            ->helperText('Source of the exchange rate data'),
+                    Forms\Components\Section::make('Rate Configuration')
+                        ->schema(
+                            [
+                                Forms\Components\Select::make('source')
+                                    ->label('Rate Source')
+                                    ->options(
+                                        [
+                                            ExchangeRate::SOURCE_MANUAL => 'Manual Entry',
+                                            ExchangeRate::SOURCE_API => 'API Feed',
+                                            ExchangeRate::SOURCE_ORACLE => 'Oracle Service',
+                                            ExchangeRate::SOURCE_MARKET => 'Market Data',
+                                        ]
+                                    )
+                                    ->default(ExchangeRate::SOURCE_MANUAL)
+                                    ->required()
+                                    ->reactive()
+                                    ->helperText('Source of the exchange rate data'),
 
-                        Forms\Components\DateTimePicker::make('valid_at')
-                            ->label('Valid From')
-                            ->default(now())
-                            ->required()
-                            ->before('expires_at')
-                            ->helperText('When this rate becomes effective'),
+                                Forms\Components\DateTimePicker::make('valid_at')
+                                    ->label('Valid From')
+                                    ->default(now())
+                                    ->required()
+                                    ->before('expires_at')
+                                    ->helperText('When this rate becomes effective'),
 
-                        Forms\Components\DateTimePicker::make('expires_at')
-                            ->label('Expires At')
-                            ->after('valid_at')
-                            ->helperText('Leave empty for rates that don\'t expire'),
+                                Forms\Components\DateTimePicker::make('expires_at')
+                                    ->label('Expires At')
+                                    ->after('valid_at')
+                                    ->helperText('Leave empty for rates that don\'t expire'),
 
-                        Forms\Components\Toggle::make('is_active')
-                            ->label('Active')
-                            ->default(true)
-                            ->helperText('Whether this rate is available for use'),
-                        ]
-                    )
-                    ->columns(2),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Active')
+                                    ->default(true)
+                                    ->helperText('Whether this rate is available for use'),
+                            ]
+                        )
+                        ->columns(2),
 
-                Forms\Components\Section::make('Additional Information')
-                    ->schema(
-                        [
-                        Forms\Components\KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Property')
-                            ->valueLabel('Value')
-                            ->helperText('Additional properties and configuration')
-                            ->columnSpanFull(),
-                        ]
-                    )
-                    ->collapsible(),
+                    Forms\Components\Section::make('Additional Information')
+                        ->schema(
+                            [
+                                Forms\Components\KeyValue::make('metadata')
+                                    ->label('Metadata')
+                                    ->keyLabel('Property')
+                                    ->valueLabel('Value')
+                                    ->helperText('Additional properties and configuration')
+                                    ->columnSpanFull(),
+                            ]
+                        )
+                        ->collapsible(),
                 ]
             );
     }
@@ -123,168 +123,168 @@ class ExchangeRateResource extends Resource
         return $table
             ->columns(
                 [
-                Tables\Columns\TextColumn::make('from_asset_code')
-                    ->label('From')
-                    ->badge()
-                    ->color('primary')
-                    ->searchable()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('from_asset_code')
+                        ->label('From')
+                        ->badge()
+                        ->color('primary')
+                        ->searchable()
+                        ->sortable(),
 
-                Tables\Columns\TextColumn::make('to_asset_code')
-                    ->label('To')
-                    ->badge()
-                    ->color('success')
-                    ->searchable()
-                    ->sortable(),
+                    Tables\Columns\TextColumn::make('to_asset_code')
+                        ->label('To')
+                        ->badge()
+                        ->color('success')
+                        ->searchable()
+                        ->sortable(),
 
-                Tables\Columns\TextColumn::make('rate')
-                    ->label('Rate')
-                    ->numeric(decimalPlaces: 10)
-                    ->sortable()
-                    ->alignEnd(),
+                    Tables\Columns\TextColumn::make('rate')
+                        ->label('Rate')
+                        ->numeric(decimalPlaces: 10)
+                        ->sortable()
+                        ->alignEnd(),
 
-                Tables\Columns\TextColumn::make('inverse_rate')
-                    ->label('Inverse Rate')
-                    ->state(fn ($record) => number_format($record->getInverseRate(), 10))
-                    ->color('gray')
-                    ->alignEnd(),
+                    Tables\Columns\TextColumn::make('inverse_rate')
+                        ->label('Inverse Rate')
+                        ->state(fn ($record) => number_format($record->getInverseRate(), 10))
+                        ->color('gray')
+                        ->alignEnd(),
 
-                Tables\Columns\TextColumn::make('source')
-                    ->label('Source')
-                    ->badge()
-                    ->color(
-                        fn (string $state): string => match ($state) {
-                        ExchangeRate::SOURCE_MANUAL => 'gray',
-                        ExchangeRate::SOURCE_API    => 'success',
-                        ExchangeRate::SOURCE_ORACLE => 'warning',
-                        ExchangeRate::SOURCE_MARKET => 'info',
-                        default                     => 'gray',
-                        }
-                    ),
+                    Tables\Columns\TextColumn::make('source')
+                        ->label('Source')
+                        ->badge()
+                        ->color(
+                            fn (string $state): string => match ($state) {
+                                ExchangeRate::SOURCE_MANUAL => 'gray',
+                                ExchangeRate::SOURCE_API => 'success',
+                                ExchangeRate::SOURCE_ORACLE => 'warning',
+                                ExchangeRate::SOURCE_MARKET => 'info',
+                                default => 'gray',
+                            }
+                        ),
 
-                Tables\Columns\TextColumn::make('age')
-                    ->label('Age')
-                    ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
-                    ->color(
-                        fn ($record) => match (true) {
-                        $record->getAgeInMinutes() < 60   => 'success',
-                        $record->getAgeInMinutes() < 1440 => 'warning',
-                        default                           => 'danger',
-                        }
-                    )
-                    ->badge()
-                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')),
+                    Tables\Columns\TextColumn::make('age')
+                        ->label('Age')
+                        ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
+                        ->color(
+                            fn ($record) => match (true) {
+                                $record->getAgeInMinutes() < 60 => 'success',
+                                $record->getAgeInMinutes() < 1440 => 'warning',
+                                default => 'danger',
+                            }
+                        )
+                        ->badge()
+                        ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('valid_at', $direction === 'asc' ? 'desc' : 'asc')),
 
-                Tables\Columns\IconColumn::make('is_valid')
-                    ->label('Valid')
-                    ->state(fn ($record) => $record->isValid())
-                    ->boolean()
-                    ->alignCenter(),
+                    Tables\Columns\IconColumn::make('is_valid')
+                        ->label('Valid')
+                        ->state(fn ($record) => $record->isValid())
+                        ->boolean()
+                        ->alignCenter(),
 
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Active')
-                    ->boolean()
-                    ->alignCenter(),
+                    Tables\Columns\IconColumn::make('is_active')
+                        ->label('Active')
+                        ->boolean()
+                        ->alignCenter(),
 
-                Tables\Columns\TextColumn::make('expires_at')
-                    ->label('Expires')
-                    ->dateTime()
-                    ->placeholder('Never')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('expires_at')
+                        ->label('Expires')
+                        ->dateTime()
+                        ->placeholder('Never')
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
                 ]
             )
             ->filters(
                 [
-                Tables\Filters\SelectFilter::make('from_asset_code')
-                    ->label('From Asset')
-                    ->relationship('fromAsset', 'code')
-                    ->searchable()
-                    ->preload(),
+                    Tables\Filters\SelectFilter::make('from_asset_code')
+                        ->label('From Asset')
+                        ->relationship('fromAsset', 'code')
+                        ->searchable()
+                        ->preload(),
 
-                Tables\Filters\SelectFilter::make('to_asset_code')
-                    ->label('To Asset')
-                    ->relationship('toAsset', 'code')
-                    ->searchable()
-                    ->preload(),
+                    Tables\Filters\SelectFilter::make('to_asset_code')
+                        ->label('To Asset')
+                        ->relationship('toAsset', 'code')
+                        ->searchable()
+                        ->preload(),
 
-                Tables\Filters\SelectFilter::make('source')
-                    ->options(
-                        [
-                        ExchangeRate::SOURCE_MANUAL => 'Manual',
-                        ExchangeRate::SOURCE_API    => 'API',
-                        ExchangeRate::SOURCE_ORACLE => 'Oracle',
-                        ExchangeRate::SOURCE_MARKET => 'Market',
-                        ]
-                    ),
+                    Tables\Filters\SelectFilter::make('source')
+                        ->options(
+                            [
+                                ExchangeRate::SOURCE_MANUAL => 'Manual',
+                                ExchangeRate::SOURCE_API => 'API',
+                                ExchangeRate::SOURCE_ORACLE => 'Oracle',
+                                ExchangeRate::SOURCE_MARKET => 'Market',
+                            ]
+                        ),
 
-                Tables\Filters\TernaryFilter::make('is_active')
-                    ->label('Active Status'),
+                    Tables\Filters\TernaryFilter::make('is_active')
+                        ->label('Active Status'),
 
-                Tables\Filters\Filter::make('valid_now')
-                    ->label('Valid Now')
-                    ->query(fn (Builder $query): Builder => $query->valid()),
+                    Tables\Filters\Filter::make('valid_now')
+                        ->label('Valid Now')
+                        ->query(fn (Builder $query): Builder => $query->valid()),
 
-                Tables\Filters\Filter::make('expired')
-                    ->label('Expired')
-                    ->query(fn (Builder $query): Builder => $query->where('expires_at', '<=', now())),
+                    Tables\Filters\Filter::make('expired')
+                        ->label('Expired')
+                        ->query(fn (Builder $query): Builder => $query->where('expires_at', '<=', now())),
 
-                Tables\Filters\Filter::make('stale')
-                    ->label('Stale (>24h)')
-                    ->query(fn (Builder $query): Builder => $query->where('valid_at', '<=', now()->subDay())),
+                    Tables\Filters\Filter::make('stale')
+                        ->label('Stale (>24h)')
+                        ->query(fn (Builder $query): Builder => $query->where('valid_at', '<=', now()->subDay())),
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->requiresConfirmation(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->requiresConfirmation(),
 
-                Tables\Actions\Action::make('refresh')
-                    ->label('Refresh')
-                    ->icon('heroicon-m-arrow-path')
-                    ->color('warning')
-                    ->action(
-                        function ($record) {
-                            $record->update(['valid_at' => now()]);
-                        }
-                    )
-                    ->requiresConfirmation()
-                    ->visible(fn ($record) => $record->source !== ExchangeRate::SOURCE_MANUAL),
+                    Tables\Actions\Action::make('refresh')
+                        ->label('Refresh')
+                        ->icon('heroicon-m-arrow-path')
+                        ->color('warning')
+                        ->action(
+                            function ($record) {
+                                $record->update(['valid_at' => now()]);
+                            }
+                        )
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => $record->source !== ExchangeRate::SOURCE_MANUAL),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->requiresConfirmation(),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make()
+                                ->requiresConfirmation(),
 
-                    Tables\Actions\BulkAction::make('activate')
-                        ->label('Activate')
-                        ->icon('heroicon-m-check-circle')
-                        ->color('success')
-                        ->action(fn ($records) => $records->each->update(['is_active' => true]))
-                        ->deselectRecordsAfterCompletion(),
+                            Tables\Actions\BulkAction::make('activate')
+                                ->label('Activate')
+                                ->icon('heroicon-m-check-circle')
+                                ->color('success')
+                                ->action(fn ($records) => $records->each->update(['is_active' => true]))
+                                ->deselectRecordsAfterCompletion(),
 
-                    Tables\Actions\BulkAction::make('deactivate')
-                        ->label('Deactivate')
-                        ->icon('heroicon-m-x-circle')
-                        ->color('danger')
-                        ->action(fn ($records) => $records->each->update(['is_active' => false]))
-                        ->requiresConfirmation()
-                        ->deselectRecordsAfterCompletion(),
+                            Tables\Actions\BulkAction::make('deactivate')
+                                ->label('Deactivate')
+                                ->icon('heroicon-m-x-circle')
+                                ->color('danger')
+                                ->action(fn ($records) => $records->each->update(['is_active' => false]))
+                                ->requiresConfirmation()
+                                ->deselectRecordsAfterCompletion(),
 
-                    Tables\Actions\BulkAction::make('refresh_rates')
-                        ->label('Refresh Rates')
-                        ->icon('heroicon-m-arrow-path')
-                        ->color('warning')
-                        ->action(fn ($records) => $records->each->update(['valid_at' => now()]))
-                        ->requiresConfirmation()
-                        ->deselectRecordsAfterCompletion(),
-                    ]
-                ),
+                            Tables\Actions\BulkAction::make('refresh_rates')
+                                ->label('Refresh Rates')
+                                ->icon('heroicon-m-arrow-path')
+                                ->color('warning')
+                                ->action(fn ($records) => $records->each->update(['valid_at' => now()]))
+                                ->requiresConfirmation()
+                                ->deselectRecordsAfterCompletion(),
+                        ]
+                    ),
                 ]
             )
             ->defaultSort('valid_at', 'desc');
@@ -295,94 +295,94 @@ class ExchangeRateResource extends Resource
         return $infolist
             ->schema(
                 [
-                Infolists\Components\Section::make('Exchange Rate Details')
-                    ->schema(
-                        [
-                        Infolists\Components\TextEntry::make('pair')
-                            ->label('Asset Pair')
-                            ->state(fn ($record) => "{$record->from_asset_code} → {$record->to_asset_code}")
-                            ->badge()
-                            ->color('primary'),
+                    Infolists\Components\Section::make('Exchange Rate Details')
+                        ->schema(
+                            [
+                                Infolists\Components\TextEntry::make('pair')
+                                    ->label('Asset Pair')
+                                    ->state(fn ($record) => "{$record->from_asset_code} → {$record->to_asset_code}")
+                                    ->badge()
+                                    ->color('primary'),
 
-                        Infolists\Components\TextEntry::make('rate')
-                            ->label('Exchange Rate')
-                            ->numeric(decimalPlaces: 10),
+                                Infolists\Components\TextEntry::make('rate')
+                                    ->label('Exchange Rate')
+                                    ->numeric(decimalPlaces: 10),
 
-                        Infolists\Components\TextEntry::make('inverse_rate')
-                            ->label('Inverse Rate')
-                            ->state(fn ($record) => number_format($record->getInverseRate(), 10)),
+                                Infolists\Components\TextEntry::make('inverse_rate')
+                                    ->label('Inverse Rate')
+                                    ->state(fn ($record) => number_format($record->getInverseRate(), 10)),
 
-                        Infolists\Components\TextEntry::make('source')
-                            ->label('Source')
-                            ->badge()
-                            ->color(
-                                fn (string $state): string => match ($state) {
-                                ExchangeRate::SOURCE_MANUAL => 'gray',
-                                ExchangeRate::SOURCE_API    => 'success',
-                                ExchangeRate::SOURCE_ORACLE => 'warning',
-                                ExchangeRate::SOURCE_MARKET => 'info',
-                                default                     => 'gray',
-                                }
-                            ),
-                        ]
-                    )
-                    ->columns(2),
+                                Infolists\Components\TextEntry::make('source')
+                                    ->label('Source')
+                                    ->badge()
+                                    ->color(
+                                        fn (string $state): string => match ($state) {
+                                            ExchangeRate::SOURCE_MANUAL => 'gray',
+                                            ExchangeRate::SOURCE_API => 'success',
+                                            ExchangeRate::SOURCE_ORACLE => 'warning',
+                                            ExchangeRate::SOURCE_MARKET => 'info',
+                                            default => 'gray',
+                                        }
+                                    ),
+                            ]
+                        )
+                        ->columns(2),
 
-                Infolists\Components\Section::make('Validity Information')
-                    ->schema(
-                        [
-                        Infolists\Components\TextEntry::make('valid_at')
-                            ->label('Valid From')
-                            ->dateTime(),
+                    Infolists\Components\Section::make('Validity Information')
+                        ->schema(
+                            [
+                                Infolists\Components\TextEntry::make('valid_at')
+                                    ->label('Valid From')
+                                    ->dateTime(),
 
-                        Infolists\Components\TextEntry::make('expires_at')
-                            ->label('Expires At')
-                            ->dateTime()
-                            ->placeholder('Never expires'),
+                                Infolists\Components\TextEntry::make('expires_at')
+                                    ->label('Expires At')
+                                    ->dateTime()
+                                    ->placeholder('Never expires'),
 
-                        Infolists\Components\IconEntry::make('is_active')
-                            ->label('Active')
-                            ->boolean(),
+                                Infolists\Components\IconEntry::make('is_active')
+                                    ->label('Active')
+                                    ->boolean(),
 
-                        Infolists\Components\TextEntry::make('age')
-                            ->label('Age')
-                            ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
-                            ->badge()
-                            ->color(
-                                fn ($record) => match (true) {
-                                $record->getAgeInMinutes() < 60   => 'success',
-                                $record->getAgeInMinutes() < 1440 => 'warning',
-                                default                           => 'danger',
-                                }
-                            ),
-                        ]
-                    )
-                    ->columns(2),
+                                Infolists\Components\TextEntry::make('age')
+                                    ->label('Age')
+                                    ->state(fn ($record) => self::formatAge($record->getAgeInMinutes()))
+                                    ->badge()
+                                    ->color(
+                                        fn ($record) => match (true) {
+                                            $record->getAgeInMinutes() < 60 => 'success',
+                                            $record->getAgeInMinutes() < 1440 => 'warning',
+                                            default => 'danger',
+                                        }
+                                    ),
+                            ]
+                        )
+                        ->columns(2),
 
-                Infolists\Components\Section::make('Metadata')
-                    ->schema(
-                        [
-                        Infolists\Components\KeyValueEntry::make('metadata')
-                            ->label('Additional Properties')
-                            ->columnSpanFull(),
-                        ]
-                    )
-                    ->collapsible(),
+                    Infolists\Components\Section::make('Metadata')
+                        ->schema(
+                            [
+                                Infolists\Components\KeyValueEntry::make('metadata')
+                                    ->label('Additional Properties')
+                                    ->columnSpanFull(),
+                            ]
+                        )
+                        ->collapsible(),
 
-                Infolists\Components\Section::make('System Information')
-                    ->schema(
-                        [
-                        Infolists\Components\TextEntry::make('created_at')
-                            ->label('Created At')
-                            ->dateTime(),
+                    Infolists\Components\Section::make('System Information')
+                        ->schema(
+                            [
+                                Infolists\Components\TextEntry::make('created_at')
+                                    ->label('Created At')
+                                    ->dateTime(),
 
-                        Infolists\Components\TextEntry::make('updated_at')
-                            ->label('Updated At')
-                            ->dateTime(),
-                        ]
-                    )
-                    ->columns(2)
-                    ->collapsible(),
+                                Infolists\Components\TextEntry::make('updated_at')
+                                    ->label('Updated At')
+                                    ->dateTime(),
+                            ]
+                        )
+                        ->columns(2)
+                        ->collapsible(),
                 ]
             );
     }
@@ -397,10 +397,10 @@ class ExchangeRateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListExchangeRates::route('/'),
+            'index' => Pages\ListExchangeRates::route('/'),
             'create' => Pages\CreateExchangeRate::route('/create'),
-            'view'   => Pages\ViewExchangeRate::route('/{record}'),
-            'edit'   => Pages\EditExchangeRate::route('/{record}/edit'),
+            'view' => Pages\ViewExchangeRate::route('/{record}'),
+            'edit' => Pages\EditExchangeRate::route('/{record}/edit'),
         ];
     }
 
@@ -431,7 +431,7 @@ class ExchangeRateResource extends Resource
         return match (true) {
             $percentage >= 80 => 'success',
             $percentage >= 60 => 'warning',
-            default           => 'danger',
+            default => 'danger',
         };
     }
 

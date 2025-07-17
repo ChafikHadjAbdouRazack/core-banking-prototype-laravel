@@ -60,8 +60,8 @@ class ExchangeServiceProvider extends ServiceProvider
         // Register projectors
         Projectionist::addProjectors(
             [
-            OrderProjector::class,
-            OrderBookProjector::class,
+                OrderProjector::class,
+                OrderBookProjector::class,
             ]
         );
     }

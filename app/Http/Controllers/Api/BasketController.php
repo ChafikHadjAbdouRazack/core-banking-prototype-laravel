@@ -30,25 +30,32 @@ class BasketController extends Controller
      *     operationId="listBaskets",
      *     tags={"Baskets"},
      *     summary="List all basket assets",
+     *
      * @OA\Parameter(
      *         name="type",
      *         in="query",
      *         description="Filter by basket type",
      *         required=false,
+     *
      * @OA\Schema(type="string",                         enum={"fixed", "dynamic"})
      *     ),
+     *
      * @OA\Parameter(
      *         name="active",
      *         in="query",
      *         description="Filter by active status",
      *         required=false,
+     *
      * @OA\Schema(type="boolean")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="List of basket assets",
+     *
      * @OA\JsonContent(
      *             type="array",
+     *
      * @OA\Items(ref="#/components/schemas/BasketAsset")
      *         )
      *     )
@@ -71,27 +78,27 @@ class BasketController extends Controller
                 $latestValue = $basket->values()->latest('calculated_at')->first();
 
                 return [
-                'code'                => $basket->code,
-                'name'                => $basket->name,
-                'description'         => $basket->description,
-                'type'                => $basket->type,
-                'rebalance_frequency' => $basket->rebalance_frequency,
-                'is_active'           => $basket->is_active,
-                'latest_value'        => $latestValue ? [
-                    'value'         => $latestValue->value,
-                    'calculated_at' => $latestValue->calculated_at->toISOString(),
-                ] : null,
-                'components' => $basket->components->map(
-                    function ($component) {
-                        return [
-                        'asset_code' => $component->asset_code,
-                        'asset_name' => $component->asset->name ?? $component->asset_code,
-                        'weight'     => $component->weight,
-                        'min_weight' => $component->min_weight,
-                        'max_weight' => $component->max_weight,
-                        ];
-                    }
-                ),
+                    'code' => $basket->code,
+                    'name' => $basket->name,
+                    'description' => $basket->description,
+                    'type' => $basket->type,
+                    'rebalance_frequency' => $basket->rebalance_frequency,
+                    'is_active' => $basket->is_active,
+                    'latest_value' => $latestValue ? [
+                        'value' => $latestValue->value,
+                        'calculated_at' => $latestValue->calculated_at->toISOString(),
+                    ] : null,
+                    'components' => $basket->components->map(
+                        function ($component) {
+                            return [
+                                'asset_code' => $component->asset_code,
+                                'asset_name' => $component->asset->name ?? $component->asset_code,
+                                'weight' => $component->weight,
+                                'min_weight' => $component->min_weight,
+                                'max_weight' => $component->max_weight,
+                            ];
+                        }
+                    ),
                 ];
             }
         );
@@ -105,18 +112,23 @@ class BasketController extends Controller
      *     operationId="getBasket",
      *     tags={"Baskets"},
      *     summary="Get basket details",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="Basket code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Basket details",
+     *
      * @OA\JsonContent(ref="#/components/schemas/BasketAsset")
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Basket not found"
@@ -133,34 +145,34 @@ class BasketController extends Controller
 
         return response()->json(
             [
-            'code'                => $basket->code,
-            'name'                => $basket->name,
-            'description'         => $basket->description,
-            'type'                => $basket->type,
-            'rebalance_frequency' => $basket->rebalance_frequency,
-            'last_rebalanced_at'  => $basket->last_rebalanced_at?->toISOString(),
-            'is_active'           => $basket->is_active,
-            'created_at'          => $basket->created_at->toISOString(),
-            'components'          => $basket->components->map(
-                function ($component) {
-                    return [
-                    'asset_code' => $component->asset_code,
-                    'asset_name' => $component->asset->name ?? $component->asset_code,
-                    'weight'     => $component->weight,
-                    'min_weight' => $component->min_weight,
-                    'max_weight' => $component->max_weight,
-                    'is_active'  => $component->is_active,
-                    ];
-                }
-            ),
-            'recent_values' => $basket->values->map(
-                function ($value) {
-                    return [
-                    'value'         => $value->value,
-                    'calculated_at' => $value->calculated_at->toISOString(),
-                    ];
-                }
-            ),
+                'code' => $basket->code,
+                'name' => $basket->name,
+                'description' => $basket->description,
+                'type' => $basket->type,
+                'rebalance_frequency' => $basket->rebalance_frequency,
+                'last_rebalanced_at' => $basket->last_rebalanced_at?->toISOString(),
+                'is_active' => $basket->is_active,
+                'created_at' => $basket->created_at->toISOString(),
+                'components' => $basket->components->map(
+                    function ($component) {
+                        return [
+                            'asset_code' => $component->asset_code,
+                            'asset_name' => $component->asset->name ?? $component->asset_code,
+                            'weight' => $component->weight,
+                            'min_weight' => $component->min_weight,
+                            'max_weight' => $component->max_weight,
+                            'is_active' => $component->is_active,
+                        ];
+                    }
+                ),
+                'recent_values' => $basket->values->map(
+                    function ($value) {
+                        return [
+                            'value' => $value->value,
+                            'calculated_at' => $value->calculated_at->toISOString(),
+                        ];
+                    }
+                ),
             ]
         );
     }
@@ -172,10 +184,13 @@ class BasketController extends Controller
      *     tags={"Baskets"},
      *     summary="Create a new basket",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"code", "name", "components"},
+     *
      * @OA\Property(property="code",                           type="string", example="STABLE_BASKET"),
      * @OA\Property(property="name",                           type="string", example="Stable Currency Basket"),
      * @OA\Property(property="description",                    type="string"),
@@ -184,9 +199,11 @@ class BasketController extends Controller
      * @OA\Property(
      *                 property="components",
      *                 type="array",
+     *
      * @OA\Items(
      *                     type="object",
      *                     required={"asset_code", "weight"},
+     *
      * @OA\Property(property="asset_code",                     type="string", example="USD"),
      * @OA\Property(property="weight",                         type="number", format="float", example=40.0),
      * @OA\Property(property="min_weight",                     type="number", format="float", example=35.0),
@@ -195,11 +212,14 @@ class BasketController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Basket created successfully",
+     *
      * @OA\JsonContent(ref="#/components/schemas/BasketAsset")
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error"
@@ -210,16 +230,16 @@ class BasketController extends Controller
     {
         $validated = $request->validate(
             [
-            'code'                    => 'required|string|max:20|unique:basket_assets,code',
-            'name'                    => 'required|string|max:100',
-            'description'             => 'nullable|string',
-            'type'                    => ['required', Rule::in(['fixed', 'dynamic'])],
-            'rebalance_frequency'     => ['required', Rule::in(['daily', 'weekly', 'monthly', 'quarterly', 'never'])],
-            'components'              => 'required|array|min:2',
-            'components.*.asset_code' => 'required|string|exists:assets,code',
-            'components.*.weight'     => 'required|numeric|min:0|max:100',
-            'components.*.min_weight' => 'nullable|numeric|min:0|max:100',
-            'components.*.max_weight' => 'nullable|numeric|min:0|max:100',
+                'code' => 'required|string|max:20|unique:basket_assets,code',
+                'name' => 'required|string|max:100',
+                'description' => 'nullable|string',
+                'type' => ['required', Rule::in(['fixed', 'dynamic'])],
+                'rebalance_frequency' => ['required', Rule::in(['daily', 'weekly', 'monthly', 'quarterly', 'never'])],
+                'components' => 'required|array|min:2',
+                'components.*.asset_code' => 'required|string|exists:assets,code',
+                'components.*.weight' => 'required|numeric|min:0|max:100',
+                'components.*.min_weight' => 'nullable|numeric|min:0|max:100',
+                'components.*.max_weight' => 'nullable|numeric|min:0|max:100',
             ]
         );
 
@@ -228,8 +248,8 @@ class BasketController extends Controller
         if (abs($totalWeight - 100) > 0.01) {
             return response()->json(
                 [
-                'message'      => 'Component weights must sum to 100%',
-                'total_weight' => $totalWeight,
+                    'message' => 'Component weights must sum to 100%',
+                    'total_weight' => $totalWeight,
                 ],
                 422
             );
@@ -239,13 +259,13 @@ class BasketController extends Controller
             function () use ($validated, $request) {
                 $basket = BasketAsset::create(
                     [
-                    'code'                => $validated['code'],
-                    'name'                => $validated['name'],
-                    'description'         => $validated['description'] ?? null,
-                    'type'                => $validated['type'],
-                    'rebalance_frequency' => $validated['rebalance_frequency'],
-                    'created_by'          => $request->user()?->uuid,
-                    'is_active'           => true,
+                        'code' => $validated['code'],
+                        'name' => $validated['name'],
+                        'description' => $validated['description'] ?? null,
+                        'type' => $validated['type'],
+                        'rebalance_frequency' => $validated['rebalance_frequency'],
+                        'created_by' => $request->user()?->uuid,
+                        'is_active' => true,
                     ]
                 );
 
@@ -267,23 +287,23 @@ class BasketController extends Controller
 
         return response()->json(
             [
-            'code'                => $basket->code,
-            'name'                => $basket->name,
-            'description'         => $basket->description,
-            'type'                => $basket->type,
-            'rebalance_frequency' => $basket->rebalance_frequency,
-            'is_active'           => $basket->is_active,
-            'components'          => $basket->components->map(
-                function ($component) {
-                    return [
-                    'asset_code' => $component->asset_code,
-                    'asset_name' => $component->asset->name ?? $component->asset_code,
-                    'weight'     => $component->weight,
-                    'min_weight' => $component->min_weight,
-                    'max_weight' => $component->max_weight,
-                    ];
-                }
-            ),
+                'code' => $basket->code,
+                'name' => $basket->name,
+                'description' => $basket->description,
+                'type' => $basket->type,
+                'rebalance_frequency' => $basket->rebalance_frequency,
+                'is_active' => $basket->is_active,
+                'components' => $basket->components->map(
+                    function ($component) {
+                        return [
+                            'asset_code' => $component->asset_code,
+                            'asset_name' => $component->asset->name ?? $component->asset_code,
+                            'weight' => $component->weight,
+                            'min_weight' => $component->min_weight,
+                            'max_weight' => $component->max_weight,
+                        ];
+                    }
+                ),
             ],
             201
         );
@@ -295,17 +315,22 @@ class BasketController extends Controller
      *     operationId="getBasketValue",
      *     tags={"Baskets"},
      *     summary="Get current basket value",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="Basket code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Current basket value",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="basket_code",      type="string"),
      * @OA\Property(property="value",            type="number"),
      * @OA\Property(property="calculated_at",    type="string", format="date-time"),
@@ -321,10 +346,10 @@ class BasketController extends Controller
 
         return response()->json(
             [
-            'basket_code'      => $basket->code,
-            'value'            => $value->value,
-            'calculated_at'    => $value->calculated_at->toISOString(),
-            'component_values' => $value->component_values,
+                'basket_code' => $basket->code,
+                'value' => $value->value,
+                'calculated_at' => $value->calculated_at->toISOString(),
+                'component_values' => $value->component_values,
             ]
         );
     }
@@ -336,24 +361,31 @@ class BasketController extends Controller
      *     tags={"Baskets"},
      *     summary="Trigger basket rebalancing",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="Basket code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Parameter(
      *         name="simulate",
      *         in="query",
      *         description="Simulate rebalancing without executing",
      *         required=false,
+     *
      * @OA\Schema(type="boolean",           default=false)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Rebalancing result",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",      type="string"),
      * @OA\Property(property="basket",      type="string"),
      * @OA\Property(property="adjustments", type="array", @OA\Items(type="object"))
@@ -368,7 +400,7 @@ class BasketController extends Controller
         if ($basket->type !== 'dynamic') {
             return response()->json(
                 [
-                'message' => 'Only dynamic baskets can be rebalanced',
+                    'message' => 'Only dynamic baskets can be rebalanced',
                 ],
                 422
             );
@@ -391,20 +423,25 @@ class BasketController extends Controller
      *     operationId="getBasketHistory",
      *     tags={"Baskets"},
      *     summary="Get basket value history",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="Basket code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Parameter(
      *         name="days",
      *         in="query",
      *         description="Number of days of history",
      *         required=false,
+     *
      * @OA\Schema(type="integer", default=30)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Basket value history"
@@ -424,12 +461,12 @@ class BasketController extends Controller
 
         return response()->json(
             [
-            'basket_code' => $basket->code,
-            'period'      => [
-                'start' => now()->subDays($days)->toISOString(),
-                'end'   => now()->toISOString(),
-            ],
-            'values' => $history,
+                'basket_code' => $basket->code,
+                'period' => [
+                    'start' => now()->subDays($days)->toISOString(),
+                    'end' => now()->toISOString(),
+                ],
+                'values' => $history,
             ]
         );
     }
@@ -440,20 +477,25 @@ class BasketController extends Controller
      *     operationId="getBasketPerformanceMetrics",
      *     tags={"Baskets"},
      *     summary="Get basket performance metrics",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="Basket code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Parameter(
      *         name="period",
      *         in="query",
      *         description="Performance period",
      *         required=false,
+     *
      * @OA\Schema(type="string", enum={"1d", "7d", "30d", "90d", "1y"}, default="30d")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Basket performance metrics"
@@ -466,11 +508,11 @@ class BasketController extends Controller
         $period = $request->input('period', '30d');
 
         $days = match ($period) {
-            '1d'    => 1,
-            '7d'    => 7,
-            '30d'   => 30,
-            '90d'   => 90,
-            '1y'    => 365,
+            '1d' => 1,
+            '7d' => 7,
+            '30d' => 30,
+            '90d' => 90,
+            '1y' => 365,
             default => 30,
         };
 
@@ -482,9 +524,9 @@ class BasketController extends Controller
 
         return response()->json(
             [
-            'basket_code' => $basket->code,
-            'period'      => $period,
-            'performance' => $performance,
+                'basket_code' => $basket->code,
+                'period' => $period,
+                'performance' => $performance,
             ]
         );
     }

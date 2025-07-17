@@ -66,8 +66,8 @@ class BurnStablecoinActivityTest extends DomainTestCase
     {
         // Create stablecoin with burn fee
         $stablecoin = Stablecoin::factory()->create([
-            'code'         => 'USDS',
-            'burn_fee'     => 0.005, // 0.5% burn fee
+            'code' => 'USDS',
+            'burn_fee' => 0.005, // 0.5% burn fee
             'total_supply' => 1000000000000, // 1 million USDS
         ]);
 

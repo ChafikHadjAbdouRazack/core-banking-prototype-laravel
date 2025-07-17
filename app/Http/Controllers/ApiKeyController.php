@@ -41,12 +41,12 @@ class ApiKeyController extends Controller
     {
         $validated = $request->validate(
             [
-            'name'          => 'required|string|max:255',
-            'description'   => 'nullable|string|max:1000',
-            'permissions'   => 'required|array',
-            'permissions.*' => 'in:read,write,delete,*',
-            'expires_in'    => 'nullable|in:30,90,365,never',
-            'ip_whitelist'  => 'nullable|string',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1000',
+                'permissions' => 'required|array',
+                'permissions.*' => 'in:read,write,delete,*',
+                'expires_in' => 'nullable|in:30,90,365,never',
+                'ip_whitelist' => 'nullable|string',
             ]
         );
 
@@ -67,11 +67,11 @@ class ApiKeyController extends Controller
         $result = ApiKey::createForUser(
             Auth::user(),
             [
-            'name'        => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'permissions' => $validated['permissions'],
-            'allowed_ips' => $allowedIps,
-            'expires_at'  => $expiresAt,
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'permissions' => $validated['permissions'],
+                'allowed_ips' => $allowedIps,
+                'expires_at' => $expiresAt,
             ]
         );
 
@@ -94,11 +94,11 @@ class ApiKeyController extends Controller
 
         // Get usage statistics
         $stats = [
-            'total_requests'      => $apiKey->request_count,
-            'requests_today'      => $apiKey->logs()->where('created_at', '>=', now()->startOfDay())->count(),
+            'total_requests' => $apiKey->request_count,
+            'requests_today' => $apiKey->logs()->where('created_at', '>=', now()->startOfDay())->count(),
             'requests_this_month' => $apiKey->logs()->where('created_at', '>=', now()->startOfMonth())->count(),
-            'avg_response_time'   => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->avg('response_time'),
-            'error_rate'          => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->failed()->count() / max($apiKey->logs()->where('created_at', '>=', now()->subDays(7))->count(), 1) * 100,
+            'avg_response_time' => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->avg('response_time'),
+            'error_rate' => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->failed()->count() / max($apiKey->logs()->where('created_at', '>=', now()->subDays(7))->count(), 1) * 100,
         ];
 
         // Get recent logs
@@ -135,11 +135,11 @@ class ApiKeyController extends Controller
 
         $validated = $request->validate(
             [
-            'name'          => 'required|string|max:255',
-            'description'   => 'nullable|string|max:1000',
-            'permissions'   => 'required|array',
-            'permissions.*' => 'in:read,write,delete,*',
-            'ip_whitelist'  => 'nullable|string',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:1000',
+                'permissions' => 'required|array',
+                'permissions.*' => 'in:read,write,delete,*',
+                'ip_whitelist' => 'nullable|string',
             ]
         );
 
@@ -152,10 +152,10 @@ class ApiKeyController extends Controller
 
         $apiKey->update(
             [
-            'name'        => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'permissions' => $validated['permissions'],
-            'allowed_ips' => $allowedIps,
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'permissions' => $validated['permissions'],
+                'allowed_ips' => $allowedIps,
             ]
         );
 
@@ -196,11 +196,11 @@ class ApiKeyController extends Controller
         $result = ApiKey::createForUser(
             Auth::user(),
             [
-            'name'        => $apiKey->name . ' (Regenerated)',
-            'description' => $apiKey->description,
-            'permissions' => $apiKey->permissions,
-            'allowed_ips' => $apiKey->allowed_ips,
-            'expires_at'  => $apiKey->expires_at,
+                'name' => $apiKey->name . ' (Regenerated)',
+                'description' => $apiKey->description,
+                'permissions' => $apiKey->permissions,
+                'allowed_ips' => $apiKey->allowed_ips,
+                'expires_at' => $apiKey->expires_at,
             ]
         );
 

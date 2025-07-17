@@ -20,7 +20,7 @@ class SubProductController extends Controller
     {
         return response()->json(
             [
-            'data' => $this->subProductService->getApiStatus(),
+                'data' => $this->subProductService->getApiStatus(),
             ]
         );
     }
@@ -35,8 +35,8 @@ class SubProductController extends Controller
         if (! isset($allProducts[$subProduct])) {
             return response()->json(
                 [
-                'error'   => 'Sub-product not found',
-                'message' => "The sub-product '{$subProduct}' does not exist.",
+                    'error' => 'Sub-product not found',
+                    'message' => "The sub-product '{$subProduct}' does not exist.",
                 ],
                 404
             );
@@ -44,7 +44,7 @@ class SubProductController extends Controller
 
         return response()->json(
             [
-            'data' => $allProducts[$subProduct],
+                'data' => $allProducts[$subProduct],
             ]
         );
     }
@@ -58,19 +58,19 @@ class SubProductController extends Controller
 
         return response()->json(
             [
-            'data' => array_map(
-                function ($product) {
-                    return [
-                    'key'              => $product['key'],
-                    'name'             => $product['name'],
-                    'description'      => $product['description'],
-                    'icon'             => $product['icon'],
-                    'color'            => $product['color'],
-                    'enabled_features' => $product['enabled_features'],
-                    ];
-                },
-                $enabledProducts
-            ),
+                'data' => array_map(
+                    function ($product) {
+                        return [
+                            'key' => $product['key'],
+                            'name' => $product['name'],
+                            'description' => $product['description'],
+                            'icon' => $product['icon'],
+                            'color' => $product['color'],
+                            'enabled_features' => $product['enabled_features'],
+                        ];
+                    },
+                    $enabledProducts
+                ),
             ]
         );
     }

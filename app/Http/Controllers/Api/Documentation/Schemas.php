@@ -8,6 +8,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Account",
  *     required={"uuid", "user_uuid", "name", "balance", "frozen"},
+ *
  * @OA\Property(property="uuid",       type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="user_uuid",  type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="name",       type="string", example="Savings Account"),
@@ -22,6 +23,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Transaction",
  *     required={"uuid", "account_uuid", "type", "amount", "balance_after", "description", "hash"},
+ *
  * @OA\Property(property="uuid",          type="string", format="uuid", example="770e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="account_uuid",  type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="type",          type="string", enum={"deposit", "withdrawal"}, example="deposit"),
@@ -37,6 +39,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Transfer",
  *     required={"uuid", "from_account_uuid", "to_account_uuid", "amount", "description", "status", "hash"},
+ *
  * @OA\Property(property="uuid",              type="string", format="uuid", example="880e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="from_account_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="to_account_uuid",   type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
@@ -53,6 +56,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Balance",
  *     required={"account_uuid", "balance", "frozen"},
+ *
  * @OA\Property(property="account_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="balance",      type="integer", example=50000, description="Current balance in cents"),
  * @OA\Property(property="frozen",       type="boolean", example=false),
@@ -73,6 +77,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Asset",
  *     required={"code", "name", "type", "precision", "is_active"},
+ *
  * @OA\Property(property="code",       type="string", example="USD", description="Asset code (e.g., USD, EUR, BTC)"),
  * @OA\Property(property="name",       type="string", example="US Dollar"),
  * @OA\Property(property="type",       type="string", enum={"fiat", "crypto", "commodity", "custom"}, example="fiat"),
@@ -88,6 +93,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Exchange Rate",
  *     required={"from_asset_code", "to_asset_code", "rate", "is_active"},
+ *
  * @OA\Property(property="id",              type="integer", example=1),
  * @OA\Property(property="from_asset_code", type="string", example="USD"),
  * @OA\Property(property="to_asset_code",   type="string", example="EUR"),
@@ -108,6 +114,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Account Balance",
  *     required={"account_uuid", "asset_code", "balance"},
+ *
  * @OA\Property(property="id",           type="integer", example=1),
  * @OA\Property(property="account_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="asset_code",   type="string", example="USD"),
@@ -123,6 +130,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Poll",
  *     required={"id", "title", "type", "status", "options", "start_date", "end_date"},
+ *
  * @OA\Property(property="id",                    type="integer", example=1),
  * @OA\Property(property="title",                 type="string", example="Should we add support for Japanese Yen?"),
  * @OA\Property(property="description",           type="string", nullable=true, example="This poll determines whether to add JPY support to the platform"),
@@ -131,8 +139,10 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Property(
  *         property="options",
  *         type="array",
+ *
  * @OA\Items(
  *             type="object",
+ *
  * @OA\Property(property="id",                    type="string", example="yes"),
  * @OA\Property(property="label",                 type="string", example="Yes, add JPY support")
  *         )
@@ -155,15 +165,18 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Vote",
  *     required={"id", "poll_id", "user_uuid", "selected_options", "voting_power", "voted_at"},
+ *
  * @OA\Property(property="id",           type="integer", example=1),
  * @OA\Property(property="poll_id",      type="integer", example=1),
  * @OA\Property(property="user_uuid",    type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(
  *         property="selected_options",
  *         type="array",
+ *
  * @OA\Items(type="string"),
  *         example={"yes"}
  *     ),
+ *
  * @OA\Property(property="voting_power", type="integer", example=10),
  * @OA\Property(property="signature",    type="string", nullable=true, example="abc123def456"),
  * @OA\Property(property="voted_at",     type="string", format="date-time", example="2024-01-01T12:00:00Z"),
@@ -177,6 +190,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Poll Result",
  *     required={"poll", "results", "participation"},
+ *
  * @OA\Property(property="poll",               ref="#/components/schemas/Poll"),
  * @OA\Property(
  *         property="results",
@@ -204,6 +218,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Error Response",
  *     required={"message"},
+ *
  * @OA\Property(property="message", type="string", example="The given data was invalid."),
  * @OA\Property(property="error",   type="string", example="VALIDATION_ERROR", nullable=true),
  * @OA\Property(
@@ -219,6 +234,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Validation Error Response",
  *     required={"message", "errors"},
+ *
  * @OA\Property(property="message", type="string", example="The given data was invalid."),
  * @OA\Property(
  *         property="errors",
@@ -239,6 +255,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Basket Asset",
  *     required={"code", "name", "type", "components"},
+ *
  * @OA\Property(property="code",                         type="string", example="STABLE_BASKET"),
  * @OA\Property(property="name",                         type="string", example="Stable Currency Basket"),
  * @OA\Property(property="description",                  type="string", example="A diversified basket of stable fiat currencies"),
@@ -250,8 +267,10 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Property(
  *         property="components",
  *         type="array",
+ *
  * @OA\Items(ref="#/components/schemas/BasketComponent")
  *     ),
+ *
  * @OA\Property(
  *         property="latest_value",
  *         type="object",
@@ -266,6 +285,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Basket Component",
  *     required={"asset_code", "weight"},
+ *
  * @OA\Property(property="asset_code", type="string", example="USD"),
  * @OA\Property(property="asset_name", type="string", example="US Dollar"),
  * @OA\Property(property="weight",     type="number", format="float", example=40.0, description="Weight percentage (0-100)"),
@@ -279,6 +299,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="Basket Value",
  *     required={"basket_code", "value", "calculated_at"},
+ *
  * @OA\Property(property="basket_code",   type="string", example="STABLE_BASKET"),
  * @OA\Property(property="value",         type="number", format="float", example=1.0975, description="Current value in base currency (USD)"),
  * @OA\Property(property="calculated_at", type="string", format="date-time", example="2024-01-01T12:00:00Z"),
@@ -299,6 +320,7 @@ namespace App\Http\Controllers\Api\Documentation;
  *     type="object",
  *     title="User Voting Poll",
  *     required={"uuid", "title", "type", "status", "options", "start_date", "end_date", "user_context"},
+ *
  * @OA\Property(property="uuid",                   type="string", format="uuid", example="990e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="title",                  type="string", example="Monthly GCU Basket Allocation for June 2025"),
  * @OA\Property(property="description",            type="string", nullable=true, example="Vote on the currency allocation for the Global Currency Unit basket"),
@@ -307,8 +329,10 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Property(
  *         property="options",
  *         type="array",
+ *
  * @OA\Items(
  *             type="object",
+ *
  * @OA\Property(property="id",                     type="string", example="USD"),
  * @OA\Property(property="label",                  type="string", example="US Dollar")
  *         )
@@ -330,8 +354,10 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Property(
  *                 property="selected_options",
  *                 type="array",
+ *
  * @OA\Items(type="string")
  *             ),
+ *
  * @OA\Property(property="voted_at",               type="string", format="date-time")
  *         )
  *     ),

@@ -30,7 +30,7 @@ class CustodianServiceProvider extends ServiceProvider
         // Publish config file
         $this->publishes(
             [
-            __DIR__ . '/../../config/custodians.php' => config_path('custodians.php'),
+                __DIR__ . '/../../config/custodians.php' => config_path('custodians.php'),
             ],
             'config'
         );
@@ -58,6 +58,7 @@ class CustodianServiceProvider extends ServiceProvider
 
                 if (! $connectorClass || ! class_exists($connectorClass)) {
                     Log::warning("Custodian connector class not found: {$connectorClass}");
+
                     continue;
                 }
 

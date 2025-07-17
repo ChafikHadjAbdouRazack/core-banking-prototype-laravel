@@ -20,7 +20,7 @@ class AuditLogResource extends Resource
         return $form
             ->schema(
                 [
-                //
+                    //
                 ]
             );
     }
@@ -30,26 +30,26 @@ class AuditLogResource extends Resource
         return $table
             ->columns(
                 [
-                //
+                    //
                 ]
             )
             ->filters(
                 [
-                //
+                    //
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\EditAction::make(),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make(),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make(),
+                        ]
+                    ),
                 ]
             );
     }
@@ -64,9 +64,9 @@ class AuditLogResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAuditLogs::route('/'),
+            'index' => Pages\ListAuditLogs::route('/'),
             'create' => Pages\CreateAuditLog::route('/create'),
-            'edit'   => Pages\EditAuditLog::route('/{record}/edit'),
+            'edit' => Pages\EditAuditLog::route('/{record}/edit'),
         ];
     }
 }

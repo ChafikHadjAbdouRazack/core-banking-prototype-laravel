@@ -30,9 +30,6 @@ class Turnover extends Model
             'date' => 'date',
         ];
 
-    /**
-     * @return BelongsTo
-     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(

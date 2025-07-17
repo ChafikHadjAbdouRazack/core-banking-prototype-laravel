@@ -27,8 +27,8 @@ class UnfreezeAccountTest extends DomainTestCase
     {
         // Create frozen account
         $account = Account::factory()->create([
-            'uuid'   => 'frozen-account-123',
-            'name'   => 'Frozen Account',
+            'uuid' => 'frozen-account-123',
+            'name' => 'Frozen Account',
             'frozen' => true,
         ]);
 
@@ -49,8 +49,8 @@ class UnfreezeAccountTest extends DomainTestCase
     {
         // Create active account
         $account = Account::factory()->create([
-            'uuid'   => 'active-account',
-            'name'   => 'Already Active Account',
+            'uuid' => 'active-account',
+            'name' => 'Already Active Account',
             'frozen' => false,
         ]);
 
@@ -85,20 +85,20 @@ class UnfreezeAccountTest extends DomainTestCase
     {
         // Create frozen account with balances
         $account = Account::factory()->create([
-            'uuid'   => 'frozen-with-balance',
-            'name'   => 'Frozen Account with Balance',
+            'uuid' => 'frozen-with-balance',
+            'name' => 'Frozen Account with Balance',
             'frozen' => true,
         ]);
 
         // Create account balances
         $account->balances()->create([
             'asset_code' => 'USD',
-            'balance'    => 25000,
+            'balance' => 25000,
         ]);
 
         $account->balances()->create([
             'asset_code' => 'BTC',
-            'balance'    => 50000000, // 0.5 BTC
+            'balance' => 50000000, // 0.5 BTC
         ]);
 
         // Create event
@@ -122,8 +122,8 @@ class UnfreezeAccountTest extends DomainTestCase
     {
         // Create frozen business account
         $account = Account::factory()->create([
-            'uuid'   => 'frozen-business',
-            'name'   => 'Frozen Business Account',
+            'uuid' => 'frozen-business',
+            'name' => 'Frozen Business Account',
             'frozen' => true,
         ]);
 

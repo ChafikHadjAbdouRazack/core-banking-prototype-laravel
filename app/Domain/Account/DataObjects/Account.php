@@ -42,9 +42,9 @@ final readonly class Account extends DataObject implements DataObjectContract
     public function toArray(): array
     {
         return [
-            'name'      => $this->name,
+            'name' => $this->name,
             'user_uuid' => $this->userUuid,
-            'uuid'      => $this->uuid,
+            'uuid' => $this->uuid,
         ];
     }
 }

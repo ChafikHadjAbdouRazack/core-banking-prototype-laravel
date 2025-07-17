@@ -14,7 +14,7 @@ use Tests\DomainTestCase;
 class AmlScreeningAggregateTest extends DomainTestCase
 {
     #[Test]
-    public function canStartScreening()
+    public function can_start_screening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -43,14 +43,14 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function canRecordScreeningResults()
+    public function can_record_screening_results()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
 
         $aggregate->recordResults(
             ['matches' => 0],
-            ['is_pep'   => false],
+            ['is_pep' => false],
             ['articles' => []],
             [],
             0,
@@ -62,7 +62,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
         $aggregate->assertRecorded([
             new AmlScreeningResultsRecorded(
                 ['matches' => 0],
-                ['is_pep'   => false],
+                ['is_pep' => false],
                 ['articles' => []],
                 [],
                 0,
@@ -74,7 +74,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function canUpdateMatchStatus()
+    public function can_update_match_status()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -97,7 +97,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function throwsExceptionForInvalidMatchAction()
+    public function throws_exception_for_invalid_match_action()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -114,7 +114,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function canCompleteScreening()
+    public function can_complete_screening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -127,7 +127,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function throwsExceptionForInvalidCompletionStatus()
+    public function throws_exception_for_invalid_completion_status()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -139,7 +139,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function canReviewScreening()
+    public function can_review_screening()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -160,7 +160,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function throwsExceptionForInvalidReviewDecision()
+    public function throws_exception_for_invalid_review_decision()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::fake($uuid);
@@ -176,7 +176,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function tracksStateCorrectly()
+    public function tracks_state_correctly()
     {
         $uuid = 'test-uuid';
         $aggregate = AmlScreeningAggregate::retrieve($uuid);
@@ -195,7 +195,7 @@ class AmlScreeningAggregateTest extends DomainTestCase
         // Record results
         $aggregate->recordResults(
             ['matches' => 2],
-            ['is_pep'   => true],
+            ['is_pep' => true],
             ['articles' => []],
             [],
             2,

@@ -38,7 +38,7 @@ class WalletServiceProvider extends ServiceProvider
         // Register projectors
         Projectionist::addProjectors(
             [
-            BlockchainWalletProjector::class,
+                BlockchainWalletProjector::class,
             ]
         );
     }

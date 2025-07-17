@@ -89,8 +89,8 @@ class TestEventSerializerTest extends DomainTestCase
     {
         $serialized = [
             'class' => SimpleTestEvent::class,
-            'data'  => [
-                'name'  => 'Deserialized Event',
+            'data' => [
+                'name' => 'Deserialized Event',
                 'value' => 99,
             ],
         ];
@@ -107,8 +107,8 @@ class TestEventSerializerTest extends DomainTestCase
     {
         $serialized = [
             'class' => EventWithCarbonDate::class,
-            'data'  => [
-                'title'     => 'Restored Date Event',
+            'data' => [
+                'title' => 'Restored Date Event',
                 'createdAt' => '2024-02-20T14:30:00.000000Z',
                 'updatedAt' => '2024-02-21T09:15:00.000000Z',
             ],
@@ -129,8 +129,8 @@ class TestEventSerializerTest extends DomainTestCase
     {
         $serialized = [
             'class' => SimpleTestEvent::class,
-            'data'  => [
-                'name'                => 'Partial Event',
+            'data' => [
+                'name' => 'Partial Event',
                 'nonExistentProperty' => 'ignored',
             ],
         ];
@@ -147,8 +147,8 @@ class TestEventSerializerTest extends DomainTestCase
     {
         $serialized = [
             'class' => EventWithCarbonDate::class,
-            'data'  => [
-                'title'     => 'Null Date Event',
+            'data' => [
+                'title' => 'Null Date Event',
                 'createdAt' => '2024-03-01T00:00:00.000000Z',
                 'updatedAt' => null,
             ],
@@ -166,7 +166,7 @@ class TestEventSerializerTest extends DomainTestCase
     public function test_from_array_creates_event_from_data(): void
     {
         $data = [
-            'name'  => 'Array Event',
+            'name' => 'Array Event',
             'value' => 123,
         ];
 
@@ -181,7 +181,7 @@ class TestEventSerializerTest extends DomainTestCase
     public function test_from_array_handles_carbon_type_hints(): void
     {
         $data = [
-            'title'     => 'Carbon Array Event',
+            'title' => 'Carbon Array Event',
             'createdAt' => '2024-04-10T12:00:00.000000Z',
             'updatedAt' => '2024-04-11T13:30:00.000000Z',
         ];
@@ -203,7 +203,7 @@ class TestEventSerializerTest extends DomainTestCase
 
         $data = [
             'untypedProperty' => 'any value',
-            'typedProperty'   => 'string value',
+            'typedProperty' => 'string value',
         ];
 
         $event = TestEventSerializer::fromArray($className, $data);
@@ -247,7 +247,7 @@ class TestEventSerializerTest extends DomainTestCase
             eval("class $className { public string|int \$unionProperty; public string \$normalProperty; }");
 
             $data = [
-                'unionProperty'  => 'string value',
+                'unionProperty' => 'string value',
                 'normalProperty' => 'normal',
             ];
 

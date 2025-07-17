@@ -19,7 +19,7 @@ class SettingsController extends Controller
 
         return response()->json(
             [
-            'data' => $settings,
+                'data' => $settings,
             ]
         );
     }
@@ -36,7 +36,7 @@ class SettingsController extends Controller
 
         return response()->json(
             [
-            'data' => $settings,
+                'data' => $settings,
             ]
         );
     }

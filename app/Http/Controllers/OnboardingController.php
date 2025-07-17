@@ -17,8 +17,8 @@ class OnboardingController extends Controller
 
         return response()->json(
             [
-            'message'  => 'Onboarding completed successfully',
-            'redirect' => route('dashboard'),
+                'message' => 'Onboarding completed successfully',
+                'redirect' => route('dashboard'),
             ]
         );
     }
@@ -33,8 +33,8 @@ class OnboardingController extends Controller
 
         return response()->json(
             [
-            'message'  => 'Onboarding skipped',
-            'redirect' => route('dashboard'),
+                'message' => 'Onboarding skipped',
+                'redirect' => route('dashboard'),
             ]
         );
     }

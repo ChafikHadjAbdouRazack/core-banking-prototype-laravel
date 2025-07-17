@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="WorkflowExecution",
  *     required={"id", "workflow_name", "status", "started_at"},
+ *
  * @OA\Property(property="id",            type="string", format="uuid", example="123e4567-e89b-12d3-a456-426614174000"),
  * @OA\Property(property="workflow_name", type="string", example="TransferWorkflow"),
  * @OA\Property(property="status",        type="string", enum={"running", "completed", "failed", "compensating", "compensated"}, example="completed"),
@@ -29,6 +30,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="WorkflowStatistics",
  *     required={"workflow_name", "period", "statistics"},
+ *
  * @OA\Property(property="workflow_name",       type="string", example="TransferWorkflow"),
  * @OA\Property(property="period",              type="string", example="last_24_hours"),
  * @OA\Property(property="statistics",          type="object",
@@ -53,6 +55,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CircuitBreakerStatus",
  *     required={"service", "state", "failure_count", "last_checked"},
+ *
  * @OA\Property(property="service",                  type="string", example="paysera_connector"),
  * @OA\Property(property="state",                    type="string", enum={"closed", "open", "half_open"}, example="closed"),
  * @OA\Property(property="failure_count",            type="integer", example=0),
@@ -74,6 +77,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="EventReplayRequest",
  *     required={"aggregate_uuid", "from_version"},
+ *
  * @OA\Property(property="aggregate_uuid", type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="from_version",   type="integer", example=1, description="Starting version to replay from"),
  * @OA\Property(property="to_version",     type="integer", example=100, description="Ending version to replay to", nullable=true),
@@ -86,6 +90,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="EventReplayResult",
  *     required={"aggregate_uuid", "events_replayed", "status"},
+ *
  * @OA\Property(property="aggregate_uuid",  type="string", format="uuid"),
  * @OA\Property(property="events_replayed", type="integer", example=50),
  * @OA\Property(property="status",          type="string", enum={"completed", "failed", "partial"}, example="completed"),
@@ -100,6 +105,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="QueueMetrics",
  *     required={"queue_name", "metrics"},
+ *
  * @OA\Property(property="queue_name",           type="string", example="transactions"),
  * @OA\Property(property="metrics",              type="object",
  * @OA\Property(property="size",                 type="integer", example=125, description="Current queue size"),

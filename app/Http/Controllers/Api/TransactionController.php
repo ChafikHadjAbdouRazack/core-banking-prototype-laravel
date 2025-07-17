@@ -28,25 +28,33 @@ class TransactionController extends Controller
      *     summary="Deposit money to an account",
      *     description="Deposits money into a specified account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"amount"},
+     *
      * @OA\Property(property="amount",                   type="integer", example=10000, minimum=1, description="Amount in cents"),
      * @OA\Property(property="description",              type="string", example="Monthly salary", maxLength=255)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Deposit successful",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     type="object",
      * @OA\Property(property="account_uuid",             type="string", format="uuid"),
      * @OA\Property(property="new_balance",              type="integer", example=60000),
@@ -56,14 +64,18 @@ class TransactionController extends Controller
      * @OA\Property(property="message",                  type="string", example="Deposit successful")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Cannot deposit to frozen account",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -72,9 +84,9 @@ class TransactionController extends Controller
     {
         $validated = $request->validate(
             [
-            'amount'      => 'required|numeric|min:0.01',
-            'asset_code'  => 'required|string|exists:assets,code',
-            'description' => 'sometimes|string|max:255',
+                'amount' => 'required|numeric|min:0.01',
+                'asset_code' => 'required|string|exists:assets,code',
+                'description' => 'sometimes|string|max:255',
             ]
         );
 
@@ -84,8 +96,8 @@ class TransactionController extends Controller
         if ($account->user_uuid !== auth()->user()->uuid) {
             return response()->json(
                 [
-                'message' => 'Access denied to this account',
-                'error'   => 'FORBIDDEN',
+                    'message' => 'Access denied to this account',
+                    'error' => 'FORBIDDEN',
                 ],
                 403
             );
@@ -94,8 +106,8 @@ class TransactionController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                'message' => 'Cannot deposit to frozen account',
-                'error'   => 'ACCOUNT_FROZEN',
+                    'message' => 'Cannot deposit to frozen account',
+                    'error' => 'ACCOUNT_FROZEN',
                 ],
                 422
             );
@@ -120,7 +132,7 @@ class TransactionController extends Controller
 
         return response()->json(
             [
-            'message' => 'Deposit initiated successfully',
+                'message' => 'Deposit initiated successfully',
             ]
         );
     }
@@ -133,25 +145,33 @@ class TransactionController extends Controller
      *     summary="Withdraw money from an account",
      *     description="Withdraws money from a specified account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"amount"},
+     *
      * @OA\Property(property="amount",                   type="integer", example=5000, minimum=1, description="Amount in cents"),
      * @OA\Property(property="description",              type="string", example="ATM withdrawal", maxLength=255)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Withdrawal successful",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     type="object",
      * @OA\Property(property="account_uuid",             type="string", format="uuid"),
      * @OA\Property(property="new_balance",              type="integer", example=45000),
@@ -161,14 +181,18 @@ class TransactionController extends Controller
      * @OA\Property(property="message",                  type="string", example="Withdrawal successful")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Insufficient balance or frozen account",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -177,9 +201,9 @@ class TransactionController extends Controller
     {
         $validated = $request->validate(
             [
-            'amount'      => 'required|numeric|min:0.01',
-            'asset_code'  => 'required|string|exists:assets,code',
-            'description' => 'sometimes|string|max:255',
+                'amount' => 'required|numeric|min:0.01',
+                'asset_code' => 'required|string|exists:assets,code',
+                'description' => 'sometimes|string|max:255',
             ]
         );
 
@@ -189,8 +213,8 @@ class TransactionController extends Controller
         if ($account->user_uuid !== auth()->user()->uuid) {
             return response()->json(
                 [
-                'message' => 'Access denied to this account',
-                'error'   => 'FORBIDDEN',
+                    'message' => 'Access denied to this account',
+                    'error' => 'FORBIDDEN',
                 ],
                 403
             );
@@ -199,8 +223,8 @@ class TransactionController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                'message' => 'Cannot withdraw from frozen account',
-                'error'   => 'ACCOUNT_FROZEN',
+                    'message' => 'Cannot withdraw from frozen account',
+                    'error' => 'ACCOUNT_FROZEN',
                 ],
                 422
             );
@@ -215,10 +239,10 @@ class TransactionController extends Controller
         if ($balance < $amountInMinorUnits) {
             return response()->json(
                 [
-                'message' => 'Insufficient balance',
-                'errors'  => [
-                    'amount' => ['Insufficient balance'],
-                ],
+                    'message' => 'Insufficient balance',
+                    'errors' => [
+                        'amount' => ['Insufficient balance'],
+                    ],
                 ],
                 422
             );
@@ -241,8 +265,8 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'message' => 'Withdrawal failed',
-                'error'   => 'WITHDRAWAL_FAILED',
+                    'message' => 'Withdrawal failed',
+                    'error' => 'WITHDRAWAL_FAILED',
                 ],
                 422
             );
@@ -250,7 +274,7 @@ class TransactionController extends Controller
 
         return response()->json(
             [
-            'message' => 'Withdrawal initiated successfully',
+                'message' => 'Withdrawal initiated successfully',
             ]
         );
     }
@@ -263,45 +287,58 @@ class TransactionController extends Controller
      *     summary="Get transaction history for an account",
      *     description="Retrieves paginated transaction history from event store",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\Parameter(
      *         name="type",
      *         in="query",
      *         description="Filter by transaction type",
      *         required=false,
+     *
      * @OA\Schema(type="string",                         enum={"credit", "debit"})
      *     ),
+     *
      * @OA\Parameter(
      *         name="asset_code",
      *         in="query",
      *         description="Filter by asset code",
      *         required=false,
+     *
      * @OA\Schema(type="string",                         example="USD")
      *     ),
+     *
      * @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         description="Items per page",
      *         required=false,
+     *
      * @OA\Schema(type="integer",                        minimum=1, maximum=100, default=50)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Transaction history retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     type="array", @OA\Items(ref="#/components/schemas/Transaction")),
      * @OA\Property(property="meta",                     type="object")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -310,9 +347,9 @@ class TransactionController extends Controller
     {
         $validated = $request->validate(
             [
-            'type'       => 'sometimes|string|in:credit,debit',
-            'asset_code' => 'sometimes|string|max:10',
-            'per_page'   => 'sometimes|integer|min:1|max:100',
+                'type' => 'sometimes|string|in:credit,debit',
+                'asset_code' => 'sometimes|string|max:10',
+                'per_page' => 'sometimes|integer|min:1|max:100',
             ]
         );
 
@@ -343,15 +380,15 @@ class TransactionController extends Controller
 
                 // Default values
                 $transaction = [
-                'id'           => $event->id,
-                'account_uuid' => $event->aggregate_uuid,
-                'type'         => $this->getTransactionType($eventClass),
-                'amount'       => 0,
-                'asset_code'   => 'USD',
-                'description'  => $this->getTransactionDescription($eventClass),
-                'hash'         => $properties['hash']['hash'] ?? null,
-                'created_at'   => $event->created_at,
-                'metadata'     => [],
+                    'id' => $event->id,
+                    'account_uuid' => $event->aggregate_uuid,
+                    'type' => $this->getTransactionType($eventClass),
+                    'amount' => 0,
+                    'asset_code' => 'USD',
+                    'description' => $this->getTransactionDescription($eventClass),
+                    'hash' => $properties['hash']['hash'] ?? null,
+                    'created_at' => $event->created_at,
+                    'metadata' => [],
                 ];
 
                 // Extract amount and asset based on event type
@@ -373,8 +410,8 @@ class TransactionController extends Controller
                         $transaction['amount'] = $properties['money']['amount'] ?? $properties['fromAmount'] ?? 0;
                         $transaction['asset_code'] = $properties['fromAsset'] ?? 'USD';
                         $transaction['metadata'] = [
-                        'to_account'   => $properties['toAccount']['uuid'] ?? null,
-                        'from_account' => $properties['fromAccount']['uuid'] ?? null,
+                            'to_account' => $properties['toAccount']['uuid'] ?? null,
+                            'from_account' => $properties['fromAccount']['uuid'] ?? null,
                         ];
                         break;
                 }
@@ -398,14 +435,14 @@ class TransactionController extends Controller
 
         return response()->json(
             [
-            'data' => $transactions,
-            'meta' => [
-                'current_page' => $events->currentPage(),
-                'last_page'    => $events->lastPage(),
-                'per_page'     => $events->perPage(),
-                'total'        => $events->total(),
-                'account_uuid' => $uuid,
-            ],
+                'data' => $transactions,
+                'meta' => [
+                    'current_page' => $events->currentPage(),
+                    'last_page' => $events->lastPage(),
+                    'per_page' => $events->perPage(),
+                    'total' => $events->total(),
+                    'account_uuid' => $uuid,
+                ],
             ]
         );
     }

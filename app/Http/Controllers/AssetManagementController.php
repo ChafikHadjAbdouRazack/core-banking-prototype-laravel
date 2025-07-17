@@ -167,12 +167,12 @@ class AssetManagementController extends Controller
         $changePercent = $totalValueYesterday > 0 ? ($change / $totalValueYesterday) * 100 : 0;
 
         return [
-            'total_value'           => $totalValue,
+            'total_value' => $totalValue,
             'total_value_yesterday' => $totalValueYesterday,
-            'change'                => $change,
-            'change_percent'        => $changePercent,
-            'asset_count'           => $assetCount,
-            'currency_count'        => count($currencies),
+            'change' => $change,
+            'change_percent' => $changePercent,
+            'asset_count' => $assetCount,
+            'currency_count' => count($currencies),
         ];
     }
 
@@ -193,12 +193,12 @@ class AssetManagementController extends Controller
 
                     if (! isset($allocation[$symbol])) {
                         $allocation[$symbol] = [
-                            'symbol'     => $symbol,
-                            'name'       => $balance->asset->name,
-                            'amount'     => 0,
-                            'value'      => 0,
+                            'symbol' => $symbol,
+                            'name' => $balance->asset->name,
+                            'amount' => 0,
+                            'value' => 0,
                             'percentage' => 0,
-                            'color'      => $this->getAssetColor($symbol),
+                            'color' => $this->getAssetColor($symbol),
                         ];
                     }
 
@@ -239,13 +239,13 @@ class AssetManagementController extends Controller
             ->map(
                 function ($transaction) {
                     return [
-                    'id'          => $transaction->uuid,
-                    'type'        => $transaction->type,
-                    'amount'      => $transaction->amount,
-                    'currency'    => $transaction->currency,
-                    'description' => $transaction->description,
-                    'status'      => $transaction->status,
-                    'created_at'  => $transaction->created_at,
+                        'id' => $transaction->uuid,
+                        'type' => $transaction->type,
+                        'amount' => $transaction->amount,
+                        'currency' => $transaction->currency,
+                        'description' => $transaction->description,
+                        'status' => $transaction->status,
+                        'created_at' => $transaction->created_at,
                     ];
                 }
             );
@@ -263,11 +263,11 @@ class AssetManagementController extends Controller
         foreach ($assets as $asset) {
             $change = rand(-500, 500) / 100; // -5% to +5%
             $performance[] = [
-                'symbol'     => $asset,
+                'symbol' => $asset,
                 'change_24h' => $change,
-                'change_7d'  => $change * 2.5,
+                'change_7d' => $change * 2.5,
                 'change_30d' => $change * 5,
-                'price'      => $this->getMockPrice($asset),
+                'price' => $this->getMockPrice($asset),
             ];
         }
 
@@ -290,8 +290,8 @@ class AssetManagementController extends Controller
             foreach ($account->balances as $balance) {
                 if ($balance->balance > 0) {
                     $holdings[] = [
-                        'account'   => $account,
-                        'balance'   => $balance,
+                        'account' => $account,
+                        'balance' => $balance,
                         'value_usd' => $this->convertToUSD($balance->balance, $asset->symbol),
                     ];
                 }
@@ -311,14 +311,14 @@ class AssetManagementController extends Controller
             300,
             function () use ($asset) {
                 return [
-                'total_supply' => $asset->symbol === 'GCU' ? 1000000000 : null,
-                'market_cap'   => $this->getMockMarketCap($asset->symbol),
-                'holders'      => DB::table('account_balances')
-                    ->where('asset_code', $asset->symbol)
-                    ->where('balance', '>', 0)
-                    ->count(),
-                'transactions_24h' => rand(100, 1000),
-                'volume_24h'       => rand(10000, 100000) * 100, // In cents
+                    'total_supply' => $asset->symbol === 'GCU' ? 1000000000 : null,
+                    'market_cap' => $this->getMockMarketCap($asset->symbol),
+                    'holders' => DB::table('account_balances')
+                        ->where('asset_code', $asset->symbol)
+                        ->where('balance', '>', 0)
+                        ->count(),
+                    'transactions_24h' => rand(100, 1000),
+                    'volume_24h' => rand(10000, 100000) * 100, // In cents
                 ];
             }
         );
@@ -338,8 +338,8 @@ class AssetManagementController extends Controller
             $variation = (100 - rand(0, 10)) / 100; // 90-100% of base price
 
             $history[] = [
-                'date'   => $date->format('Y-m-d'),
-                'price'  => $basePrice * $variation,
+                'date' => $date->format('Y-m-d'),
+                'price' => $basePrice * $variation,
                 'volume' => rand(5000, 50000) * 100,
             ];
         }
@@ -434,10 +434,10 @@ class AssetManagementController extends Controller
     private function getPortfolioHistory($user, $period)
     {
         $days = match ($period) {
-            '7d'    => 7,
-            '30d'   => 30,
-            '90d'   => 90,
-            '1y'    => 365,
+            '7d' => 7,
+            '30d' => 30,
+            '90d' => 90,
+            '1y' => 365,
             default => 30,
         };
 
@@ -450,7 +450,7 @@ class AssetManagementController extends Controller
             $baseValue = $baseValue * $variation;
 
             $history[] = [
-                'date'  => $date->format('Y-m-d'),
+                'date' => $date->format('Y-m-d'),
                 'value' => round($baseValue),
             ];
         }
@@ -464,12 +464,12 @@ class AssetManagementController extends Controller
     private function getPerformanceMetrics($user, $period)
     {
         return [
-            'total_return'      => rand(5, 20),
+            'total_return' => rand(5, 20),
             'annualized_return' => rand(10, 30),
-            'best_performer'    => 'GCU',
-            'worst_performer'   => 'PHP',
-            'volatility'        => rand(10, 25),
-            'sharpe_ratio'      => rand(50, 150) / 100,
+            'best_performer' => 'GCU',
+            'worst_performer' => 'PHP',
+            'volatility' => rand(10, 25),
+            'sharpe_ratio' => rand(50, 150) / 100,
         ];
     }
 
@@ -479,10 +479,10 @@ class AssetManagementController extends Controller
     private function getRiskAnalysis($user)
     {
         return [
-            'risk_score'      => rand(30, 70),
-            'risk_level'      => 'Moderate',
-            'var_95'          => rand(500, 1500), // Value at Risk
-            'max_drawdown'    => rand(5, 15),
+            'risk_score' => rand(30, 70),
+            'risk_level' => 'Moderate',
+            'var_95' => rand(500, 1500), // Value at Risk
+            'max_drawdown' => rand(5, 15),
             'recommendations' => [
                 'Consider diversifying into more stable assets',
                 'Your GCU allocation is within recommended limits',
@@ -506,8 +506,8 @@ class AssetManagementController extends Controller
         $score = min(100, ($assetCount * 10) + (100 - $maxAllocation));
 
         return [
-            'score'      => $score,
-            'rating'     => $score >= 70 ? 'Good' : ($score >= 40 ? 'Fair' : 'Poor'),
+            'score' => $score,
+            'rating' => $score >= 70 ? 'Good' : ($score >= 40 ? 'Fair' : 'Poor'),
             'suggestion' => $score < 70 ? 'Consider spreading investments across more assets' : 'Well diversified portfolio',
         ];
     }
@@ -527,11 +527,11 @@ class AssetManagementController extends Controller
                 fputcsv(
                     $handle,
                     [
-                    'Account',
-                    'Asset',
-                    'Balance',
-                    'Value (USD)',
-                    'Percentage',
+                        'Account',
+                        'Asset',
+                        'Balance',
+                        'Value (USD)',
+                        'Percentage',
                     ]
                 );
 
@@ -546,10 +546,10 @@ class AssetManagementController extends Controller
                             $totalValue += $valueUSD;
 
                             $rows[] = [
-                            'account'   => $account->name,
-                            'asset'     => $balance->asset->symbol,
-                            'balance'   => $balance->balance / 100,
-                            'value_usd' => $valueUSD / 100,
+                                'account' => $account->name,
+                                'asset' => $balance->asset->symbol,
+                                'balance' => $balance->balance / 100,
+                                'value_usd' => $valueUSD / 100,
                             ];
                         }
                     }
@@ -562,11 +562,11 @@ class AssetManagementController extends Controller
                     fputcsv(
                         $handle,
                         [
-                        $row['account'],
-                        $row['asset'],
-                        number_format($row['balance'], 2),
-                        number_format($row['value_usd'], 2),
-                        number_format($percentage, 2) . '%',
+                            $row['account'],
+                            $row['asset'],
+                            number_format($row['balance'], 2),
+                            number_format($row['value_usd'], 2),
+                            number_format($percentage, 2) . '%',
                         ]
                     );
                 }
@@ -579,7 +579,7 @@ class AssetManagementController extends Controller
             },
             $filename,
             [
-            'Content-Type' => 'text/csv',
+                'Content-Type' => 'text/csv',
             ]
         );
     }

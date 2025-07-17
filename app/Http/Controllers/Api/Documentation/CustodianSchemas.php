@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="Custodian",
  *     required={"id", "code", "name", "type", "is_active", "capabilities"},
+ *
  * @OA\Property(property="id",                   type="string", format="uuid", example="123e4567-e89b-12d3-a456-426614174000"),
  * @OA\Property(property="code",                 type="string", example="paysera", description="Unique custodian code"),
  * @OA\Property(property="name",                 type="string", example="Paysera", description="Custodian display name"),
@@ -26,6 +27,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianBalance",
  *     required={"custodian_code", "currency", "available_balance", "pending_balance", "reserved_balance", "last_updated"},
+ *
  * @OA\Property(property="custodian_code",    type="string", example="deutsche_bank"),
  * @OA\Property(property="currency",          type="string", example="EUR"),
  * @OA\Property(property="available_balance", type="integer", example=10000000, description="Available balance in cents"),
@@ -44,6 +46,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianTransfer",
  *     required={"id", "custodian_code", "direction", "amount", "currency", "status", "created_at"},
+ *
  * @OA\Property(property="id",                 type="string", format="uuid"),
  * @OA\Property(property="custodian_code",     type="string", example="santander"),
  * @OA\Property(property="direction",          type="string", enum={"incoming", "outgoing", "internal"}, example="outgoing"),
@@ -73,6 +76,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="InitiateCustodianTransferRequest",
  *     required={"from_custodian", "to_custodian", "amount", "currency"},
+ *
  * @OA\Property(property="from_custodian", type="string", example="paysera", description="Source custodian code"),
  * @OA\Property(property="to_custodian",   type="string", example="deutsche_bank", description="Destination custodian code"),
  * @OA\Property(property="amount",         type="integer", example=100000, description="Amount in cents"),
@@ -87,6 +91,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianReconciliation",
  *     required={"id", "custodian_code", "reconciliation_date", "status", "discrepancies"},
+ *
  * @OA\Property(property="id",                  type="string", format="uuid"),
  * @OA\Property(property="custodian_code",      type="string", example="revolut"),
  * @OA\Property(property="reconciliation_date", type="string", format="date", example="2025-01-15"),
@@ -119,6 +124,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianWebhookPayload",
  *     required={"event_type", "custodian_code", "timestamp", "data"},
+ *
  * @OA\Property(property="event_type",     type="string", enum={"transfer.completed", "transfer.failed", "balance.updated", "account.blocked"}, example="transfer.completed"),
  * @OA\Property(property="custodian_code", type="string", example="n26"),
  * @OA\Property(property="timestamp",      type="string", format="date-time"),
@@ -131,6 +137,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianHealthStatus",
  *     required={"custodian_code", "status", "last_check", "metrics"},
+ *
  * @OA\Property(property="custodian_code",    type="string", example="paysera"),
  * @OA\Property(property="status",            type="string", enum={"healthy", "degraded", "unhealthy"}, example="healthy"),
  * @OA\Property(property="last_check",        type="string", format="date-time"),
@@ -157,6 +164,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CustodianSettlement",
  *     required={"id", "settlement_date", "status", "total_amount", "transactions"},
+ *
  * @OA\Property(property="id",                type="string", format="uuid"),
  * @OA\Property(property="settlement_date",   type="string", format="date", example="2025-01-15"),
  * @OA\Property(property="status",            type="string", enum={"pending", "processing", "completed", "failed"}, example="completed"),

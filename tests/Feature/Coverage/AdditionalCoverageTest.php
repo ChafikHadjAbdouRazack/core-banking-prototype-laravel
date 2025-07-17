@@ -34,9 +34,9 @@ it('can test model relationships', function () {
 // Test asset model methods
 it('can test asset model methods', function () {
     $asset = Asset::factory()->create([
-        'code'      => 'TEST',
-        'name'      => 'Test Asset',
-        'type'      => 'fiat',
+        'code' => 'TEST',
+        'name' => 'Test Asset',
+        'type' => 'fiat',
         'precision' => 2,
         'is_active' => true,
     ]);

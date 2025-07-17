@@ -19,7 +19,7 @@ class BasketValueChart extends ChartWidget
         if (! $this->record) {
             return [
                 'datasets' => [],
-                'labels'   => [],
+                'labels' => [],
             ];
         }
 
@@ -58,11 +58,11 @@ class BasketValueChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => 'Value (USD)',
-                    'data'            => $data,
-                    'borderColor'     => 'rgb(75, 192, 192)',
+                    'label' => 'Value (USD)',
+                    'data' => $data,
+                    'borderColor' => 'rgb(75, 192, 192)',
                     'backgroundColor' => 'rgba(75, 192, 192, 0.1)',
-                    'tension'         => 0.1,
+                    'tension' => 0.1,
                 ],
             ],
             'labels' => $labels,
@@ -85,7 +85,7 @@ class BasketValueChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => false,
-                    'ticks'       => [
+                    'ticks' => [
                         'callback' => "function(value) { return '$' + value.toFixed(2); }",
                     ],
                 ],

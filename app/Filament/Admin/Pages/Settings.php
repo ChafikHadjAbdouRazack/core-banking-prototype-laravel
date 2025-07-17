@@ -131,8 +131,8 @@ class Settings extends Page
             Log::info(
                 'Platform settings updated',
                 [
-                'user'           => auth()->user()->email ?? 'system',
-                'settings_count' => count($data),
+                    'user' => auth()->user()->email ?? 'system',
+                    'settings_count' => count($data),
                 ]
             );
         } catch (Halt $exception) {
@@ -157,7 +157,7 @@ class Settings extends Page
             Log::info(
                 'Platform settings reset to defaults',
                 [
-                'user' => auth()->user()->email ?? 'system',
+                    'user' => auth()->user()->email ?? 'system',
                 ]
             );
         } catch (\Exception $e) {
@@ -185,9 +185,9 @@ class Settings extends Page
         Log::info(
             'Settings exported',
             [
-            'user'           => auth()->user()->email ?? 'system',
-            'filename'       => $filename,
-            'settings_count' => count($settings),
+                'user' => auth()->user()->email ?? 'system',
+                'filename' => $filename,
+                'settings_count' => count($settings),
             ]
         );
     }

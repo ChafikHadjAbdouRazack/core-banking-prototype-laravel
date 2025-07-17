@@ -27,35 +27,46 @@ class AccountBalanceController extends Controller
      *     summary="Get account balances",
      *     description="Retrieve all asset balances for a specific account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         required=true,
      *         description="The account UUID",
+     *
      * @OA\Schema(type="string",                     format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
      *     ),
+     *
      * @OA\Parameter(
      *         name="asset",
      *         in="query",
      *         required=false,
      *         description="Filter by specific asset code",
+     *
      * @OA\Schema(type="string",                     example="USD")
      *     ),
+     *
      * @OA\Parameter(
      *         name="positive",
      *         in="query",
      *         required=false,
      *         description="Only show positive balances",
+     *
      * @OA\Schema(type="boolean",                    example=true)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                 type="object",
      * @OA\Property(property="account_uuid",         type="string", format="uuid"),
      * @OA\Property(property="balances",             type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="asset_code",           type="string"),
      * @OA\Property(property="balance",              type="integer"),
      * @OA\Property(property="formatted",            type="string"),
@@ -75,10 +86,13 @@ class AccountBalanceController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",              type="string", example="Account not found"),
      * @OA\Property(property="error",                type="string", example="The specified account UUID was not found")
      *         )
@@ -92,8 +106,8 @@ class AccountBalanceController extends Controller
         if (! $account) {
             return response()->json(
                 [
-                'message' => 'Account not found',
-                'error'   => 'The specified account UUID was not found',
+                    'message' => 'Account not found',
+                    'error' => 'The specified account UUID was not found',
                 ],
                 404
             );
@@ -118,32 +132,32 @@ class AccountBalanceController extends Controller
 
         return response()->json(
             [
-            'data' => [
-                'account_uuid' => $account->uuid,
-                'balances'     => $balances->map(
-                    function ($balance) {
-                        $asset = $balance->asset;
-                        $formatted = $this->formatAmount($balance->balance, $asset);
+                'data' => [
+                    'account_uuid' => $account->uuid,
+                    'balances' => $balances->map(
+                        function ($balance) {
+                            $asset = $balance->asset;
+                            $formatted = $this->formatAmount($balance->balance, $asset);
 
-                        return [
-                        'asset_code' => $balance->asset_code,
-                        'balance'    => $balance->balance,
-                        'formatted'  => $formatted,
-                        'asset'      => [
-                            'code'      => $asset->code,
-                            'name'      => $asset->name,
-                            'type'      => $asset->type,
-                            'symbol'    => $asset->symbol,
-                            'precision' => $asset->precision,
-                        ],
-                        ];
-                    }
-                ),
-                'summary' => [
-                    'total_assets'         => $balances->where('balance', '>', 0)->count(),
-                    'total_usd_equivalent' => number_format($totalUsdEquivalent, 2),
+                            return [
+                                'asset_code' => $balance->asset_code,
+                                'balance' => $balance->balance,
+                                'formatted' => $formatted,
+                                'asset' => [
+                                    'code' => $asset->code,
+                                    'name' => $asset->name,
+                                    'type' => $asset->type,
+                                    'symbol' => $asset->symbol,
+                                    'precision' => $asset->precision,
+                                ],
+                            ];
+                        }
+                    ),
+                    'summary' => [
+                        'total_assets' => $balances->where('balance', '>', 0)->count(),
+                        'total_usd_equivalent' => number_format($totalUsdEquivalent, 2),
+                    ],
                 ],
-            ],
             ]
         );
     }
@@ -156,40 +170,53 @@ class AccountBalanceController extends Controller
      *     summary="List all account balances",
      *     description="Get balances across all accounts with filtering and aggregation options",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="asset",
      *         in="query",
      *         required=false,
      *         description="Filter by specific asset code",
+     *
      * @OA\Schema(type="string",                                   example="USD")
      *     ),
+     *
      * @OA\Parameter(
      *         name="min_balance",
      *         in="query",
      *         required=false,
      *         description="Minimum balance filter (in smallest unit)",
+     *
      * @OA\Schema(type="integer",                                  example=1000)
      *     ),
+     *
      * @OA\Parameter(
      *         name="user_uuid",
      *         in="query",
      *         required=false,
      *         description="Filter by account owner",
+     *
      * @OA\Schema(type="string",                                   format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
      *     ),
+     *
      * @OA\Parameter(
      *         name="limit",
      *         in="query",
      *         required=false,
      *         description="Number of results per page (max 100)",
+     *
      * @OA\Schema(type="integer",                                  minimum=1, maximum=100, example=20)
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                               type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="account_uuid",                       type="string", format="uuid"),
      * @OA\Property(property="asset_code",                         type="string"),
      * @OA\Property(property="balance",                            type="integer"),
@@ -209,9 +236,11 @@ class AccountBalanceController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      * @OA\JsonContent(ref="#/components/schemas/ValidationError")
      *     )
      * )
@@ -220,10 +249,10 @@ class AccountBalanceController extends Controller
     {
         $request->validate(
             [
-            'asset'       => 'sometimes|string|size:3',
-            'min_balance' => 'sometimes|integer|min:0',
-            'user_uuid'   => 'sometimes|uuid',
-            'limit'       => 'sometimes|integer|min:1|max:100',
+                'asset' => 'sometimes|string|size:3',
+                'min_balance' => 'sometimes|integer|min:0',
+                'user_uuid' => 'sometimes|uuid',
+                'limit' => 'sometimes|integer|min:1|max:100',
             ]
         );
 
@@ -257,25 +286,25 @@ class AccountBalanceController extends Controller
 
         return response()->json(
             [
-            'data' => $balances->map(
-                function ($balance) {
-                    return [
-                    'account_uuid' => $balance->account_uuid,
-                    'asset_code'   => $balance->asset_code,
-                    'balance'      => $balance->balance,
-                    'formatted'    => $this->formatAmount($balance->balance, $balance->asset),
-                    'account'      => [
-                        'uuid'      => $balance->account->uuid,
-                        'user_uuid' => $balance->account->user_uuid,
-                    ],
-                    ];
-                }
-            ),
-            'meta' => [
-                'total_accounts' => $totalAccounts,
-                'total_balances' => $totalBalances,
-                'asset_totals'   => $assetTotals,
-            ],
+                'data' => $balances->map(
+                    function ($balance) {
+                        return [
+                            'account_uuid' => $balance->account_uuid,
+                            'asset_code' => $balance->asset_code,
+                            'balance' => $balance->balance,
+                            'formatted' => $this->formatAmount($balance->balance, $balance->asset),
+                            'account' => [
+                                'uuid' => $balance->account->uuid,
+                                'user_uuid' => $balance->account->user_uuid,
+                            ],
+                        ];
+                    }
+                ),
+                'meta' => [
+                    'total_accounts' => $totalAccounts,
+                    'total_balances' => $totalBalances,
+                    'asset_totals' => $assetTotals,
+                ],
             ]
         );
     }

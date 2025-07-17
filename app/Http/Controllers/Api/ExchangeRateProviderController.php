@@ -33,14 +33,19 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="List all available exchange rate providers",
      *     description="Returns a list of all registered exchange rate providers with their capabilities and status",
+     *
      * @OA\Response(
      *         response=200,
      *         description="List of providers retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="data",
      *                 type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="name",                type="string", example="ecb"),
      * @OA\Property(property="display_name",        type="string", example="European Central Bank"),
      * @OA\Property(property="available",           type="boolean", example=true),
@@ -55,16 +60,16 @@ class ExchangeRateProviderController extends Controller
      * @OA\Property(
      *                         property="supported_currencies",
      *                         type="array",
+     *
      * @OA\Items(type="string",                     example="EUR")
      *                     )
      *                 )
      *             ),
+     *
      * @OA\Property(property="default",             type="string", nullable=true, example="ecb")
      *         )
      *     )
      * )
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -72,19 +77,19 @@ class ExchangeRateProviderController extends Controller
 
         foreach ($this->registry->all() as $name => $provider) {
             $providers[] = [
-                'name'                 => $name,
-                'display_name'         => $provider->getName(),
-                'available'            => $provider->isAvailable(),
-                'priority'             => $provider->getPriority(),
-                'capabilities'         => $provider->getCapabilities()->toArray(),
+                'name' => $name,
+                'display_name' => $provider->getName(),
+                'available' => $provider->isAvailable(),
+                'priority' => $provider->getPriority(),
+                'capabilities' => $provider->getCapabilities()->toArray(),
                 'supported_currencies' => $provider->getSupportedCurrencies(),
             ];
         }
 
         return response()->json(
             [
-            'data'    => $providers,
-            'default' => $this->registry->names()[0] ?? null,
+                'data' => $providers,
+                'default' => $this->registry->names()[0] ?? null,
             ]
         );
     }
@@ -98,31 +103,40 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Get exchange rate from specific provider",
      *     description="Retrieves the current exchange rate for a currency pair from the specified provider",
+     *
      * @OA\Parameter(
      *         name="provider",
      *         in="path",
      *         required=true,
      *         description="Provider identifier",
+     *
      * @OA\Schema(type="string",              example="ecb")
      *     ),
+     *
      * @OA\Parameter(
      *         name="from",
      *         in="query",
      *         required=true,
      *         description="Source currency code (3 characters)",
+     *
      * @OA\Schema(type="string",              pattern="^[A-Z]{3}$", example="EUR")
      *     ),
+     *
      * @OA\Parameter(
      *         name="to",
      *         in="query",
      *         required=true,
      *         description="Target currency code (3 characters)",
+     *
      * @OA\Schema(type="string",              pattern="^[A-Z]{3}$", example="USD")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Exchange rate retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -136,33 +150,35 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="error",         type="string"),
      * @OA\Property(property="message",       type="string")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=503,
      *         description="Provider is not available",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="error",         type="string", example="Provider is not available")
      *         )
      *     )
      * )
-     *
-     * @param  Request $request
-     * @param  string  $provider
-     * @return JsonResponse
      */
     public function getRate(Request $request, string $provider): JsonResponse
     {
         $validated = $request->validate(
             [
-            'from' => 'required|string|size:3',
-            'to'   => 'required|string|size:3',
+                'from' => 'required|string|size:3',
+                'to' => 'required|string|size:3',
             ]
         );
 
@@ -172,7 +188,7 @@ class ExchangeRateProviderController extends Controller
             if (! $providerInstance->isAvailable()) {
                 return response()->json(
                     [
-                    'error' => 'Provider is not available',
+                        'error' => 'Provider is not available',
                     ],
                     503
                 );
@@ -182,14 +198,14 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'data' => $quote->toArray(),
+                    'data' => $quote->toArray(),
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to get exchange rate',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to get exchange rate',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );
@@ -205,44 +221,49 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Compare rates from all providers",
      *     description="Retrieves and compares exchange rates for a currency pair from all available providers",
+     *
      * @OA\Parameter(
      *         name="from",
      *         in="query",
      *         required=true,
      *         description="Source currency code (3 characters)",
+     *
      * @OA\Schema(type="string",          pattern="^[A-Z]{3}$", example="EUR")
      *     ),
+     *
      * @OA\Parameter(
      *         name="to",
      *         in="query",
      *         required=true,
      *         description="Target currency code (3 characters)",
+     *
      * @OA\Schema(type="string",          pattern="^[A-Z]{3}$", example="USD")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Rate comparison retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",      type="object", description="Comparison data with provider rates"),
      * @OA\Property(property="pair",      type="string", example="EUR/USD"),
      * @OA\Property(property="timestamp", type="string", format="date-time")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function compareRates(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
-            'from' => 'required|string|size:3',
-            'to'   => 'required|string|size:3',
+                'from' => 'required|string|size:3',
+                'to' => 'required|string|size:3',
             ]
         );
 
@@ -251,16 +272,16 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'data'      => $comparison,
-                'pair'      => "{$validated['from']}/{$validated['to']}",
-                'timestamp' => now()->toISOString(),
+                    'data' => $comparison,
+                    'pair' => "{$validated['from']}/{$validated['to']}",
+                    'timestamp' => now()->toISOString(),
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to compare rates',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to compare rates',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );
@@ -276,24 +297,31 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Get aggregated rate from multiple providers",
      *     description="Calculates an aggregated exchange rate using data from multiple providers",
+     *
      * @OA\Parameter(
      *         name="from",
      *         in="query",
      *         required=true,
      *         description="Source currency code (3 characters)",
+     *
      * @OA\Schema(type="string",              pattern="^[A-Z]{3}$", example="EUR")
      *     ),
+     *
      * @OA\Parameter(
      *         name="to",
      *         in="query",
      *         required=true,
      *         description="Target currency code (3 characters)",
+     *
      * @OA\Schema(type="string",              pattern="^[A-Z]{3}$", example="USD")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Aggregated rate retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -307,21 +335,19 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function getAggregatedRate(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
-            'from' => 'required|string|size:3',
-            'to'   => 'required|string|size:3',
+                'from' => 'required|string|size:3',
+                'to' => 'required|string|size:3',
             ]
         );
 
@@ -330,14 +356,14 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'data' => $quote->toArray(),
+                    'data' => $quote->toArray(),
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to get aggregated rate',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to get aggregated rate',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );
@@ -353,13 +379,17 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Refresh exchange rates",
      *     description="Manually triggers a refresh of exchange rates for specified currency pairs or all active pairs",
+     *
      * @OA\RequestBody(
      *         required=false,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="pairs",
      *                 type="array",
      *                 description="Optional array of currency pairs to refresh",
+     *
      * @OA\Items(
      *                     type="string",
      *                     pattern="^[A-Z]{3}/[A-Z]{3}$",
@@ -368,10 +398,13 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Rates refreshed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message", type="string", example="Exchange rates refreshed"),
      * @OA\Property(
      *                 property="data",
@@ -379,12 +412,16 @@ class ExchangeRateProviderController extends Controller
      * @OA\Property(
      *                     property="refreshed",
      *                     type="array",
+     *
      * @OA\Items(type="string",         example="EUR/USD")
      *                 ),
+     *
      * @OA\Property(
      *                     property="failed",
      *                     type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="pair",    type="string"),
      * @OA\Property(property="error",   type="string")
      *                     )
@@ -392,21 +429,19 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function refresh(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
-            'pairs'   => 'nullable|array',
-            'pairs.*' => 'string|regex:/^[A-Z]{3}\/[A-Z]{3}$/',
+                'pairs' => 'nullable|array',
+                'pairs.*' => 'string|regex:/^[A-Z]{3}\/[A-Z]{3}$/',
             ]
         );
 
@@ -422,7 +457,7 @@ class ExchangeRateProviderController extends Controller
                         $results['refreshed'][] = $pair;
                     } catch (\Exception $e) {
                         $results['failed'][] = [
-                            'pair'  => $pair,
+                            'pair' => $pair,
                             'error' => $e->getMessage(),
                         ];
                     }
@@ -434,15 +469,15 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'message' => 'Exchange rates refreshed',
-                'data'    => $results,
+                    'message' => 'Exchange rates refreshed',
+                    'data' => $results,
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to refresh rates',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to refresh rates',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );
@@ -458,38 +493,49 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Get historical exchange rates",
      *     description="Retrieves historical exchange rates for a currency pair within a specified date range",
+     *
      * @OA\Parameter(
      *         name="from",
      *         in="query",
      *         required=true,
      *         description="Source currency code (3 characters)",
+     *
      * @OA\Schema(type="string",      pattern="^[A-Z]{3}$", example="EUR")
      *     ),
+     *
      * @OA\Parameter(
      *         name="to",
      *         in="query",
      *         required=true,
      *         description="Target currency code (3 characters)",
+     *
      * @OA\Schema(type="string",      pattern="^[A-Z]{3}$", example="USD")
      *     ),
+     *
      * @OA\Parameter(
      *         name="start_date",
      *         in="query",
      *         required=true,
      *         description="Start date for historical data",
+     *
      * @OA\Schema(type="string",      format="date", example="2024-01-01")
      *     ),
+     *
      * @OA\Parameter(
      *         name="end_date",
      *         in="query",
      *         required=true,
      *         description="End date for historical data (must be after or equal to start_date)",
+     *
      * @OA\Schema(type="string",      format="date", example="2024-01-31")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Historical rates retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",  type="array", description="Array of historical rate data"),
      * @OA\Property(property="pair",  type="string", example="EUR/USD"),
      * @OA\Property(
@@ -500,23 +546,21 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function historical(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
-            'from'       => 'required|string|size:3',
-            'to'         => 'required|string|size:3',
-            'start_date' => 'required|date',
-            'end_date'   => 'required|date|after_or_equal:start_date',
+                'from' => 'required|string|size:3',
+                'to' => 'required|string|size:3',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
             ]
         );
 
@@ -530,19 +574,19 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'data'   => $rates,
-                'pair'   => "{$validated['from']}/{$validated['to']}",
-                'period' => [
-                    'start' => $validated['start_date'],
-                    'end'   => $validated['end_date'],
-                ],
+                    'data' => $rates,
+                    'pair' => "{$validated['from']}/{$validated['to']}",
+                    'period' => [
+                        'start' => $validated['start_date'],
+                        'end' => $validated['end_date'],
+                    ],
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to get historical rates',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to get historical rates',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );
@@ -558,20 +602,26 @@ class ExchangeRateProviderController extends Controller
      *     tags={"Exchange Rates"},
      *     summary="Validate an exchange rate",
      *     description="Validates a given exchange rate against current market rates and configured thresholds",
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"from", "to", "rate"},
+     *
      * @OA\Property(property="from",                 type="string", pattern="^[A-Z]{3}$", example="EUR", description="Source currency code"),
      * @OA\Property(property="to",                   type="string", pattern="^[A-Z]{3}$", example="USD", description="Target currency code"),
      * @OA\Property(property="rate",                 type="number", format="float", minimum=0, example=1.0825, description="Exchange rate to validate"),
      * @OA\Property(property="provider",             type="string", example="manual", description="Optional provider name")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Validation result",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="data",
      *                 type="object",
@@ -582,23 +632,21 @@ class ExchangeRateProviderController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid request parameters"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function validateRate(Request $request): JsonResponse
     {
         $validated = $request->validate(
             [
-            'from'     => 'required|string|size:3',
-            'to'       => 'required|string|size:3',
-            'rate'     => 'required|numeric|min:0',
-            'provider' => 'nullable|string',
+                'from' => 'required|string|size:3',
+                'to' => 'required|string|size:3',
+                'rate' => 'required|numeric|min:0',
+                'provider' => 'nullable|string',
             ]
         );
 
@@ -618,14 +666,14 @@ class ExchangeRateProviderController extends Controller
 
             return response()->json(
                 [
-                'data' => $validation,
+                    'data' => $validation,
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error'   => 'Failed to validate rate',
-                'message' => $e->getMessage(),
+                    'error' => 'Failed to validate rate',
+                    'message' => $e->getMessage(),
                 ],
                 400
             );

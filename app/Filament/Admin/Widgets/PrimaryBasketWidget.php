@@ -9,7 +9,7 @@ class PrimaryBasketWidget extends Widget
 {
     protected static string $view = 'filament.admin.widgets.primary-basket-widget';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 1;
 
@@ -19,7 +19,7 @@ class PrimaryBasketWidget extends Widget
 
         if (! $basket) {
             return [
-                'exists'     => false,
+                'exists' => false,
                 'currencies' => [
                     ['code' => 'USD', 'name' => 'US Dollar', 'weight' => 40],
                     ['code' => 'EUR', 'name' => 'Euro', 'weight' => 30],
@@ -32,14 +32,14 @@ class PrimaryBasketWidget extends Widget
         }
 
         return [
-            'exists'     => true,
-            'basket'     => $basket,
+            'exists' => true,
+            'basket' => $basket,
             'currencies' => $basket->components()->with('asset')->get()->map(
                 function ($component) {
                     return [
-                    'code'   => $component->asset_code,
-                    'name'   => $component->asset->name ?? $component->asset_code,
-                    'weight' => $component->weight,
+                        'code' => $component->asset_code,
+                        'name' => $component->asset->name ?? $component->asset_code,
+                        'weight' => $component->weight,
                     ];
                 }
             )->toArray(),

@@ -34,8 +34,8 @@ class TransactionProjection extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'amount'     => 'integer',
-        'metadata'   => 'array',
+        'amount' => 'integer',
+        'metadata' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

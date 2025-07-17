@@ -23,15 +23,15 @@ class TransactionProjector extends Projector
         try {
             TransactionProjection::create(
                 [
-                    'uuid'         => Str::uuid(),
+                    'uuid' => Str::uuid(),
                     'account_uuid' => (string) $event->accountUuid,
-                    'type'         => $event->isCredit() ? 'deposit' : 'withdrawal',
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->getAmount(),
-                    'description'  => $event->description ?? ($event->isCredit() ? 'Deposit' : 'Withdrawal'),
-                    'reference'    => $event->transactionId ?? null,
-                    'status'       => 'completed',
-                    'metadata'     => [
+                    'type' => $event->isCredit() ? 'deposit' : 'withdrawal',
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->getAmount(),
+                    'description' => $event->description ?? ($event->isCredit() ? 'Deposit' : 'Withdrawal'),
+                    'reference' => $event->transactionId ?? null,
+                    'status' => 'completed',
+                    'metadata' => [
                         'event_type' => 'AssetTransactionCreated',
                         'event_uuid' => $event->aggregateRootUuid(),
                     ],
@@ -42,8 +42,8 @@ class TransactionProjector extends Projector
                 'Transaction projection created for AssetTransactionCreated',
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->getAmount(),
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->getAmount(),
                 ]
             );
         } catch (\Exception $e) {
@@ -66,15 +66,15 @@ class TransactionProjector extends Projector
             // Create debit transaction for sender
             TransactionProjection::create(
                 [
-                    'uuid'         => Str::uuid(),
+                    'uuid' => Str::uuid(),
                     'account_uuid' => (string) $event->fromAccountUuid,
-                    'type'         => 'transfer_out',
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
-                    'description'  => $event->description ?? 'Transfer to ' . substr((string) $event->toAccountUuid, 0, 8),
-                    'reference'    => $event->transferId ?? null,
-                    'status'       => 'completed',
-                    'metadata'     => [
+                    'type' => 'transfer_out',
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
+                    'description' => $event->description ?? 'Transfer to ' . substr((string) $event->toAccountUuid, 0, 8),
+                    'reference' => $event->transferId ?? null,
+                    'status' => 'completed',
+                    'metadata' => [
                         'event_type' => 'AssetTransferCompleted',
                         'event_uuid' => $event->aggregateRootUuid(),
                         'to_account' => (string) $event->toAccountUuid,
@@ -85,17 +85,17 @@ class TransactionProjector extends Projector
             // Create credit transaction for receiver
             TransactionProjection::create(
                 [
-                    'uuid'         => Str::uuid(),
+                    'uuid' => Str::uuid(),
                     'account_uuid' => (string) $event->toAccountUuid,
-                    'type'         => 'transfer_in',
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
-                    'description'  => $event->description ?? 'Transfer from ' . substr((string) $event->fromAccountUuid, 0, 8),
-                    'reference'    => $event->transferId ?? null,
-                    'status'       => 'completed',
-                    'metadata'     => [
-                        'event_type'   => 'AssetTransferCompleted',
-                        'event_uuid'   => $event->aggregateRootUuid(),
+                    'type' => 'transfer_in',
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
+                    'description' => $event->description ?? 'Transfer from ' . substr((string) $event->fromAccountUuid, 0, 8),
+                    'reference' => $event->transferId ?? null,
+                    'status' => 'completed',
+                    'metadata' => [
+                        'event_type' => 'AssetTransferCompleted',
+                        'event_uuid' => $event->aggregateRootUuid(),
                         'from_account' => (string) $event->fromAccountUuid,
                     ],
                 ]
@@ -105,9 +105,9 @@ class TransactionProjector extends Projector
                 'Transaction projections created for AssetTransferCompleted',
                 [
                     'from_account' => (string) $event->fromAccountUuid,
-                    'to_account'   => (string) $event->toAccountUuid,
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
+                    'to_account' => (string) $event->toAccountUuid,
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
                 ]
             );
         } catch (\Exception $e) {
@@ -129,17 +129,17 @@ class TransactionProjector extends Projector
         try {
             TransactionProjection::create(
                 [
-                    'uuid'         => Str::uuid(),
+                    'uuid' => Str::uuid(),
                     'account_uuid' => (string) $event->accountUuid,
-                    'type'         => 'deposit',
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
-                    'description'  => $event->description ?? 'Payment deposit',
-                    'reference'    => $event->paymentReference ?? null,
-                    'status'       => 'completed',
-                    'metadata'     => [
-                        'event_type'     => 'PaymentDepositCreated',
-                        'event_uuid'     => $event->aggregateRootUuid(),
+                    'type' => 'deposit',
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
+                    'description' => $event->description ?? 'Payment deposit',
+                    'reference' => $event->paymentReference ?? null,
+                    'status' => 'completed',
+                    'metadata' => [
+                        'event_type' => 'PaymentDepositCreated',
+                        'event_uuid' => $event->aggregateRootUuid(),
                         'payment_method' => $event->paymentMethod ?? null,
                     ],
                 ]
@@ -149,8 +149,8 @@ class TransactionProjector extends Projector
                 'Transaction projection created for PaymentDepositCreated',
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
                 ]
             );
         } catch (\Exception $e) {
@@ -172,17 +172,17 @@ class TransactionProjector extends Projector
         try {
             TransactionProjection::create(
                 [
-                    'uuid'         => Str::uuid(),
+                    'uuid' => Str::uuid(),
                     'account_uuid' => (string) $event->accountUuid,
-                    'type'         => 'withdrawal',
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
-                    'description'  => $event->description ?? 'Payment withdrawal',
-                    'reference'    => $event->paymentReference ?? null,
-                    'status'       => 'completed',
-                    'metadata'     => [
-                        'event_type'     => 'PaymentWithdrawalCreated',
-                        'event_uuid'     => $event->aggregateRootUuid(),
+                    'type' => 'withdrawal',
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
+                    'description' => $event->description ?? 'Payment withdrawal',
+                    'reference' => $event->paymentReference ?? null,
+                    'status' => 'completed',
+                    'metadata' => [
+                        'event_type' => 'PaymentWithdrawalCreated',
+                        'event_uuid' => $event->aggregateRootUuid(),
                         'payment_method' => $event->paymentMethod ?? null,
                     ],
                 ]
@@ -192,8 +192,8 @@ class TransactionProjector extends Projector
                 'Transaction projection created for PaymentWithdrawalCreated',
                 [
                     'account_uuid' => (string) $event->accountUuid,
-                    'asset_code'   => $event->assetCode,
-                    'amount'       => $event->amount,
+                    'asset_code' => $event->assetCode,
+                    'amount' => $event->amount,
                 ]
             );
         } catch (\Exception $e) {

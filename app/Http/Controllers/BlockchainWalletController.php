@@ -68,9 +68,9 @@ class BlockchainWalletController extends Controller
     {
         $validated = $request->validate(
             [
-            'chain'    => 'required|in:ethereum,bitcoin,polygon,bsc',
-            'label'    => 'required|string|max:255',
-            'password' => 'required|string|min:8',
+                'chain' => 'required|in:ethereum,bitcoin,polygon,bsc',
+                'label' => 'required|string|max:255',
+                'password' => 'required|string|min:8',
             ]
         );
 
@@ -84,18 +84,18 @@ class BlockchainWalletController extends Controller
             // Store address in database
             $address = BlockchainAddress::create(
                 [
-                'uuid'            => Str::uuid()->toString(),
-                'user_uuid'       => Auth::user()->uuid,
-                'chain'           => $validated['chain'],
-                'address'         => $addressData->address,
-                'public_key'      => $addressData->publicKey,
-                'derivation_path' => '',
-                'label'           => $validated['label'],
-                'is_active'       => true,
-                'metadata'        => [
-                    'created_via' => 'web',
-                    'ip_address'  => $request->ip(),
-                ],
+                    'uuid' => Str::uuid()->toString(),
+                    'user_uuid' => Auth::user()->uuid,
+                    'chain' => $validated['chain'],
+                    'address' => $addressData->address,
+                    'public_key' => $addressData->publicKey,
+                    'derivation_path' => '',
+                    'label' => $validated['label'],
+                    'is_active' => true,
+                    'metadata' => [
+                        'created_via' => 'web',
+                        'ip_address' => $request->ip(),
+                    ],
                 ]
             );
 
@@ -167,11 +167,11 @@ class BlockchainWalletController extends Controller
 
         $validated = $request->validate(
             [
-            'recipient_address' => 'required|string',
-            'amount'            => 'required|numeric|min:0.00000001',
-            'fee_level'         => 'required|in:slow,medium,fast',
-            'password'          => 'required|string',
-            'memo'              => 'nullable|string|max:255',
+                'recipient_address' => 'required|string',
+                'amount' => 'required|numeric|min:0.00000001',
+                'fee_level' => 'required|in:slow,medium,fast',
+                'password' => 'required|string',
+                'memo' => 'nullable|string|max:255',
             ]
         );
 
@@ -197,7 +197,7 @@ class BlockchainWalletController extends Controller
                 $validated['recipient_address'],
                 $validated['amount'],
                 [
-                    'fee'  => $fee,
+                    'fee' => $fee,
                     'memo' => $validated['memo'],
                 ]
             );
@@ -205,20 +205,20 @@ class BlockchainWalletController extends Controller
             // Record transaction
             BlockchainTransaction::create(
                 [
-                'uuid'         => Str::uuid()->toString(),
-                'address_uuid' => $address->uuid,
-                'tx_hash'      => $transaction->hash,
-                'type'         => 'send',
-                'amount'       => $validated['amount'],
-                'fee'          => $fee,
-                'from_address' => $address->address,
-                'to_address'   => $validated['recipient_address'],
-                'chain'        => $address->chain,
-                'status'       => 'pending',
-                'metadata'     => [
-                    'memo'      => $validated['memo'],
-                    'fee_level' => $validated['fee_level'],
-                ],
+                    'uuid' => Str::uuid()->toString(),
+                    'address_uuid' => $address->uuid,
+                    'tx_hash' => $transaction->hash,
+                    'type' => 'send',
+                    'amount' => $validated['amount'],
+                    'fee' => $fee,
+                    'from_address' => $address->address,
+                    'to_address' => $validated['recipient_address'],
+                    'chain' => $address->chain,
+                    'status' => 'pending',
+                    'metadata' => [
+                        'memo' => $validated['memo'],
+                        'fee_level' => $validated['fee_level'],
+                    ],
                 ]
             );
 
@@ -265,8 +265,8 @@ class BlockchainWalletController extends Controller
     {
         $validated = $request->validate(
             [
-            'password'             => 'required|string',
-            'include_private_keys' => 'boolean',
+                'password' => 'required|string',
+                'include_private_keys' => 'boolean',
             ]
         );
 
@@ -279,11 +279,11 @@ class BlockchainWalletController extends Controller
 
             return response()->json(
                 [
-                'backup_id'       => $backup['backup_id'],
-                'encrypted_data'  => $backup['encrypted_data'],
-                'checksum'        => $backup['checksum'],
-                'created_at'      => now()->toIso8601String(),
-                'addresses_count' => $addresses->count(),
+                    'backup_id' => $backup['backup_id'],
+                    'encrypted_data' => $backup['encrypted_data'],
+                    'checksum' => $backup['checksum'],
+                    'created_at' => now()->toIso8601String(),
+                    'addresses_count' => $addresses->count(),
                 ]
             )->header('Content-Disposition', 'attachment; filename="wallet-backup-' . now()->format('Y-m-d') . '.json"');
         } catch (\Exception $e) {
@@ -304,10 +304,10 @@ class BlockchainWalletController extends Controller
                 $balances[$address->uuid] = $balance;
             } catch (\Exception $e) {
                 $balances[$address->uuid] = [
-                    'balance'   => 0,
+                    'balance' => 0,
                     'available' => 0,
-                    'pending'   => 0,
-                    'error'     => true,
+                    'pending' => 0,
+                    'error' => true,
                 ];
             }
         }
@@ -322,32 +322,32 @@ class BlockchainWalletController extends Controller
     {
         return [
             'ethereum' => [
-                'name'     => 'Ethereum',
-                'symbol'   => 'ETH',
+                'name' => 'Ethereum',
+                'symbol' => 'ETH',
                 'decimals' => 18,
                 'explorer' => 'https://etherscan.io',
-                'icon'     => 'eth-icon',
+                'icon' => 'eth-icon',
             ],
             'bitcoin' => [
-                'name'     => 'Bitcoin',
-                'symbol'   => 'BTC',
+                'name' => 'Bitcoin',
+                'symbol' => 'BTC',
                 'decimals' => 8,
                 'explorer' => 'https://blockstream.info',
-                'icon'     => 'btc-icon',
+                'icon' => 'btc-icon',
             ],
             'polygon' => [
-                'name'     => 'Polygon',
-                'symbol'   => 'MATIC',
+                'name' => 'Polygon',
+                'symbol' => 'MATIC',
                 'decimals' => 18,
                 'explorer' => 'https://polygonscan.com',
-                'icon'     => 'matic-icon',
+                'icon' => 'matic-icon',
             ],
             'bsc' => [
-                'name'     => 'BNB Smart Chain',
-                'symbol'   => 'BNB',
+                'name' => 'BNB Smart Chain',
+                'symbol' => 'BNB',
                 'decimals' => 18,
                 'explorer' => 'https://bscscan.com',
-                'icon'     => 'bnb-icon',
+                'icon' => 'bnb-icon',
             ],
         ];
     }
@@ -360,24 +360,24 @@ class BlockchainWalletController extends Controller
         // Mock network fees - in production, fetch from blockchain
         $fees = [
             'ethereum' => [
-                'slow'   => ['time' => '10 min', 'amount' => 0.001],
+                'slow' => ['time' => '10 min', 'amount' => 0.001],
                 'medium' => ['time' => '3 min', 'amount' => 0.002],
-                'fast'   => ['time' => '30 sec', 'amount' => 0.003],
+                'fast' => ['time' => '30 sec', 'amount' => 0.003],
             ],
             'bitcoin' => [
-                'slow'   => ['time' => '60 min', 'amount' => 0.00001],
+                'slow' => ['time' => '60 min', 'amount' => 0.00001],
                 'medium' => ['time' => '30 min', 'amount' => 0.00002],
-                'fast'   => ['time' => '10 min', 'amount' => 0.00005],
+                'fast' => ['time' => '10 min', 'amount' => 0.00005],
             ],
             'polygon' => [
-                'slow'   => ['time' => '30 sec', 'amount' => 0.001],
+                'slow' => ['time' => '30 sec', 'amount' => 0.001],
                 'medium' => ['time' => '15 sec', 'amount' => 0.002],
-                'fast'   => ['time' => '5 sec', 'amount' => 0.005],
+                'fast' => ['time' => '5 sec', 'amount' => 0.005],
             ],
             'bsc' => [
-                'slow'   => ['time' => '15 sec', 'amount' => 0.0001],
+                'slow' => ['time' => '15 sec', 'amount' => 0.0001],
                 'medium' => ['time' => '6 sec', 'amount' => 0.0002],
-                'fast'   => ['time' => '3 sec', 'amount' => 0.0005],
+                'fast' => ['time' => '3 sec', 'amount' => 0.0005],
             ],
         ];
 
@@ -393,11 +393,11 @@ class BlockchainWalletController extends Controller
 
         return [
             'total_transactions' => $transactions->count(),
-            'total_sent'         => $transactions->where('type', 'send')->sum('amount'),
-            'total_received'     => $transactions->where('type', 'receive')->sum('amount'),
-            'total_fees'         => $transactions->sum('fee'),
-            'first_transaction'  => $transactions->min('created_at'),
-            'last_transaction'   => $transactions->max('created_at'),
+            'total_sent' => $transactions->where('type', 'send')->sum('amount'),
+            'total_received' => $transactions->where('type', 'receive')->sum('amount'),
+            'total_fees' => $transactions->sum('fee'),
+            'first_transaction' => $transactions->min('created_at'),
+            'last_transaction' => $transactions->max('created_at'),
         ];
     }
 }

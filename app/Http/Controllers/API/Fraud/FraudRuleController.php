@@ -17,11 +17,11 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'category'    => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
-            'severity'    => 'nullable|in:low,medium,high,critical',
-            'is_active'   => 'nullable|boolean',
-            'is_blocking' => 'nullable|boolean',
-            'search'      => 'nullable|string|max:100',
+                'category' => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
+                'severity' => 'nullable|in:low,medium,high,critical',
+                'is_active' => 'nullable|boolean',
+                'is_blocking' => 'nullable|boolean',
+                'search' => 'nullable|string|max:100',
             ]
         );
 
@@ -70,8 +70,8 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'rule'        => $rule,
-            'performance' => $rule->getPerformanceMetrics(),
+                'rule' => $rule,
+                'performance' => $rule->getPerformanceMetrics(),
             ]
         );
     }
@@ -83,21 +83,21 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'name'            => 'required|string|max:255|unique:fraud_rules',
-            'code'            => 'required|string|max:50|unique:fraud_rules',
-            'description'     => 'required|string',
-            'category'        => 'required|in:velocity,pattern,amount,geography,device,behavior',
-            'severity'        => 'required|in:low,medium,high,critical',
-            'conditions'      => 'required|array',
-            'thresholds'      => 'nullable|array',
-            'actions'         => 'required|array',
-            'actions.*'       => 'in:block,flag,notify,challenge',
-            'base_score'      => 'required|integer|min:0|max:100',
-            'score_modifiers' => 'nullable|array',
-            'is_blocking'     => 'boolean',
-            'is_active'       => 'boolean',
-            'tags'            => 'nullable|array',
-            'tags.*'          => 'string|max:50',
+                'name' => 'required|string|max:255|unique:fraud_rules',
+                'code' => 'required|string|max:50|unique:fraud_rules',
+                'description' => 'required|string',
+                'category' => 'required|in:velocity,pattern,amount,geography,device,behavior',
+                'severity' => 'required|in:low,medium,high,critical',
+                'conditions' => 'required|array',
+                'thresholds' => 'nullable|array',
+                'actions' => 'required|array',
+                'actions.*' => 'in:block,flag,notify,challenge',
+                'base_score' => 'required|integer|min:0|max:100',
+                'score_modifiers' => 'nullable|array',
+                'is_blocking' => 'boolean',
+                'is_active' => 'boolean',
+                'tags' => 'nullable|array',
+                'tags.*' => 'string|max:50',
             ]
         );
 
@@ -111,8 +111,8 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud rule created successfully',
-            'rule'    => $rule,
+                'message' => 'Fraud rule created successfully',
+                'rule' => $rule,
             ],
             201
         );
@@ -125,20 +125,20 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'name'            => 'nullable|string|max:255|unique:fraud_rules,name,' . $ruleId,
-            'description'     => 'nullable|string',
-            'category'        => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
-            'severity'        => 'nullable|in:low,medium,high,critical',
-            'conditions'      => 'nullable|array',
-            'thresholds'      => 'nullable|array',
-            'actions'         => 'nullable|array',
-            'actions.*'       => 'in:block,flag,notify,challenge',
-            'base_score'      => 'nullable|integer|min:0|max:100',
-            'score_modifiers' => 'nullable|array',
-            'is_blocking'     => 'nullable|boolean',
-            'is_active'       => 'nullable|boolean',
-            'tags'            => 'nullable|array',
-            'tags.*'          => 'string|max:50',
+                'name' => 'nullable|string|max:255|unique:fraud_rules,name,' . $ruleId,
+                'description' => 'nullable|string',
+                'category' => 'nullable|in:velocity,pattern,amount,geography,device,behavior',
+                'severity' => 'nullable|in:low,medium,high,critical',
+                'conditions' => 'nullable|array',
+                'thresholds' => 'nullable|array',
+                'actions' => 'nullable|array',
+                'actions.*' => 'in:block,flag,notify,challenge',
+                'base_score' => 'nullable|integer|min:0|max:100',
+                'score_modifiers' => 'nullable|array',
+                'is_blocking' => 'nullable|boolean',
+                'is_active' => 'nullable|boolean',
+                'tags' => 'nullable|array',
+                'tags.*' => 'string|max:50',
             ]
         );
 
@@ -154,8 +154,8 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud rule updated successfully',
-            'rule'    => $rule,
+                'message' => 'Fraud rule updated successfully',
+                'rule' => $rule,
             ]
         );
     }
@@ -177,7 +177,7 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud rule deleted successfully',
+                'message' => 'Fraud rule deleted successfully',
             ]
         );
     }
@@ -199,8 +199,8 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message' => 'Rule status toggled successfully',
-            'rule'    => $rule,
+                'message' => 'Rule status toggled successfully',
+                'rule' => $rule,
             ]
         );
     }
@@ -212,7 +212,7 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'context' => 'required|array',
+                'context' => 'required|array',
             ]
         );
 
@@ -226,15 +226,15 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'triggered' => $triggered,
-            'score'     => $score,
-            'rule'      => [
-                'id'       => $rule->id,
-                'name'     => $rule->name,
-                'code'     => $rule->code,
-                'category' => $rule->category,
-                'severity' => $rule->severity,
-            ],
+                'triggered' => $triggered,
+                'score' => $score,
+                'rule' => [
+                    'id' => $rule->id,
+                    'name' => $rule->name,
+                    'code' => $rule->code,
+                    'category' => $rule->category,
+                    'severity' => $rule->severity,
+                ],
             ]
         );
     }
@@ -246,8 +246,8 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'date_from' => 'nullable|date',
-            'date_to'   => 'nullable|date|after_or_equal:date_from',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
             ]
         );
 
@@ -262,10 +262,10 @@ class FraudRuleController extends Controller
         }
 
         $statistics = [
-            'total_rules'    => FraudRule::count(),
-            'active_rules'   => FraudRule::where('is_active', true)->count(),
+            'total_rules' => FraudRule::count(),
+            'active_rules' => FraudRule::where('is_active', true)->count(),
             'blocking_rules' => FraudRule::where('is_blocking', true)->count(),
-            'by_category'    => FraudRule::groupBy('category')
+            'by_category' => FraudRule::groupBy('category')
                 ->selectRaw('category, COUNT(*) as count')
                 ->pluck('count', 'category'),
             'by_severity' => FraudRule::groupBy('severity')
@@ -274,7 +274,7 @@ class FraudRuleController extends Controller
             'recently_triggered' => FraudRule::where('last_triggered_at', '>=', now()->subDays(7))
                 ->count(),
             'never_triggered' => FraudRule::whereNull('last_triggered_at')->count(),
-            'most_triggered'  => FraudRule::orderBy('trigger_count', 'desc')
+            'most_triggered' => FraudRule::orderBy('trigger_count', 'desc')
                 ->take(10)
                 ->get(['id', 'name', 'code', 'trigger_count', 'last_triggered_at']),
         ];
@@ -298,8 +298,8 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message'       => 'Default fraud rules created successfully',
-            'rules_created' => FraudRule::count(),
+                'message' => 'Default fraud rules created successfully',
+                'rules_created' => FraudRule::count(),
             ]
         );
     }
@@ -315,28 +315,28 @@ class FraudRuleController extends Controller
         $rules = FraudRule::all()->map(
             function ($rule) {
                 return [
-                'name'            => $rule->name,
-                'code'            => $rule->code,
-                'description'     => $rule->description,
-                'category'        => $rule->category,
-                'severity'        => $rule->severity,
-                'conditions'      => $rule->conditions,
-                'thresholds'      => $rule->thresholds,
-                'actions'         => $rule->actions,
-                'base_score'      => $rule->base_score,
-                'score_modifiers' => $rule->score_modifiers,
-                'is_blocking'     => $rule->is_blocking,
-                'is_active'       => $rule->is_active,
-                'tags'            => $rule->tags,
+                    'name' => $rule->name,
+                    'code' => $rule->code,
+                    'description' => $rule->description,
+                    'category' => $rule->category,
+                    'severity' => $rule->severity,
+                    'conditions' => $rule->conditions,
+                    'thresholds' => $rule->thresholds,
+                    'actions' => $rule->actions,
+                    'base_score' => $rule->base_score,
+                    'score_modifiers' => $rule->score_modifiers,
+                    'is_blocking' => $rule->is_blocking,
+                    'is_active' => $rule->is_active,
+                    'tags' => $rule->tags,
                 ];
             }
         );
 
         return response()->json(
             [
-            'rules'       => $rules,
-            'exported_at' => now()->toIso8601String(),
-            'total_rules' => $rules->count(),
+                'rules' => $rules,
+                'exported_at' => now()->toIso8601String(),
+                'total_rules' => $rules->count(),
             ]
         );
     }
@@ -348,14 +348,14 @@ class FraudRuleController extends Controller
     {
         $request->validate(
             [
-            'rules'              => 'required|array',
-            'rules.*.name'       => 'required|string|max:255',
-            'rules.*.code'       => 'required|string|max:50',
-            'rules.*.category'   => 'required|in:velocity,pattern,amount,geography,device,behavior',
-            'rules.*.severity'   => 'required|in:low,medium,high,critical',
-            'rules.*.conditions' => 'required|array',
-            'rules.*.actions'    => 'required|array',
-            'rules.*.base_score' => 'required|integer|min:0|max:100',
+                'rules' => 'required|array',
+                'rules.*.name' => 'required|string|max:255',
+                'rules.*.code' => 'required|string|max:50',
+                'rules.*.category' => 'required|in:velocity,pattern,amount,geography,device,behavior',
+                'rules.*.severity' => 'required|in:low,medium,high,critical',
+                'rules.*.conditions' => 'required|array',
+                'rules.*.actions' => 'required|array',
+                'rules.*.base_score' => 'required|integer|min:0|max:100',
             ]
         );
 
@@ -369,6 +369,7 @@ class FraudRuleController extends Controller
             // Skip if rule with same code exists
             if (FraudRule::where('code', $ruleData['code'])->exists()) {
                 $skipped++;
+
                 continue;
             }
 
@@ -381,9 +382,9 @@ class FraudRuleController extends Controller
 
         return response()->json(
             [
-            'message'  => 'Rules imported successfully',
-            'imported' => $imported,
-            'skipped'  => $skipped,
+                'message' => 'Rules imported successfully',
+                'imported' => $imported,
+                'skipped' => $skipped,
             ]
         );
     }

@@ -41,11 +41,11 @@ class MachineLearningService
     {
         if (! $this->isEnabled()) {
             return [
-                'score'         => 0,
-                'confidence'    => 0,
+                'score' => 0,
+                'confidence' => 0,
                 'model_version' => null,
-                'features'      => [],
-                'explanation'   => 'ML service disabled',
+                'features' => [],
+                'explanation' => 'ML service disabled',
             ];
         }
 
@@ -57,28 +57,28 @@ class MachineLearningService
             $prediction = $this->getPrediction($features);
 
             return [
-                'score'         => $prediction['fraud_probability'] * 100,
-                'confidence'    => $prediction['confidence'],
+                'score' => $prediction['fraud_probability'] * 100,
+                'confidence' => $prediction['confidence'],
                 'model_version' => $this->modelVersion,
-                'features'      => $features,
-                'explanation'   => $prediction['explanation'] ?? null,
-                'risk_factors'  => $prediction['risk_factors'] ?? [],
+                'features' => $features,
+                'explanation' => $prediction['explanation'] ?? null,
+                'risk_factors' => $prediction['risk_factors'] ?? [],
             ];
         } catch (\Exception $e) {
             Log::error(
                 'ML prediction failed',
                 [
-                    'error'   => $e->getMessage(),
+                    'error' => $e->getMessage(),
                     'context' => $context,
                 ]
             );
 
             return [
-                'score'         => 0,
-                'confidence'    => 0,
+                'score' => 0,
+                'confidence' => 0,
                 'model_version' => $this->modelVersion,
-                'features'      => [],
-                'explanation'   => 'ML prediction error',
+                'features' => [],
+                'explanation' => 'ML prediction error',
             ];
         }
     }
@@ -219,9 +219,9 @@ class MachineLearningService
 
         return [
             'fraud_probability' => $fraudProbability,
-            'confidence'        => $confidence,
-            'risk_factors'      => $riskFactors,
-            'explanation'       => $this->generateExplanation($fraudProbability, $riskFactors),
+            'confidence' => $confidence,
+            'risk_factors' => $riskFactors,
+            'explanation' => $this->generateExplanation($fraudProbability, $riskFactors),
         ];
     }
 
@@ -236,11 +236,11 @@ class MachineLearningService
 
         try {
             $trainingData = [
-                'fraud_score_id'     => $fraudScore->id,
-                'features'           => $fraudScore->ml_features,
-                'predicted_score'    => $fraudScore->ml_score,
-                'actual_outcome'     => $actualOutcome,
-                'decision'           => $fraudScore->decision,
+                'fraud_score_id' => $fraudScore->id,
+                'features' => $fraudScore->ml_features,
+                'predicted_score' => $fraudScore->ml_score,
+                'actual_outcome' => $actualOutcome,
+                'decision' => $fraudScore->decision,
                 'feedback_timestamp' => now()->toIso8601String(),
             ];
 
@@ -254,7 +254,7 @@ class MachineLearningService
                 'ML training feedback failed',
                 [
                     'fraud_score_id' => $fraudScore->id,
-                    'error'          => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]
             );
         }
@@ -290,14 +290,14 @@ class MachineLearningService
             function () {
                 // In production, fetch from ML service
                 return [
-                    'model_version'      => $this->modelVersion,
-                    'accuracy'           => 0.94,
-                    'precision'          => 0.89,
-                    'recall'             => 0.82,
-                    'f1_score'           => 0.85,
-                    'auc_roc'            => 0.91,
-                    'last_trained'       => now()->subDays(7)->toIso8601String(),
-                    'training_samples'   => 150000,
+                    'model_version' => $this->modelVersion,
+                    'accuracy' => 0.94,
+                    'precision' => 0.89,
+                    'recall' => 0.82,
+                    'f1_score' => 0.85,
+                    'auc_roc' => 0.91,
+                    'last_trained' => now()->subDays(7)->toIso8601String(),
+                    'training_samples' => 150000,
                     'feature_importance' => $this->getFeatureImportance(),
                 ];
             }
@@ -311,15 +311,15 @@ class MachineLearningService
     {
         // In production, this would come from the ML model
         return [
-            'risk_composite'              => 0.15,
-            'amount_deviation'            => 0.12,
-            'device_risk_score'           => 0.10,
-            'behavioral_deviation_score'  => 0.09,
-            'rules_triggered_count'       => 0.08,
-            'velocity_amount_product'     => 0.07,
-            'is_vpn'                      => 0.06,
-            'is_high_risk_country'        => 0.05,
-            'account_balance_ratio'       => 0.05,
+            'risk_composite' => 0.15,
+            'amount_deviation' => 0.12,
+            'device_risk_score' => 0.10,
+            'behavioral_deviation_score' => 0.09,
+            'rules_triggered_count' => 0.08,
+            'velocity_amount_product' => 0.07,
+            'is_vpn' => 0.06,
+            'is_high_risk_country' => 0.05,
+            'account_balance_ratio' => 0.05,
             'time_since_last_transaction' => 0.04,
         ];
     }
@@ -339,10 +339,10 @@ class MachineLearningService
     protected function encodeKycLevel(?string $kycLevel): int
     {
         return match ($kycLevel) {
-            'full'     => 3,
+            'full' => 3,
             'enhanced' => 2,
-            'basic'    => 1,
-            default    => 0,
+            'basic' => 1,
+            default => 0,
         };
     }
 
@@ -353,10 +353,10 @@ class MachineLearningService
     {
         return match ($riskRating) {
             'very_high' => 4,
-            'high'      => 3,
-            'medium'    => 2,
-            'low'       => 1,
-            default     => 2,
+            'high' => 3,
+            'medium' => 2,
+            'low' => 1,
+            default => 2,
         };
     }
 
@@ -468,7 +468,7 @@ class MachineLearningService
             'ML training data collected',
             [
                 'fraud_score_id' => $data['fraud_score_id'],
-                'outcome'        => $data['actual_outcome'],
+                'outcome' => $data['actual_outcome'],
             ]
         );
     }
@@ -481,10 +481,10 @@ class MachineLearningService
         // Build minimal context for batch processing
         return [
             'transaction' => $transaction,
-            'amount'      => $transaction['amount'] ?? 0,
-            'currency'    => $transaction['currency'] ?? 'USD',
-            'type'        => $transaction['type'] ?? 'unknown',
-            'timestamp'   => $transaction['created_at'] ?? now(),
+            'amount' => $transaction['amount'] ?? 0,
+            'currency' => $transaction['currency'] ?? 'USD',
+            'type' => $transaction['type'] ?? 'unknown',
+            'timestamp' => $transaction['created_at'] ?? now(),
         ];
     }
 
@@ -509,11 +509,11 @@ class MachineLearningService
             if (isset($features[$feature])) {
                 $contribution = $features[$feature] * $weight;
                 $insights[] = [
-                    'feature'      => $feature,
-                    'value'        => $features[$feature],
-                    'importance'   => $weight,
+                    'feature' => $feature,
+                    'value' => $features[$feature],
+                    'importance' => $weight,
                     'contribution' => $contribution,
-                    'direction'    => $contribution > 0 ? 'increases_risk' : 'decreases_risk',
+                    'direction' => $contribution > 0 ? 'increases_risk' : 'decreases_risk',
                 ];
             }
         }

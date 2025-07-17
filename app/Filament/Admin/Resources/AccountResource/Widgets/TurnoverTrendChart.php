@@ -12,7 +12,7 @@ class TurnoverTrendChart extends ChartWidget
 
     protected static ?int $sort = 4;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?string $pollingInterval = '60s';
 
@@ -27,28 +27,28 @@ class TurnoverTrendChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => 'Debit (Outflows)',
-                    'data'            => $data->pluck('debit'),
+                    'label' => 'Debit (Outflows)',
+                    'data' => $data->pluck('debit'),
                     'backgroundColor' => 'rgba(239, 68, 68, 0.8)',
-                    'borderColor'     => '#ef4444',
-                    'borderWidth'     => 2,
+                    'borderColor' => '#ef4444',
+                    'borderWidth' => 2,
                 ],
                 [
-                    'label'           => 'Credit (Inflows)',
-                    'data'            => $data->pluck('credit'),
+                    'label' => 'Credit (Inflows)',
+                    'data' => $data->pluck('credit'),
                     'backgroundColor' => 'rgba(16, 185, 129, 0.8)',
-                    'borderColor'     => '#10b981',
-                    'borderWidth'     => 2,
+                    'borderColor' => '#10b981',
+                    'borderWidth' => 2,
                 ],
                 [
-                    'label'           => 'Net Flow',
-                    'data'            => $data->pluck('net'),
-                    'type'            => 'line',
+                    'label' => 'Net Flow',
+                    'data' => $data->pluck('net'),
+                    'type' => 'line',
                     'backgroundColor' => 'rgba(59, 130, 246, 0.2)',
-                    'borderColor'     => '#3b82f6',
-                    'borderWidth'     => 3,
-                    'tension'         => 0.4,
-                    'fill'            => true,
+                    'borderColor' => '#3b82f6',
+                    'borderWidth' => 3,
+                    'tension' => 0.4,
+                    'fill' => true,
                 ],
             ],
             'labels' => $data->pluck('month'),
@@ -66,14 +66,14 @@ class TurnoverTrendChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
-                    'ticks'       => [
+                    'ticks' => [
                         'callback' => "function(value) { return '$' + value.toLocaleString(); }",
                     ],
                 ],
             ],
             'plugins' => [
                 'legend' => [
-                    'display'  => true,
+                    'display' => true,
                     'position' => 'top',
                 ],
                 'tooltip' => [
@@ -97,8 +97,8 @@ class TurnoverTrendChart extends ChartWidget
     protected function getFilters(): ?array
     {
         return [
-            '3m'  => 'Last 3 Months',
-            '6m'  => 'Last 6 Months',
+            '3m' => 'Last 3 Months',
+            '6m' => 'Last 6 Months',
             '12m' => 'Last 12 Months',
             '24m' => 'Last 24 Months',
         ];
@@ -107,10 +107,10 @@ class TurnoverTrendChart extends ChartWidget
     private function getTurnoverData(string $period)
     {
         $months = match ($period) {
-            '3m'    => 3,
-            '6m'    => 6,
-            '12m'   => 12,
-            '24m'   => 24,
+            '3m' => 3,
+            '6m' => 6,
+            '12m' => 12,
+            '24m' => 24,
             default => 6,
         };
 
@@ -124,7 +124,7 @@ class TurnoverTrendChart extends ChartWidget
             DB::raw('SUM(credit) as total_credit')
         )
             ->where(
-                function ($query) use ($startDate, $endDate) {
+                function ($query) use ($startDate) {
                     $query->where('year', '>', $startDate->year)
                         ->orWhere(
                             function ($q) use ($startDate) {
@@ -166,10 +166,10 @@ class TurnoverTrendChart extends ChartWidget
 
             $data->push(
                 [
-                'month'  => $current->format('M Y'),
-                'debit'  => round($debit, 2),
-                'credit' => round($credit, 2),
-                'net'    => round($credit - $debit, 2),
+                    'month' => $current->format('M Y'),
+                    'debit' => round($debit, 2),
+                    'credit' => round($credit, 2),
+                    'net' => round($credit - $debit, 2),
                 ]
             );
 

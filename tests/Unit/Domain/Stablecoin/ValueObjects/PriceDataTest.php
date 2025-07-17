@@ -76,14 +76,14 @@ class PriceDataTest extends TestCase
         $array = $priceData->toArray();
 
         $this->assertEquals([
-            'base'               => 'BTC',
-            'quote'              => 'EUR',
-            'price'              => '42000.00',
-            'source'             => 'internal_amm',
-            'timestamp'          => $timestamp->toIso8601String(),
-            'volume_24h'         => '500000.00',
+            'base' => 'BTC',
+            'quote' => 'EUR',
+            'price' => '42000.00',
+            'source' => 'internal_amm',
+            'timestamp' => $timestamp->toIso8601String(),
+            'volume_24h' => '500000.00',
             'change_percent_24h' => '-1.25',
-            'metadata'           => ['pool_id' => 'pool-123'],
+            'metadata' => ['pool_id' => 'pool-123'],
         ], $array);
     }
 
@@ -187,12 +187,12 @@ class PriceDataTest extends TestCase
     public function test_handles_complex_metadata(): void
     {
         $metadata = [
-            'sources'     => ['binance', 'kraken', 'coinbase'],
-            'weights'     => [0.4, 0.3, 0.3],
-            'outliers'    => ['ftx' => '0.01'],
+            'sources' => ['binance', 'kraken', 'coinbase'],
+            'weights' => [0.4, 0.3, 0.3],
+            'outliers' => ['ftx' => '0.01'],
             'calculation' => [
-                'method'     => 'weighted_average',
-                'samples'    => 100,
+                'method' => 'weighted_average',
+                'samples' => 100,
                 'confidence' => 0.95,
             ],
         ];

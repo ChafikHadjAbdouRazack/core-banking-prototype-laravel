@@ -88,10 +88,10 @@ class ExternalExchangeController extends Controller
     {
         $validated = $request->validate(
             [
-            'opportunity_id'     => 'required|string',
-            'amount'             => 'required|numeric|min:0.00000001',
-            'slippage_tolerance' => 'required|numeric|min:0|max:5',
-            'password'           => 'required|string',
+                'opportunity_id' => 'required|string',
+                'amount' => 'required|numeric|min:0.00000001',
+                'slippage_tolerance' => 'required|numeric|min:0|max:5',
+                'password' => 'required|string',
             ]
         );
 
@@ -101,7 +101,7 @@ class ExternalExchangeController extends Controller
                 $validated['opportunity_id'],
                 $validated['amount'],
                 [
-                    'user_uuid'          => Auth::user()->uuid,
+                    'user_uuid' => Auth::user()->uuid,
                     'slippage_tolerance' => $validated['slippage_tolerance'],
                 ]
             );
@@ -151,11 +151,11 @@ class ExternalExchangeController extends Controller
     {
         $validated = $request->validate(
             [
-            'auto_align'       => 'boolean',
-            'max_spread'       => 'required|numeric|min:0|max:10',
-            'update_frequency' => 'required|integer|min:1|max:3600',
-            'exchanges'        => 'required|array',
-            'exchanges.*'      => 'string|in:binance,kraken,coinbase',
+                'auto_align' => 'boolean',
+                'max_spread' => 'required|numeric|min:0|max:10',
+                'update_frequency' => 'required|integer|min:1|max:3600',
+                'exchanges' => 'required|array',
+                'exchanges.*' => 'string|in:binance,kraken,coinbase',
             ]
         );
 
@@ -163,10 +163,10 @@ class ExternalExchangeController extends Controller
             // Update price alignment settings
             $this->priceAggregator->updateAlignmentSettings(
                 [
-                'auto_align'          => $validated['auto_align'] ?? false,
-                'max_spread'          => $validated['max_spread'],
-                'update_frequency'    => $validated['update_frequency'],
-                'reference_exchanges' => $validated['exchanges'],
+                    'auto_align' => $validated['auto_align'] ?? false,
+                    'max_spread' => $validated['max_spread'],
+                    'update_frequency' => $validated['update_frequency'],
+                    'reference_exchanges' => $validated['exchanges'],
                 ]
             );
 
@@ -187,10 +187,10 @@ class ExternalExchangeController extends Controller
     {
         $validated = $request->validate(
             [
-            'exchange'   => 'required|string|in:binance,kraken,coinbase',
-            'api_key'    => 'required|string',
-            'api_secret' => 'required|string',
-            'testnet'    => 'boolean',
+                'exchange' => 'required|string|in:binance,kraken,coinbase',
+                'api_key' => 'required|string',
+                'api_secret' => 'required|string',
+                'testnet' => 'boolean',
             ]
         );
 
@@ -200,9 +200,9 @@ class ExternalExchangeController extends Controller
                 Auth::user()->uuid,
                 $validated['exchange'],
                 [
-                    'api_key'    => $validated['api_key'],
+                    'api_key' => $validated['api_key'],
                     'api_secret' => $validated['api_secret'],
-                    'testnet'    => $validated['testnet'] ?? false,
+                    'testnet' => $validated['testnet'] ?? false,
                 ]
             );
 
@@ -248,11 +248,11 @@ class ExternalExchangeController extends Controller
                 ->map(
                     function ($connection) {
                         return [
-                        'exchange'     => $connection->exchange,
-                        'connected_at' => $connection->created_at,
-                        'testnet'      => $connection->testnet,
-                        'last_sync'    => $connection->last_sync_at,
-                        'status'       => $connection->status,
+                            'exchange' => $connection->exchange,
+                            'connected_at' => $connection->created_at,
+                            'testnet' => $connection->testnet,
+                            'last_sync' => $connection->last_sync_at,
+                            'status' => $connection->status,
                         ];
                     }
                 );
@@ -274,11 +274,11 @@ class ExternalExchangeController extends Controller
             $prices = $this->priceAggregator->getPricesAcrossExchanges($pair);
             $comparisons[$pair] = [
                 'internal' => $prices['internal'] ?? null,
-                'binance'  => $prices['binance'] ?? null,
-                'kraken'   => $prices['kraken'] ?? null,
+                'binance' => $prices['binance'] ?? null,
+                'kraken' => $prices['kraken'] ?? null,
                 'coinbase' => $prices['coinbase'] ?? null,
-                'average'  => $prices['average'] ?? null,
-                'spread'   => $prices['spread'] ?? null,
+                'average' => $prices['average'] ?? null,
+                'spread' => $prices['spread'] ?? null,
             ];
         }
 
@@ -362,11 +362,11 @@ class ExternalExchangeController extends Controller
     private function getSupportedArbitragePairs()
     {
         return [
-            'BTC/USD'   => ['binance', 'kraken', 'coinbase'],
-            'ETH/USD'   => ['binance', 'kraken', 'coinbase'],
-            'BTC/ETH'   => ['binance', 'kraken'],
+            'BTC/USD' => ['binance', 'kraken', 'coinbase'],
+            'ETH/USD' => ['binance', 'kraken', 'coinbase'],
+            'BTC/ETH' => ['binance', 'kraken'],
             'MATIC/USD' => ['binance', 'coinbase'],
-            'BNB/USD'   => ['binance'],
+            'BNB/USD' => ['binance'],
         ];
     }
 
@@ -396,12 +396,12 @@ class ExternalExchangeController extends Controller
 
                 if ($deviation > 1) { // More than 1% deviation
                     $recommendations[] = [
-                        'pair'                 => $pair,
-                        'current_price'        => $prices['internal'],
-                        'market_average'       => $prices['average'],
-                        'recommended_price'    => $prices['average'],
+                        'pair' => $pair,
+                        'current_price' => $prices['internal'],
+                        'market_average' => $prices['average'],
+                        'recommended_price' => $prices['average'],
                         'deviation_percentage' => $deviation,
-                        'action'               => $prices['internal'] > $prices['average'] ? 'decrease' : 'increase',
+                        'action' => $prices['internal'] > $prices['average'] ? 'decrease' : 'increase',
                     ];
                 }
             }

@@ -16,7 +16,7 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Create a newly registered user.
      *
-     * @param array<string, string> $input
+     * @param  array<string, string>  $input
      *
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -25,19 +25,19 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make(
             $input,
             [
-            'name'                 => ['required', 'string', 'max:255'],
-            'email'                => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'is_business_customer' => ['boolean'],
-            'password'             => $this->passwordRules(),
-            'terms'                => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'is_business_customer' => ['boolean'],
+                'password' => $this->passwordRules(),
+                'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
             ]
         )->validate();
 
         $user = User::create(
             [
-            'name'     => $input['name'],
-            'email'    => $input['email'],
-            'password' => Hash::make($input['password']),
+                'name' => $input['name'],
+                'email' => $input['email'],
+                'password' => Hash::make($input['password']),
             ]
         );
 
@@ -49,16 +49,16 @@ class CreateNewUser implements CreatesNewUsers
             // Convert personal team to business organization
             $team->update(
                 [
-                'is_business_organization' => true,
-                'organization_type'        => 'business',
-                'max_users'                => 10, // Default limit for business accounts
-                'allowed_roles'            => [
-                    'compliance_officer',
-                    'risk_manager',
-                    'accountant',
-                    'operations_manager',
-                    'customer_service',
-                ],
+                    'is_business_organization' => true,
+                    'organization_type' => 'business',
+                    'max_users' => 10, // Default limit for business accounts
+                    'allowed_roles' => [
+                        'compliance_officer',
+                        'risk_manager',
+                        'accountant',
+                        'operations_manager',
+                        'customer_service',
+                    ],
                 ]
             );
 
@@ -79,9 +79,9 @@ class CreateNewUser implements CreatesNewUsers
         return $user->ownedTeams()->save(
             Team::forceCreate(
                 [
-                'user_id'       => $user->id,
-                'name'          => explode(' ', $user->name, 2)[0] . "'s Team",
-                'personal_team' => true,
+                    'user_id' => $user->id,
+                    'name' => explode(' ', $user->name, 2)[0] . "'s Team",
+                    'personal_team' => true,
                 ]
             )
         );

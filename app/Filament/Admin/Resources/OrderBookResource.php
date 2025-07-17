@@ -20,7 +20,7 @@ class OrderBookResource extends Resource
         return $form
             ->schema(
                 [
-                //
+                    //
                 ]
             );
     }
@@ -30,26 +30,26 @@ class OrderBookResource extends Resource
         return $table
             ->columns(
                 [
-                //
+                    //
                 ]
             )
             ->filters(
                 [
-                //
+                    //
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\EditAction::make(),
+                    Tables\Actions\EditAction::make(),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make(),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make(),
+                        ]
+                    ),
                 ]
             );
     }
@@ -64,9 +64,9 @@ class OrderBookResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListOrderBooks::route('/'),
+            'index' => Pages\ListOrderBooks::route('/'),
             'create' => Pages\CreateOrderBook::route('/create'),
-            'edit'   => Pages\EditOrderBook::route('/{record}/edit'),
+            'edit' => Pages\EditOrderBook::route('/{record}/edit'),
         ];
     }
 }

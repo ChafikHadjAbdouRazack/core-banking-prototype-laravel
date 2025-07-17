@@ -30,7 +30,7 @@ class GdprServiceTest extends ServiceTestCase
     public function test_export_user_data_returns_complete_data_structure(): void
     {
         $user = User::factory()->create([
-            'name'  => 'John Doe',
+            'name' => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
@@ -38,9 +38,9 @@ class GdprServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
         Transaction::factory()->count(3)->forAccount($account)->create([
             'event_properties' => [
-                'amount'    => 10000,
+                'amount' => 10000,
                 'assetCode' => 'USD',
-                'metadata'  => [],
+                'metadata' => [],
             ],
         ]);
         KycDocument::factory()->count(2)->create(['user_uuid' => $user->uuid]);
@@ -78,7 +78,7 @@ class GdprServiceTest extends ServiceTestCase
     public function test_delete_user_data_anonymizes_user(): void
     {
         $user = User::factory()->create([
-            'name'  => 'Jane Doe',
+            'name' => 'Jane Doe',
             'email' => 'jane@example.com',
         ]);
 
@@ -153,7 +153,7 @@ class GdprServiceTest extends ServiceTestCase
     public function test_get_user_data_returns_sanitized_data(): void
     {
         $user = User::factory()->create([
-            'password'       => bcrypt('secret'),
+            'password' => bcrypt('secret'),
             'remember_token' => 'token123',
         ]);
 
@@ -184,9 +184,9 @@ class GdprServiceTest extends ServiceTestCase
                 'type' => 'deposit',
             ],
             'event_properties' => [
-                'amount'    => 10000,
+                'amount' => 10000,
                 'assetCode' => 'USD',
-                'metadata'  => [],
+                'metadata' => [],
             ],
         ]);
 
@@ -195,9 +195,9 @@ class GdprServiceTest extends ServiceTestCase
                 'type' => 'withdrawal',
             ],
             'event_properties' => [
-                'amount'    => 5000,
+                'amount' => 5000,
                 'assetCode' => 'USD',
-                'metadata'  => [],
+                'metadata' => [],
             ],
         ]);
 

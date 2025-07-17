@@ -15,13 +15,13 @@ class ApplicationApprovedTest extends DomainTestCase
     {
         $application = FinancialInstitutionApplication::factory()->create([
             'institution_name' => 'Approved Bank',
-            'status'           => 'approved',
+            'status' => 'approved',
         ]);
 
         $partner = FinancialInstitutionPartner::factory()->create([
             'application_id' => $application->id,
-            'name'           => 'Approved Bank',
-            'status'         => 'active',
+            'name' => 'Approved Bank',
+            'status' => 'active',
         ]);
 
         $event = new ApplicationApproved($application, $partner);
@@ -65,13 +65,13 @@ class ApplicationApprovedTest extends DomainTestCase
     public function test_event_serializes_correctly(): void
     {
         $application = FinancialInstitutionApplication::factory()->create([
-            'institution_name'    => 'Serialized Bank',
+            'institution_name' => 'Serialized Bank',
             'registration_number' => 'SER123456',
         ]);
 
         $partner = FinancialInstitutionPartner::factory()->create([
             'application_id' => $application->id,
-            'partner_code'   => 'PARTNER001',
+            'partner_code' => 'PARTNER001',
         ]);
 
         $event = new ApplicationApproved($application, $partner);

@@ -5,7 +5,7 @@
 // Models that were already moved (need to fix backward compatibility proxies)
 $alreadyMovedModels = [
     'CgoInvestment',
-    'CgoPricingRound', 
+    'CgoPricingRound',
     'CgoRefund',
     'FraudCase',
     'FraudRule',
@@ -45,7 +45,8 @@ $liquidityPoolCommands = [
 ];
 
 // Function to fix backward compatibility proxies
-function fixBackwardCompatibilityProxy($modelName, $oldNamespace, $newNamespace) {
+function fixBackwardCompatibilityProxy($modelName, $oldNamespace, $newNamespace)
+{
     $filePath = "app/Models/$modelName.php";
     $content = "<?php\n\nnamespace $oldNamespace;\n\n/**\n * @deprecated Use $newNamespace\\$modelName instead\n */\nclass $modelName extends \\$newNamespace\\$modelName\n{\n}";
     file_put_contents($filePath, $content);
@@ -53,43 +54,45 @@ function fixBackwardCompatibilityProxy($modelName, $oldNamespace, $newNamespace)
 }
 
 // Function to move file and create proxy
-function moveFileAndCreateProxy($source, $destination) {
-    if (!file_exists($source)) {
+function moveFileAndCreateProxy($source, $destination)
+{
+    if (! file_exists($source)) {
         echo "Source file not found: $source\n";
+
         return false;
     }
-    
+
     // Extract namespaces
-    $oldNamespace = 'App\\' . str_replace(['app/', '.php', '/'], ['', '', '\\'], dirname($source));
-    $newNamespace = 'App\\' . str_replace(['app/', '.php', '/'], ['', '', '\\'], dirname($destination));
+    $oldNamespace = 'App\\'.str_replace(['app/', '.php', '/'], ['', '', '\\'], dirname($source));
+    $newNamespace = 'App\\'.str_replace(['app/', '.php', '/'], ['', '', '\\'], dirname($destination));
     $className = basename($source, '.php');
-    
+
     // Ensure destination directory exists
     $destDir = dirname($destination);
-    if (!is_dir($destDir)) {
+    if (! is_dir($destDir)) {
         mkdir($destDir, 0755, true);
     }
-    
+
     // Read source file
     $content = file_get_contents($source);
-    
+
     // Update namespace
     $content = preg_replace(
         "/namespace\s+$oldNamespace;/",
         "namespace $newNamespace;",
         $content
     );
-    
+
     // Write to destination
     file_put_contents($destination, $content);
     echo "Moved: $source -> $destination\n";
-    
+
     // Create backward compatibility proxy
     $proxyContent = "<?php\n\nnamespace $oldNamespace;\n\n/**\n * @deprecated Use $newNamespace\\$className instead\n */\nclass $className extends \\$newNamespace\\$className\n{\n}";
-    
+
     file_put_contents($source, $proxyContent);
     echo "Created proxy for: $className\n";
-    
+
     return true;
 }
 
@@ -112,7 +115,7 @@ foreach ($alreadyMovedModels as $model) {
         'PaymentDeposit' => 'Payment',
         'PaymentWithdrawal' => 'Payment',
     ];
-    
+
     $domain = $domainMap[$model];
     fixBackwardCompatibilityProxy($model, 'App\\Models', "App\\Domain\\$domain\\Models");
 }
@@ -146,7 +149,7 @@ $domainsNeedingDirectories = [
     'app/Domain/Stablecoin/Models',
     'app/Domain/Stablecoin/Console/Commands',
     'app/Domain/Webhook/Models',
-    'app/Domain/Webhook/Services', 
+    'app/Domain/Webhook/Services',
     'app/Domain/Webhook/Console/Commands',
     'app/Domain/Regulatory/Models',
     'app/Domain/Regulatory/Console/Commands',
@@ -154,7 +157,7 @@ $domainsNeedingDirectories = [
 
 echo "\nCreating missing domain directories...\n";
 foreach ($domainsNeedingDirectories as $dir) {
-    if (!is_dir($dir)) {
+    if (! is_dir($dir)) {
         mkdir($dir, 0755, true);
         echo "Created directory: $dir\n";
     }

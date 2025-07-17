@@ -38,10 +38,10 @@ class TransactionReversalWorkflow extends Workflow
                 'Transaction reversal failed',
                 [
                     'account_uuid' => $accountUuid->getUuid(),
-                    'amount'       => $originalAmount->getAmount(),
-                    'type'         => $transactionType,
-                    'reason'       => $reversalReason,
-                    'error'        => $th->getMessage(),
+                    'amount' => $originalAmount->getAmount(),
+                    'type' => $transactionType,
+                    'reason' => $reversalReason,
+                    'error' => $th->getMessage(),
                 ]
             );
 

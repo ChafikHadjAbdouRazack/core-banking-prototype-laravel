@@ -53,8 +53,8 @@ class CoinbaseWebhookController extends Controller
             Log::error(
                 'Error processing Coinbase webhook',
                 [
-                'error' => $e->getMessage(),
-                'event' => $event,
+                    'error' => $e->getMessage(),
+                    'event' => $event,
                 ]
             );
 

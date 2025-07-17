@@ -31,31 +31,31 @@ class BlockchainServiceProvider extends ServiceProvider
             'blockchain.connectors',
             function ($app) {
                 return [
-                'ethereum' => new EthereumConnector(
-                    [
-                    'rpc_url'  => config('blockchain.ethereum.rpc_url'),
-                    'chain_id' => config('blockchain.ethereum.chain_id'),
-                    ]
-                ),
-                'polygon' => new PolygonConnector(
-                    [
-                    'rpc_url'  => config('blockchain.polygon.rpc_url'),
-                    'chain_id' => config('blockchain.polygon.chain_id'),
-                    ]
-                ),
-                'bsc' => new EthereumConnector(
-                    [
-                    'rpc_url'  => config('blockchain.bsc.rpc_url'),
-                    'chain_id' => config('blockchain.bsc.chain_id'),
-                    ]
-                ),
-                'bitcoin' => new SimpleBitcoinConnector(
-                    [
-                    'network' => config('blockchain.bitcoin.network'),
-                    'api_url' => config('blockchain.bitcoin.api_url'),
-                    'api_key' => config('blockchain.bitcoin.api_key'),
-                    ]
-                ),
+                    'ethereum' => new EthereumConnector(
+                        [
+                            'rpc_url' => config('blockchain.ethereum.rpc_url'),
+                            'chain_id' => config('blockchain.ethereum.chain_id'),
+                        ]
+                    ),
+                    'polygon' => new PolygonConnector(
+                        [
+                            'rpc_url' => config('blockchain.polygon.rpc_url'),
+                            'chain_id' => config('blockchain.polygon.chain_id'),
+                        ]
+                    ),
+                    'bsc' => new EthereumConnector(
+                        [
+                            'rpc_url' => config('blockchain.bsc.rpc_url'),
+                            'chain_id' => config('blockchain.bsc.chain_id'),
+                        ]
+                    ),
+                    'bitcoin' => new SimpleBitcoinConnector(
+                        [
+                            'network' => config('blockchain.bitcoin.network'),
+                            'api_url' => config('blockchain.bitcoin.api_url'),
+                            'api_key' => config('blockchain.bitcoin.api_key'),
+                        ]
+                    ),
                 ];
             }
         );
@@ -101,7 +101,7 @@ class BlockchainServiceProvider extends ServiceProvider
         // Register blockchain configuration
         $this->publishes(
             [
-            __DIR__ . '/../../config/blockchain.php' => config_path('blockchain.php'),
+                __DIR__ . '/../../config/blockchain.php' => config_path('blockchain.php'),
             ],
             'blockchain-config'
         );

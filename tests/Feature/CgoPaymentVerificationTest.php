@@ -27,12 +27,12 @@ class CgoPaymentVerificationTest extends TestCase
     public function test_user_can_view_pending_payments()
     {
         $pendingInvestment = CgoInvestment::factory()->create([
-            'user_id'        => $this->user->id,
+            'user_id' => $this->user->id,
             'payment_status' => 'pending',
         ]);
 
         $completedInvestment = CgoInvestment::factory()->create([
-            'user_id'        => $this->user->id,
+            'user_id' => $this->user->id,
             'payment_status' => 'completed',
         ]);
 
@@ -49,7 +49,7 @@ class CgoPaymentVerificationTest extends TestCase
     {
         $otherUser = User::factory()->create();
         $otherInvestment = CgoInvestment::factory()->create([
-            'user_id'        => $otherUser->id,
+            'user_id' => $otherUser->id,
             'payment_status' => 'pending',
         ]);
 
@@ -64,9 +64,9 @@ class CgoPaymentVerificationTest extends TestCase
     public function test_user_can_check_payment_status()
     {
         $investment = CgoInvestment::factory()->create([
-            'user_id'                  => $this->user->id,
-            'payment_status'           => 'pending',
-            'payment_method'           => 'stripe',
+            'user_id' => $this->user->id,
+            'payment_status' => 'pending',
+            'payment_method' => 'stripe',
             'stripe_payment_intent_id' => 'pi_test_123',
         ]);
 
@@ -91,7 +91,7 @@ class CgoPaymentVerificationTest extends TestCase
     {
         $otherUser = User::factory()->create();
         $investment = CgoInvestment::factory()->create([
-            'user_id'        => $otherUser->id,
+            'user_id' => $otherUser->id,
             'payment_status' => 'pending',
         ]);
 
@@ -105,10 +105,10 @@ class CgoPaymentVerificationTest extends TestCase
     public function test_user_can_get_payment_timeline()
     {
         $investment = CgoInvestment::factory()->create([
-            'user_id'            => $this->user->id,
-            'payment_status'     => 'pending',
+            'user_id' => $this->user->id,
+            'payment_status' => 'pending',
             'payment_pending_at' => now()->subHour(),
-            'kyc_verified_at'    => now()->subMinutes(30),
+            'kyc_verified_at' => now()->subMinutes(30),
         ]);
 
         $response = $this->actingAs($this->user)
@@ -144,7 +144,7 @@ class CgoPaymentVerificationTest extends TestCase
 
         CgoInvestment::factory()->count(2)->create([
             'payment_status' => 'pending',
-            'created_at'     => now()->subDays(2),
+            'created_at' => now()->subDays(2),
         ]);
 
         $widget = new \App\Filament\Widgets\PaymentVerificationStats();
@@ -160,37 +160,37 @@ class CgoPaymentVerificationTest extends TestCase
     {
         $investment = CgoInvestment::factory()->create([
             'payment_status' => 'pending',
-            'status'         => 'pending',
+            'status' => 'pending',
             'payment_method' => 'bank_transfer',
         ]);
 
         // This would be tested through the Filament interface
         // Simulating the manual verification process
         $data = [
-            'reference'       => 'BANK-REF-123',
+            'reference' => 'BANK-REF-123',
             'amount_received' => 1000.00,
-            'notes'           => 'Verified via bank statement',
+            'notes' => 'Verified via bank statement',
         ];
 
         $investment->update([
-            'payment_status'          => 'completed',
-            'status'                  => 'confirmed',
-            'payment_completed_at'    => now(),
+            'payment_status' => 'completed',
+            'status' => 'confirmed',
+            'payment_completed_at' => now(),
             'bank_transfer_reference' => $data['reference'],
-            'amount_paid'             => $data['amount_received'] * 100,
-            'metadata'                => [
+            'amount_paid' => $data['amount_received'] * 100,
+            'metadata' => [
                 'manual_verification' => [
                     'verified_by' => 1,
                     'verified_at' => now()->toIso8601String(),
-                    'notes'       => $data['notes'],
+                    'notes' => $data['notes'],
                 ],
             ],
         ]);
 
         $this->assertDatabaseHas('cgo_investments', [
-            'id'                      => $investment->id,
-            'payment_status'          => 'completed',
-            'status'                  => 'confirmed',
+            'id' => $investment->id,
+            'payment_status' => 'completed',
+            'status' => 'confirmed',
             'bank_transfer_reference' => 'BANK-REF-123',
         ]);
     }

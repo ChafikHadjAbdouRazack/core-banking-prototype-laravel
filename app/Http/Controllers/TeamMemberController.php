@@ -60,19 +60,19 @@ class TeamMemberController extends Controller
 
         $validated = $request->validate(
             [
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', Password::defaults()],
-            'role'     => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', Password::defaults()],
+                'role' => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
             ]
         );
 
         // Create the user
         $user = User::create(
             [
-            'name'     => $validated['name'],
-            'email'    => $validated['email'],
-            'password' => Hash::make($validated['password']),
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
             ]
         );
 
@@ -128,7 +128,7 @@ class TeamMemberController extends Controller
 
         $validated = $request->validate(
             [
-            'role' => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
+                'role' => ['required', 'string', 'in:' . implode(',', $team->getAvailableRoles())],
             ]
         );
 

@@ -20,8 +20,8 @@ class FraudDetectedTest extends DomainTestCase
         $fraudScore = FraudScore::factory()->create([
             'entity_type' => Transaction::class,
             'total_score' => 85,
-            'risk_level'  => 'high',
-            'decision'    => 'block',
+            'risk_level' => 'high',
+            'decision' => 'block',
         ]);
 
         $event = new FraudDetected($fraudScore);
@@ -50,7 +50,7 @@ class FraudDetectedTest extends DomainTestCase
     {
         $fraudScore = FraudScore::factory()->create([
             'entity_type' => Transaction::class,
-            'risk_level'  => 'medium',
+            'risk_level' => 'medium',
         ]);
 
         $event = new FraudDetected($fraudScore);
@@ -66,12 +66,12 @@ class FraudDetectedTest extends DomainTestCase
     public function test_event_serializes_correctly(): void
     {
         $fraudScore = FraudScore::factory()->create([
-            'total_score'     => 92,
-            'risk_level'      => 'high',
-            'decision'        => 'block',
+            'total_score' => 92,
+            'risk_level' => 'high',
+            'decision' => 'block',
             'score_breakdown' => [
                 'rule_engine' => ['score' => 50],
-                'behavioral'  => ['score' => 42],
+                'behavioral' => ['score' => 42],
             ],
         ]);
 
@@ -103,15 +103,15 @@ class FraudDetectedTest extends DomainTestCase
     public function test_handles_different_entity_types(): void
     {
         $entityTypes = [
-            Transaction::class         => 'Transaction',
-            \App\Models\User::class    => 'User',
+            Transaction::class => 'Transaction',
+            \App\Models\User::class => 'User',
             \App\Models\Account::class => 'Account',
         ];
 
         foreach ($entityTypes as $entityClass => $expectedTag) {
             $fraudScore = FraudScore::factory()->create([
                 'entity_type' => $entityClass,
-                'entity_id'   => 1,
+                'entity_id' => 1,
             ]);
 
             $event = new FraudDetected($fraudScore);

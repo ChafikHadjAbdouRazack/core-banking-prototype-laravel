@@ -12,8 +12,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['total' => 0],
+                'data' => [],
+                'meta' => ['total' => 0],
             ]
         );
     }
@@ -22,7 +22,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => ['id' => $id],
+                'data' => ['id' => $id],
             ]
         );
     }
@@ -31,8 +31,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Transaction flagged',
-            'data'    => ['id' => $id],
+                'message' => 'Transaction flagged',
+                'data' => ['id' => $id],
             ]
         );
     }
@@ -41,8 +41,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Transaction cleared',
-            'data'    => ['id' => $id],
+                'message' => 'Transaction cleared',
+                'data' => ['id' => $id],
             ]
         );
     }
@@ -51,7 +51,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -60,8 +60,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Rule created',
-            'data'    => [],
+                'message' => 'Rule created',
+                'data' => [],
             ],
             201
         );
@@ -71,8 +71,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Rule updated',
-            'data'    => ['id' => $id],
+                'message' => 'Rule updated',
+                'data' => ['id' => $id],
             ]
         );
     }
@@ -81,7 +81,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Rule deleted',
+                'message' => 'Rule deleted',
             ]
         );
     }
@@ -90,7 +90,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -99,7 +99,7 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -108,8 +108,8 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Thresholds updated',
-            'data'    => [],
+                'message' => 'Thresholds updated',
+                'data' => [],
             ]
         );
     }
@@ -118,10 +118,10 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'analysis_id' => uniqid(),
-                'status'      => 'completed',
-            ],
+                'data' => [
+                    'analysis_id' => uniqid(),
+                    'status' => 'completed',
+                ],
             ]
         );
     }
@@ -130,10 +130,10 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'batch_id' => uniqid(),
-                'status'   => 'processing',
-            ],
+                'data' => [
+                    'batch_id' => uniqid(),
+                    'status' => 'processing',
+                ],
             ]
         );
     }
@@ -142,10 +142,10 @@ class TransactionMonitoringController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'analysis_id' => $analysisId,
-                'status'      => 'completed',
-            ],
+                'data' => [
+                    'analysis_id' => $analysisId,
+                    'status' => 'completed',
+                ],
             ]
         );
     }

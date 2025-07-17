@@ -17,42 +17,42 @@ class TransactionRateLimitMiddleware
      */
     private const TRANSACTION_LIMITS = [
         'deposit' => [
-            'limit'             => 10,          // 10 deposits per hour
-            'window'            => 3600,       // 1 hour
-            'daily_limit'       => 50,    // 50 deposits per day
-            'daily_window'      => 86400, // 24 hours
-            'amount_limit'      => 100000, // $1000 per hour (in cents)
+            'limit' => 10,          // 10 deposits per hour
+            'window' => 3600,       // 1 hour
+            'daily_limit' => 50,    // 50 deposits per day
+            'daily_window' => 86400, // 24 hours
+            'amount_limit' => 100000, // $1000 per hour (in cents)
             'progressive_delay' => true,
         ],
         'withdraw' => [
-            'limit'             => 5,           // 5 withdrawals per hour
-            'window'            => 3600,       // 1 hour
-            'daily_limit'       => 20,    // 20 withdrawals per day
-            'daily_window'      => 86400, // 24 hours
-            'amount_limit'      => 50000, // $500 per hour (in cents)
+            'limit' => 5,           // 5 withdrawals per hour
+            'window' => 3600,       // 1 hour
+            'daily_limit' => 20,    // 20 withdrawals per day
+            'daily_window' => 86400, // 24 hours
+            'amount_limit' => 50000, // $500 per hour (in cents)
             'progressive_delay' => true,
         ],
         'transfer' => [
-            'limit'             => 15,          // 15 transfers per hour
-            'window'            => 3600,       // 1 hour
-            'daily_limit'       => 100,   // 100 transfers per day
-            'daily_window'      => 86400, // 24 hours
-            'amount_limit'      => 200000, // $2000 per hour (in cents)
+            'limit' => 15,          // 15 transfers per hour
+            'window' => 3600,       // 1 hour
+            'daily_limit' => 100,   // 100 transfers per day
+            'daily_window' => 86400, // 24 hours
+            'amount_limit' => 200000, // $2000 per hour (in cents)
             'progressive_delay' => true,
         ],
         'convert' => [
-            'limit'             => 20,          // 20 conversions per hour
-            'window'            => 3600,       // 1 hour
-            'daily_limit'       => 200,   // 200 conversions per day
-            'daily_window'      => 86400, // 24 hours
-            'amount_limit'      => 500000, // $5000 per hour (in cents)
+            'limit' => 20,          // 20 conversions per hour
+            'window' => 3600,       // 1 hour
+            'daily_limit' => 200,   // 200 conversions per day
+            'daily_window' => 86400, // 24 hours
+            'amount_limit' => 500000, // $5000 per hour (in cents)
             'progressive_delay' => false,
         ],
         'vote' => [
-            'limit'             => 100,         // 100 votes per day
-            'window'            => 86400,      // 24 hours
-            'daily_limit'       => 100,   // Same as regular limit
-            'daily_window'      => 86400,
+            'limit' => 100,         // 100 votes per day
+            'window' => 86400,      // 24 hours
+            'daily_limit' => 100,   // Same as regular limit
+            'daily_window' => 86400,
             'progressive_delay' => false,
         ],
     ];
@@ -125,29 +125,29 @@ class TransactionRateLimitMiddleware
             Log::warning(
                 'Transaction rate limit exceeded',
                 [
-                'user_id'          => $userId,
-                'transaction_type' => $transactionType,
-                'period'           => $period,
-                'limit'            => $limit,
-                'current_count'    => $currentCount,
+                    'user_id' => $userId,
+                    'transaction_type' => $transactionType,
+                    'period' => $period,
+                    'limit' => $limit,
+                    'current_count' => $currentCount,
                 ]
             );
 
             return response()->json(
                 [
-                'error'         => 'Transaction rate limit exceeded',
-                'message'       => "You have exceeded the {$period} limit of {$limit} {$transactionType} transactions.",
-                'period'        => $period,
-                'limit'         => $limit,
-                'current_count' => $currentCount,
-                'reset_time'    => now()->addSeconds($window)->toISOString(),
+                    'error' => 'Transaction rate limit exceeded',
+                    'message' => "You have exceeded the {$period} limit of {$limit} {$transactionType} transactions.",
+                    'period' => $period,
+                    'limit' => $limit,
+                    'current_count' => $currentCount,
+                    'reset_time' => now()->addSeconds($window)->toISOString(),
                 ],
                 429,
                 [
-                'X-Transaction-RateLimit-Exceeded' => $period,
-                'X-Transaction-Limit'              => $limit,
-                'X-Transaction-Remaining'          => 0,
-                'Retry-After'                      => $window,
+                    'X-Transaction-RateLimit-Exceeded' => $period,
+                    'X-Transaction-Limit' => $limit,
+                    'X-Transaction-Remaining' => 0,
+                    'Retry-After' => $window,
                 ]
             );
         }
@@ -172,28 +172,28 @@ class TransactionRateLimitMiddleware
             Log::warning(
                 'Transaction amount limit exceeded',
                 [
-                'user_id'          => $userId,
-                'transaction_type' => $transactionType,
-                'amount'           => $amount,
-                'current_amount'   => $currentAmount,
-                'limit'            => $config['amount_limit'],
+                    'user_id' => $userId,
+                    'transaction_type' => $transactionType,
+                    'amount' => $amount,
+                    'current_amount' => $currentAmount,
+                    'limit' => $config['amount_limit'],
                 ]
             );
 
             return response()->json(
                 [
-                'error'            => 'Transaction amount limit exceeded',
-                'message'          => 'This transaction would exceed your hourly amount limit.',
-                'amount_limit'     => $config['amount_limit'],
-                'current_amount'   => $currentAmount,
-                'requested_amount' => $amount,
-                'remaining_amount' => max(0, $config['amount_limit'] - $currentAmount),
+                    'error' => 'Transaction amount limit exceeded',
+                    'message' => 'This transaction would exceed your hourly amount limit.',
+                    'amount_limit' => $config['amount_limit'],
+                    'current_amount' => $currentAmount,
+                    'requested_amount' => $amount,
+                    'remaining_amount' => max(0, $config['amount_limit'] - $currentAmount),
                 ],
                 429,
                 [
-                'X-Transaction-AmountLimit-Exceeded' => 'true',
-                'X-Transaction-AmountLimit'          => $config['amount_limit'],
-                'X-Transaction-AmountRemaining'      => max(0, $config['amount_limit'] - $currentAmount),
+                    'X-Transaction-AmountLimit-Exceeded' => 'true',
+                    'X-Transaction-AmountLimit' => $config['amount_limit'],
+                    'X-Transaction-AmountRemaining' => max(0, $config['amount_limit'] - $currentAmount),
                 ]
             );
         }
@@ -217,10 +217,10 @@ class TransactionRateLimitMiddleware
             Log::info(
                 'Progressive delay applied',
                 [
-                'user_id'          => $userId,
-                'transaction_type' => $transactionType,
-                'recent_count'     => $recentCount,
-                'delay_seconds'    => $delay,
+                    'user_id' => $userId,
+                    'transaction_type' => $transactionType,
+                    'recent_count' => $recentCount,
+                    'delay_seconds' => $delay,
                 ]
             );
         }
@@ -279,10 +279,10 @@ class TransactionRateLimitMiddleware
         Log::info(
             'Transaction rate limit check passed',
             [
-            'user_id'          => $userId,
-            'transaction_type' => $transactionType,
-            'endpoint'         => $request->path(),
-            'amount'           => $this->extractAmount($request),
+                'user_id' => $userId,
+                'transaction_type' => $transactionType,
+                'endpoint' => $request->path(),
+                'amount' => $this->extractAmount($request),
             ]
         );
     }

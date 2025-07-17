@@ -26,52 +26,67 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="List all workflows with filtering",
      *     description="Retrieves a paginated list of workflows with optional filtering by status, class, and date range",
+     *
      * @OA\Parameter(
      *         name="status",
      *         in="query",
      *         required=false,
      *         description="Filter by workflow status",
+     *
      * @OA\Schema(type="string",             enum={"created", "pending", "running", "completed", "failed", "waiting"})
      *     ),
+     *
      * @OA\Parameter(
      *         name="class",
      *         in="query",
      *         required=false,
      *         description="Filter by workflow class name (partial match)",
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Parameter(
      *         name="per_page",
      *         in="query",
      *         required=false,
      *         description="Number of items per page",
+     *
      * @OA\Schema(type="integer",            minimum=1, maximum=100, default=15)
      *     ),
+     *
      * @OA\Parameter(
      *         name="search",
      *         in="query",
      *         required=false,
      *         description="Search in workflow class and arguments",
+     *
      * @OA\Schema(type="string",             maxLength=255)
      *     ),
+     *
      * @OA\Parameter(
      *         name="created_from",
      *         in="query",
      *         required=false,
      *         description="Filter workflows created after this date",
+     *
      * @OA\Schema(type="string",             format="date")
      *     ),
+     *
      * @OA\Parameter(
      *         name="created_to",
      *         in="query",
      *         required=false,
      *         description="Filter workflows created before this date",
+     *
      * @OA\Schema(type="string",             format="date")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Workflows retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",         type="array", @OA\Items(type="object")),
      * @OA\Property(
      *                 property="meta",
@@ -96,12 +111,12 @@ class WorkflowMonitoringController extends Controller
     {
         $request->validate(
             [
-            'status'       => 'sometimes|string|in:created,pending,running,completed,failed,waiting',
-            'class'        => 'sometimes|string',
-            'per_page'     => 'sometimes|integer|min:1|max:100',
-            'search'       => 'sometimes|string|max:255',
-            'created_from' => 'sometimes|date',
-            'created_to'   => 'sometimes|date|after_or_equal:created_from',
+                'status' => 'sometimes|string|in:created,pending,running,completed,failed,waiting',
+                'class' => 'sometimes|string',
+                'per_page' => 'sometimes|integer|min:1|max:100',
+                'search' => 'sometimes|string|max:255',
+                'created_from' => 'sometimes|date',
+                'created_to' => 'sometimes|date|after_or_equal:created_from',
             ]
         );
 
@@ -109,8 +124,8 @@ class WorkflowMonitoringController extends Controller
             ->with(['logs:id,stored_workflow_id,index,class,result,created_at'])
             ->select(
                 [
-                'id', 'class', 'status', 'arguments',
-                'output', 'created_at', 'updated_at',
+                    'id', 'class', 'status', 'arguments',
+                    'output', 'created_at', 'updated_at',
                 ]
             );
 
@@ -148,16 +163,16 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'data' => $workflows->items(),
-            'meta' => [
-                'current_page' => $workflows->currentPage(),
-                'last_page'    => $workflows->lastPage(),
-                'per_page'     => $workflows->perPage(),
-                'total'        => $workflows->total(),
-                'from'         => $workflows->firstItem(),
-                'to'           => $workflows->lastItem(),
-            ],
-            'stats' => $this->getWorkflowStats(),
+                'data' => $workflows->items(),
+                'meta' => [
+                    'current_page' => $workflows->currentPage(),
+                    'last_page' => $workflows->lastPage(),
+                    'per_page' => $workflows->perPage(),
+                    'total' => $workflows->total(),
+                    'from' => $workflows->firstItem(),
+                    'to' => $workflows->lastItem(),
+                ],
+                'stats' => $this->getWorkflowStats(),
             ]
         );
     }
@@ -171,23 +186,29 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get workflow details",
      *     description="Retrieves detailed information about a specific workflow including logs, exceptions, and compensation info",
+     *
      * @OA\Parameter(
      *         name="id",
      *         in="path",
      *         required=true,
      *         description="Workflow ID",
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Workflow details retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="workflow",           type="object", description="Workflow details with logs"),
      * @OA\Property(property="exceptions",         type="array", @OA\Items(type="object")),
      * @OA\Property(property="compensation_info",  type="object", description="Compensation tracking information"),
      * @OA\Property(property="execution_timeline", type="array", @OA\Items(type="object"))
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Workflow not found"
@@ -198,9 +219,9 @@ class WorkflowMonitoringController extends Controller
     {
         $workflow = StoredWorkflow::with(
             [
-            'logs' => function ($query) {
-                $query->orderBy('created_at', 'asc');
-            },
+                'logs' => function ($query) {
+                    $query->orderBy('created_at', 'asc');
+                },
             ]
         )->findOrFail($id);
 
@@ -211,10 +232,10 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'workflow'           => $workflow,
-            'exceptions'         => $exceptions,
-            'compensation_info'  => $this->getCompensationInfo($workflow),
-            'execution_timeline' => $this->buildExecutionTimeline($workflow),
+                'workflow' => $workflow,
+                'exceptions' => $exceptions,
+                'compensation_info' => $this->getCompensationInfo($workflow),
+                'execution_timeline' => $this->buildExecutionTimeline($workflow),
             ]
         );
     }
@@ -228,10 +249,13 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get workflow statistics",
      *     description="Retrieves overall workflow execution statistics and counts by status",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Statistics retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="total_workflows",    type="integer"),
      * @OA\Property(
      *                 property="by_status",
@@ -258,17 +282,22 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get workflows by status",
      *     description="Retrieves all workflows with a specific status",
+     *
      * @OA\Parameter(
      *         name="status",
      *         in="path",
      *         required=true,
      *         description="Workflow status to filter by",
+     *
      * @OA\Schema(type="string",             enum={"created", "pending", "running", "completed", "failed", "waiting"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Workflows retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="status",       type="string"),
      * @OA\Property(property="count",        type="integer"),
      * @OA\Property(property="data",         type="array", @OA\Items(type="object")),
@@ -282,6 +311,7 @@ class WorkflowMonitoringController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=400,
      *         description="Invalid status"
@@ -303,15 +333,15 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'status' => $status,
-            'count'  => $workflows->total(),
-            'data'   => $workflows->items(),
-            'meta'   => [
-                'current_page' => $workflows->currentPage(),
-                'last_page'    => $workflows->lastPage(),
-                'per_page'     => $workflows->perPage(),
-                'total'        => $workflows->total(),
-            ],
+                'status' => $status,
+                'count' => $workflows->total(),
+                'data' => $workflows->items(),
+                'meta' => [
+                    'current_page' => $workflows->currentPage(),
+                    'last_page' => $workflows->lastPage(),
+                    'per_page' => $workflows->perPage(),
+                    'total' => $workflows->total(),
+                ],
             ]
         );
     }
@@ -325,10 +355,13 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get failed workflows",
      *     description="Retrieves all failed workflows with detailed exception information",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Failed workflows retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",               type="array", @OA\Items(type="object")),
      * @OA\Property(
      *                 property="meta",
@@ -371,14 +404,14 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'data' => $enrichedWorkflows,
-            'meta' => [
-                'current_page' => $failedWorkflows->currentPage(),
-                'last_page'    => $failedWorkflows->lastPage(),
-                'per_page'     => $failedWorkflows->perPage(),
-                'total'        => $failedWorkflows->total(),
-            ],
-            'error_summary' => $this->getErrorSummary(),
+                'data' => $enrichedWorkflows,
+                'meta' => [
+                    'current_page' => $failedWorkflows->currentPage(),
+                    'last_page' => $failedWorkflows->lastPage(),
+                    'per_page' => $failedWorkflows->perPage(),
+                    'total' => $failedWorkflows->total(),
+                ],
+                'error_summary' => $this->getErrorSummary(),
             ]
         );
     }
@@ -392,10 +425,13 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get workflow execution metrics",
      *     description="Retrieves detailed workflow execution metrics and performance data",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Metrics retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="execution_metrics",
      *                 type="object",
@@ -430,22 +466,22 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'execution_metrics' => [
-                'last_24_hours' => [
-                    'total_executions' => StoredWorkflow::where('created_at', '>=', $last24Hours)->count(),
-                    'successful'       => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'completed')->count(),
-                    'failed'           => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'failed')->count(),
-                    'average_duration' => $this->getAverageDuration($last24Hours),
+                'execution_metrics' => [
+                    'last_24_hours' => [
+                        'total_executions' => StoredWorkflow::where('created_at', '>=', $last24Hours)->count(),
+                        'successful' => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'completed')->count(),
+                        'failed' => StoredWorkflow::where('created_at', '>=', $last24Hours)->where('status', 'failed')->count(),
+                        'average_duration' => $this->getAverageDuration($last24Hours),
+                    ],
+                    'last_7_days' => [
+                        'total_executions' => StoredWorkflow::where('created_at', '>=', $last7Days)->count(),
+                        'successful' => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'completed')->count(),
+                        'failed' => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'failed')->count(),
+                        'average_duration' => $this->getAverageDuration($last7Days),
+                    ],
                 ],
-                'last_7_days' => [
-                    'total_executions' => StoredWorkflow::where('created_at', '>=', $last7Days)->count(),
-                    'successful'       => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'completed')->count(),
-                    'failed'           => StoredWorkflow::where('created_at', '>=', $last7Days)->where('status', 'failed')->count(),
-                    'average_duration' => $this->getAverageDuration($last7Days),
-                ],
-            ],
-            'workflow_types'      => $this->getWorkflowTypeMetrics(),
-            'performance_metrics' => $this->getPerformanceMetrics(),
+                'workflow_types' => $this->getWorkflowTypeMetrics(),
+                'performance_metrics' => $this->getPerformanceMetrics(),
             ]
         );
     }
@@ -459,10 +495,13 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Search workflows",
      *     description="Search workflows by class, arguments, output, or exception content",
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"query"},
+     *
      * @OA\Property(property="query",        type="string", minLength=2, maxLength=255, description="Search query"),
      * @OA\Property(
      *                 property="type",
@@ -474,10 +513,13 @@ class WorkflowMonitoringController extends Controller
      * @OA\Property(property="per_page",     type="integer", minimum=1, maximum=50, default=20)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Search results",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="search_query", type="string"),
      * @OA\Property(property="search_type",  type="string"),
      * @OA\Property(property="results",      type="array", @OA\Items(type="object")),
@@ -490,6 +532,7 @@ class WorkflowMonitoringController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error"
@@ -500,9 +543,9 @@ class WorkflowMonitoringController extends Controller
     {
         $request->validate(
             [
-            'query'    => 'required|string|min:2|max:255',
-            'type'     => 'sometimes|string|in:class,arguments,output,exception',
-            'per_page' => 'sometimes|integer|min:1|max:50',
+                'query' => 'required|string|min:2|max:255',
+                'type' => 'sometimes|string|in:class,arguments,output,exception',
+                'per_page' => 'sometimes|integer|min:1|max:50',
             ]
         );
 
@@ -532,14 +575,14 @@ class WorkflowMonitoringController extends Controller
 
         return response()->json(
             [
-            'search_query' => $searchTerm,
-            'search_type'  => $searchType,
-            'results'      => $results->items(),
-            'meta'         => [
-                'total_found'  => $results->total(),
-                'current_page' => $results->currentPage(),
-                'last_page'    => $results->lastPage(),
-            ],
+                'search_query' => $searchTerm,
+                'search_type' => $searchType,
+                'results' => $results->items(),
+                'meta' => [
+                    'total_found' => $results->total(),
+                    'current_page' => $results->currentPage(),
+                    'last_page' => $results->lastPage(),
+                ],
             ]
         );
     }
@@ -553,14 +596,19 @@ class WorkflowMonitoringController extends Controller
      *     tags={"Workflow Monitoring"},
      *     summary="Get compensation tracking",
      *     description="Retrieves workflows that have triggered compensations or rollback activities",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Compensation data retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="data",
      *                 type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="workflow",                type="object"),
      * @OA\Property(property="compensation_info",       type="object"),
      * @OA\Property(property="rollback_activities",     type="array", @OA\Items(type="object"))
@@ -597,22 +645,22 @@ class WorkflowMonitoringController extends Controller
         $compensationData = $compensatedWorkflows->getCollection()->map(
             function ($workflow) {
                 return [
-                'workflow'            => $workflow,
-                'compensation_info'   => $this->getCompensationInfo($workflow),
-                'rollback_activities' => $this->getRollbackActivities($workflow),
+                    'workflow' => $workflow,
+                    'compensation_info' => $this->getCompensationInfo($workflow),
+                    'rollback_activities' => $this->getRollbackActivities($workflow),
                 ];
             }
         );
 
         return response()->json(
             [
-            'data' => $compensationData,
-            'meta' => [
-                'current_page' => $compensatedWorkflows->currentPage(),
-                'last_page'    => $compensatedWorkflows->lastPage(),
-                'total'        => $compensatedWorkflows->total(),
-            ],
-            'compensation_summary' => $this->getCompensationSummary(),
+                'data' => $compensationData,
+                'meta' => [
+                    'current_page' => $compensatedWorkflows->currentPage(),
+                    'last_page' => $compensatedWorkflows->lastPage(),
+                    'total' => $compensatedWorkflows->total(),
+                ],
+                'compensation_summary' => $this->getCompensationSummary(),
             ]
         );
     }
@@ -623,11 +671,11 @@ class WorkflowMonitoringController extends Controller
     {
         return [
             'total_workflows' => StoredWorkflow::count(),
-            'by_status'       => StoredWorkflow::selectRaw('status, COUNT(*) as count')
+            'by_status' => StoredWorkflow::selectRaw('status, COUNT(*) as count')
                 ->groupBy('status')
                 ->pluck('count', 'status')
                 ->toArray(),
-            'recent_executions'  => StoredWorkflow::where('created_at', '>=', now()->subHour())->count(),
+            'recent_executions' => StoredWorkflow::where('created_at', '>=', now()->subHour())->count(),
             'avg_execution_time' => $this->getAverageDuration(now()->subWeek()),
         ];
     }
@@ -648,8 +696,8 @@ class WorkflowMonitoringController extends Controller
         );
 
         return [
-            'has_compensation'   => $compensationLogs->isNotEmpty(),
-            'compensation_logs'  => $compensationLogs->values(),
+            'has_compensation' => $compensationLogs->isNotEmpty(),
+            'compensation_logs' => $compensationLogs->values(),
             'compensation_count' => $compensationLogs->count(),
         ];
     }
@@ -662,9 +710,9 @@ class WorkflowMonitoringController extends Controller
             $result = json_decode($log->result, true);
             $timeline[] = [
                 'timestamp' => $log->created_at,
-                'index'     => $log->index,
-                'class'     => $log->class,
-                'result'    => $result,
+                'index' => $log->index,
+                'class' => $log->class,
+                'result' => $result,
             ];
         }
 
@@ -681,8 +729,8 @@ class WorkflowMonitoringController extends Controller
 
         return [
             'most_common_errors' => $exceptions->toArray(),
-            'total_exceptions'   => StoredWorkflowException::count(),
-            'recent_exceptions'  => StoredWorkflowException::where('created_at', '>=', now()->subDay())->count(),
+            'total_exceptions' => StoredWorkflowException::count(),
+            'recent_exceptions' => StoredWorkflowException::where('created_at', '>=', now()->subDay())->count(),
         ];
     }
 
@@ -745,7 +793,7 @@ class WorkflowMonitoringController extends Controller
             ->get();
 
         return [
-            'slow_workflows'             => $slowWorkflows->toArray(),
+            'slow_workflows' => $slowWorkflows->toArray(),
             'average_duration_by_status' => StoredWorkflow::selectRaw("status, {$avgDurationSql} as avg_duration")
                 ->whereNotNull('updated_at')
                 ->groupBy('status')
@@ -781,9 +829,9 @@ class WorkflowMonitoringController extends Controller
         $failedWorkflows = StoredWorkflow::where('status', 'failed')->count();
 
         return [
-            'total_workflows'         => $totalWorkflows,
-            'failed_workflows'        => $failedWorkflows,
-            'failure_rate'            => $totalWorkflows > 0 ? round(($failedWorkflows / $totalWorkflows) * 100, 2) : 0,
+            'total_workflows' => $totalWorkflows,
+            'failed_workflows' => $failedWorkflows,
+            'failure_rate' => $totalWorkflows > 0 ? round(($failedWorkflows / $totalWorkflows) * 100, 2) : 0,
             'compensations_triggered' => StoredWorkflowLog::where('class', 'LIKE', '%compensation%')->count(),
         ];
     }

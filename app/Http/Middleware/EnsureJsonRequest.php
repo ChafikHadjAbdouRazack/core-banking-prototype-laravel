@@ -11,7 +11,7 @@ class EnsureJsonRequest
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -26,8 +26,8 @@ class EnsureJsonRequest
         if (! $contentType || ! str_contains($contentType, 'application/json')) {
             return response()->json(
                 [
-                'error'   => 'Unsupported Media Type',
-                'message' => 'This API endpoint requires Content-Type: application/json',
+                    'error' => 'Unsupported Media Type',
+                    'message' => 'This API endpoint requires Content-Type: application/json',
                 ],
                 415
             );

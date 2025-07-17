@@ -60,6 +60,7 @@ class CompareBenchmarks extends Command
         foreach ($current['results'] as $test => $currentResult) {
             if (! isset($baseline['results'][$test])) {
                 $this->warn("⚠️  New test: {$test} (no baseline)");
+
                 continue;
             }
 
@@ -70,11 +71,11 @@ class CompareBenchmarks extends Command
             $percentChange = (($currentAvg - $baselineAvg) / $baselineAvg) * 100;
 
             $results[] = [
-                'test'     => $test,
+                'test' => $test,
                 'baseline' => sprintf('%.2f ms', $baselineAvg),
-                'current'  => sprintf('%.2f ms', $currentAvg),
-                'change'   => sprintf('%+.1f%%', $percentChange),
-                'status'   => $this->getStatus($percentChange, $threshold),
+                'current' => sprintf('%.2f ms', $currentAvg),
+                'change' => sprintf('%+.1f%%', $percentChange),
+                'status' => $this->getStatus($percentChange, $threshold),
             ];
 
             if ($percentChange > $threshold) {
@@ -88,11 +89,11 @@ class CompareBenchmarks extends Command
             collect($results)->map(
                 function ($result) {
                     return [
-                    $result['test'],
-                    $result['baseline'],
-                    $result['current'],
-                    $result['change'],
-                    $result['status'],
+                        $result['test'],
+                        $result['baseline'],
+                        $result['current'],
+                        $result['change'],
+                        $result['status'],
                     ];
                 }
             )->toArray()

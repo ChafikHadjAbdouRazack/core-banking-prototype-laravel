@@ -17,7 +17,7 @@ class EnsureSubProductEnabled
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $parameter): Response
     {
@@ -79,7 +79,7 @@ class EnsureSubProductEnabled
     {
         return response()->json(
             [
-            'error' => $message,
+                'error' => $message,
             ],
             $statusCode
         );

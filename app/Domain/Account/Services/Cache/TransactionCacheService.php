@@ -78,11 +78,11 @@ class TransactionCacheService
                     ->get();
 
                 return [
-                    'date'              => $date,
-                    'total_deposits'    => $transactions->where('type', 'deposit')->sum('amount'),
+                    'date' => $date,
+                    'total_deposits' => $transactions->where('type', 'deposit')->sum('amount'),
                     'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
                     'transaction_count' => $transactions->count(),
-                    'net_change'        => $transactions->where('type', 'deposit')->sum('amount') -
+                    'net_change' => $transactions->where('type', 'deposit')->sum('amount') -
                                    $transactions->where('type', 'withdrawal')->sum('amount'),
                 ];
             }

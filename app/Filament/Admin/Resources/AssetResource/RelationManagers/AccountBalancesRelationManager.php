@@ -24,18 +24,18 @@ class AccountBalancesRelationManager extends RelationManager
         return $form
             ->schema(
                 [
-                Forms\Components\Select::make('account_uuid')
-                    ->label('Account')
-                    ->relationship('account', 'uuid')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
+                    Forms\Components\Select::make('account_uuid')
+                        ->label('Account')
+                        ->relationship('account', 'uuid')
+                        ->searchable()
+                        ->preload()
+                        ->required(),
 
-                Forms\Components\TextInput::make('balance')
-                    ->label('Balance')
-                    ->numeric()
-                    ->required()
-                    ->helperText('Balance in smallest unit (e.g., cents for USD)'),
+                    Forms\Components\TextInput::make('balance')
+                        ->label('Balance')
+                        ->numeric()
+                        ->required()
+                        ->helperText('Balance in smallest unit (e.g., cents for USD)'),
                 ]
             );
     }
@@ -46,71 +46,71 @@ class AccountBalancesRelationManager extends RelationManager
             ->recordTitleAttribute('account_uuid')
             ->columns(
                 [
-                Tables\Columns\TextColumn::make('account.uuid')
-                    ->label('Account UUID')
-                    ->searchable()
-                    ->copyable()
-                    ->copyMessage('Account UUID copied')
-                    ->limit(20)
-                    ->tooltip(fn ($record) => $record->account->uuid),
+                    Tables\Columns\TextColumn::make('account.uuid')
+                        ->label('Account UUID')
+                        ->searchable()
+                        ->copyable()
+                        ->copyMessage('Account UUID copied')
+                        ->limit(20)
+                        ->tooltip(fn ($record) => $record->account->uuid),
 
-                Tables\Columns\TextColumn::make('account.user.name')
-                    ->label('Account Owner')
-                    ->searchable()
-                    ->placeholder('—'),
+                    Tables\Columns\TextColumn::make('account.user.name')
+                        ->label('Account Owner')
+                        ->searchable()
+                        ->placeholder('—'),
 
-                Tables\Columns\TextColumn::make('balance')
-                    ->label('Balance')
-                    ->formatStateUsing(
-                        function ($state, $record) {
-                            $asset = $record->asset;
-                            $formatted = number_format($state / (10 ** $asset->precision), $asset->precision);
+                    Tables\Columns\TextColumn::make('balance')
+                        ->label('Balance')
+                        ->formatStateUsing(
+                            function ($state, $record) {
+                                $asset = $record->asset;
+                                $formatted = number_format($state / (10 ** $asset->precision), $asset->precision);
 
-                            return "{$formatted} {$asset->code}";
-                        }
-                    )
-                    ->sortable()
-                    ->alignEnd(),
+                                return "{$formatted} {$asset->code}";
+                            }
+                        )
+                        ->sortable()
+                        ->alignEnd(),
 
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Last Updated')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('updated_at')
+                        ->label('Last Updated')
+                        ->dateTime()
+                        ->sortable()
+                        ->toggleable(isToggledHiddenByDefault: true),
                 ]
             )
             ->filters(
                 [
-                Tables\Filters\Filter::make('positive_balance')
-                    ->label('Positive Balance Only')
-                    ->query(fn (Builder $query): Builder => $query->where('balance', '>', 0)),
+                    Tables\Filters\Filter::make('positive_balance')
+                        ->label('Positive Balance Only')
+                        ->query(fn (Builder $query): Builder => $query->where('balance', '>', 0)),
 
-                Tables\Filters\Filter::make('zero_balance')
-                    ->label('Zero Balance Only')
-                    ->query(fn (Builder $query): Builder => $query->where('balance', '=', 0)),
+                    Tables\Filters\Filter::make('zero_balance')
+                        ->label('Zero Balance Only')
+                        ->query(fn (Builder $query): Builder => $query->where('balance', '=', 0)),
                 ]
             )
             ->headerActions(
                 [
-                Tables\Actions\CreateAction::make()
-                    ->label('Add Balance'),
+                    Tables\Actions\CreateAction::make()
+                        ->label('Add Balance'),
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->requiresConfirmation(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->requiresConfirmation(),
                 ]
             )
             ->bulkActions(
                 [
-                Tables\Actions\BulkActionGroup::make(
-                    [
-                    Tables\Actions\DeleteBulkAction::make()
-                        ->requiresConfirmation(),
-                    ]
-                ),
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make()
+                                ->requiresConfirmation(),
+                        ]
+                    ),
                 ]
             )
             ->defaultSort('balance', 'desc');

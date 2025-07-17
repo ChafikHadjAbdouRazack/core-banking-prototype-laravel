@@ -30,10 +30,10 @@ class BatchProcessingController extends Controller
 
         // Get filter parameters
         $filters = [
-            'status'    => $request->get('status', 'all'),
-            'type'      => $request->get('type', 'all'),
+            'status' => $request->get('status', 'all'),
+            'type' => $request->get('type', 'all'),
             'date_from' => $request->get('date_from'),
-            'date_to'   => $request->get('date_to'),
+            'date_to' => $request->get('date_to'),
         ];
 
         // Get batch jobs
@@ -80,15 +80,15 @@ class BatchProcessingController extends Controller
     {
         $validated = $request->validate(
             [
-            'name'                 => 'required|string|max:255',
-            'type'                 => 'required|in:transfer,payment,conversion',
-            'schedule_at'          => 'nullable|date|after:now',
-            'items'                => 'required|array|min:1',
-            'items.*.from_account' => 'required_if:type,transfer|uuid',
-            'items.*.to_account'   => 'required_if:type,transfer|uuid',
-            'items.*.amount'       => 'required|numeric|min:0.01',
-            'items.*.currency'     => 'required|string|size:3',
-            'items.*.description'  => 'nullable|string|max:255',
+                'name' => 'required|string|max:255',
+                'type' => 'required|in:transfer,payment,conversion',
+                'schedule_at' => 'nullable|date|after:now',
+                'items' => 'required|array|min:1',
+                'items.*.from_account' => 'required_if:type,transfer|uuid',
+                'items.*.to_account' => 'required_if:type,transfer|uuid',
+                'items.*.amount' => 'required|numeric|min:0.01',
+                'items.*.currency' => 'required|string|size:3',
+                'items.*.description' => 'nullable|string|max:255',
             ]
         );
 
@@ -97,15 +97,15 @@ class BatchProcessingController extends Controller
             // Create batch job
             $batchJob = BatchJob::create(
                 [
-                'uuid'            => Str::uuid(),
-                'user_uuid'       => Auth::user()->uuid,
-                'name'            => $validated['name'],
-                'type'            => $validated['type'],
-                'status'          => 'pending',
-                'total_items'     => count($validated['items']),
-                'processed_items' => 0,
-                'failed_items'    => 0,
-                'scheduled_at'    => $validated['schedule_at'] ?? now(),
+                    'uuid' => Str::uuid(),
+                    'user_uuid' => Auth::user()->uuid,
+                    'name' => $validated['name'],
+                    'type' => $validated['type'],
+                    'status' => 'pending',
+                    'total_items' => count($validated['items']),
+                    'processed_items' => 0,
+                    'failed_items' => 0,
+                    'scheduled_at' => $validated['schedule_at'] ?? now(),
                 ]
             );
 
@@ -113,11 +113,11 @@ class BatchProcessingController extends Controller
             foreach ($validated['items'] as $index => $item) {
                 BatchItem::create(
                     [
-                    'batch_job_id' => $batchJob->id,
-                    'sequence'     => $index + 1,
-                    'type'         => $validated['type'],
-                    'status'       => 'pending',
-                    'data'         => $item,
+                        'batch_job_id' => $batchJob->id,
+                        'sequence' => $index + 1,
+                        'type' => $validated['type'],
+                        'status' => 'pending',
+                        'data' => $item,
                     ]
                 );
             }
@@ -212,17 +212,17 @@ class BatchProcessingController extends Controller
             ->where('status', 'failed')
             ->update(
                 [
-                'status'        => 'pending',
-                'error_message' => null,
-                'processed_at'  => null,
+                    'status' => 'pending',
+                    'error_message' => null,
+                    'processed_at' => null,
                 ]
             );
 
         // Update batch job
         $batchJob->update(
             [
-            'status'       => 'processing',
-            'failed_items' => 0,
+                'status' => 'processing',
+                'failed_items' => 0,
             ]
         );
 
@@ -252,16 +252,16 @@ class BatchProcessingController extends Controller
                 fputcsv(
                     $handle,
                     [
-                    'Sequence',
-                    'Type',
-                    'Status',
-                    'From Account',
-                    'To Account',
-                    'Amount',
-                    'Currency',
-                    'Description',
-                    'Processed At',
-                    'Error Message',
+                        'Sequence',
+                        'Type',
+                        'Status',
+                        'From Account',
+                        'To Account',
+                        'Amount',
+                        'Currency',
+                        'Description',
+                        'Processed At',
+                        'Error Message',
                     ]
                 );
 
@@ -270,16 +270,16 @@ class BatchProcessingController extends Controller
                     fputcsv(
                         $handle,
                         [
-                        $item->sequence,
-                        $item->type,
-                        $item->status,
-                        $item->data['from_account'] ?? '',
-                        $item->data['to_account'] ?? '',
-                        $item->data['amount'] ?? '',
-                        $item->data['currency'] ?? '',
-                        $item->data['description'] ?? '',
-                        $item->processed_at,
-                        $item->error_message,
+                            $item->sequence,
+                            $item->type,
+                            $item->status,
+                            $item->data['from_account'] ?? '',
+                            $item->data['to_account'] ?? '',
+                            $item->data['amount'] ?? '',
+                            $item->data['currency'] ?? '',
+                            $item->data['description'] ?? '',
+                            $item->processed_at,
+                            $item->error_message,
                         ]
                     );
                 }
@@ -288,7 +288,7 @@ class BatchProcessingController extends Controller
             },
             $filename,
             [
-            'Content-Type' => 'text/csv',
+                'Content-Type' => 'text/csv',
             ]
         );
     }
@@ -348,32 +348,32 @@ class BatchProcessingController extends Controller
     {
         return [
             [
-                'id'          => 'salary_payments',
-                'name'        => 'Salary Payments',
+                'id' => 'salary_payments',
+                'name' => 'Salary Payments',
                 'description' => 'Monthly salary disbursement to employees',
-                'type'        => 'transfer',
-                'icon'        => 'currency-dollar',
+                'type' => 'transfer',
+                'icon' => 'currency-dollar',
             ],
             [
-                'id'          => 'vendor_payments',
-                'name'        => 'Vendor Payments',
+                'id' => 'vendor_payments',
+                'name' => 'Vendor Payments',
                 'description' => 'Bulk payments to suppliers and vendors',
-                'type'        => 'payment',
-                'icon'        => 'shopping-cart',
+                'type' => 'payment',
+                'icon' => 'shopping-cart',
             ],
             [
-                'id'          => 'currency_conversion',
-                'name'        => 'Currency Conversion',
+                'id' => 'currency_conversion',
+                'name' => 'Currency Conversion',
                 'description' => 'Bulk currency conversion operations',
-                'type'        => 'conversion',
-                'icon'        => 'refresh',
+                'type' => 'conversion',
+                'icon' => 'refresh',
             ],
             [
-                'id'          => 'dividend_distribution',
-                'name'        => 'Dividend Distribution',
+                'id' => 'dividend_distribution',
+                'name' => 'Dividend Distribution',
                 'description' => 'Distribute dividends to shareholders',
-                'type'        => 'transfer',
-                'icon'        => 'chart-bar',
+                'type' => 'transfer',
+                'icon' => 'chart-bar',
             ],
         ];
     }

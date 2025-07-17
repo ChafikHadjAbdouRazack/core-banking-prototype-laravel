@@ -195,11 +195,11 @@ class KeyManagementServiceTest extends ServiceTestCase
     public function test_restore_from_backup_validates_checksum(): void
     {
         $backup = [
-            'backup_id'      => 'backup_123',
-            'wallet_id'      => 'wallet_123',
+            'backup_id' => 'backup_123',
+            'wallet_id' => 'wallet_123',
             'encrypted_data' => 'invalid_data',
-            'checksum'       => 'invalid_checksum',
-            'created_at'     => now()->toIso8601String(),
+            'checksum' => 'invalid_checksum',
+            'created_at' => now()->toIso8601String(),
         ];
 
         $this->expectException(KeyManagementException::class);

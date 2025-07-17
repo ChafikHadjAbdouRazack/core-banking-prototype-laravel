@@ -86,12 +86,12 @@ class FraudAlertsController extends Controller
         }
 
         $stats = [
-            'total_cases'         => (clone $statsQuery)->count(),
-            'pending_cases'       => (clone $statsQuery)->where('status', 'pending')->count(),
-            'confirmed_cases'     => (clone $statsQuery)->where('status', 'confirmed')->count(),
-            'false_positives'     => (clone $statsQuery)->where('status', 'false_positive')->count(),
+            'total_cases' => (clone $statsQuery)->count(),
+            'pending_cases' => (clone $statsQuery)->where('status', 'pending')->count(),
+            'confirmed_cases' => (clone $statsQuery)->where('status', 'confirmed')->count(),
+            'false_positives' => (clone $statsQuery)->where('status', 'false_positive')->count(),
             'investigating_cases' => (clone $statsQuery)->where('status', 'investigating')->count(),
-            'resolved_cases'      => (clone $statsQuery)->where('status', 'resolved')->count(),
+            'resolved_cases' => (clone $statsQuery)->where('status', 'resolved')->count(),
         ];
 
         // Get trend data for the last 30 days
@@ -145,17 +145,17 @@ class FraudAlertsController extends Controller
 
         $request->validate(
             [
-            'status' => 'required|in:pending,investigating,confirmed,false_positive,resolved',
-            'notes'  => 'nullable|string|max:1000',
+                'status' => 'required|in:pending,investigating,confirmed,false_positive,resolved',
+                'notes' => 'nullable|string|max:1000',
             ]
         );
 
         $fraudCase->update(
             [
-            'status'             => $request->status,
-            'investigator_notes' => $request->notes,
-            'investigated_by'    => Auth::id(),
-            'investigated_at'    => now(),
+                'status' => $request->status,
+                'investigator_notes' => $request->notes,
+                'investigated_by' => Auth::id(),
+                'investigated_at' => now(),
             ]
         );
 
@@ -173,7 +173,7 @@ class FraudAlertsController extends Controller
         $filename = 'fraud-cases-' . date('Y-m-d') . '.csv';
 
         $headers = [
-            'Content-Type'        => 'text/csv',
+            'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
@@ -184,16 +184,16 @@ class FraudAlertsController extends Controller
             fputcsv(
                 $file,
                 [
-                'Case Number',
-                'Type',
-                'Status',
-                'Severity',
-                'Risk Score',
-                'Amount',
-                'Currency',
-                'Detected At',
-                'Resolved At',
-                'Description',
+                    'Case Number',
+                    'Type',
+                    'Status',
+                    'Severity',
+                    'Risk Score',
+                    'Amount',
+                    'Currency',
+                    'Detected At',
+                    'Resolved At',
+                    'Description',
                 ]
             );
 
@@ -230,16 +230,16 @@ class FraudAlertsController extends Controller
                             fputcsv(
                                 $file,
                                 [
-                                $case->case_number,
-                                $case->type,
-                                $case->status,
-                                $case->severity,
-                                $case->risk_score,
-                                $case->amount,
-                                $case->currency ?? 'USD',
-                                $case->detected_at->format('Y-m-d H:i:s'),
-                                $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
-                                $case->description ?? '',
+                                    $case->case_number,
+                                    $case->type,
+                                    $case->status,
+                                    $case->severity,
+                                    $case->risk_score,
+                                    $case->amount,
+                                    $case->currency ?? 'USD',
+                                    $case->detected_at->format('Y-m-d H:i:s'),
+                                    $case->resolved_at?->format('Y-m-d H:i:s') ?? '',
+                                    $case->description ?? '',
                                 ]
                             );
                         }
@@ -268,7 +268,7 @@ class FraudAlertsController extends Controller
                 ->count();
 
             $trendData[] = [
-                'date'  => $date->format('M d'),
+                'date' => $date->format('M d'),
                 'count' => $count,
             ];
         }
@@ -282,9 +282,9 @@ class FraudAlertsController extends Controller
     private function getRiskDistribution($baseQuery)
     {
         return [
-            'low'      => (clone $baseQuery)->whereBetween('risk_score', [0, 30])->count(),
-            'medium'   => (clone $baseQuery)->whereBetween('risk_score', [31, 60])->count(),
-            'high'     => (clone $baseQuery)->whereBetween('risk_score', [61, 80])->count(),
+            'low' => (clone $baseQuery)->whereBetween('risk_score', [0, 30])->count(),
+            'medium' => (clone $baseQuery)->whereBetween('risk_score', [31, 60])->count(),
+            'high' => (clone $baseQuery)->whereBetween('risk_score', [61, 80])->count(),
             'critical' => (clone $baseQuery)->where('risk_score', '>', 80)->count(),
         ];
     }

@@ -12,8 +12,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['total' => 0],
+                'data' => [],
+                'meta' => ['total' => 0],
             ]
         );
     }
@@ -22,10 +22,10 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'export_id' => uniqid(),
-                'status'    => 'processing',
-            ],
+                'data' => [
+                    'export_id' => uniqid(),
+                    'status' => 'processing',
+                ],
             ]
         );
     }
@@ -34,7 +34,7 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -43,7 +43,7 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => ['id' => $id],
+                'data' => ['id' => $id],
             ]
         );
     }
@@ -52,8 +52,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['total' => 0],
+                'data' => [],
+                'meta' => ['total' => 0],
             ]
         );
     }
@@ -62,8 +62,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Audit report generation initiated',
-            'data'    => ['report_id' => uniqid()],
+                'message' => 'Audit report generation initiated',
+                'data' => ['report_id' => uniqid()],
             ],
             201
         );
@@ -73,11 +73,11 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => [
-                'entity_type' => $entityType,
-                'entity_id'   => $entityId,
-            ],
+                'data' => [],
+                'meta' => [
+                    'entity_type' => $entityType,
+                    'entity_id' => $entityId,
+                ],
             ]
         );
     }
@@ -86,8 +86,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['user_id' => $userId],
+                'data' => [],
+                'meta' => ['user_id' => $userId],
             ]
         );
     }
@@ -96,8 +96,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['total' => 0],
+                'data' => [],
+                'meta' => ['total' => 0],
             ]
         );
     }
@@ -106,8 +106,8 @@ class AuditController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Audit logs archived',
-            'data'    => [],
+                'message' => 'Audit logs archived',
+                'data' => [],
             ]
         );
     }

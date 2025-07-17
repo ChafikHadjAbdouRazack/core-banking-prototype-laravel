@@ -15,9 +15,9 @@ it('caches latest turnover', function () {
     $account = Account::factory()->create();
     $turnover = Turnover::factory()->create([
         'account_uuid' => $account->uuid,
-        'debit'        => 1000,
-        'credit'       => 2000,
-        'created_at'   => now()->subMinute(), // Ensure older timestamp
+        'debit' => 1000,
+        'credit' => 2000,
+        'created_at' => now()->subMinute(), // Ensure older timestamp
     ]);
 
     $cacheService = app(TurnoverCacheService::class);
@@ -31,9 +31,9 @@ it('caches latest turnover', function () {
     // Create a new turnover to verify cache is being used
     $newTurnover = Turnover::factory()->create([
         'account_uuid' => $account->uuid,
-        'debit'        => 3000,
-        'credit'       => 4000,
-        'created_at'   => now(), // Ensure newer timestamp
+        'debit' => 3000,
+        'credit' => 4000,
+        'created_at' => now(), // Ensure newer timestamp
     ]);
 
     // Should still return the old cached turnover (not the new one)
@@ -56,8 +56,8 @@ it('caches turnover statistics', function () {
     // Create multiple turnovers
     Turnover::factory()->count(3)->create([
         'account_uuid' => $account->uuid,
-        'debit'        => 1000,
-        'credit'       => 2000,
+        'debit' => 1000,
+        'credit' => 2000,
     ]);
 
     $cacheService = app(TurnoverCacheService::class);

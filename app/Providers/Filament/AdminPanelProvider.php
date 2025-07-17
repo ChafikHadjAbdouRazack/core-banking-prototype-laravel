@@ -28,44 +28,44 @@ class AdminPanelProvider extends PanelProvider
             ->brandName($this->getBrandName())
             ->colors(
                 [
-                'primary' => Color::Blue,
-                'danger'  => Color::Red,
-                'success' => Color::Emerald,
-                'warning' => Color::Amber,
+                    'primary' => Color::Blue,
+                    'danger' => Color::Red,
+                    'success' => Color::Emerald,
+                    'warning' => Color::Amber,
                 ]
             )
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages(
                 [
-                Dashboard::class,
+                    Dashboard::class,
                 ]
             )
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([])
             ->navigationGroups(
                 [
-                'Banking',
-                'System',
+                    'Banking',
+                    'System',
                 ]
             )
             ->sidebarCollapsibleOnDesktop()
             ->middleware(
                 [
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
+                    EncryptCookies::class,
+                    AddQueuedCookiesToResponse::class,
+                    StartSession::class,
+                    AuthenticateSession::class,
+                    ShareErrorsFromSession::class,
+                    VerifyCsrfToken::class,
+                    SubstituteBindings::class,
+                    DisableBladeIconComponents::class,
+                    DispatchServingFilamentEvent::class,
                 ]
             )
             ->authMiddleware(
                 [
-                Authenticate::class,
+                    Authenticate::class,
                 ]
             );
     }

@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="KycDocument",
  *     required={"id", "user_uuid", "document_type", "status", "created_at"},
+ *
  * @OA\Property(property="id",                 type="string", format="uuid", example="123e4567-e89b-12d3-a456-426614174000"),
  * @OA\Property(property="user_uuid",          type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
  * @OA\Property(property="document_type",      type="string", enum={"passport", "national_id", "driving_license", "proof_of_address", "bank_statement"}, example="passport"),
@@ -25,6 +26,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="KycStatus",
  *     required={"user_uuid", "verification_level", "status", "documents", "next_review_date"},
+ *
  * @OA\Property(property="user_uuid",                type="string", format="uuid"),
  * @OA\Property(property="verification_level",       type="string", enum={"basic", "enhanced", "premium"}, example="enhanced", description="KYC verification tier"),
  * @OA\Property(property="status",                   type="string", enum={"unverified", "pending", "verified", "rejected", "expired"}, example="verified"),
@@ -44,6 +46,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="UploadKycDocumentRequest",
  *     required={"document_type", "document_file"},
+ *
  * @OA\Property(property="document_type",   type="string", enum={"passport", "national_id", "driving_license", "proof_of_address", "bank_statement"}),
  * @OA\Property(property="document_number", type="string", example="AB123456", description="Document identification number"),
  * @OA\Property(property="document_file",   type="string", format="binary", description="Document file upload"),
@@ -56,6 +59,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="VerifyKycDocumentRequest",
  *     required={"status"},
+ *
  * @OA\Property(property="status",             type="string", enum={"approved", "rejected"}, example="approved"),
  * @OA\Property(property="verification_notes", type="string", example="Document verified against government database"),
  * @OA\Property(property="risk_factors",       type="array", @OA\Items(type="string"), example={"pep", "high_risk_country"})
@@ -66,6 +70,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="GdprDataRequest",
  *     required={"id", "user_uuid", "request_type", "status", "created_at"},
+ *
  * @OA\Property(property="id",              type="string", format="uuid"),
  * @OA\Property(property="user_uuid",       type="string", format="uuid"),
  * @OA\Property(property="request_type",    type="string", enum={"export", "deletion", "rectification", "portability"}, example="export"),
@@ -83,6 +88,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CreateGdprRequestRequest",
  *     required={"request_type"},
+ *
  * @OA\Property(property="request_type",   type="string", enum={"export", "deletion", "rectification", "portability"}),
  * @OA\Property(property="requested_data", type="array", @OA\Items(type="string"), example={"personal_info", "transactions"}, description="Specific data categories requested"),
  * @OA\Property(property="reason",         type="string", example="Personal backup", description="Reason for the request"),
@@ -94,6 +100,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="ConsentRecord",
  *     required={"id", "user_uuid", "consent_type", "status", "version", "created_at"},
+ *
  * @OA\Property(property="id",           type="string", format="uuid"),
  * @OA\Property(property="user_uuid",    type="string", format="uuid"),
  * @OA\Property(property="consent_type", type="string", enum={"marketing", "data_processing", "third_party_sharing", "cookies"}, example="marketing"),
@@ -111,6 +118,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="UpdateConsentRequest",
  *     required={"consent_type", "status"},
+ *
  * @OA\Property(property="consent_type",  type="string", enum={"marketing", "data_processing", "third_party_sharing", "cookies"}),
  * @OA\Property(property="status",        type="string", enum={"granted", "revoked"}, example="granted"),
  * @OA\Property(property="duration_days", type="integer", example=365, description="Consent duration in days")
@@ -121,6 +129,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="AmlAlert",
  *     required={"id", "user_uuid", "alert_type", "severity", "status", "created_at"},
+ *
  * @OA\Property(property="id",                      type="string", format="uuid"),
  * @OA\Property(property="user_uuid",               type="string", format="uuid"),
  * @OA\Property(property="alert_type",              type="string", enum={"high_value_transaction", "rapid_movement", "suspicious_pattern", "sanctions_match", "pep_match"}, example="high_value_transaction"),
@@ -141,6 +150,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="SanctionsCheckResult",
  *     required={"checked_at", "status", "matches"},
+ *
  * @OA\Property(property="checked_at",      type="string", format="date-time"),
  * @OA\Property(property="status",          type="string", enum={"clear", "potential_match", "confirmed_match"}, example="clear"),
  * @OA\Property(property="matches",         type="array", @OA\Items(

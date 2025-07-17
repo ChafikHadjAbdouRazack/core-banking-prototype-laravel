@@ -61,27 +61,27 @@ class CgoPaymentVerificationController extends Controller
             if ($updated) {
                 return response()->json(
                     [
-                    'success'  => true,
-                    'message'  => 'Payment has been verified!',
-                    'status'   => $investment->fresh()->payment_status,
-                    'redirect' => route('cgo.investments'),
+                        'success' => true,
+                        'message' => 'Payment has been verified!',
+                        'status' => $investment->fresh()->payment_status,
+                        'redirect' => route('cgo.investments'),
                     ]
                 );
             }
 
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'Payment is still pending',
-                'status'  => $investment->payment_status,
+                    'success' => false,
+                    'message' => 'Payment is still pending',
+                    'status' => $investment->payment_status,
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'Unable to verify payment at this time',
-                'error'   => config('app.debug') ? $e->getMessage() : null,
+                    'success' => false,
+                    'message' => 'Unable to verify payment at this time',
+                    'error' => config('app.debug') ? $e->getMessage() : null,
                 ],
                 500
             );
@@ -101,8 +101,8 @@ class CgoPaymentVerificationController extends Controller
         if ($investment->payment_status === 'completed') {
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'Payment has already been completed',
+                    'success' => false,
+                    'message' => 'Payment has already been completed',
                 ],
                 400
             );
@@ -126,15 +126,15 @@ class CgoPaymentVerificationController extends Controller
 
             return response()->json(
                 [
-                'success' => true,
-                'message' => 'Payment instructions have been sent to your email',
+                    'success' => true,
+                    'message' => 'Payment instructions have been sent to your email',
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'success' => false,
-                'message' => 'Unable to send instructions at this time',
+                    'success' => false,
+                    'message' => 'Unable to send instructions at this time',
                 ],
                 500
             );
@@ -155,63 +155,63 @@ class CgoPaymentVerificationController extends Controller
 
         // Investment created
         $timeline[] = [
-            'date'        => $investment->created_at,
-            'event'       => 'Investment initiated',
+            'date' => $investment->created_at,
+            'event' => 'Investment initiated',
             'description' => 'Investment of $' . number_format($investment->amount / 100, 2) . ' created',
-            'icon'        => 'heroicon-o-currency-dollar',
-            'color'       => 'gray',
+            'icon' => 'heroicon-o-currency-dollar',
+            'color' => 'gray',
         ];
 
         // Payment method selected
         $timeline[] = [
-            'date'        => $investment->created_at,
-            'event'       => 'Payment method selected',
+            'date' => $investment->created_at,
+            'event' => 'Payment method selected',
             'description' => ucfirst(str_replace('_', ' ', $investment->payment_method)),
-            'icon'        => 'heroicon-o-credit-card',
-            'color'       => 'blue',
+            'icon' => 'heroicon-o-credit-card',
+            'color' => 'blue',
         ];
 
         // Payment pending
         if ($investment->payment_pending_at) {
             $timeline[] = [
-                'date'        => $investment->payment_pending_at,
-                'event'       => 'Payment pending',
+                'date' => $investment->payment_pending_at,
+                'event' => 'Payment pending',
                 'description' => 'Waiting for payment confirmation',
-                'icon'        => 'heroicon-o-clock',
-                'color'       => 'yellow',
+                'icon' => 'heroicon-o-clock',
+                'color' => 'yellow',
             ];
         }
 
         // KYC verification
         if ($investment->kyc_verified_at) {
             $timeline[] = [
-                'date'        => $investment->kyc_verified_at,
-                'event'       => 'KYC verified',
+                'date' => $investment->kyc_verified_at,
+                'event' => 'KYC verified',
                 'description' => ucfirst($investment->kyc_level) . ' KYC completed',
-                'icon'        => 'heroicon-o-shield-check',
-                'color'       => 'green',
+                'icon' => 'heroicon-o-shield-check',
+                'color' => 'green',
             ];
         }
 
         // Payment completed
         if ($investment->payment_completed_at) {
             $timeline[] = [
-                'date'        => $investment->payment_completed_at,
-                'event'       => 'Payment confirmed',
+                'date' => $investment->payment_completed_at,
+                'event' => 'Payment confirmed',
                 'description' => 'Payment successfully processed',
-                'icon'        => 'heroicon-o-check-circle',
-                'color'       => 'green',
+                'icon' => 'heroicon-o-check-circle',
+                'color' => 'green',
             ];
         }
 
         // Certificate issued
         if ($investment->certificate_issued_at) {
             $timeline[] = [
-                'date'        => $investment->certificate_issued_at,
-                'event'       => 'Certificate issued',
+                'date' => $investment->certificate_issued_at,
+                'event' => 'Certificate issued',
                 'description' => 'Investment certificate #' . $investment->certificate_number . ' generated',
-                'icon'        => 'heroicon-o-document-text',
-                'color'       => 'green',
+                'icon' => 'heroicon-o-document-text',
+                'color' => 'green',
             ];
         }
 

@@ -24,18 +24,18 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'status'      => 'nullable|in:open,investigating,closed',
-            'priority'    => 'nullable|in:low,medium,high,critical',
-            'risk_level'  => 'nullable|in:very_low,low,medium,high,very_high',
-            'assigned_to' => 'nullable|integer',
-            'date_from'   => 'nullable|date',
-            'date_to'     => 'nullable|date|after_or_equal:date_from',
-            'min_amount'  => 'nullable|numeric|min:0',
-            'max_amount'  => 'nullable|numeric|min:0',
-            'search'      => 'nullable|string|max:100',
-            'sort_by'     => 'nullable|in:created_at,priority,loss_amount,risk_level',
-            'sort_order'  => 'nullable|in:asc,desc',
-            'per_page'    => 'nullable|integer|min:10|max:100',
+                'status' => 'nullable|in:open,investigating,closed',
+                'priority' => 'nullable|in:low,medium,high,critical',
+                'risk_level' => 'nullable|in:very_low,low,medium,high,very_high',
+                'assigned_to' => 'nullable|integer',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
+                'min_amount' => 'nullable|numeric|min:0',
+                'max_amount' => 'nullable|numeric|min:0',
+                'search' => 'nullable|string|max:100',
+                'sort_by' => 'nullable|in:created_at,priority,loss_amount,risk_level',
+                'sort_order' => 'nullable|in:asc,desc',
+                'per_page' => 'nullable|integer|min:10|max:100',
             ]
         );
 
@@ -51,8 +51,8 @@ class FraudCaseController extends Controller
     {
         $case = FraudCase::with(
             [
-            'fraudScore',
-            'fraudScore.entity',
+                'fraudScore',
+                'fraudScore.entity',
             ]
         )->findOrFail($caseId);
 
@@ -64,18 +64,18 @@ class FraudCaseController extends Controller
 
         return response()->json(
             [
-            'case'          => $case,
-            'similar_cases' => $similarCases->map(
-                function ($similarCase) {
-                    return [
-                    'id'          => $similarCase->id,
-                    'case_number' => $similarCase->case_number,
-                    'risk_level'  => $similarCase->risk_level,
-                    'status'      => $similarCase->status,
-                    'created_at'  => $similarCase->created_at,
-                    ];
-                }
-            ),
+                'case' => $case,
+                'similar_cases' => $similarCases->map(
+                    function ($similarCase) {
+                        return [
+                            'id' => $similarCase->id,
+                            'case_number' => $similarCase->case_number,
+                            'risk_level' => $similarCase->risk_level,
+                            'status' => $similarCase->status,
+                            'created_at' => $similarCase->created_at,
+                        ];
+                    }
+                ),
             ]
         );
     }
@@ -87,17 +87,17 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'status'               => 'nullable|in:open,investigating,closed',
-            'priority'             => 'nullable|in:low,medium,high,critical',
-            'assigned_to'          => 'nullable|integer',
-            'note'                 => 'nullable|string|max:1000',
-            'note_type'            => 'nullable|in:investigation,analysis,action,resolution',
-            'evidence'             => 'nullable|array',
-            'evidence.type'        => 'required_with:evidence|string',
-            'evidence.description' => 'required_with:evidence|string',
-            'evidence.file_path'   => 'nullable|string',
-            'tags'                 => 'nullable|array',
-            'tags.*'               => 'string|max:50',
+                'status' => 'nullable|in:open,investigating,closed',
+                'priority' => 'nullable|in:low,medium,high,critical',
+                'assigned_to' => 'nullable|integer',
+                'note' => 'nullable|string|max:1000',
+                'note_type' => 'nullable|in:investigation,analysis,action,resolution',
+                'evidence' => 'nullable|array',
+                'evidence.type' => 'required_with:evidence|string',
+                'evidence.description' => 'required_with:evidence|string',
+                'evidence.file_path' => 'nullable|string',
+                'tags' => 'nullable|array',
+                'tags.*' => 'string|max:50',
             ]
         );
 
@@ -110,8 +110,8 @@ class FraudCaseController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud case updated successfully',
-            'case'    => $updatedCase,
+                'message' => 'Fraud case updated successfully',
+                'case' => $updatedCase,
             ]
         );
     }
@@ -123,9 +123,9 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'resolution'      => 'required|string|max:500',
-            'outcome'         => 'required|in:fraud,legitimate,unknown',
-            'recovery_amount' => 'nullable|numeric|min:0',
+                'resolution' => 'required|string|max:500',
+                'outcome' => 'required|in:fraud,legitimate,unknown',
+                'recovery_amount' => 'nullable|numeric|min:0',
             ]
         );
 
@@ -147,8 +147,8 @@ class FraudCaseController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud case resolved successfully',
-            'case'    => $resolvedCase,
+                'message' => 'Fraud case resolved successfully',
+                'case' => $resolvedCase,
             ]
         );
     }
@@ -160,7 +160,7 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'reason' => 'required|string|max:500',
+                'reason' => 'required|string|max:500',
             ]
         );
 
@@ -173,8 +173,8 @@ class FraudCaseController extends Controller
 
         return response()->json(
             [
-            'message' => 'Fraud case escalated successfully',
-            'case'    => $escalatedCase,
+                'message' => 'Fraud case escalated successfully',
+                'case' => $escalatedCase,
             ]
         );
     }
@@ -186,8 +186,8 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'date_from' => 'nullable|date',
-            'date_to'   => 'nullable|date|after_or_equal:date_from',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date|after_or_equal:date_from',
             ]
         );
 
@@ -203,7 +203,7 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'investigator_id' => 'required|integer|exists:users,id',
+                'investigator_id' => 'required|integer|exists:users,id',
             ]
         );
 
@@ -222,8 +222,8 @@ class FraudCaseController extends Controller
 
         return response()->json(
             [
-            'message' => 'Case assigned successfully',
-            'case'    => $case,
+                'message' => 'Case assigned successfully',
+                'case' => $case,
             ]
         );
     }
@@ -235,10 +235,10 @@ class FraudCaseController extends Controller
     {
         $request->validate(
             [
-            'type'        => 'required|in:document,screenshot,log,communication,other',
-            'description' => 'required|string|max:500',
-            'file'        => 'nullable|file|max:10240', // 10MB max
-            'metadata'    => 'nullable|array',
+                'type' => 'required|in:document,screenshot,log,communication,other',
+                'description' => 'required|string|max:500',
+                'file' => 'nullable|file|max:10240', // 10MB max
+                'metadata' => 'nullable|array',
             ]
         );
 
@@ -248,9 +248,9 @@ class FraudCaseController extends Controller
         $this->authorize('update', $case);
 
         $evidenceData = [
-            'type'        => $request->type,
+            'type' => $request->type,
             'description' => $request->description,
-            'metadata'    => $request->metadata ?? [],
+            'metadata' => $request->metadata ?? [],
         ];
 
         // Handle file upload
@@ -262,14 +262,14 @@ class FraudCaseController extends Controller
         $updatedCase = $this->caseService->updateInvestigation(
             $case,
             [
-            'evidence' => $evidenceData,
+                'evidence' => $evidenceData,
             ]
         );
 
         return response()->json(
             [
-            'message' => 'Evidence added successfully',
-            'case'    => $updatedCase,
+                'message' => 'Evidence added successfully',
+                'case' => $updatedCase,
             ]
         );
     }
@@ -288,39 +288,39 @@ class FraudCaseController extends Controller
 
         // Case created
         $timeline[] = [
-            'timestamp'   => $case->created_at,
-            'type'        => 'case_created',
+            'timestamp' => $case->created_at,
+            'type' => 'case_created',
             'description' => 'Fraud case created',
-            'actor'       => 'System',
+            'actor' => 'System',
         ];
 
         // Investigation started
         if ($case->investigation_started_at) {
             $timeline[] = [
-                'timestamp'   => $case->investigation_started_at,
-                'type'        => 'investigation_started',
+                'timestamp' => $case->investigation_started_at,
+                'type' => 'investigation_started',
                 'description' => 'Investigation started',
-                'actor'       => 'System',
+                'actor' => 'System',
             ];
         }
 
         // Add investigation notes to timeline
         foreach ($case->investigation_notes ?? [] as $note) {
             $timeline[] = [
-                'timestamp'   => $note['timestamp'],
-                'type'        => $note['type'] ?? 'note',
+                'timestamp' => $note['timestamp'],
+                'type' => $note['type'] ?? 'note',
                 'description' => $note['note'],
-                'actor'       => $note['author'] ?? 'Unknown',
+                'actor' => $note['author'] ?? 'Unknown',
             ];
         }
 
         // Case resolved
         if ($case->resolved_at) {
             $timeline[] = [
-                'timestamp'   => $case->resolved_at,
-                'type'        => 'case_resolved',
+                'timestamp' => $case->resolved_at,
+                'type' => 'case_resolved',
                 'description' => "Case resolved: {$case->resolution}",
-                'actor'       => $case->resolution_notes['resolved_by'] ?? 'Unknown',
+                'actor' => $case->resolution_notes['resolved_by'] ?? 'Unknown',
             ];
         }
 

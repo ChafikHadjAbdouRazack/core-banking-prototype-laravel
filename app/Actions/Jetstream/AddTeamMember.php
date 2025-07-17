@@ -43,12 +43,12 @@ class AddTeamMember implements AddsTeamMembers
     {
         Validator::make(
             [
-            'email' => $email,
-            'role'  => $role,
+                'email' => $email,
+                'role' => $role,
             ],
             $this->rules(),
             [
-            'email.exists' => __('We were unable to find a registered user with this email address.'),
+                'email.exists' => __('We were unable to find a registered user with this email address.'),
             ]
         )->after(
             $this->ensureUserIsNotAlreadyOnTeam($team, $email)
@@ -64,10 +64,10 @@ class AddTeamMember implements AddsTeamMembers
     {
         return array_filter(
             [
-            'email' => ['required', 'email', 'exists:users'],
-            'role'  => Jetstream::hasRoles()
-                            ? ['required', 'string', new Role()]
-                            : null,
+                'email' => ['required', 'email', 'exists:users'],
+                'role' => Jetstream::hasRoles()
+                                ? ['required', 'string', new Role()]
+                                : null,
             ]
         );
     }

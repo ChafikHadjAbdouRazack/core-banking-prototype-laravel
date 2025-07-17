@@ -21,28 +21,37 @@ class PasswordController extends Controller
      *     operationId="changePassword",
      *     tags={"Authentication"},
      *     security={{"sanctum": {}}},
+     *
      *     @OA\RequestBody(
      *         required=true,
+     *
      *         @OA\JsonContent(
      *             required={"current_password","new_password","new_password_confirmation"},
+     *
      *             @OA\Property(property="current_password", type="string", format="password", example="oldpassword123"),
      *             @OA\Property(property="new_password", type="string", format="password", example="newpassword123"),
      *             @OA\Property(property="new_password_confirmation", type="string", format="password", example="newpassword123")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=200,
      *         description="Password changed successfully",
+     *
      *         @OA\JsonContent(
+     *
      *             @OA\Property(property="message", type="string", example="Password changed successfully"),
      *             @OA\Property(property="new_token", type="string", example="1|laravel_sanctum_token...")
      *         )
      *     ),
+     *
      *     @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      *         @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
+     *
      *     @OA\Response(
      *         response=401,
      *         description="Unauthorized - Invalid current password"
@@ -53,7 +62,7 @@ class PasswordController extends Controller
     {
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
-            'new_password'     => ['required', 'string', 'confirmed', Password::defaults()],
+            'new_password' => ['required', 'string', 'confirmed', Password::defaults()],
         ]);
 
         $user = $request->user();
@@ -77,7 +86,7 @@ class PasswordController extends Controller
         $newToken = $user->createToken($request->header('User-Agent', 'Unknown Device'))->plainTextToken;
 
         return response()->json([
-            'message'   => 'Password changed successfully',
+            'message' => 'Password changed successfully',
             'new_token' => $newToken,
         ], 200);
     }

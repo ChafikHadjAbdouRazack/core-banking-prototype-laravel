@@ -13,7 +13,7 @@ class UpdateTeamName implements UpdatesTeamNames
     /**
      * Validate and update the given team's name.
      *
-     * @param array<string, string> $input
+     * @param  array<string, string>  $input
      */
     public function update(User $user, Team $team, array $input): void
     {
@@ -22,13 +22,13 @@ class UpdateTeamName implements UpdatesTeamNames
         Validator::make(
             $input,
             [
-            'name' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', 'max:255'],
             ]
         )->validateWithBag('updateTeamName');
 
         $team->forceFill(
             [
-            'name' => $input['name'],
+                'name' => $input['name'],
             ]
         )->save();
     }

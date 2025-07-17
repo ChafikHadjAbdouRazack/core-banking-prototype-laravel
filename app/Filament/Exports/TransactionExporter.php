@@ -22,11 +22,11 @@ class TransactionExporter extends Exporter
                 ->label('Type')
                 ->formatStateUsing(
                     fn (string $state): string => match ($state) {
-                    'deposit'      => 'Deposit',
-                    'withdrawal'   => 'Withdrawal',
-                    'transfer_in'  => 'Transfer In',
-                    'transfer_out' => 'Transfer Out',
-                    default        => $state,
+                        'deposit' => 'Deposit',
+                        'withdrawal' => 'Withdrawal',
+                        'transfer_in' => 'Transfer In',
+                        'transfer_out' => 'Transfer Out',
+                        default => $state,
                     }
                 ),
             ExportColumn::make('amount')

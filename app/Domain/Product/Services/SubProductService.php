@@ -99,8 +99,8 @@ class SubProductService
                         $enabled[$key] = array_merge(
                             $config,
                             [
-                            'key'              => $key,
-                            'enabled_features' => $this->getEnabledFeatures($key),
+                                'key' => $key,
+                                'enabled_features' => $this->getEnabledFeatures($key),
                             ]
                         );
                     }
@@ -124,9 +124,9 @@ class SubProductService
             $all[$key] = array_merge(
                 $config,
                 [
-                'key'              => $key,
-                'is_enabled'       => $isEnabled,
-                'enabled_features' => $isEnabled ? $this->getEnabledFeatures($key) : [],
+                    'key' => $key,
+                    'is_enabled' => $isEnabled,
+                    'enabled_features' => $isEnabled ? $this->getEnabledFeatures($key) : [],
                 ]
             );
         }
@@ -167,8 +167,8 @@ class SubProductService
             Log::info(
                 'Sub-product enabled',
                 [
-                'sub_product' => $subProduct,
-                'enabled_by'  => $enabledBy ?? 'system',
+                    'sub_product' => $subProduct,
+                    'enabled_by' => $enabledBy ?? 'system',
                 ]
             );
 
@@ -177,8 +177,8 @@ class SubProductService
             Log::error(
                 'Failed to enable sub-product',
                 [
-                'sub_product' => $subProduct,
-                'error'       => $e->getMessage(),
+                    'sub_product' => $subProduct,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -198,8 +198,8 @@ class SubProductService
             Log::info(
                 'Sub-product disabled',
                 [
-                'sub_product' => $subProduct,
-                'disabled_by' => $disabledBy ?? 'system',
+                    'sub_product' => $subProduct,
+                    'disabled_by' => $disabledBy ?? 'system',
                 ]
             );
 
@@ -208,8 +208,8 @@ class SubProductService
             Log::error(
                 'Failed to disable sub-product',
                 [
-                'sub_product' => $subProduct,
-                'error'       => $e->getMessage(),
+                    'sub_product' => $subProduct,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -229,9 +229,9 @@ class SubProductService
             Log::info(
                 'Sub-product feature enabled',
                 [
-                'sub_product' => $subProduct,
-                'feature'     => $feature,
-                'enabled_by'  => $enabledBy ?? 'system',
+                    'sub_product' => $subProduct,
+                    'feature' => $feature,
+                    'enabled_by' => $enabledBy ?? 'system',
                 ]
             );
 
@@ -240,9 +240,9 @@ class SubProductService
             Log::error(
                 'Failed to enable sub-product feature',
                 [
-                'sub_product' => $subProduct,
-                'feature'     => $feature,
-                'error'       => $e->getMessage(),
+                    'sub_product' => $subProduct,
+                    'feature' => $feature,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -262,9 +262,9 @@ class SubProductService
             Log::info(
                 'Sub-product feature disabled',
                 [
-                'sub_product' => $subProduct,
-                'feature'     => $feature,
-                'disabled_by' => $disabledBy ?? 'system',
+                    'sub_product' => $subProduct,
+                    'feature' => $feature,
+                    'disabled_by' => $disabledBy ?? 'system',
                 ]
             );
 
@@ -273,9 +273,9 @@ class SubProductService
             Log::error(
                 'Failed to disable sub-product feature',
                 [
-                'sub_product' => $subProduct,
-                'feature'     => $feature,
-                'error'       => $e->getMessage(),
+                    'sub_product' => $subProduct,
+                    'feature' => $feature,
+                    'error' => $e->getMessage(),
                 ]
             );
 
@@ -335,14 +335,14 @@ class SubProductService
 
         foreach ($subProducts as $key => $config) {
             $status[$key] = [
-                'enabled'     => $config['is_enabled'],
-                'name'        => $config['name'],
+                'enabled' => $config['is_enabled'],
+                'name' => $config['name'],
                 'description' => $config['description'],
-                'features'    => array_map(
+                'features' => array_map(
                     function ($feature) use ($key) {
                         return [
-                        'key'     => $feature,
-                        'enabled' => $this->isFeatureEnabled($key, $feature),
+                            'key' => $feature,
+                            'enabled' => $this->isFeatureEnabled($key, $feature),
                         ];
                     },
                     array_keys($config['features'])

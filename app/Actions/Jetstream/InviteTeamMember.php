@@ -31,8 +31,8 @@ class InviteTeamMember implements InvitesTeamMembers
 
         $invitation = $team->teamInvitations()->create(
             [
-            'email' => $email,
-            'role'  => $role,
+                'email' => $email,
+                'role' => $role,
             ]
         );
 
@@ -46,12 +46,12 @@ class InviteTeamMember implements InvitesTeamMembers
     {
         Validator::make(
             [
-            'email' => $email,
-            'role'  => $role,
+                'email' => $email,
+                'role' => $role,
             ],
             $this->rules($team),
             [
-            'email.unique' => __('This user has already been invited to the team.'),
+                'email.unique' => __('This user has already been invited to the team.'),
             ]
         )->after(
             $this->ensureUserIsNotAlreadyOnTeam($team, $email)
@@ -67,17 +67,17 @@ class InviteTeamMember implements InvitesTeamMembers
     {
         return array_filter(
             [
-            'email' => [
-                'required', 'email',
-                Rule::unique(Jetstream::teamInvitationModel())->where(
-                    function (Builder $query) use ($team) {
-                        $query->where('team_id', $team->id);
-                    }
-                ),
-            ],
-            'role' => Jetstream::hasRoles()
-                            ? ['required', 'string', new Role()]
-                            : null,
+                'email' => [
+                    'required', 'email',
+                    Rule::unique(Jetstream::teamInvitationModel())->where(
+                        function (Builder $query) use ($team) {
+                            $query->where('team_id', $team->id);
+                        }
+                    ),
+                ],
+                'role' => Jetstream::hasRoles()
+                                ? ['required', 'string', new Role()]
+                                : null,
             ]
         );
     }

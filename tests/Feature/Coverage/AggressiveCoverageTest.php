@@ -451,9 +451,9 @@ it('can test enum values exhaustively', function () {
 it('can test additional static methods and edge cases', function () {
     // Test Account fromArray static method
     $accountData = [
-        'name'      => 'Test Account',
+        'name' => 'Test Account',
         'user_uuid' => Str::uuid()->toString(),
-        'uuid'      => Str::uuid()->toString(),
+        'uuid' => Str::uuid()->toString(),
     ];
 
     $account = Account::fromArray($accountData);

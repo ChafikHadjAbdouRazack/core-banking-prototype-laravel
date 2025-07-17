@@ -72,40 +72,40 @@ class SubProducts extends Page
                 ->icon($config['icon'] ?? 'heroicon-o-squares-2x2')
                 ->schema(
                     [
-                    Forms\Components\Toggle::make("{$key}_enabled")
-                        ->label('Enable ' . $config['name'])
-                        ->helperText("Enable or disable the entire {$config['name']} sub-product")
-                        ->reactive()
-                        ->afterStateUpdated(
-                            function ($state, Forms\Set $set) use ($key, $config) {
-                                if (! $state) {
-                                    // Disable all features when sub-product is disabled
-                                    foreach ($config['features'] as $feature => $default) {
-                                        $set("{$key}_{$feature}", false);
+                        Forms\Components\Toggle::make("{$key}_enabled")
+                            ->label('Enable ' . $config['name'])
+                            ->helperText("Enable or disable the entire {$config['name']} sub-product")
+                            ->reactive()
+                            ->afterStateUpdated(
+                                function ($state, Forms\Set $set) use ($key, $config) {
+                                    if (! $state) {
+                                        // Disable all features when sub-product is disabled
+                                        foreach ($config['features'] as $feature => $default) {
+                                            $set("{$key}_{$feature}", false);
+                                        }
                                     }
                                 }
-                            }
-                        )
-                        ->columnSpanFull(),
+                            )
+                            ->columnSpanFull(),
 
-                    Forms\Components\Grid::make(2)
-                        ->schema($featureFields)
-                        ->visible(fn (Forms\Get $get) => $get("{$key}_enabled")),
+                        Forms\Components\Grid::make(2)
+                            ->schema($featureFields)
+                            ->visible(fn (Forms\Get $get) => $get("{$key}_enabled")),
 
-                    Forms\Components\Placeholder::make("{$key}_licenses")
-                        ->label('Required Licenses')
-                        ->content(implode(', ', $config['licenses']))
-                        ->visible(fn (Forms\Get $get) => $get("{$key}_enabled")),
+                        Forms\Components\Placeholder::make("{$key}_licenses")
+                            ->label('Required Licenses')
+                            ->content(implode(', ', $config['licenses']))
+                            ->visible(fn (Forms\Get $get) => $get("{$key}_enabled")),
 
-                    Forms\Components\Placeholder::make("{$key}_status")
-                        ->label('Status')
-                        ->content(
-                            fn (Forms\Get $get) => $get("{$key}_enabled") ?
-                            '<span class="text-success-600">Active</span>' :
-                            '<span class="text-danger-600">Inactive</span>'
-                        )
-                        ->extraAttributes(['class' => 'font-semibold'])
-                        ->columnSpanFull(),
+                        Forms\Components\Placeholder::make("{$key}_status")
+                            ->label('Status')
+                            ->content(
+                                fn (Forms\Get $get) => $get("{$key}_enabled") ?
+                                '<span class="text-success-600">Active</span>' :
+                                '<span class="text-danger-600">Inactive</span>'
+                            )
+                            ->extraAttributes(['class' => 'font-semibold'])
+                            ->columnSpanFull(),
                     ]
                 )
                 ->collapsible()
@@ -155,8 +155,8 @@ class SubProducts extends Page
         Log::info(
             'Sub-product configuration updated',
             [
-            'user'    => $currentUser,
-            'changes' => $data,
+                'user' => $currentUser,
+                'changes' => $data,
             ]
         );
     }
@@ -171,7 +171,7 @@ class SubProducts extends Page
                     fn () => view(
                         'filament.modals.sub-product-status',
                         [
-                        'status' => $this->subProductService->getApiStatus(),
+                            'status' => $this->subProductService->getApiStatus(),
                         ]
                     )
                 )

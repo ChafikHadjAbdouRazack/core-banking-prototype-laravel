@@ -31,10 +31,10 @@ class RegulatoryReportsController extends Controller
 
         // Get statistics
         $stats = [
-            'total_reports'      => RegulatoryReport::count(),
+            'total_reports' => RegulatoryReport::count(),
             'pending_submission' => RegulatoryReport::where('status', 'pending_submission')->count(),
-            'submitted'          => RegulatoryReport::where('status', 'submitted')->count(),
-            'this_month'         => RegulatoryReport::whereMonth('created_at', now()->month)->count(),
+            'submitted' => RegulatoryReport::where('status', 'submitted')->count(),
+            'this_month' => RegulatoryReport::whereMonth('created_at', now()->month)->count(),
         ];
 
         // Get active thresholds
@@ -53,11 +53,11 @@ class RegulatoryReportsController extends Controller
         $this->authorize('generate_regulatory_reports');
 
         $reportTypes = [
-            'ctr'                => 'Currency Transaction Report (CTR)',
-            'sar'                => 'Suspicious Activity Report (SAR)',
+            'ctr' => 'Currency Transaction Report (CTR)',
+            'sar' => 'Suspicious Activity Report (SAR)',
             'monthly_compliance' => 'Monthly Compliance Report',
-            'quarterly_risk'     => 'Quarterly Risk Assessment',
-            'annual_aml'         => 'Annual AML Report',
+            'quarterly_risk' => 'Quarterly Risk Assessment',
+            'annual_aml' => 'Annual AML Report',
         ];
 
         return view('regulatory.reports.create', compact('reportTypes'));
@@ -72,10 +72,10 @@ class RegulatoryReportsController extends Controller
 
         $request->validate(
             [
-            'report_type'  => 'required|in:ctr,sar,monthly_compliance,quarterly_risk,annual_aml',
-            'start_date'   => 'required|date',
-            'end_date'     => 'required|date|after_or_equal:start_date',
-            'jurisdiction' => 'required|string',
+                'report_type' => 'required|in:ctr,sar,monthly_compliance,quarterly_risk,annual_aml',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'jurisdiction' => 'required|string',
             ]
         );
 
@@ -85,7 +85,7 @@ class RegulatoryReportsController extends Controller
                 $request->start_date,
                 $request->end_date,
                 [
-                    'jurisdiction'    => $request->jurisdiction,
+                    'jurisdiction' => $request->jurisdiction,
                     'include_details' => $request->boolean('include_details'),
                 ]
             );
@@ -136,9 +136,9 @@ class RegulatoryReportsController extends Controller
             // In a real system, this would submit to the regulatory authority's API
             $report->update(
                 [
-                'status'       => 'submitted',
-                'submitted_at' => now(),
-                'submitted_by' => Auth::id(),
+                    'status' => 'submitted',
+                    'submitted_at' => now(),
+                    'submitted_by' => Auth::id(),
                 ]
             );
 

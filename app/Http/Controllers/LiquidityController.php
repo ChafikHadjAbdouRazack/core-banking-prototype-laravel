@@ -49,10 +49,10 @@ class LiquidityController extends Controller
     {
         $validated = $request->validate(
             [
-            'pool_id'      => 'required|uuid',
-            'base_amount'  => 'required|numeric|min:0.00000001',
-            'quote_amount' => 'required|numeric|min:0.00000001',
-            'min_shares'   => 'nullable|numeric|min:0',
+                'pool_id' => 'required|uuid',
+                'base_amount' => 'required|numeric|min:0.00000001',
+                'quote_amount' => 'required|numeric|min:0.00000001',
+                'min_shares' => 'nullable|numeric|min:0',
             ]
         );
 
@@ -85,10 +85,10 @@ class LiquidityController extends Controller
     {
         $validated = $request->validate(
             [
-            'pool_id'          => 'required|uuid',
-            'shares'           => 'required|numeric|min:0.00000001',
-            'min_base_amount'  => 'nullable|numeric|min:0',
-            'min_quote_amount' => 'nullable|numeric|min:0',
+                'pool_id' => 'required|uuid',
+                'shares' => 'required|numeric|min:0.00000001',
+                'min_base_amount' => 'nullable|numeric|min:0',
+                'min_quote_amount' => 'nullable|numeric|min:0',
             ]
         );
 
@@ -128,7 +128,7 @@ class LiquidityController extends Controller
     {
         $validated = $request->validate(
             [
-            'pool_id' => 'required|uuid',
+                'pool_id' => 'required|uuid',
             ]
         );
 

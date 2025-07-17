@@ -25,46 +25,46 @@ class OrderResource extends Resource
         return $form
             ->schema(
                 [
-                Forms\Components\Section::make('Order Details')
-                    ->schema(
-                        [
-                        Forms\Components\TextInput::make('order_id')
-                            ->label('Order ID')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('account_id')
-                            ->label('Account ID')
-                            ->disabled(),
-                        Forms\Components\Select::make('status')
-                            ->options(
-                                [
-                                'pending'          => 'Pending',
-                                'open'             => 'Open',
-                                'partially_filled' => 'Partially Filled',
-                                'filled'           => 'Filled',
-                                'cancelled'        => 'Cancelled',
-                                ]
-                            )
-                            ->disabled(),
-                        ]
-                    )->columns(3),
+                    Forms\Components\Section::make('Order Details')
+                        ->schema(
+                            [
+                                Forms\Components\TextInput::make('order_id')
+                                    ->label('Order ID')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('account_id')
+                                    ->label('Account ID')
+                                    ->disabled(),
+                                Forms\Components\Select::make('status')
+                                    ->options(
+                                        [
+                                            'pending' => 'Pending',
+                                            'open' => 'Open',
+                                            'partially_filled' => 'Partially Filled',
+                                            'filled' => 'Filled',
+                                            'cancelled' => 'Cancelled',
+                                        ]
+                                    )
+                                    ->disabled(),
+                            ]
+                        )->columns(3),
 
-                Forms\Components\Section::make('Trading Details')
-                    ->schema(
-                        [
-                        Forms\Components\TextInput::make('base_currency')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('quote_currency')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('type')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('order_type')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('amount')
-                            ->disabled(),
-                        Forms\Components\TextInput::make('price')
-                            ->disabled(),
-                        ]
-                    )->columns(3),
+                    Forms\Components\Section::make('Trading Details')
+                        ->schema(
+                            [
+                                Forms\Components\TextInput::make('base_currency')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('quote_currency')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('type')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('order_type')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('amount')
+                                    ->disabled(),
+                                Forms\Components\TextInput::make('price')
+                                    ->disabled(),
+                            ]
+                        )->columns(3),
                 ]
             );
     }
@@ -74,88 +74,88 @@ class OrderResource extends Resource
         return $table
             ->columns(
                 [
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Date')
-                    ->dateTime()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('pair')
-                    ->label('Pair')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\BadgeColumn::make('type')
-                    ->colors(
-                        [
-                        'success' => 'buy',
-                        'danger'  => 'sell',
-                        ]
-                    ),
-                Tables\Columns\TextColumn::make('order_type')
-                    ->label('Order Type')
-                    ->formatStateUsing(fn (string $state): string => ucfirst($state)),
-                Tables\Columns\TextColumn::make('amount')
-                    ->numeric(8),
-                Tables\Columns\TextColumn::make('price')
-                    ->numeric(2)
-                    ->placeholder('Market'),
-                Tables\Columns\TextColumn::make('filled_percentage')
-                    ->label('Filled')
-                    ->suffix('%')
-                    ->numeric(1),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->colors(
-                        [
-                        'warning'   => 'pending',
-                        'info'      => 'open',
-                        'primary'   => 'partially_filled',
-                        'success'   => 'filled',
-                        'secondary' => 'cancelled',
-                        ]
-                    ),
-                Tables\Columns\TextColumn::make('account.user.name')
-                    ->label('User')
-                    ->searchable()
-                    ->toggleable(),
+                    Tables\Columns\TextColumn::make('created_at')
+                        ->label('Date')
+                        ->dateTime()
+                        ->sortable(),
+                    Tables\Columns\TextColumn::make('pair')
+                        ->label('Pair')
+                        ->searchable()
+                        ->sortable(),
+                    Tables\Columns\BadgeColumn::make('type')
+                        ->colors(
+                            [
+                                'success' => 'buy',
+                                'danger' => 'sell',
+                            ]
+                        ),
+                    Tables\Columns\TextColumn::make('order_type')
+                        ->label('Order Type')
+                        ->formatStateUsing(fn (string $state): string => ucfirst($state)),
+                    Tables\Columns\TextColumn::make('amount')
+                        ->numeric(8),
+                    Tables\Columns\TextColumn::make('price')
+                        ->numeric(2)
+                        ->placeholder('Market'),
+                    Tables\Columns\TextColumn::make('filled_percentage')
+                        ->label('Filled')
+                        ->suffix('%')
+                        ->numeric(1),
+                    Tables\Columns\BadgeColumn::make('status')
+                        ->colors(
+                            [
+                                'warning' => 'pending',
+                                'info' => 'open',
+                                'primary' => 'partially_filled',
+                                'success' => 'filled',
+                                'secondary' => 'cancelled',
+                            ]
+                        ),
+                    Tables\Columns\TextColumn::make('account.user.name')
+                        ->label('User')
+                        ->searchable()
+                        ->toggleable(),
                 ]
             )
             ->defaultSort('created_at', 'desc')
             ->filters(
                 [
-                Tables\Filters\SelectFilter::make('status')
-                    ->options(
-                        [
-                        'pending'          => 'Pending',
-                        'open'             => 'Open',
-                        'partially_filled' => 'Partially Filled',
-                        'filled'           => 'Filled',
-                        'cancelled'        => 'Cancelled',
-                        ]
-                    ),
-                Tables\Filters\SelectFilter::make('type')
-                    ->options(
-                        [
-                        'buy'  => 'Buy',
-                        'sell' => 'Sell',
-                        ]
-                    ),
-                Tables\Filters\SelectFilter::make('base_currency')
-                    ->options(fn () => \App\Domain\Asset\Models\Asset::where('is_tradeable', true)->pluck('code', 'code')),
+                    Tables\Filters\SelectFilter::make('status')
+                        ->options(
+                            [
+                                'pending' => 'Pending',
+                                'open' => 'Open',
+                                'partially_filled' => 'Partially Filled',
+                                'filled' => 'Filled',
+                                'cancelled' => 'Cancelled',
+                            ]
+                        ),
+                    Tables\Filters\SelectFilter::make('type')
+                        ->options(
+                            [
+                                'buy' => 'Buy',
+                                'sell' => 'Sell',
+                            ]
+                        ),
+                    Tables\Filters\SelectFilter::make('base_currency')
+                        ->options(fn () => \App\Domain\Asset\Models\Asset::where('is_tradeable', true)->pluck('code', 'code')),
                 ]
             )
             ->actions(
                 [
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\Action::make('cancel')
-                    ->label('Cancel')
-                    ->icon('heroicon-o-x-mark')
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->visible(fn (Order $record): bool => $record->canBeCancelled())
-                    ->action(fn (Order $record) => app(\App\Domain\Exchange\Services\ExchangeService::class)->cancelOrder($record->order_id)),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\Action::make('cancel')
+                        ->label('Cancel')
+                        ->icon('heroicon-o-x-mark')
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(fn (Order $record): bool => $record->canBeCancelled())
+                        ->action(fn (Order $record) => app(\App\Domain\Exchange\Services\ExchangeService::class)->cancelOrder($record->order_id)),
                 ]
             )
             ->bulkActions(
                 [
-                // No bulk actions for orders
+                    // No bulk actions for orders
                 ]
             );
     }
@@ -171,7 +171,7 @@ class OrderResource extends Resource
     {
         return [
             'index' => Pages\ListOrders::route('/'),
-            'view'  => Pages\ViewOrder::route('/{record}'),
+            'view' => Pages\ViewOrder::route('/{record}'),
         ];
     }
 

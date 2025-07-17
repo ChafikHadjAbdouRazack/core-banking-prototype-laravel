@@ -36,9 +36,9 @@ class DepositController extends Controller
         return view(
             'wallet.deposit-card',
             [
-            'account'        => $account,
-            'paymentMethods' => $paymentMethods,
-            'stripeKey'      => config('cashier.key'),
+                'account' => $account,
+                'paymentMethods' => $paymentMethods,
+                'stripeKey' => config('cashier.key'),
             ]
         );
     }
@@ -50,8 +50,8 @@ class DepositController extends Controller
     {
         $request->validate(
             [
-            'amount'   => 'required|numeric|min:1|max:10000',
-            'currency' => 'required|in:USD,EUR,GBP',
+                'amount' => 'required|numeric|min:1|max:10000',
+                'currency' => 'required|in:USD,EUR,GBP',
             ]
         );
 
@@ -68,15 +68,15 @@ class DepositController extends Controller
 
             return response()->json(
                 [
-                'client_secret' => $intent->client_secret,
-                'amount'        => $amountInCents,
-                'currency'      => $request->currency,
+                    'client_secret' => $intent->client_secret,
+                    'amount' => $amountInCents,
+                    'currency' => $request->currency,
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error' => 'Failed to create payment intent. Please try again.',
+                    'error' => 'Failed to create payment intent. Please try again.',
                 ],
                 500
             );
@@ -90,7 +90,7 @@ class DepositController extends Controller
     {
         $request->validate(
             [
-            'payment_intent_id' => 'required|string',
+                'payment_intent_id' => 'required|string',
             ]
         );
 
@@ -112,7 +112,7 @@ class DepositController extends Controller
     {
         $request->validate(
             [
-            'payment_method_id' => 'required|string',
+                'payment_method_id' => 'required|string',
             ]
         );
 
@@ -124,14 +124,14 @@ class DepositController extends Controller
 
             return response()->json(
                 [
-                'success' => true,
-                'message' => 'Payment method added successfully.',
+                    'success' => true,
+                    'message' => 'Payment method added successfully.',
                 ]
             );
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'error' => 'Failed to add payment method.',
+                    'error' => 'Failed to add payment method.',
                 ],
                 500
             );

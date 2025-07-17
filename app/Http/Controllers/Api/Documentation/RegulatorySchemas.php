@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="RegulatoryReport",
  *     required={"id", "report_type", "period_start", "period_end", "status", "created_at"},
+ *
  * @OA\Property(property="id",                  type="string", format="uuid", example="123e4567-e89b-12d3-a456-426614174000"),
  * @OA\Property(property="report_type",         type="string", enum={"ctr", "sar", "currency_exposure", "large_exposure", "liquidity", "capital_adequacy"}, example="ctr"),
  * @OA\Property(property="period_start",        type="string", format="date", example="2025-01-01"),
@@ -27,6 +28,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CurrencyTransactionReport",
  *     allOf={@OA\Schema(ref="#/components/schemas/RegulatoryReport")},
+ *
  * @OA\Property(property="report_type",              type="string", enum={"ctr"}, example="ctr"),
  * @OA\Property(property="total_transactions",       type="integer", example=150),
  * @OA\Property(property="total_amount",             type="object",
@@ -49,6 +51,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="SuspiciousActivityReport",
  *     allOf={@OA\Schema(ref="#/components/schemas/RegulatoryReport")},
+ *
  * @OA\Property(property="report_type",              type="string", enum={"sar"}, example="sar"),
  * @OA\Property(property="case_number",              type="string", example="SAR-2025-001"),
  * @OA\Property(property="priority",                 type="string", enum={"low", "medium", "high", "critical"}, example="high"),
@@ -69,6 +72,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="ComplianceMetrics",
  *     required={"period", "metrics"},
+ *
  * @OA\Property(property="period",                   type="string", example="2025-01"),
  * @OA\Property(property="metrics",                  type="object",
  * @OA\Property(property="kyc_completion_rate",      type="number", example=0.95),
@@ -94,6 +98,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="CreateReportRequest",
  *     required={"report_type", "period_start", "period_end"},
+ *
  * @OA\Property(property="report_type",   type="string", enum={"ctr", "sar", "currency_exposure", "large_exposure", "liquidity", "capital_adequacy"}),
  * @OA\Property(property="period_start",  type="string", format="date", example="2025-01-01"),
  * @OA\Property(property="period_end",    type="string", format="date", example="2025-01-31"),
@@ -106,6 +111,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="ReportSubmission",
  *     required={"report_id", "submission_type"},
+ *
  * @OA\Property(property="report_id",           type="string", format="uuid"),
  * @OA\Property(property="submission_type",     type="string", enum={"electronic", "manual", "api"}, example="electronic"),
  * @OA\Property(property="regulator_system_id", type="string", example="BOL-REPORTING"),
@@ -118,6 +124,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="TransactionMonitoringRule",
  *     required={"id", "rule_name", "rule_type", "status", "threshold"},
+ *
  * @OA\Property(property="id",                type="string", format="uuid"),
  * @OA\Property(property="rule_name",         type="string", example="Large Cash Transaction"),
  * @OA\Property(property="rule_type",         type="string", enum={"amount", "velocity", "pattern", "behavioral"}, example="amount"),
@@ -139,6 +146,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="ComplianceCase",
  *     required={"id", "case_type", "status", "priority", "created_at"},
+ *
  * @OA\Property(property="id",            type="string", format="uuid"),
  * @OA\Property(property="case_number",   type="string", example="CASE-2025-001"),
  * @OA\Property(property="case_type",     type="string", enum={"aml", "kyc", "sanctions", "fraud", "other"}, example="aml"),
@@ -165,6 +173,7 @@ namespace App\Http\Controllers\Api\Documentation;
  * @OA\Schema(
  *     schema="RegulatoryNotification",
  *     required={"id", "type", "title", "severity", "created_at"},
+ *
  * @OA\Property(property="id",              type="string", format="uuid"),
  * @OA\Property(property="type",            type="string", enum={"deadline", "regulation_change", "audit", "inspection", "violation"}, example="deadline"),
  * @OA\Property(property="title",           type="string", example="CTR Submission Deadline Approaching"),

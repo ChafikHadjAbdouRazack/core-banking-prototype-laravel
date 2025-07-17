@@ -11,7 +11,7 @@ class BankHealthMonitorWidget extends Widget
 {
     protected static string $view = 'filament.admin.widgets.bank-health-monitor-widget';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = 3;
 

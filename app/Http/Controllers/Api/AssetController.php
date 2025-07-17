@@ -25,33 +25,44 @@ class AssetController extends Controller
      *     summary="List all supported assets",
      *     description="Get a list of all assets supported by the platform, including fiat currencies, cryptocurrencies, and commodities",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="include_inactive",
      *         in="query",
      *         required=false,
      *         description="Include inactive assets in the response (default: false)",
+     *
      * @OA\Schema(type="boolean")
      *     ),
+     *
      * @OA\Parameter(
      *         name="type",
      *         in="query",
      *         required=false,
      *         description="Filter by asset type",
+     *
      * @OA\Schema(type="string",          enum={"fiat", "crypto", "commodity"})
      *     ),
+     *
      * @OA\Parameter(
      *         name="search",
      *         in="query",
      *         required=false,
      *         description="Search by code or name",
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",      type="array",
+     *
      * @OA\Items(
+     *
      * @OA\Property(property="code",      type="string", example="USD"),
      * @OA\Property(property="name",      type="string", example="US Dollar"),
      * @OA\Property(property="type",      type="string", enum={"fiat", "crypto", "commodity"}),
@@ -111,28 +122,28 @@ class AssetController extends Controller
 
         return response()->json(
             [
-            'data' => $assets->map(
-                function (Asset $asset) {
-                    return [
-                    'code'      => $asset->code,
-                    'name'      => $asset->name,
-                    'type'      => $asset->type,
-                    'symbol'    => $asset->symbol,
-                    'precision' => $asset->precision,
-                    'is_active' => $asset->is_active,
-                    'metadata'  => $asset->metadata,
-                    ];
-                }
-            ),
-            'meta' => [
-                'total'  => $total,
-                'active' => $active,
-                'types'  => [
-                    'fiat'      => $types['fiat'] ?? 0,
-                    'crypto'    => $types['crypto'] ?? 0,
-                    'commodity' => $types['commodity'] ?? 0,
+                'data' => $assets->map(
+                    function (Asset $asset) {
+                        return [
+                            'code' => $asset->code,
+                            'name' => $asset->name,
+                            'type' => $asset->type,
+                            'symbol' => $asset->symbol,
+                            'precision' => $asset->precision,
+                            'is_active' => $asset->is_active,
+                            'metadata' => $asset->metadata,
+                        ];
+                    }
+                ),
+                'meta' => [
+                    'total' => $total,
+                    'active' => $active,
+                    'types' => [
+                        'fiat' => $types['fiat'] ?? 0,
+                        'crypto' => $types['crypto'] ?? 0,
+                        'commodity' => $types['commodity'] ?? 0,
+                    ],
                 ],
-            ],
             ]
         );
     }
@@ -163,7 +174,6 @@ class AssetController extends Controller
      *     }
      *   }
      * }
-     *
      * @response 404 {
      *   "message": "Asset not found",
      *   "error": "The specified asset code was not found"
@@ -183,8 +193,8 @@ class AssetController extends Controller
         if (! $asset) {
             return response()->json(
                 [
-                'message' => 'Asset not found',
-                'error'   => 'The specified asset code was not found',
+                    'message' => 'Asset not found',
+                    'error' => 'The specified asset code was not found',
                 ],
                 404
             );
@@ -205,24 +215,24 @@ class AssetController extends Controller
 
         return response()->json(
             [
-            'id'         => $asset->id,
-            'code'       => $asset->code,
-            'name'       => $asset->name,
-            'type'       => $asset->type,
-            'symbol'     => $asset->symbol,
-            'precision'  => $asset->precision,
-            'is_active'  => $asset->is_active,
-            'metadata'   => $asset->metadata,
-            'statistics' => [
-                'total_supply'       => null, // These would be calculated based on your business logic
-                'circulating_supply' => null,
-                'market_data'        => $asset->metadata['market_data'] ?? null,
-                'total_accounts'     => $totalAccounts,
-                'total_balance'      => $formattedBalance,
-                'active_rates'       => $activeRates,
-            ],
-            'created_at' => $asset->created_at,
-            'updated_at' => $asset->updated_at,
+                'id' => $asset->id,
+                'code' => $asset->code,
+                'name' => $asset->name,
+                'type' => $asset->type,
+                'symbol' => $asset->symbol,
+                'precision' => $asset->precision,
+                'is_active' => $asset->is_active,
+                'metadata' => $asset->metadata,
+                'statistics' => [
+                    'total_supply' => null, // These would be calculated based on your business logic
+                    'circulating_supply' => null,
+                    'market_data' => $asset->metadata['market_data'] ?? null,
+                    'total_accounts' => $totalAccounts,
+                    'total_balance' => $formattedBalance,
+                    'active_rates' => $activeRates,
+                ],
+                'created_at' => $asset->created_at,
+                'updated_at' => $asset->updated_at,
             ]
         );
     }

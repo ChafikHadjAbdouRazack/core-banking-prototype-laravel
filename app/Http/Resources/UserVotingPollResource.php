@@ -31,34 +31,34 @@ class UserVotingPollResource extends JsonResource
         }
 
         return [
-            'uuid'                   => $this->uuid,
-            'title'                  => $this->title,
-            'description'            => $this->description,
-            'type'                   => $this->type->value,
-            'status'                 => $this->status->value,
-            'options'                => $this->options,
-            'start_date'             => $this->start_date->toISOString(),
-            'end_date'               => $this->end_date->toISOString(),
+            'uuid' => $this->uuid,
+            'title' => $this->title,
+            'description' => $this->description,
+            'type' => $this->type->value,
+            'status' => $this->status->value,
+            'options' => $this->options,
+            'start_date' => $this->start_date->toISOString(),
+            'end_date' => $this->end_date->toISOString(),
             'required_participation' => $this->required_participation,
-            'current_participation'  => $this->calculateParticipation(),
-            'user_context'           => [
-                'has_voted'    => $hasVoted,
+            'current_participation' => $this->calculateParticipation(),
+            'user_context' => [
+                'has_voted' => $hasVoted,
                 'voting_power' => $votingPower,
-                'can_vote'     => ! $hasVoted && $this->status->value === 'active' && $votingPower > 0,
-                'vote'         => $userVote ? [
+                'can_vote' => ! $hasVoted && $this->status->value === 'active' && $votingPower > 0,
+                'vote' => $userVote ? [
                     'selected_options' => $userVote->selected_options,
-                    'voted_at'         => $userVote->created_at->toISOString(),
+                    'voted_at' => $userVote->created_at->toISOString(),
                 ] : null,
             ],
             'metadata' => [
-                'is_gcu_poll'  => ($this->metadata['basket_code'] ?? null) === config('baskets.primary_code', 'GCU'),
+                'is_gcu_poll' => ($this->metadata['basket_code'] ?? null) === config('baskets.primary_code', 'GCU'),
                 'voting_month' => $this->metadata['voting_month'] ?? null,
-                'template'     => $this->metadata['template'] ?? null,
+                'template' => $this->metadata['template'] ?? null,
             ],
             'results_visible' => $this->status->value === 'closed',
-            'time_remaining'  => $this->status->value === 'active' ? [
-                'days'           => now()->diffInDays($this->end_date, false),
-                'hours'          => now()->diffInHours($this->end_date, false) % 24,
+            'time_remaining' => $this->status->value === 'active' ? [
+                'days' => now()->diffInDays($this->end_date, false),
+                'hours' => now()->diffInHours($this->end_date, false) % 24,
                 'human_readable' => now()->diffForHumans($this->end_date),
             ] : null,
         ];

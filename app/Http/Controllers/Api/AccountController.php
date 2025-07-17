@@ -37,10 +37,13 @@ class AccountController extends Controller
      *     summary="List accounts",
      *     description="Retrieves a list of accounts for the authenticated user",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="List of accounts",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Account"))
      *         )
      *     )
@@ -58,19 +61,19 @@ class AccountController extends Controller
 
         return response()->json(
             [
-            'data' => $accounts->map(
-                function ($account) {
-                    return [
-                    'uuid'       => $account->uuid,
-                    'user_uuid'  => $account->user_uuid,
-                    'name'       => $account->name,
-                    'balance'    => $account->balance,
-                    'frozen'     => $account->frozen ?? false,
-                    'created_at' => $account->created_at,
-                    'updated_at' => $account->updated_at,
-                    ];
-                }
-            ),
+                'data' => $accounts->map(
+                    function ($account) {
+                        return [
+                            'uuid' => $account->uuid,
+                            'user_uuid' => $account->user_uuid,
+                            'name' => $account->name,
+                            'balance' => $account->balance,
+                            'frozen' => $account->frozen ?? false,
+                            'created_at' => $account->created_at,
+                            'updated_at' => $account->updated_at,
+                        ];
+                    }
+                ),
             ]
         );
     }
@@ -83,26 +86,34 @@ class AccountController extends Controller
      *     summary="Create a new account",
      *     description="Creates a new bank account for a user with an optional initial balance",
      *     security={{"sanctum":{}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"user_uuid", "name"},
+     *
      * @OA\Property(property="user_uuid",                type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
      * @OA\Property(property="name",                     type="string", example="Savings Account", maxLength=255),
      * @OA\Property(property="initial_balance",          type="integer", example=10000, minimum=0, description="Initial balance in cents")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Account created successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     ref="#/components/schemas/Account"),
      * @OA\Property(property="message",                  type="string", example="Account created successfully")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -111,8 +122,8 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'name'            => ['required', 'string', 'max:255', new NoControlCharacters()],
-            'initial_balance' => 'sometimes|integer|min:0',
+                'name' => ['required', 'string', 'max:255', new NoControlCharacters()],
+                'initial_balance' => 'sometimes|integer|min:0',
             ]
         );
 
@@ -153,7 +164,7 @@ class AccountController extends Controller
         if (empty($sanitizedName)) {
             return response()->json([
                 'message' => 'The name field contains invalid characters.',
-                'errors'  => [
+                'errors' => [
                     'name' => ['The name field contains only invalid characters.'],
                 ],
             ], 422);
@@ -189,25 +200,25 @@ class AccountController extends Controller
         if (! $account) {
             $account = Account::create(
                 [
-                'uuid'      => $accountUuid,
-                'user_uuid' => $request->user()->uuid,
-                'name'      => $sanitizedName,
-                'balance'   => $validated['initial_balance'] ?? 0,
+                    'uuid' => $accountUuid,
+                    'user_uuid' => $request->user()->uuid,
+                    'name' => $sanitizedName,
+                    'balance' => $validated['initial_balance'] ?? 0,
                 ]
             );
         }
 
         return response()->json(
             [
-            'data' => [
-                'uuid'       => $account->uuid,
-                'user_uuid'  => $account->user_uuid,
-                'name'       => $account->name,
-                'balance'    => $account->balance,
-                'frozen'     => $account->frozen ?? false,
-                'created_at' => $account->created_at,
-            ],
-            'message' => 'Account created successfully',
+                'data' => [
+                    'uuid' => $account->uuid,
+                    'user_uuid' => $account->user_uuid,
+                    'name' => $account->name,
+                    'balance' => $account->balance,
+                    'frozen' => $account->frozen ?? false,
+                    'created_at' => $account->created_at,
+                ],
+                'message' => 'Account created successfully',
             ],
             201
         );
@@ -221,23 +232,30 @@ class AccountController extends Controller
      *     summary="Get account details",
      *     description="Retrieves detailed information about a specific account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account details",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     ref="#/components/schemas/Account")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -258,15 +276,15 @@ class AccountController extends Controller
 
         return response()->json(
             [
-            'data' => [
-                'uuid'       => $account->uuid,
-                'user_uuid'  => $account->user_uuid,
-                'name'       => $account->name,
-                'balance'    => $account->balance,
-                'frozen'     => $account->frozen ?? false,
-                'created_at' => $account->created_at,
-                'updated_at' => $account->updated_at,
-            ],
+                'data' => [
+                    'uuid' => $account->uuid,
+                    'user_uuid' => $account->user_uuid,
+                    'name' => $account->name,
+                    'balance' => $account->balance,
+                    'frozen' => $account->frozen ?? false,
+                    'created_at' => $account->created_at,
+                    'updated_at' => $account->updated_at,
+                ],
             ]
         );
     }
@@ -279,28 +297,37 @@ class AccountController extends Controller
      *     summary="Delete an account",
      *     description="Deletes an account. Account must have zero balance and not be frozen.",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account deletion initiated",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",                  type="string", example="Account deletion initiated")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Cannot delete account",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Account not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -317,8 +344,8 @@ class AccountController extends Controller
         if ($account->balance > 0) {
             return response()->json(
                 [
-                'message' => 'Cannot delete account with positive balance',
-                'error'   => 'ACCOUNT_HAS_BALANCE',
+                    'message' => 'Cannot delete account with positive balance',
+                    'error' => 'ACCOUNT_HAS_BALANCE',
                 ],
                 422
             );
@@ -327,8 +354,8 @@ class AccountController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                'message' => 'Cannot delete frozen account',
-                'error'   => 'ACCOUNT_FROZEN',
+                    'message' => 'Cannot delete frozen account',
+                    'error' => 'ACCOUNT_FROZEN',
                 ],
                 422
             );
@@ -341,7 +368,7 @@ class AccountController extends Controller
 
         return response()->json(
             [
-            'message' => 'Account deletion initiated',
+                'message' => 'Account deletion initiated',
             ]
         );
     }
@@ -354,31 +381,41 @@ class AccountController extends Controller
      *     summary="Freeze an account",
      *     description="Freezes an account to prevent any transactions",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"reason"},
+     *
      * @OA\Property(property="reason",                   type="string", example="Suspicious activity detected", maxLength=255),
      * @OA\Property(property="authorized_by",            type="string", example="admin@example.com", maxLength=255)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account frozen successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",                  type="string", example="Account frozen successfully")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Account already frozen",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -387,8 +424,8 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'reason'        => 'required|string|max:255',
-            'authorized_by' => 'sometimes|string|max:255',
+                'reason' => 'required|string|max:255',
+                'authorized_by' => 'sometimes|string|max:255',
             ]
         );
 
@@ -402,8 +439,8 @@ class AccountController extends Controller
         if ($account->frozen) {
             return response()->json(
                 [
-                'message' => 'Account is already frozen',
-                'error'   => 'ACCOUNT_ALREADY_FROZEN',
+                    'message' => 'Account is already frozen',
+                    'error' => 'ACCOUNT_ALREADY_FROZEN',
                 ],
                 422
             );
@@ -420,7 +457,7 @@ class AccountController extends Controller
 
         return response()->json(
             [
-            'message' => 'Account frozen successfully',
+                'message' => 'Account frozen successfully',
             ]
         );
     }
@@ -433,31 +470,41 @@ class AccountController extends Controller
      *     summary="Unfreeze an account",
      *     description="Unfreezes a previously frozen account",
      *     security={{"sanctum":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                         format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"reason"},
+     *
      * @OA\Property(property="reason",                   type="string", example="Investigation completed", maxLength=255),
      * @OA\Property(property="authorized_by",            type="string", example="admin@example.com", maxLength=255)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account unfrozen successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",                  type="string", example="Account unfrozen successfully")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Account not frozen",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -466,8 +513,8 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'reason'        => 'required|string|max:255',
-            'authorized_by' => 'sometimes|string|max:255',
+                'reason' => 'required|string|max:255',
+                'authorized_by' => 'sometimes|string|max:255',
             ]
         );
 
@@ -481,8 +528,8 @@ class AccountController extends Controller
         if (! $account->frozen) {
             return response()->json(
                 [
-                'message' => 'Account is not frozen',
-                'error'   => 'ACCOUNT_NOT_FROZEN',
+                    'message' => 'Account is not frozen',
+                    'error' => 'ACCOUNT_NOT_FROZEN',
                 ],
                 422
             );
@@ -499,7 +546,7 @@ class AccountController extends Controller
 
         return response()->json(
             [
-            'message' => 'Account unfrozen successfully',
+                'message' => 'Account unfrozen successfully',
             ]
         );
     }

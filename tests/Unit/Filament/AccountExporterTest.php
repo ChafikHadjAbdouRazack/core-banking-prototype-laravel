@@ -42,11 +42,11 @@ it('has correct column labels', function () {
     }
 
     expect($labels)->toEqual([
-        'uuid'       => 'Account ID',
-        'name'       => 'Account Name',
-        'user_uuid'  => 'User ID',
-        'balance'    => 'Balance (USD)',
-        'frozen'     => 'Status',
+        'uuid' => 'Account ID',
+        'name' => 'Account Name',
+        'user_uuid' => 'User ID',
+        'balance' => 'Balance (USD)',
+        'frozen' => 'Status',
         'created_at' => 'Created Date',
         'updated_at' => 'Last Updated',
     ]);

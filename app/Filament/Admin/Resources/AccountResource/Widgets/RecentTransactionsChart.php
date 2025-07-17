@@ -12,7 +12,7 @@ class RecentTransactionsChart extends ChartWidget
 
     protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?string $pollingInterval = '30s';
 
@@ -27,22 +27,22 @@ class RecentTransactionsChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => 'Deposits',
-                    'data'            => $data->pluck('deposits'),
+                    'label' => 'Deposits',
+                    'data' => $data->pluck('deposits'),
                     'backgroundColor' => '#10b981',
-                    'borderColor'     => '#10b981',
+                    'borderColor' => '#10b981',
                 ],
                 [
-                    'label'           => 'Withdrawals',
-                    'data'            => $data->pluck('withdrawals'),
+                    'label' => 'Withdrawals',
+                    'data' => $data->pluck('withdrawals'),
                     'backgroundColor' => '#ef4444',
-                    'borderColor'     => '#ef4444',
+                    'borderColor' => '#ef4444',
                 ],
                 [
-                    'label'           => 'Transfers',
-                    'data'            => $data->pluck('transfers'),
+                    'label' => 'Transfers',
+                    'data' => $data->pluck('transfers'),
                     'backgroundColor' => '#3b82f6',
-                    'borderColor'     => '#3b82f6',
+                    'borderColor' => '#3b82f6',
                 ],
             ],
             'labels' => $data->pluck('date'),
@@ -60,7 +60,7 @@ class RecentTransactionsChart extends ChartWidget
             'scales' => [
                 'y' => [
                     'beginAtZero' => true,
-                    'stacked'     => false,
+                    'stacked' => false,
                 ],
                 'x' => [
                     'stacked' => false,
@@ -73,7 +73,7 @@ class RecentTransactionsChart extends ChartWidget
     {
         return [
             '24h' => 'Last 24 Hours',
-            '7d'  => 'Last 7 Days',
+            '7d' => 'Last 7 Days',
             '30d' => 'Last 30 Days',
             '90d' => 'Last 90 Days',
         ];
@@ -84,10 +84,10 @@ class RecentTransactionsChart extends ChartWidget
         $endDate = now();
 
         $startDate = match ($period) {
-            '24h'   => $endDate->copy()->subDay(),
-            '7d'    => $endDate->copy()->subDays(7),
-            '30d'   => $endDate->copy()->subDays(30),
-            '90d'   => $endDate->copy()->subDays(90),
+            '24h' => $endDate->copy()->subDay(),
+            '7d' => $endDate->copy()->subDays(7),
+            '30d' => $endDate->copy()->subDays(30),
+            '90d' => $endDate->copy()->subDays(90),
             default => $endDate->copy()->subDays(7),
         };
 
@@ -110,9 +110,9 @@ class RecentTransactionsChart extends ChartWidget
             ->whereIn(
                 'event_class',
                 [
-                'App\\Domain\\Account\\Events\\MoneyAdded',
-                'App\\Domain\\Account\\Events\\MoneySubtracted',
-                'App\\Domain\\Account\\Events\\MoneyTransferred',
+                    'App\\Domain\\Account\\Events\\MoneyAdded',
+                    'App\\Domain\\Account\\Events\\MoneySubtracted',
+                    'App\\Domain\\Account\\Events\\MoneyTransferred',
                 ]
             )
             ->where('created_at', '>=', $startDate)
@@ -132,10 +132,10 @@ class RecentTransactionsChart extends ChartWidget
 
             $data->push(
                 [
-                'date'        => $period === '24h' ? $dateKey : $current->format('M d'),
-                'deposits'    => $transaction?->deposits ?? 0,
-                'withdrawals' => $transaction?->withdrawals ?? 0,
-                'transfers'   => $transaction?->transfers ?? 0,
+                    'date' => $period === '24h' ? $dateKey : $current->format('M d'),
+                    'deposits' => $transaction?->deposits ?? 0,
+                    'withdrawals' => $transaction?->withdrawals ?? 0,
+                    'transfers' => $transaction?->transfers ?? 0,
                 ]
             );
 

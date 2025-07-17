@@ -60,13 +60,15 @@ it('formats amount correctly with sign', function () {
     $formatState = $property->getValue($amountColumn);
 
     // Create mock records for testing
-    $creditRecord = new class () {
+    $creditRecord = new class
+    {
         public function getDirection()
         {
             return 'credit';
         }
     };
-    $debitRecord = new class () {
+    $debitRecord = new class
+    {
         public function getDirection()
         {
             return 'debit';

@@ -67,11 +67,11 @@ class TurnoverCacheService
                 $turnovers = $this->getLastMonths($accountUuid, 12);
 
                 return [
-                    'total_debit'            => $turnovers->sum('debit'),
-                    'total_credit'           => $turnovers->sum('credit'),
-                    'average_monthly_debit'  => $turnovers->avg('debit') ?? 0,
+                    'total_debit' => $turnovers->sum('debit'),
+                    'total_credit' => $turnovers->sum('credit'),
+                    'average_monthly_debit' => $turnovers->avg('debit') ?? 0,
                     'average_monthly_credit' => $turnovers->avg('credit') ?? 0,
-                    'months_analyzed'        => $turnovers->count(),
+                    'months_analyzed' => $turnovers->count(),
                 ];
             }
         );

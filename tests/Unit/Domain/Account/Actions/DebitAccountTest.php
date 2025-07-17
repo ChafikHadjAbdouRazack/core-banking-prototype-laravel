@@ -4,9 +4,9 @@ namespace Tests\Unit\Domain\Account\Actions;
 
 use App\Domain\Account\Actions\DebitAccount;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Repositories\AccountRepository;
 use App\Models\Account;
-use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -59,8 +59,8 @@ class DebitAccountTest extends DomainTestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'account-123',
-            'asset_code'   => 'USD',
-            'balance'      => 5000, // $50.00
+            'asset_code' => 'USD',
+            'balance' => 5000, // $50.00
         ]);
 
         // Repository will find the account by UUID
@@ -115,8 +115,8 @@ class DebitAccountTest extends DomainTestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'account-789',
-            'asset_code'   => 'USD',
-            'balance'      => 1000, // $10.00
+            'asset_code' => 'USD',
+            'balance' => 1000, // $10.00
         ]);
 
         // Repository will find the account by UUID
@@ -144,8 +144,8 @@ class DebitAccountTest extends DomainTestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'exact-balance-account',
-            'asset_code'   => 'BTC',
-            'balance'      => 100000000, // 1 BTC
+            'asset_code' => 'BTC',
+            'balance' => 100000000, // 1 BTC
         ]);
 
         // Repository will find the account by UUID
@@ -176,8 +176,8 @@ class DebitAccountTest extends DomainTestCase
         // Create existing balance
         AccountBalance::create([
             'account_uuid' => 'multi-debit-account',
-            'asset_code'   => 'EUR',
-            'balance'      => 10000, // €100.00
+            'asset_code' => 'EUR',
+            'balance' => 10000, // €100.00
         ]);
 
         // Repository will find the account by UUID

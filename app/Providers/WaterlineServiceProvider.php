@@ -22,7 +22,7 @@ class WaterlineServiceProvider extends WaterlineApplicationServiceProvider
                 return in_array(
                     $user->email,
                     [
-                    //
+                        //
                     ]
                 );
             }

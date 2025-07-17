@@ -28,31 +28,40 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Decompose basket holdings into component assets",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",              format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"basket_code", "amount"},
+     *
      * @OA\Property(property="basket_code",   type="string", example="STABLE_BASKET"),
      * @OA\Property(property="amount",        type="integer", example=10000, description="Amount in smallest unit")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Basket decomposed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="basket_code",   type="string"),
      * @OA\Property(property="basket_amount", type="integer"),
      * @OA\Property(property="components",    type="object"),
      * @OA\Property(property="decomposed_at", type="string", format="date-time")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error or insufficient balance"
@@ -63,8 +72,8 @@ class BasketAccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'basket_code' => 'required|string|exists:basket_assets,code',
-            'amount'      => 'required|integer|min:1',
+                'basket_code' => 'required|string|exists:basket_assets,code',
+                'amount' => 'required|integer|min:1',
             ]
         );
 
@@ -86,7 +95,7 @@ class BasketAccountController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'message' => $e->getMessage(),
+                    'message' => $e->getMessage(),
                 ],
                 422
             );
@@ -100,31 +109,40 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Compose component assets into a basket",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                format="uuid")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"basket_code", "amount"},
+     *
      * @OA\Property(property="basket_code",     type="string", example="STABLE_BASKET"),
      * @OA\Property(property="amount",          type="integer", example=10000, description="Amount of basket to create")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Basket composed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="basket_code",     type="string"),
      * @OA\Property(property="basket_amount",   type="integer"),
      * @OA\Property(property="components_used", type="object"),
      * @OA\Property(property="composed_at",     type="string", format="date-time")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error or insufficient component balances"
@@ -135,8 +153,8 @@ class BasketAccountController extends Controller
     {
         $validated = $request->validate(
             [
-            'basket_code' => 'required|string|exists:basket_assets,code',
-            'amount'      => 'required|integer|min:1',
+                'basket_code' => 'required|string|exists:basket_assets,code',
+                'amount' => 'required|integer|min:1',
             ]
         );
 
@@ -158,7 +176,7 @@ class BasketAccountController extends Controller
         } catch (\Exception $e) {
             return response()->json(
                 [
-                'message' => $e->getMessage(),
+                    'message' => $e->getMessage(),
                 ],
                 422
             );
@@ -172,17 +190,22 @@ class BasketAccountController extends Controller
      *     tags={"Basket Operations"},
      *     summary="Get basket holdings for an account",
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Parameter(
      *         name="uuid",
      *         in="path",
      *         description="Account UUID",
      *         required=true,
+     *
      * @OA\Schema(type="string",                format="uuid")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Account basket holdings",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="account_uuid",    type="string"),
      * @OA\Property(property="basket_holdings", type="array", @OA\Items(
      * @OA\Property(property="basket_code",     type="string"),

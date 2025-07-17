@@ -12,11 +12,11 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'user_id'    => $userId,
-                'risk_score' => 0,
-                'risk_level' => 'low',
-            ],
+                'data' => [
+                    'user_id' => $userId,
+                    'risk_score' => 0,
+                    'risk_level' => 'low',
+                ],
             ]
         );
     }
@@ -25,11 +25,11 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'transaction_id' => $transactionId,
-                'risk_score'     => 0,
-                'risk_factors'   => [],
-            ],
+                'data' => [
+                    'transaction_id' => $transactionId,
+                    'risk_score' => 0,
+                    'risk_factors' => [],
+                ],
             ]
         );
     }
@@ -38,10 +38,10 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [
-                'risk_score' => 0,
-                'risk_level' => 'low',
-            ],
+                'data' => [
+                    'risk_score' => 0,
+                    'risk_level' => 'low',
+                ],
             ]
         );
     }
@@ -50,7 +50,7 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -59,7 +59,7 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
+                'data' => [],
             ]
         );
     }
@@ -68,8 +68,8 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['user_id' => $userId],
+                'data' => [],
+                'meta' => ['user_id' => $userId],
             ]
         );
     }
@@ -78,8 +78,8 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'message' => 'Device fingerprint stored',
-            'data'    => [],
+                'message' => 'Device fingerprint stored',
+                'data' => [],
             ]
         );
     }
@@ -88,8 +88,8 @@ class RiskAnalysisController extends Controller
     {
         return response()->json(
             [
-            'data' => [],
-            'meta' => ['user_id' => $userId],
+                'data' => [],
+                'meta' => ['user_id' => $userId],
             ]
         );
     }

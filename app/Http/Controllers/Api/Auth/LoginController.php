@@ -20,19 +20,25 @@ class LoginController extends Controller
      *     description="Authenticate user with email and password to receive an access token",
      *     operationId="login",
      *     tags={"Authentication"},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
      *             required={"email","password"},
+     *
      * @OA\Property(property="email",             type="string", format="email", example="john@example.com"),
      * @OA\Property(property="password",          type="string", format="password", example="password123"),
      * @OA\Property(property="device_name",       type="string", example="iPhone 12", description="Optional device name for token")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Login successful",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="user",
      *                 type="object",
@@ -46,10 +52,13 @@ class LoginController extends Controller
      * @OA\Property(property="expires_in",        type="integer", nullable=true, example=null, description="Token expiration time in seconds")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Invalid credentials",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message",           type="string", example="The given data was invalid."),
      * @OA\Property(
      *                 property="errors",
@@ -57,6 +66,7 @@ class LoginController extends Controller
      * @OA\Property(
      *                     property="email",
      *                     type="array",
+     *
      * @OA\Items(type="string",                   example="The provided credentials are incorrect.")
      *                 )
      *             )
@@ -64,17 +74,15 @@ class LoginController extends Controller
      *     )
      * )
      *
-     * @param  Request $request
-     * @return JsonResponse
      * @throws ValidationException
      */
     public function login(Request $request): JsonResponse
     {
         $request->validate(
             [
-            'email'       => 'required|email',
-            'password'    => 'required',
-            'device_name' => 'string',
+                'email' => 'required|email',
+                'password' => 'required',
+                'device_name' => 'string',
             ]
         );
 
@@ -83,7 +91,7 @@ class LoginController extends Controller
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages(
                 [
-                'email' => ['The provided credentials are incorrect.'],
+                    'email' => ['The provided credentials are incorrect.'],
                 ]
             );
         }
@@ -116,16 +124,16 @@ class LoginController extends Controller
 
         return response()->json(
             [
-            'user' => [
-                'id'                => $user->id,
-                'name'              => $user->name,
-                'email'             => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-            ],
-            'access_token' => $token,
-            'token'        => $token, // For backward compatibility
-            'token_type'   => 'Bearer',
-            'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'email_verified_at' => $user->email_verified_at,
+                ],
+                'access_token' => $token,
+                'token' => $token, // For backward compatibility
+                'token_type' => 'Bearer',
+                'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
             ]
         );
     }
@@ -140,21 +148,22 @@ class LoginController extends Controller
      *     operationId="logout",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successfully logged out",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message", type="string", example="Successfully logged out")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function logout(Request $request): JsonResponse
     {
@@ -162,7 +171,7 @@ class LoginController extends Controller
 
         return response()->json(
             [
-            'message' => 'Successfully logged out',
+                'message' => 'Successfully logged out',
             ]
         );
     }
@@ -177,21 +186,22 @@ class LoginController extends Controller
      *     operationId="logoutAll",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successfully logged out from all devices",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message", type="string", example="Successfully logged out from all devices")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function logoutAll(Request $request): JsonResponse
     {
@@ -199,7 +209,7 @@ class LoginController extends Controller
 
         return response()->json(
             [
-            'message' => 'Successfully logged out from all devices',
+                'message' => 'Successfully logged out from all devices',
             ]
         );
     }
@@ -214,23 +224,24 @@ class LoginController extends Controller
      *     operationId="refreshToken",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="Token refreshed successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="access_token", type="string", example="3|newTokenHere..."),
      * @OA\Property(property="token_type",   type="string", example="Bearer"),
      * @OA\Property(property="expires_in",   type="integer", nullable=true)
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function refresh(Request $request): JsonResponse
     {
@@ -245,9 +256,9 @@ class LoginController extends Controller
 
         return response()->json(
             [
-            'access_token' => $token,
-            'token_type'   => 'Bearer',
-            'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'expires_in' => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
             ]
         );
     }
@@ -262,10 +273,13 @@ class LoginController extends Controller
      *     operationId="getUser",
      *     tags={"Authentication"},
      *     security={{"bearerAuth":{}}},
+     *
      * @OA\Response(
      *         response=200,
      *         description="User information retrieved successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(
      *                 property="user",
      *                 type="object",
@@ -278,20 +292,18 @@ class LoginController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
      * )
-     *
-     * @param  Request $request
-     * @return JsonResponse
      */
     public function user(Request $request): JsonResponse
     {
         return response()->json(
             [
-            'user' => $request->user(),
+                'user' => $request->user(),
             ]
         );
     }

@@ -13,7 +13,7 @@ class AuthenticateApiOrSanctum
     /**
      * Handle an incoming request.
      *
-     * @param Closure(Request): (Response) $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $permission = 'read'): Response
     {
@@ -40,8 +40,8 @@ class AuthenticateApiOrSanctum
         if (! $apiKey) {
             return response()->json(
                 [
-                'error'   => 'Unauthorized',
-                'message' => 'Invalid API key',
+                    'error' => 'Unauthorized',
+                    'message' => 'Invalid API key',
                 ],
                 401
             );
@@ -51,8 +51,8 @@ class AuthenticateApiOrSanctum
         if ($apiKey->expires_at && $apiKey->expires_at->isPast()) {
             return response()->json(
                 [
-                'error'   => 'Unauthorized',
-                'message' => 'API key expired',
+                    'error' => 'Unauthorized',
+                    'message' => 'API key expired',
                 ],
                 401
             );
@@ -62,8 +62,8 @@ class AuthenticateApiOrSanctum
         if (! $apiKey->isIpAllowed($request->ip())) {
             return response()->json(
                 [
-                'error'   => 'Forbidden',
-                'message' => 'Access denied from this IP address',
+                    'error' => 'Forbidden',
+                    'message' => 'Access denied from this IP address',
                 ],
                 403
             );
@@ -73,8 +73,8 @@ class AuthenticateApiOrSanctum
         if (! $apiKey->hasPermission($permission)) {
             return response()->json(
                 [
-                'error'   => 'Forbidden',
-                'message' => 'Insufficient permissions',
+                    'error' => 'Forbidden',
+                    'message' => 'Insufficient permissions',
                 ],
                 403
             );
@@ -108,8 +108,8 @@ class AuthenticateApiOrSanctum
                 if (! auth('sanctum')->check()) {
                     return response()->json(
                         [
-                        'error'   => 'Unauthorized',
-                        'message' => 'Authentication required',
+                            'error' => 'Unauthorized',
+                            'message' => 'Authentication required',
                         ],
                         401
                     );

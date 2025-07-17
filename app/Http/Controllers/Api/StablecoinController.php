@@ -33,38 +33,49 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="List all stablecoins",
      *     description="Retrieve a list of all configured stablecoins with optional filtering",
+     *
      * @OA\Parameter(
      *         name="active_only",
      *         in="query",
      *         description="Filter to show only active stablecoins",
      *         required=false,
+     *
      * @OA\Schema(type="boolean")
      *     ),
+     *
      * @OA\Parameter(
      *         name="minting_enabled",
      *         in="query",
      *         description="Filter to show only stablecoins with minting enabled",
      *         required=false,
+     *
      * @OA\Schema(type="boolean")
      *     ),
+     *
      * @OA\Parameter(
      *         name="burning_enabled",
      *         in="query",
      *         description="Filter to show only stablecoins with burning enabled",
      *         required=false,
+     *
      * @OA\Schema(type="boolean")
      *     ),
+     *
      * @OA\Parameter(
      *         name="stability_mechanism",
      *         in="query",
      *         description="Filter by stability mechanism type",
      *         required=false,
+     *
      * @OA\Schema(type="string",     enum={"collateralized", "algorithmic", "hybrid"})
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Stablecoin"))
      *         )
      *     )
@@ -94,7 +105,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $stablecoins,
+                'data' => $stablecoins,
             ]
         );
     }
@@ -106,23 +117,30 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="Get stablecoin details",
      *     description="Retrieve detailed information about a specific stablecoin including collateralization metrics",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                     ref="#/components/schemas/Stablecoin")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found",
+     *
      * @OA\JsonContent(ref="#/components/schemas/Error")
      *     )
      * )
@@ -144,7 +162,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $data,
+                'data' => $data,
             ]
         );
     }
@@ -157,20 +175,27 @@ class StablecoinController extends Controller
      *     summary="Create a new stablecoin",
      *     description="Create a new stablecoin configuration",
      *     security={{"sanctum": {}}},
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(ref="#/components/schemas/CreateStablecoinRequest")
      *     ),
+     *
      * @OA\Response(
      *         response=201,
      *         description="Stablecoin created successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                                       ref="#/components/schemas/Stablecoin")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=422,
      *         description="Validation error",
+     *
      * @OA\JsonContent(ref="#/components/schemas/ValidationError")
      *     )
      * )
@@ -179,21 +204,21 @@ class StablecoinController extends Controller
     {
         $validated = $request->validate(
             [
-            'code'                 => 'required|string|max:10|unique:stablecoins,code',
-            'name'                 => 'required|string|max:255',
-            'symbol'               => 'required|string|max:10',
-            'peg_asset_code'       => 'required|string|exists:assets,code',
-            'peg_ratio'            => 'required|numeric|min:0',
-            'target_price'         => 'required|numeric|min:0',
-            'stability_mechanism'  => 'required|in:collateralized,algorithmic,hybrid',
-            'collateral_ratio'     => 'required|numeric|min:1',
-            'min_collateral_ratio' => 'required|numeric|min:1|lt:collateral_ratio',
-            'liquidation_penalty'  => 'required|numeric|min:0|max:1',
-            'max_supply'           => 'nullable|integer|min:1',
-            'mint_fee'             => 'required|numeric|min:0|max:1',
-            'burn_fee'             => 'required|numeric|min:0|max:1',
-            'precision'            => 'required|integer|min:0|max:18',
-            'metadata'             => 'nullable|array',
+                'code' => 'required|string|max:10|unique:stablecoins,code',
+                'name' => 'required|string|max:255',
+                'symbol' => 'required|string|max:10',
+                'peg_asset_code' => 'required|string|exists:assets,code',
+                'peg_ratio' => 'required|numeric|min:0',
+                'target_price' => 'required|numeric|min:0',
+                'stability_mechanism' => 'required|in:collateralized,algorithmic,hybrid',
+                'collateral_ratio' => 'required|numeric|min:1',
+                'min_collateral_ratio' => 'required|numeric|min:1|lt:collateral_ratio',
+                'liquidation_penalty' => 'required|numeric|min:0|max:1',
+                'max_supply' => 'nullable|integer|min:1',
+                'mint_fee' => 'required|numeric|min:0|max:1',
+                'burn_fee' => 'required|numeric|min:0|max:1',
+                'precision' => 'required|integer|min:0|max:18',
+                'metadata' => 'nullable|array',
             ]
         );
 
@@ -207,7 +232,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $stablecoin,
+                'data' => $stablecoin,
             ],
             201
         );
@@ -221,16 +246,21 @@ class StablecoinController extends Controller
      *     summary="Update stablecoin configuration",
      *     description="Update an existing stablecoin's configuration parameters",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\RequestBody(
      *         required=true,
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="name",                 type="string", example="FinAegis USD Updated"),
      * @OA\Property(property="collateral_ratio",     type="number", example=1.6),
      * @OA\Property(property="min_collateral_ratio", type="number", example=1.3),
@@ -244,13 +274,17 @@ class StablecoinController extends Controller
      * @OA\Property(property="metadata",             type="object")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Stablecoin updated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                 ref="#/components/schemas/Stablecoin")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found"
@@ -267,17 +301,17 @@ class StablecoinController extends Controller
 
         $validated = $request->validate(
             [
-            'name'                 => 'sometimes|string|max:255',
-            'collateral_ratio'     => 'sometimes|numeric|min:1',
-            'min_collateral_ratio' => 'sometimes|numeric|min:1',
-            'liquidation_penalty'  => 'sometimes|numeric|min:0|max:1',
-            'max_supply'           => 'sometimes|nullable|integer|min:1',
-            'mint_fee'             => 'sometimes|numeric|min:0|max:1',
-            'burn_fee'             => 'sometimes|numeric|min:0|max:1',
-            'is_active'            => 'sometimes|boolean',
-            'minting_enabled'      => 'sometimes|boolean',
-            'burning_enabled'      => 'sometimes|boolean',
-            'metadata'             => 'sometimes|nullable|array',
+                'name' => 'sometimes|string|max:255',
+                'collateral_ratio' => 'sometimes|numeric|min:1',
+                'min_collateral_ratio' => 'sometimes|numeric|min:1',
+                'liquidation_penalty' => 'sometimes|numeric|min:0|max:1',
+                'max_supply' => 'sometimes|nullable|integer|min:1',
+                'mint_fee' => 'sometimes|numeric|min:0|max:1',
+                'burn_fee' => 'sometimes|numeric|min:0|max:1',
+                'is_active' => 'sometimes|boolean',
+                'minting_enabled' => 'sometimes|boolean',
+                'burning_enabled' => 'sometimes|boolean',
+                'metadata' => 'sometimes|nullable|array',
             ]
         );
 
@@ -289,7 +323,7 @@ class StablecoinController extends Controller
             if ($newMinRatio >= $newCollateralRatio) {
                 throw ValidationException::withMessages(
                     [
-                    'min_collateral_ratio' => 'Minimum collateral ratio must be less than collateral ratio',
+                        'min_collateral_ratio' => 'Minimum collateral ratio must be less than collateral ratio',
                     ]
                 );
             }
@@ -299,7 +333,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $stablecoin,
+                'data' => $stablecoin,
             ]
         );
     }
@@ -311,17 +345,22 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="Get stablecoin metrics and statistics",
      *     description="Retrieve detailed metrics and statistics for a specific stablecoin",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",                    type="object",
      * @OA\Property(property="stablecoin_code",         type="string", example="FUSD"),
      * @OA\Property(property="total_supply",            type="integer", example=1000000),
@@ -336,6 +375,7 @@ class StablecoinController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found or no metrics available"
@@ -350,7 +390,7 @@ class StablecoinController extends Controller
         if (! $metrics) {
             return response()->json(
                 [
-                'error' => 'No metrics available for this stablecoin',
+                    'error' => 'No metrics available for this stablecoin',
                 ],
                 404
             );
@@ -358,7 +398,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $metrics,
+                'data' => $metrics,
             ]
         );
     }
@@ -370,10 +410,13 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="Get system-wide stablecoin metrics",
      *     description="Retrieve metrics for all stablecoins in the system",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data", type="object", additionalProperties={
      *                 "type": "object",
      *                 "properties": {
@@ -393,7 +436,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $metrics,
+                'data' => $metrics,
             ]
         );
     }
@@ -406,17 +449,22 @@ class StablecoinController extends Controller
      *     summary="Execute stability mechanisms for a stablecoin",
      *     description="Trigger stability mechanism execution for a specific stablecoin",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",          type="object",
      * @OA\Property(property="success",       type="boolean", example=true),
      * @OA\Property(property="mechanism",     type="string", example="collateralized"),
@@ -426,6 +474,7 @@ class StablecoinController extends Controller
      *             )
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found"
@@ -439,7 +488,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $result,
+                'data' => $result,
             ]
         );
     }
@@ -451,10 +500,13 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="Check system health across all stablecoins",
      *     description="Retrieve system-wide health status for all stablecoins",
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",              type="object",
      * @OA\Property(property="overall_status",    type="string", example="healthy"),
      * @OA\Property(property="stablecoin_status", type="array", @OA\Items(type="object")),
@@ -470,7 +522,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => $health,
+                'data' => $health,
             ]
         );
     }
@@ -482,17 +534,22 @@ class StablecoinController extends Controller
      *     tags={"Stablecoins"},
      *     summary="Get collateral distribution for a stablecoin",
      *     description="Retrieve the distribution of collateral assets backing a stablecoin",
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Successful operation",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="data",           type="array", @OA\Items(
      * @OA\Property(property="asset_code",     type="string", example="USD"),
      * @OA\Property(property="total_amount",   type="integer", example=800000),
@@ -502,6 +559,7 @@ class StablecoinController extends Controller
      *             ))
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found"
@@ -515,7 +573,7 @@ class StablecoinController extends Controller
 
         return response()->json(
             [
-            'data' => array_values($distribution),
+                'data' => array_values($distribution),
             ]
         );
     }
@@ -528,21 +586,27 @@ class StablecoinController extends Controller
      *     summary="Deactivate a stablecoin",
      *     description="Deactivate a stablecoin, disabling minting and burning",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Stablecoin deactivated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message", type="string", example="Stablecoin deactivated successfully"),
      * @OA\Property(property="data",    ref="#/components/schemas/Stablecoin")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found"
@@ -555,16 +619,16 @@ class StablecoinController extends Controller
 
         $stablecoin->update(
             [
-            'is_active'       => false,
-            'minting_enabled' => false,
-            'burning_enabled' => false,
+                'is_active' => false,
+                'minting_enabled' => false,
+                'burning_enabled' => false,
             ]
         );
 
         return response()->json(
             [
-            'message' => 'Stablecoin deactivated successfully',
-            'data'    => $stablecoin,
+                'message' => 'Stablecoin deactivated successfully',
+                'data' => $stablecoin,
             ]
         );
     }
@@ -577,21 +641,27 @@ class StablecoinController extends Controller
      *     summary="Reactivate a stablecoin",
      *     description="Reactivate a previously deactivated stablecoin",
      *     security={{"sanctum": {}}},
+     *
      * @OA\Parameter(
      *         name="code",
      *         in="path",
      *         description="The stablecoin code",
      *         required=true,
+     *
      * @OA\Schema(type="string")
      *     ),
+     *
      * @OA\Response(
      *         response=200,
      *         description="Stablecoin reactivated successfully",
+     *
      * @OA\JsonContent(
+     *
      * @OA\Property(property="message", type="string", example="Stablecoin reactivated successfully"),
      * @OA\Property(property="data",    ref="#/components/schemas/Stablecoin")
      *         )
      *     ),
+     *
      * @OA\Response(
      *         response=404,
      *         description="Stablecoin not found"
@@ -604,16 +674,16 @@ class StablecoinController extends Controller
 
         $stablecoin->update(
             [
-            'is_active'       => true,
-            'minting_enabled' => true,
-            'burning_enabled' => true,
+                'is_active' => true,
+                'minting_enabled' => true,
+                'burning_enabled' => true,
             ]
         );
 
         return response()->json(
             [
-            'message' => 'Stablecoin reactivated successfully',
-            'data'    => $stablecoin,
+                'message' => 'Stablecoin reactivated successfully',
+                'data' => $stablecoin,
             ]
         );
     }

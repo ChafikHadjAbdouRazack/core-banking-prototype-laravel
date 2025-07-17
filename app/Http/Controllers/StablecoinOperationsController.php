@@ -95,13 +95,13 @@ class StablecoinOperationsController extends Controller
     {
         $validated = $request->validate(
             [
-            'stablecoin'         => 'required|string|in:USDX,EURX,GBPX',
-            'amount'             => 'required|numeric|min:100|max:1000000',
-            'collateral_asset'   => 'required|string|in:USD,EUR,GBP',
-            'collateral_amount'  => 'required|numeric|min:0',
-            'recipient_account'  => 'required|uuid',
-            'reason'             => 'required|string|max:255',
-            'authorization_code' => 'required|string',
+                'stablecoin' => 'required|string|in:USDX,EURX,GBPX',
+                'amount' => 'required|numeric|min:100|max:1000000',
+                'collateral_asset' => 'required|string|in:USD,EUR,GBP',
+                'collateral_amount' => 'required|numeric|min:0',
+                'recipient_account' => 'required|uuid',
+                'reason' => 'required|string|max:255',
+                'authorization_code' => 'required|string',
             ]
         );
 
@@ -126,14 +126,14 @@ class StablecoinOperationsController extends Controller
         if ($validated['collateral_amount'] < $requiredCollateral) {
             return back()->withErrors(
                 [
-                'collateral_amount' => "Insufficient collateral. Required: {$requiredCollateral} {$validated['collateral_asset']}",
+                    'collateral_amount' => "Insufficient collateral. Required: {$requiredCollateral} {$validated['collateral_asset']}",
                 ]
             );
         }
 
         try {
             // Get recipient account
-                        /** @var Account|null $recipientAccount */
+            /** @var Account|null $recipientAccount */
             $recipientAccount = Account::where('uuid', $validated['recipient_account'])->first();
 
             if (! $recipientAccount) {
@@ -158,21 +158,21 @@ class StablecoinOperationsController extends Controller
             $operationId = (string) Str::uuid();
             StablecoinOperation::create(
                 [
-                'uuid'              => $operationId,
-                'type'              => 'mint',
-                'stablecoin'        => $validated['stablecoin'],
-                'amount'            => $mintAmount,
-                'collateral_asset'  => $validated['collateral_asset'],
-                'collateral_amount' => $collateralAmount,
-                'recipient_account' => $validated['recipient_account'],
-                'operator_uuid'     => $user->uuid,
-                'position_uuid'     => $positionUuid,
-                'reason'            => $validated['reason'],
-                'status'            => 'completed',
-                'metadata'          => [
-                    'authorized_at' => now()->toIso8601String(),
-                ],
-                'executed_at' => now(),
+                    'uuid' => $operationId,
+                    'type' => 'mint',
+                    'stablecoin' => $validated['stablecoin'],
+                    'amount' => $mintAmount,
+                    'collateral_asset' => $validated['collateral_asset'],
+                    'collateral_amount' => $collateralAmount,
+                    'recipient_account' => $validated['recipient_account'],
+                    'operator_uuid' => $user->uuid,
+                    'position_uuid' => $positionUuid,
+                    'reason' => $validated['reason'],
+                    'status' => 'completed',
+                    'metadata' => [
+                        'authorized_at' => now()->toIso8601String(),
+                    ],
+                    'executed_at' => now(),
                 ]
             );
 
@@ -222,13 +222,13 @@ class StablecoinOperationsController extends Controller
     {
         $validated = $request->validate(
             [
-            'stablecoin'         => 'required|string|in:USDX,EURX,GBPX',
-            'amount'             => 'required|numeric|min:100|max:1000000',
-            'source_account'     => 'required|uuid',
-            'return_collateral'  => 'required|boolean',
-            'collateral_asset'   => 'required_if:return_collateral,true|string|in:USD,EUR,GBP',
-            'reason'             => 'required|string|max:255',
-            'authorization_code' => 'required|string',
+                'stablecoin' => 'required|string|in:USDX,EURX,GBPX',
+                'amount' => 'required|numeric|min:100|max:1000000',
+                'source_account' => 'required|uuid',
+                'return_collateral' => 'required|boolean',
+                'collateral_asset' => 'required_if:return_collateral,true|string|in:USD,EUR,GBP',
+                'reason' => 'required|string|max:255',
+                'authorization_code' => 'required|string',
             ]
         );
 
@@ -244,7 +244,7 @@ class StablecoinOperationsController extends Controller
         }
 
         // Check account balance
-                /** @var Account|null $sourceAccount */
+        /** @var Account|null $sourceAccount */
         $sourceAccount = Account::where('uuid', $validated['source_account'])->first();
         if (! $sourceAccount) {
             return back()->withErrors(['source_account' => 'Invalid account']);
@@ -287,22 +287,22 @@ class StablecoinOperationsController extends Controller
             $operationId = (string) Str::uuid();
             StablecoinOperation::create(
                 [
-                'uuid'              => $operationId,
-                'type'              => 'burn',
-                'stablecoin'        => $validated['stablecoin'],
-                'amount'            => $amountInCents,
-                'collateral_asset'  => $validated['collateral_asset'] ?? null,
-                'collateral_return' => $collateralReturn > 0 ? (int) ($collateralReturn * 100) : null,
-                'source_account'    => $validated['source_account'],
-                'operator_uuid'     => $user->uuid,
-                'position_uuid'     => $positionUuid,
-                'reason'            => $validated['reason'],
-                'status'            => 'completed',
-                'metadata'          => [
-                    'return_collateral' => $validated['return_collateral'],
-                    'authorized_at'     => now()->toIso8601String(),
-                ],
-                'executed_at' => now(),
+                    'uuid' => $operationId,
+                    'type' => 'burn',
+                    'stablecoin' => $validated['stablecoin'],
+                    'amount' => $amountInCents,
+                    'collateral_asset' => $validated['collateral_asset'] ?? null,
+                    'collateral_return' => $collateralReturn > 0 ? (int) ($collateralReturn * 100) : null,
+                    'source_account' => $validated['source_account'],
+                    'operator_uuid' => $user->uuid,
+                    'position_uuid' => $positionUuid,
+                    'reason' => $validated['reason'],
+                    'status' => 'completed',
+                    'metadata' => [
+                        'return_collateral' => $validated['return_collateral'],
+                        'authorized_at' => now()->toIso8601String(),
+                    ],
+                    'executed_at' => now(),
                 ]
             );
 
@@ -330,10 +330,10 @@ class StablecoinOperationsController extends Controller
         }
 
         $filters = [
-            'type'       => $request->get('type', 'all'),
+            'type' => $request->get('type', 'all'),
             'stablecoin' => $request->get('stablecoin', 'all'),
-            'date_from'  => $request->get('date_from'),
-            'date_to'    => $request->get('date_to'),
+            'date_from' => $request->get('date_from'),
+            'date_to' => $request->get('date_to'),
         ];
 
         // Get operations from database
@@ -359,25 +359,25 @@ class StablecoinOperationsController extends Controller
     {
         return [
             [
-                'symbol'           => 'USDX',
-                'name'             => 'USD Stablecoin',
-                'total_supply'     => 10000000 * 100, // In cents
+                'symbol' => 'USDX',
+                'name' => 'USD Stablecoin',
+                'total_supply' => 10000000 * 100, // In cents
                 'collateral_ratio' => 150, // 150%
-                'active'           => true,
+                'active' => true,
             ],
             [
-                'symbol'           => 'EURX',
-                'name'             => 'EUR Stablecoin',
-                'total_supply'     => 5000000 * 100,
+                'symbol' => 'EURX',
+                'name' => 'EUR Stablecoin',
+                'total_supply' => 5000000 * 100,
                 'collateral_ratio' => 150,
-                'active'           => true,
+                'active' => true,
             ],
             [
-                'symbol'           => 'GBPX',
-                'name'             => 'GBP Stablecoin',
-                'total_supply'     => 3000000 * 100,
+                'symbol' => 'GBPX',
+                'name' => 'GBP Stablecoin',
+                'total_supply' => 3000000 * 100,
                 'collateral_ratio' => 150,
-                'active'           => false,
+                'active' => false,
             ],
         ];
     }
@@ -392,12 +392,12 @@ class StablecoinOperationsController extends Controller
             300,
             function () {
                 return [
-                'total_minted_24h'   => rand(50000, 200000) * 100,
-                'total_burned_24h'   => rand(30000, 150000) * 100,
-                'active_stablecoins' => 2,
-                'collateral_locked'  => rand(15000000, 25000000) * 100,
-                'operations_today'   => rand(10, 50),
-                'pending_requests'   => rand(0, 5),
+                    'total_minted_24h' => rand(50000, 200000) * 100,
+                    'total_burned_24h' => rand(30000, 150000) * 100,
+                    'active_stablecoins' => 2,
+                    'collateral_locked' => rand(15000000, 25000000) * 100,
+                    'operations_today' => rand(10, 50),
+                    'pending_requests' => rand(0, 5),
                 ];
             }
         );
@@ -415,13 +415,13 @@ class StablecoinOperationsController extends Controller
             ->map(
                 function ($operation) {
                     return [
-                    'id'         => $operation->uuid,
-                    'type'       => $operation->type,
-                    'stablecoin' => $operation->stablecoin,
-                    'amount'     => $operation->amount / 100, // Convert cents to dollars for display
-                    'operator'   => $operation->operator->name ?? 'Unknown',
-                    'status'     => $operation->status,
-                    'created_at' => $operation->created_at,
+                        'id' => $operation->uuid,
+                        'type' => $operation->type,
+                        'stablecoin' => $operation->stablecoin,
+                        'amount' => $operation->amount / 100, // Convert cents to dollars for display
+                        'operator' => $operation->operator->name ?? 'Unknown',
+                        'status' => $operation->status,
+                        'created_at' => $operation->created_at,
                     ];
                 }
             );
@@ -434,18 +434,18 @@ class StablecoinOperationsController extends Controller
     {
         return [
             'USD' => [
-                'locked'      => 10000000 * 100,
-                'available'   => 5000000 * 100,
+                'locked' => 10000000 * 100,
+                'available' => 5000000 * 100,
                 'utilization' => 66.67,
             ],
             'EUR' => [
-                'locked'      => 5000000 * 100,
-                'available'   => 3000000 * 100,
+                'locked' => 5000000 * 100,
+                'available' => 3000000 * 100,
                 'utilization' => 62.5,
             ],
             'GBP' => [
-                'locked'      => 3000000 * 100,
-                'available'   => 2000000 * 100,
+                'locked' => 3000000 * 100,
+                'available' => 2000000 * 100,
                 'utilization' => 60,
             ],
         ];
@@ -579,21 +579,21 @@ class StablecoinOperationsController extends Controller
             ->map(
                 function ($operation) {
                     return [
-                    'id'                => $operation->uuid,
-                    'type'              => $operation->type,
-                    'stablecoin'        => $operation->stablecoin,
-                    'amount'            => $operation->amount,
-                    'collateral_asset'  => $operation->collateral_asset,
-                    'collateral_amount' => $operation->collateral_amount,
-                    'collateral_return' => $operation->collateral_return,
-                    'source_account'    => $operation->source_account,
-                    'recipient_account' => $operation->recipient_account,
-                    'return_collateral' => $operation->metadata['return_collateral'] ?? false,
-                    'operator'          => $operation->operator->name ?? 'Unknown',
-                    'reason'            => $operation->reason,
-                    'position_uuid'     => $operation->position_uuid,
-                    'status'            => $operation->status,
-                    'created_at'        => $operation->created_at,
+                        'id' => $operation->uuid,
+                        'type' => $operation->type,
+                        'stablecoin' => $operation->stablecoin,
+                        'amount' => $operation->amount,
+                        'collateral_asset' => $operation->collateral_asset,
+                        'collateral_amount' => $operation->collateral_amount,
+                        'collateral_return' => $operation->collateral_return,
+                        'source_account' => $operation->source_account,
+                        'recipient_account' => $operation->recipient_account,
+                        'return_collateral' => $operation->metadata['return_collateral'] ?? false,
+                        'operator' => $operation->operator->name ?? 'Unknown',
+                        'reason' => $operation->reason,
+                        'position_uuid' => $operation->position_uuid,
+                        'status' => $operation->status,
+                        'created_at' => $operation->created_at,
                     ];
                 }
             );
@@ -608,11 +608,11 @@ class StablecoinOperationsController extends Controller
         $totalBurned = $operations->where('type', 'burn')->sum('amount');
 
         return [
-            'total_operations'  => $operations->count(),
-            'mint_operations'   => $operations->where('type', 'mint')->count(),
-            'burn_operations'   => $operations->where('type', 'burn')->count(),
-            'total_minted'      => $totalMinted,
-            'total_burned'      => $totalBurned,
+            'total_operations' => $operations->count(),
+            'mint_operations' => $operations->where('type', 'mint')->count(),
+            'burn_operations' => $operations->where('type', 'burn')->count(),
+            'total_minted' => $totalMinted,
+            'total_burned' => $totalBurned,
             'net_supply_change' => $totalMinted - $totalBurned,
         ];
     }

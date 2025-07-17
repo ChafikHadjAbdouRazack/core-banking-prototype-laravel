@@ -22,8 +22,8 @@ class FeatureToggleWorkflow
 
         if (! $this->validateFeatureConfig($featureConfig)) {
             return [
-                'success'   => false,
-                'message'   => 'Invalid feature configuration in poll',
+                'success' => false,
+                'message' => 'Invalid feature configuration in poll',
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -38,34 +38,34 @@ class FeatureToggleWorkflow
             logger()->info(
                 'Feature toggled via governance poll',
                 [
-                    'poll_uuid'          => $poll->uuid,
-                    'feature_key'        => $featureConfig['feature_key'],
-                    'enabled'            => $enabled,
-                    'winning_option'     => $result->winningOption,
+                    'poll_uuid' => $poll->uuid,
+                    'feature_key' => $featureConfig['feature_key'],
+                    'enabled' => $enabled,
+                    'winning_option' => $result->winningOption,
                     'participation_rate' => $result->participationRate,
                 ]
             );
 
             return [
-                'success'     => true,
-                'message'     => "Feature '{$featureConfig['feature_key']}' " . ($enabled ? 'enabled' : 'disabled') . ' via governance',
-                'poll_uuid'   => $poll->uuid,
+                'success' => true,
+                'message' => "Feature '{$featureConfig['feature_key']}' " . ($enabled ? 'enabled' : 'disabled') . ' via governance',
+                'poll_uuid' => $poll->uuid,
                 'feature_key' => $featureConfig['feature_key'],
-                'enabled'     => $enabled,
+                'enabled' => $enabled,
             ];
         } catch (\Exception $e) {
             logger()->error(
                 'Failed to toggle feature via governance poll',
                 [
-                    'poll_uuid'      => $poll->uuid,
+                    'poll_uuid' => $poll->uuid,
                     'feature_config' => $featureConfig,
-                    'error'          => $e->getMessage(),
+                    'error' => $e->getMessage(),
                 ]
             );
 
             return [
-                'success'   => false,
-                'message'   => 'Failed to toggle feature: ' . $e->getMessage(),
+                'success' => false,
+                'message' => 'Failed to toggle feature: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -101,15 +101,15 @@ class FeatureToggleWorkflow
 
         // Common feature patterns
         $featurePatterns = [
-            'multi.?currency'   => 'multi_currency_support',
-            'mobile.?app'       => 'mobile_app_access',
-            'api.?rate.?limit'  => 'api_rate_limiting',
-            'two.?factor|2fa'   => 'two_factor_auth',
-            'webhook'           => 'webhook_notifications',
-            'real.?time'        => 'real_time_processing',
+            'multi.?currency' => 'multi_currency_support',
+            'mobile.?app' => 'mobile_app_access',
+            'api.?rate.?limit' => 'api_rate_limiting',
+            'two.?factor|2fa' => 'two_factor_auth',
+            'webhook' => 'webhook_notifications',
+            'real.?time' => 'real_time_processing',
             'batch.?processing' => 'batch_processing',
-            'audit.?log'        => 'audit_logging',
-            'dark.?mode'        => 'dark_mode_ui',
+            'audit.?log' => 'audit_logging',
+            'dark.?mode' => 'dark_mode_ui',
             'maintenance.?mode' => 'maintenance_mode',
         ];
 
@@ -199,8 +199,8 @@ class FeatureToggleWorkflow
             'Feature flag persisted',
             [
                 'feature_key' => $featureKey,
-                'enabled'     => $enabled,
-                'timestamp'   => now()->toISOString(),
+                'enabled' => $enabled,
+                'timestamp' => now()->toISOString(),
             ]
         );
     }

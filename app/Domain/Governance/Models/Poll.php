@@ -55,14 +55,14 @@ class Poll extends Model
     ];
 
     protected $casts = [
-        'uuid'                   => 'string',
-        'type'                   => PollType::class,
-        'status'                 => PollStatus::class,
-        'options'                => 'array',
-        'start_date'             => 'datetime',
-        'end_date'               => 'datetime',
+        'uuid' => 'string',
+        'type' => PollType::class,
+        'status' => PollStatus::class,
+        'options' => 'array',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
         'required_participation' => 'integer',
-        'metadata'               => 'array',
+        'metadata' => 'array',
     ];
 
     protected static function boot()
