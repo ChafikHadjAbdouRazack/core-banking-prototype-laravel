@@ -52,6 +52,16 @@ class AccountBalance extends Model
     use HasFactory;
 
     /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     */
+    protected static function newFactory(): \Illuminate\Database\Eloquent\Factories\Factory
+    {
+        return \Database\Factories\AccountBalanceFactory::new();
+    }
+
+    /**
      * The table associated with the model.
      *
      * @var string
