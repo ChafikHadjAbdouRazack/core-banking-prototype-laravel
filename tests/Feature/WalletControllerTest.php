@@ -5,13 +5,10 @@ declare(strict_types=1);
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-
-uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
-    $this->account = Account::factory()->create(['user_uuid' => $this->user->uuid]);
+    // Ensure we have the default accounts from TestCase
+    $this->createDefaultAccounts();
 
     // Create test assets (only if they don't exist)
     $this->usdAsset = Asset::firstOrCreate(
