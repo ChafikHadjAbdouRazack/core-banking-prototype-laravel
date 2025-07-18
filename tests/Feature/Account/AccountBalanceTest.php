@@ -5,6 +5,7 @@ namespace Tests\Feature\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
+use Database\Factories\AccountBalanceFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -22,7 +23,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->zero()
@@ -43,7 +44,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->withBalance(10000)
@@ -64,7 +65,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->withBalance(1000)
@@ -82,7 +83,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->withBalance(5000)
@@ -99,7 +100,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $usd = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($usd)
             ->withBalance(12345)
@@ -118,7 +119,7 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'USD')->first();
 
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->create();
@@ -132,7 +133,7 @@ class AccountBalanceTest extends TestCase
     {
         $account = Account::factory()->create();
         $asset = Asset::where('code', 'EUR')->first();
-        $balance = AccountBalance::factory()
+        $balance = AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($asset)
             ->create();
@@ -150,7 +151,7 @@ class AccountBalanceTest extends TestCase
 
         // Create 3 positive balances
         foreach ($accounts->take(3) as $account) {
-            AccountBalance::factory()
+            AccountBalanceFactory::new()
                 ->forAccount($account)
                 ->forAsset($usd)
                 ->withBalance(1000)
@@ -159,7 +160,7 @@ class AccountBalanceTest extends TestCase
 
         // Create 2 zero balances
         foreach ($accounts->skip(3) as $account) {
-            AccountBalance::factory()
+            AccountBalanceFactory::new()
                 ->forAccount($account)
                 ->forAsset($usd)
                 ->zero()
@@ -180,7 +181,7 @@ class AccountBalanceTest extends TestCase
 
         // Create 3 USD balances
         foreach ($accounts->take(3) as $account) {
-            AccountBalance::factory()
+            AccountBalanceFactory::new()
                 ->forAccount($account)
                 ->usd()
                 ->create();
@@ -188,14 +189,14 @@ class AccountBalanceTest extends TestCase
 
         // Create 2 EUR balances
         foreach ($accounts->slice(3, 2) as $account) {
-            AccountBalance::factory()
+            AccountBalanceFactory::new()
                 ->forAccount($account)
                 ->eur()
                 ->create();
         }
 
         // Create 1 BTC balance
-        AccountBalance::factory()
+        AccountBalanceFactory::new()
             ->forAccount($accounts->last())
             ->btc()
             ->create();
@@ -211,14 +212,14 @@ class AccountBalanceTest extends TestCase
         $account = Account::factory()->create();
         $usd = Asset::where('code', 'USD')->first();
 
-        AccountBalance::factory()
+        AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($usd)
             ->create();
 
         $this->expectException(\Illuminate\Database\QueryException::class);
 
-        AccountBalance::factory()
+        AccountBalanceFactory::new()
             ->forAccount($account)
             ->forAsset($usd)
             ->create();
