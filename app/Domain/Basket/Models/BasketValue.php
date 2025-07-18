@@ -4,6 +4,7 @@ namespace App\Domain\Basket\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\BasketValueFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -59,6 +60,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class BasketValue extends Model
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return BasketValueFactory
+     */
+    protected static function newFactory()
+    {
+        return BasketValueFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

@@ -6,6 +6,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\BasketAssetFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -30,6 +31,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class BasketAsset extends Model
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return BasketAssetFactory
+     */
+    protected static function newFactory()
+    {
+        return BasketAssetFactory::new();
+    }
 
     /**
      * The attributes that are mass assignable.

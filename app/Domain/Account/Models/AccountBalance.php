@@ -8,6 +8,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\AccountBalanceFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -50,6 +51,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AccountBalance extends Model
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return AccountBalanceFactory
+     */
+    protected static function newFactory()
+    {
+        return AccountBalanceFactory::new();
+    }
 
     /**
      * The table associated with the model.

@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,27 +29,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register factory namespaces for Domain models
-        \Illuminate\Database\Eloquent\Factories\Factory::guessFactoryNamesUsing(function (string $modelName) {
-            // First, try the default resolution
-            $appNamespace = 'App\\';
-            $modelNamespace = 'Models\\';
-            
-            // If it's a Domain model, map to Database\Factories
-            if (str_starts_with($modelName, $appNamespace . 'Domain\\')) {
-                $modelBasename = class_basename($modelName);
-                return 'Database\\Factories\\' . $modelBasename . 'Factory';
-            }
-            
-            // Default Laravel factory resolution
-            $appNamespaceFactoryNamespace = 'Database\\Factories\\';
-            $modelName = str_starts_with($modelName, $appNamespace . $modelNamespace)
-                ? Str::after($modelName, $appNamespace . $modelNamespace)
-                : Str::after($modelName, $appNamespace);
-
-            return $appNamespaceFactoryNamespace . $modelName . 'Factory';
-        });
-        
         // Treat 'demo' environment as production
         if ($this->app->environment('demo')) {
             // Force production-like settings
