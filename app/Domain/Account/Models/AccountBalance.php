@@ -56,7 +56,7 @@ class AccountBalance extends Model
      *
      * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
      */
-    protected static function newFactory(): \Illuminate\Database\Eloquent\Factories\Factory
+    protected static function newFactory()
     {
         return \Database\Factories\AccountBalanceFactory::new();
     }
