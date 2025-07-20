@@ -78,15 +78,40 @@ class BlogController extends Controller
             );
 
             // Also sync with Mailchimp if configured
-            $this->syncWithMailchimp($validated['email']);
+            $mailchimpConfigured = $this->syncWithMailchimp($validated['email']);
+
+            $message = $mailchimpConfigured
+                ? 'Thank you for subscribing! Check your email for confirmation.'
+                : 'Thank you for subscribing! (Note: Mailchimp integration not configured)';
 
             return response()->json(
                 [
                     'success' => true,
-                    'message' => 'Thank you for subscribing! Check your email for confirmation.',
+                    'message' => $message,
                 ]
             );
         } catch (\Exception $e) {
+            // Check if it's a member exists error
+            if ($e->getMessage() === 'member_exists') {
+                return response()->json(
+                    [
+                        'success' => true,
+                        'message' => 'You are already subscribed to our newsletter.',
+                    ]
+                );
+            }
+
+            // Check if it's a Mailchimp API error
+            if ($e->getMessage() === 'mailchimp_api_error') {
+                return response()->json(
+                    [
+                        'success' => false,
+                        'message' => 'Failed to subscribe. Please try again later.',
+                    ],
+                    422
+                );
+            }
+
             Log::error(
                 'Subscription error',
                 [
@@ -114,13 +139,13 @@ class BlogController extends Controller
         $listId = config('services.mailchimp.list_id');
 
         if (! $apiKey || ! $listId) {
-            return; // Mailchimp not configured, skip
+            return false; // Mailchimp not configured, skip
         }
 
         $dataCenter = $this->getDataCenterFromApiKey($apiKey);
 
         try {
-            Http::withBasicAuth('apikey', $apiKey)
+            $response = Http::withBasicAuth('apikey', $apiKey)
                 ->post(
                     "https://{$dataCenter}.api.mailchimp.com/3.0/lists/{$listId}/members",
                     [
@@ -129,7 +154,26 @@ class BlogController extends Controller
                         'tags'          => ['blog_subscriber', 'finaegis_demo'],
                     ]
                 );
+
+            // Check if the response indicates member already exists
+            if ($response->status() === 400 && $response->json('title') === 'Member Exists') {
+                throw new \Exception('member_exists');
+            }
+
+            $response->throw(); // Throw for other errors
         } catch (\Exception $e) {
+            if ($e->getMessage() === 'member_exists') {
+                throw $e; // Re-throw to be handled by subscribe method
+            }
+
+            // Check if it's an API authentication error
+            if ($e instanceof \Illuminate\Http\Client\RequestException) {
+                $response = $e->response;
+                if ($response && in_array($response->status(), [401, 403])) {
+                    throw new \Exception('mailchimp_api_error');
+                }
+            }
+
             Log::warning(
                 'Mailchimp sync failed (non-critical)',
                 [
@@ -138,6 +182,8 @@ class BlogController extends Controller
                 ]
             );
         }
+
+        return true; // Mailchimp is configured
     }
 
     /**

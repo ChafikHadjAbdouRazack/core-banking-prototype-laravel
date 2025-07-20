@@ -4,12 +4,13 @@ namespace Tests\Unit\Domain\Exchange\Services;
 
 use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Aggregates\OrderBook;
-use App\Domain\Exchange\Projections\OrderBookProjection;
-use App\Domain\Exchange\Projections\OrderProjection;
+use App\Domain\Exchange\Projections\Order as OrderProjection;
+use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\FeeCalculator;
 use App\Models\Account;
 use App\Models\Asset;
+use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Mockery;
@@ -78,8 +79,7 @@ class ExchangeServiceTest extends ServiceTestCase
     {
         $account = Account::factory()->create();
 
-        Asset::create([
-            'code'         => 'BTC',
+        Asset::updateOrCreate(['code' => 'BTC'], [
             'name'         => 'Bitcoin',
             'type'         => 'crypto',
             'is_active'    => true,
@@ -87,8 +87,7 @@ class ExchangeServiceTest extends ServiceTestCase
             'precision'    => 8,
         ]);
 
-        Asset::create([
-            'code'         => 'USDT',
+        Asset::updateOrCreate(['code' => 'USDT'], [
             'name'         => 'Tether',
             'type'         => 'crypto',
             'is_active'    => true,

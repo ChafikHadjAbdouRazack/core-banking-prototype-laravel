@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Domain\Exchange\Services;
 
+use App\Domain\Exchange\Services\CircuitBreakerService;
+use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\ServiceTestCase;
 
 class CircuitBreakerServiceTest extends ServiceTestCase

@@ -110,6 +110,7 @@ class Asset extends Model
         'precision',
         'is_active',
         'is_basket',
+        'is_tradeable',
         'metadata',
     ];
 
@@ -122,6 +123,7 @@ class Asset extends Model
         'precision' => 'integer',
         'is_active' => 'boolean',
         'is_basket' => 'boolean',
+        'is_tradeable' => 'boolean',
         'metadata'  => 'array',
     ];
 

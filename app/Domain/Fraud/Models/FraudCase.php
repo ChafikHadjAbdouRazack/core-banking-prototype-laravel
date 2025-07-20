@@ -5,6 +5,7 @@ namespace App\Domain\Fraud\Models;
 use App\Models\Account;
 use App\Models\User;
 use App\Traits\BelongsToTeam;
+use Database\Factories\FraudCaseFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,11 @@ class FraudCase extends Model
     use BelongsToTeam;
     use HasFactory;
     use HasUuids;
+
+    protected static function newFactory()
+    {
+        return FraudCaseFactory::new();
+    }
 
     /**
      * The primary key type.

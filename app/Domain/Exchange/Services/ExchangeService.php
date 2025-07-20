@@ -34,17 +34,17 @@ class ExchangeService implements ExchangeServiceInterface
         array $metadata = []
     ): array {
         // Validate account
-        /** @var Account|null $$account */
-        $$account = Account::find($accountId);
+        /** @var Account|null $account */
+        $account = Account::find($accountId);
         if (! $account) {
             throw new \InvalidArgumentException('Account not found');
         }
 
         // Validate currencies
-        /** @var \Illuminate\Database\Eloquent\Model|null $$baseAsset */
-        $$baseAsset = Asset::where('code', $baseCurrency)->first();
-        /** @var \Illuminate\Database\Eloquent\Model|null $$quoteAsset */
-        $$quoteAsset = Asset::where('code', $quoteCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $baseAsset */
+        $baseAsset = Asset::where('code', $baseCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $quoteAsset */
+        $quoteAsset = Asset::where('code', $quoteCurrency)->first();
 
         if (! $baseAsset || ! $quoteAsset) {
             throw new \InvalidArgumentException('Invalid currency pair');
@@ -121,8 +121,8 @@ class ExchangeService implements ExchangeServiceInterface
         $orderProjection = null;
         /** @var Account|null $account */
         $account = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$orderProjection */
-        $$orderProjection = \App\Domain\Exchange\Projections\Order::where('order_id', $orderId)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $orderProjection */
+        $orderProjection = \App\Domain\Exchange\Projections\Order::where('order_id', $orderId)->first();
 
         if (! $orderProjection) {
             throw new \InvalidArgumentException('Order not found');
@@ -152,8 +152,8 @@ class ExchangeService implements ExchangeServiceInterface
     {
         /** @var mixed|null $orderBook */
         $orderBook = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$orderBook */
-        $$orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $orderBook */
+        $orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
 
         if (! $orderBook) {
             return [
@@ -196,8 +196,8 @@ class ExchangeService implements ExchangeServiceInterface
     {
         /** @var mixed|null $orderBook */
         $orderBook = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$orderBook */
-        $$orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $orderBook */
+        $orderBook = OrderBookProjection::forPair($baseCurrency, $quoteCurrency)->first();
 
         if (! $orderBook) {
             return [
