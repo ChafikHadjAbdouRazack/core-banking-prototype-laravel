@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects;
 
+use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolId;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects;
 
+use App\Domain\Exchange\LiquidityPool\ValueObjects\PoolRatio;
+use Brick\Math\BigDecimal;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 

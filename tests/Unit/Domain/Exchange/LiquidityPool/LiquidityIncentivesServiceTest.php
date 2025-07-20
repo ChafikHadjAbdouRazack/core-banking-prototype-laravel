@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool;
 
-use App\Domain\Exchange\LiquidityPool\LiquidityIncentivesService;
+use App\Domain\Exchange\LiquidityPool\Services\LiquidityIncentivesService;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
