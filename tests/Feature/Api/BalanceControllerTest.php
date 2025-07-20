@@ -27,8 +27,8 @@ class BalanceControllerTest extends ControllerTestCase
         // Create AccountBalance for USD with 15000
         \App\Domain\Account\Models\AccountBalance::factory()->create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 15000,
+            'asset_code'   => 'USD',
+            'balance'      => 15000,
         ]);
     }
 
@@ -119,8 +119,8 @@ class BalanceControllerTest extends ControllerTestCase
         // Create AccountBalance for the frozen account
         \App\Domain\Account\Models\AccountBalance::factory()->create([
             'account_uuid' => $frozenAccount->uuid,
-            'asset_code' => 'USD',
-            'balance' => 0,
+            'asset_code'   => 'USD',
+            'balance'      => 0,
         ]);
 
         $response = $this->getJson("/api/accounts/{$frozenAccount->uuid}/balance");

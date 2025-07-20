@@ -120,11 +120,11 @@ class Asset extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'precision' => 'integer',
-        'is_active' => 'boolean',
-        'is_basket' => 'boolean',
+        'precision'    => 'integer',
+        'is_active'    => 'boolean',
+        'is_basket'    => 'boolean',
         'is_tradeable' => 'boolean',
-        'metadata'  => 'array',
+        'metadata'     => 'array',
     ];
 
     /**
