@@ -88,7 +88,7 @@ class AccountFactory extends Factory
             if (app()->environment('testing')) {
                 return;
             }
-            
+
             // Get the balance from the raw attributes to avoid the accessor
             $rawBalance = \DB::table('accounts')
                 ->where('id', $account->id)

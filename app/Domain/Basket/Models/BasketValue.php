@@ -2,9 +2,9 @@
 
 namespace App\Domain\Basket\Models;
 
+use Database\Factories\BasketValueFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Database\Factories\BasketValueFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

@@ -6,9 +6,9 @@ namespace App\Domain\Account\Models;
 
 use App\Domain\Asset\Models\Asset;
 use App\Models\Account;
+use Database\Factories\AccountBalanceFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Database\Factories\AccountBalanceFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

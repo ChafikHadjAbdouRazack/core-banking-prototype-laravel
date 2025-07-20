@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
-use App\Models\User;
 
 beforeEach(function () {
     // Ensure we have the default accounts from TestCase

@@ -45,12 +45,23 @@ class AuthorizationSecurityTest extends DomainTestCase
         // Create accounts
         $this->user1Account = Account::factory()->create([
             'user_uuid' => $this->user1->uuid,
-            'balance'   => 50000,
         ]);
 
         $this->user2Account = Account::factory()->create([
             'user_uuid' => $this->user2->uuid,
-            'balance'   => 30000,
+        ]);
+
+        // Create account balances
+        \App\Domain\Account\Models\AccountBalance::factory()->create([
+            'account_uuid' => $this->user1Account->uuid,
+            'asset_code' => 'USD',
+            'balance' => 50000,
+        ]);
+
+        \App\Domain\Account\Models\AccountBalance::factory()->create([
+            'account_uuid' => $this->user2Account->uuid,
+            'asset_code' => 'USD',
+            'balance' => 30000,
         ]);
     }
 
