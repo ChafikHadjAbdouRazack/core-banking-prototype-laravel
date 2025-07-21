@@ -54,7 +54,7 @@ class AccountFactory extends Factory
     public function withBalance(int $balance, string $assetCode = 'USD'): static
     {
         return $this->afterCreating(function (Account $account) use ($balance, $assetCode) {
-            \App\Domain\Account\Models\AccountBalance::factory()->create([
+            AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
                 'asset_code'   => $assetCode,
                 'balance'      => $balance,

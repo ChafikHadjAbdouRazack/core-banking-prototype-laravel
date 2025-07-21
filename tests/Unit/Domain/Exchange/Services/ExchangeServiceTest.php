@@ -8,7 +8,6 @@ use App\Domain\Exchange\Projections\Order as OrderProjection;
 use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\FeeCalculator;
-use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
 use App\Models\Account;
 use App\Models\Asset;
 use Brick\Math\BigDecimal;
@@ -320,13 +319,13 @@ class ExchangeServiceTest extends ServiceTestCase
                 ['price' => '42100', 'amount' => '0.3', 'order_count' => 1],
                 ['price' => '42200', 'amount' => '0.7', 'order_count' => 2],
             ],
-            'best_bid'      => '42000',
-            'best_ask'      => '42100',
-            'last_price'    => '42050',
-            'volume_24h'    => '125.5',
-            'high_24h'      => '43000',
-            'low_24h'       => '41000',
-            'metadata'      => ['open_24h' => '42000'],
+            'best_bid'   => '42000',
+            'best_ask'   => '42100',
+            'last_price' => '42050',
+            'volume_24h' => '125.5',
+            'high_24h'   => '43000',
+            'low_24h'    => '41000',
+            'metadata'   => ['open_24h' => '42000'],
         ]);
 
         $result = $this->service->getOrderBook('BTC', 'USDT', 10);
