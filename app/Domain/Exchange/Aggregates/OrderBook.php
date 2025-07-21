@@ -32,6 +32,10 @@ class OrderBook extends AggregateRoot
     {
         $this->buyOrders = collect();
         $this->sellOrders = collect();
+        // Initialize properties to avoid uninitialized property errors
+        $this->orderBookId = '';
+        $this->baseCurrency = '';
+        $this->quoteCurrency = '';
     }
 
     public function initialize(

@@ -449,19 +449,13 @@ class TransactionMonitoringService
      */
     protected function blockTransaction(Transaction $transaction, array $alerts): void
     {
-        $transaction->update(
-            [
-                'status'   => 'blocked',
-                'metadata' => array_merge(
-                    $transaction->metadata ?? [],
-                    [
-                        'blocked_at'   => now()->toIso8601String(),
-                        'block_reason' => 'AML monitoring alert',
-                        'alerts'       => $alerts,
-                    ]
-                ),
-            ]
-        );
+        // Update metadata using SchemalessAttributes
+        $transaction->meta_data->set('blocked_at', now()->toIso8601String());
+        $transaction->meta_data->set('block_reason', 'AML monitoring alert');
+        $transaction->meta_data->set('alerts', $alerts);
+        $transaction->meta_data->set('status', 'blocked');
+
+        $transaction->save();
 
         event(new TransactionBlocked($transaction, $alerts));
     }
@@ -479,18 +473,12 @@ class TransactionMonitoringService
      */
     protected function flagForReview(Transaction $transaction, array $alerts): void
     {
-        $transaction->update(
-            [
-                'metadata' => array_merge(
-                    $transaction->metadata ?? [],
-                    [
-                        'requires_review'     => true,
-                        'review_requested_at' => now()->toIso8601String(),
-                        'review_alerts'       => $alerts,
-                    ]
-                ),
-            ]
-        );
+        // Update metadata using SchemalessAttributes
+        $transaction->meta_data->set('requires_review', true);
+        $transaction->meta_data->set('review_requested_at', now()->toIso8601String());
+        $transaction->meta_data->set('review_alerts', $alerts);
+
+        $transaction->save();
     }
 
     /**
