@@ -32,7 +32,9 @@ class LoanApplicationTest extends DomainTestCase
             'employment_status' => 'employed',
         ];
 
-        LoanApplication::submit(
+        $aggregate = LoanApplication::fake($applicationId);
+        
+        $aggregate->submit(
             $applicationId,
             $borrowerId,
             $requestedAmount,
