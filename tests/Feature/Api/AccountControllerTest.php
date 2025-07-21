@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Account;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
@@ -123,10 +124,14 @@ class AccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->forUser($this->user)->create([
             'name'    => 'Display Account',
-            'balance' => 5000,
         ]);
 
-        // The factory automatically creates the USD balance record when balance > 0
+        // Create AccountBalance for the account
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 5000,
+        ]);
 
         $response = $this->getJson("/api/accounts/{$account->uuid}");
 
@@ -147,7 +152,6 @@ class AccountControllerTest extends ControllerTestCase
                     'uuid'      => $account->uuid,
                     'user_uuid' => $this->user->uuid,
                     'name'      => 'Display Account',
-                    'balance'   => 5000,
                     'frozen'    => false,
                 ],
             ]);
@@ -169,7 +173,6 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $account = Account::factory()->forUser($this->user)->create([
-            'balance' => 0,
             'frozen'  => false,
         ]);
 
@@ -186,8 +189,13 @@ class AccountControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->user);
 
-        $account = Account::factory()->forUser($this->user)->create([
-            'balance' => 1000,
+        $account = Account::factory()->forUser($this->user)->create();
+
+        // Create AccountBalance with positive balance
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 1000,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
@@ -205,7 +213,6 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $account = Account::factory()->forUser($this->user)->create([
-            'balance' => 0,
             'frozen'  => true,
         ]);
 

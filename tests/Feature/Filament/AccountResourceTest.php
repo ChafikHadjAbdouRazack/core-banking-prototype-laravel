@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Filament\Admin\Resources\AccountResource;
 use App\Models\Account;
+use App\Models\User;
 
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\get;
@@ -33,9 +35,11 @@ describe('Filament Admin Dashboard', function () {
     });
 
     it('can create an account', function () {
+        $user = User::factory()->create();
+
         $newData = [
             'name'      => 'Test Savings Account',
-            'user_uuid' => fake()->uuid(),
+            'user_uuid' => $user->uuid,
         ];
 
         livewire(AccountResource\Pages\CreateAccount::class)
@@ -45,6 +49,7 @@ describe('Filament Admin Dashboard', function () {
 
         assertDatabaseHas('accounts', [
             'name' => 'Test Savings Account',
+            'user_uuid' => $user->uuid,
         ]);
     });
 
@@ -77,7 +82,13 @@ describe('Filament Admin Dashboard', function () {
     });
 
     it('can deposit money to account', function () {
-        $account = Account::factory()->withBalance(1000)->create();
+        $account = Account::factory()->create();
+        // Create initial balance
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code' => 'USD',
+            'balance' => 1000,
+        ]);
 
         livewire(AccountResource\Pages\ListAccounts::class)
             ->callTableAction('deposit', $account, data: [
@@ -90,7 +101,13 @@ describe('Filament Admin Dashboard', function () {
     });
 
     it('can withdraw money from account', function () {
-        $account = Account::factory()->withBalance(10000)->create();
+        $account = Account::factory()->create();
+        // Create initial balance
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code' => 'USD',
+            'balance' => 10000,
+        ]);
 
         livewire(AccountResource\Pages\ListAccounts::class)
             ->callTableAction('withdraw', $account, data: [
@@ -132,7 +149,7 @@ describe('Filament Admin Dashboard', function () {
     });
 
     it('cannot withdraw from frozen account', function () {
-        $account = Account::factory()->create(['frozen' => true, 'balance' => 10000]);
+        $account = Account::factory()->create(['frozen' => true]);
 
         livewire(AccountResource\Pages\ListAccounts::class)
             ->assertTableActionHidden('withdraw', $account);
@@ -150,8 +167,26 @@ describe('Filament Admin Dashboard', function () {
     });
 
     it('can filter accounts by balance', function () {
-        $poorAccounts = Account::factory()->count(2)->create(['balance' => 100]);
-        $richAccounts = Account::factory()->count(3)->create(['balance' => 100000]);
+        $poorAccounts = Account::factory()->count(2)->create();
+        $richAccounts = Account::factory()->count(3)->create();
+
+        // Create balances for poor accounts
+        foreach ($poorAccounts as $account) {
+            AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code' => 'USD',
+                'balance' => 100,
+            ]);
+        }
+
+        // Create balances for rich accounts
+        foreach ($richAccounts as $account) {
+            AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code' => 'USD',
+                'balance' => 100000,
+            ]);
+        }
 
         livewire(AccountResource\Pages\ListAccounts::class)
             ->assertCanSeeTableRecords([...$poorAccounts, ...$richAccounts])
@@ -181,14 +216,30 @@ describe('Filament Admin Dashboard', function () {
 
     it('shows account statistics widget', function () {
         $accounts = Account::factory()->count(5)->create([
-            'balance' => 10000,
             'frozen'  => false,
         ]);
 
-        Account::factory()->count(2)->create([
-            'balance' => 5000,
+        // Create balances for active accounts
+        foreach ($accounts as $account) {
+            AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code' => 'USD',
+                'balance' => 10000,
+            ]);
+        }
+
+        $frozenAccounts = Account::factory()->count(2)->create([
             'frozen'  => true,
         ]);
+
+        // Create balances for frozen accounts
+        foreach ($frozenAccounts as $account) {
+            AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code' => 'USD',
+                'balance' => 5000,
+            ]);
+        }
 
         livewire(AccountResource\Widgets\AccountStatsOverview::class)
             ->assertSee('Total Accounts')

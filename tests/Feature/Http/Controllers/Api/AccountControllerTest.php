@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,13 +35,25 @@ class AccountControllerTest extends ControllerTestCase
         $account1 = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'name'      => 'Checking Account',
-            'balance'   => 50000,
+        ]);
+
+        // Create AccountBalance for account1
+        AccountBalance::factory()->create([
+            'account_uuid' => $account1->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 50000,
         ]);
 
         $account2 = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'name'      => 'Savings Account',
-            'balance'   => 100000,
+        ]);
+
+        // Create AccountBalance for account2
+        AccountBalance::factory()->create([
+            'account_uuid' => $account2->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 100000,
         ]);
 
         // Create an account for another user (should not be returned)
@@ -68,12 +81,10 @@ class AccountControllerTest extends ControllerTestCase
             ->assertJsonFragment([
                 'uuid'    => $account1->uuid,
                 'name'    => 'Checking Account',
-                'balance' => 50000,
             ])
             ->assertJsonFragment([
                 'uuid'    => $account2->uuid,
                 'name'    => 'Savings Account',
-                'balance' => 100000,
             ]);
     }
 
@@ -151,7 +162,6 @@ class AccountControllerTest extends ControllerTestCase
         $this->assertDatabaseHas('accounts', [
             'user_uuid' => $this->user->uuid,
             'name'      => 'Zero Balance Account',
-            'balance'   => 0,
         ]);
     }
 
@@ -198,8 +208,14 @@ class AccountControllerTest extends ControllerTestCase
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
             'name'      => 'Test Account',
-            'balance'   => 75000,
             'frozen'    => false,
+        ]);
+
+        // Create AccountBalance for the test account
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 75000,
         ]);
 
         $response = $this->getJson("/api/accounts/{$account->uuid}");
@@ -221,7 +237,6 @@ class AccountControllerTest extends ControllerTestCase
                     'uuid'      => $account->uuid,
                     'user_uuid' => $this->user->uuid,
                     'name'      => 'Test Account',
-                    'balance'   => 75000,
                     'frozen'    => false,
                 ],
             ]);
@@ -268,7 +283,6 @@ class AccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 0,
             'frozen'    => false,
         ]);
 
@@ -287,8 +301,14 @@ class AccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 10000,
             'frozen'    => false,
+        ]);
+
+        // Create AccountBalance with positive balance
+        AccountBalance::factory()->create([
+            'account_uuid' => $account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 10000,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
@@ -311,7 +331,6 @@ class AccountControllerTest extends ControllerTestCase
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 0,
             'frozen'    => true,
         ]);
 
@@ -341,7 +360,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_destroy_requires_authentication(): void
     {
-        $account = Account::factory()->create(['balance' => 0]);
+        $account = Account::factory()->create();
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
 
@@ -355,7 +374,6 @@ class AccountControllerTest extends ControllerTestCase
 
         $otherAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
-            'balance'   => 0,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$otherAccount->uuid}");

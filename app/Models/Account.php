@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\TransactionProjection;
+use App\Domain\Account\Models\Turnover;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Traits\BelongsToTeam;
@@ -169,6 +170,14 @@ class Account extends Model
     public function transactions()
     {
         return $this->hasMany(TransactionProjection::class, 'account_uuid', 'uuid');
+    }
+
+    /**
+     * Get turnovers for this account.
+     */
+    public function turnovers(): HasMany
+    {
+        return $this->hasMany(Turnover::class, 'account_uuid', 'uuid');
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Domain\Compliance\Models;
 
 use App\Models\User;
+use Database\Factories\KycDocumentFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -70,6 +71,14 @@ class KycDocument extends Model
         'verified_at' => 'datetime',
         'expires_at'  => 'datetime',
     ];
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return KycDocumentFactory::new();
+    }
 
     /**
      * Get the user that owns the document.

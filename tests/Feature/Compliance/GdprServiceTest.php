@@ -7,6 +7,7 @@ use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -23,6 +24,9 @@ beforeEach(function () {
 });
 
 test('can export user data', function () {
+    // Authenticate the user
+    Auth::login($this->user);
+
     // Create some data for the user
     $account = Account::factory()->forUser($this->user)->create();
     $kycDoc = KycDocument::factory()->create(['user_uuid' => $this->user->uuid]);
@@ -55,6 +59,8 @@ test('can export user data', function () {
 });
 
 test('can update consent preferences', function () {
+    Auth::login($this->user);
+
     $this->gdprService->updateConsent($this->user, [
         'marketing'      => false,
         'data_retention' => false,
@@ -97,6 +103,8 @@ test('can check if user data can be deleted', function () {
 });
 
 test('can anonymize user data', function () {
+    Auth::login($this->user);
+
     $originalName = $this->user->name;
     $originalEmail = $this->user->email;
     $originalUuid = $this->user->uuid;
@@ -116,8 +124,8 @@ test('can anonymize user data', function () {
     $this->user->refresh();
 
     // Check user is anonymized
-    expect($this->user->name)->toStartWith('Deleted User');
-    expect($this->user->email)->toBe('deleted-' . $originalUuid . '@anonymous.local');
+    expect($this->user->name)->toStartWith('ANONYMIZED_');
+    expect($this->user->email)->toBe('deleted-' . $originalUuid . '@anonymized.local');
     expect($this->user->kyc_data)->toBeNull();
 
     // Check KYC documents deleted
@@ -139,6 +147,8 @@ test('consent tracking works correctly', function () {
         'marketing_consent_at'       => null,
         'data_retention_consent'     => false,
     ]);
+
+    Auth::login($user);
 
     // Initially no consents
     expect($user->privacy_policy_accepted_at)->toBeNull();
