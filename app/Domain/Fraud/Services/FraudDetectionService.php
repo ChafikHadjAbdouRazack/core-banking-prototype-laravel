@@ -349,20 +349,14 @@ class FraudDetectionService
      */
     protected function blockTransaction(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update(
-            [
-                'status'   => 'blocked',
-                'metadata' => array_merge(
-                    $transaction->metadata ?? [],
-                    [
-                        'blocked_at'     => now()->toIso8601String(),
-                        'block_reason'   => 'Fraud detection system',
-                        'fraud_score_id' => $fraudScore->id,
-                        'risk_level'     => $fraudScore->risk_level,
-                    ]
-                ),
-            ]
-        );
+        // Update metadata using SchemalessAttributes
+        $transaction->meta_data->set('blocked_at', now()->toIso8601String());
+        $transaction->meta_data->set('block_reason', 'Fraud detection system');
+        $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
+        $transaction->meta_data->set('risk_level', $fraudScore->risk_level);
+        $transaction->meta_data->set('status', 'blocked');
+        
+        $transaction->save();
 
         event(new TransactionBlocked($transaction, $fraudScore));
         event(new FraudDetected($fraudScore));
@@ -373,19 +367,13 @@ class FraudDetectionService
      */
     protected function flagForReview(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update(
-            [
-                'metadata' => array_merge(
-                    $transaction->metadata ?? [],
-                    [
-                        'requires_review'     => true,
-                        'review_requested_at' => now()->toIso8601String(),
-                        'fraud_score_id'      => $fraudScore->id,
-                        'risk_level'          => $fraudScore->risk_level,
-                    ]
-                ),
-            ]
-        );
+        // Update metadata using SchemalessAttributes
+        $transaction->meta_data->set('requires_review', true);
+        $transaction->meta_data->set('review_requested_at', now()->toIso8601String());
+        $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
+        $transaction->meta_data->set('risk_level', $fraudScore->risk_level);
+        
+        $transaction->save();
 
         // Transaction continues but is flagged
         event(new FraudDetected($fraudScore));
@@ -396,19 +384,13 @@ class FraudDetectionService
      */
     protected function requestChallenge(Transaction $transaction, FraudScore $fraudScore): void
     {
-        $transaction->update(
-            [
-                'status'   => 'pending_challenge',
-                'metadata' => array_merge(
-                    $transaction->metadata ?? [],
-                    [
-                        'challenge_requested_at' => now()->toIso8601String(),
-                        'challenge_reason'       => 'Additional verification required',
-                        'fraud_score_id'         => $fraudScore->id,
-                    ]
-                ),
-            ]
-        );
+        // Update metadata using SchemalessAttributes
+        $transaction->meta_data->set('status', 'pending_challenge');
+        $transaction->meta_data->set('challenge_requested_at', now()->toIso8601String());
+        $transaction->meta_data->set('challenge_reason', 'Additional verification required');
+        $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
+        
+        $transaction->save();
 
         event(new ChallengeRequired($transaction, $fraudScore));
     }
