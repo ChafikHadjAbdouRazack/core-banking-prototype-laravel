@@ -182,9 +182,10 @@ class ExchangeServiceTest extends ServiceTestCase
             ->andReturn(BigDecimal::of('0.0001'));
 
         // Mock request
-        $request = Mockery::mock('alias:' . Request::class);
+        $request = Mockery::mock(Request::class);
         $request->shouldReceive('ip')->andReturn('127.0.0.1');
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
+        $request->shouldReceive('setUserResolver')->andReturnSelf();
         $this->app->instance('request', $request);
 
         // Use fake aggregates for event sourcing
@@ -369,9 +370,10 @@ class ExchangeServiceTest extends ServiceTestCase
     private function mockOrderCreation(): void
     {
         // Mock request
-        $request = Mockery::mock('alias:' . Request::class);
+        $request = Mockery::mock(Request::class);
         $request->shouldReceive('ip')->andReturn('127.0.0.1');
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
+        $request->shouldReceive('setUserResolver')->andReturnSelf();
         $this->app->instance('request', $request);
 
         // Use fake aggregates for event sourcing

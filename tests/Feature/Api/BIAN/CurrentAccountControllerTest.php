@@ -46,7 +46,14 @@ it('can initiate a current account', function () {
 it('can retrieve current account details', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->withBalance(2000)->create();
+    $account = Account::factory()->create();
+
+    // Create account balance
+    App\Domain\Account\Models\AccountBalance::factory()->create([
+        'account_uuid' => $account->uuid,
+        'asset_code'   => 'USD',
+        'balance'      => 2000,
+    ]);
 
     $response = $this->getJson("/api/bian/current-account/{$account->uuid}/retrieve");
 

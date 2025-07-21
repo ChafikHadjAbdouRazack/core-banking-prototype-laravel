@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\Compliance\Services\GdprService;
 use App\Models\Account;
 use App\Models\AuditLog;
-use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -36,12 +36,12 @@ class GdprServiceTest extends ServiceTestCase
 
         // Create related data
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
-        Transaction::factory()->count(3)->forAccount($account)->create([
-            'event_properties' => [
-                'amount'    => 10000,
-                'assetCode' => 'USD',
-                'metadata'  => [],
-            ],
+        TransactionProjection::factory()->count(3)->create([
+            'account_uuid' => $account->uuid,
+            'type'         => 'deposit',
+            'amount'       => 10000,
+            'asset_code'   => 'USD',
+            'metadata'     => [],
         ]);
         KycDocument::factory()->count(2)->create(['user_uuid' => $user->uuid]);
 
@@ -179,26 +179,20 @@ class GdprServiceTest extends ServiceTestCase
         $account = Account::factory()->create(['user_uuid' => $user->uuid]);
 
         // Create various transaction types
-        Transaction::factory()->forAccount($account)->create([
-            'meta_data' => [
-                'type' => 'deposit',
-            ],
-            'event_properties' => [
-                'amount'    => 10000,
-                'assetCode' => 'USD',
-                'metadata'  => [],
-            ],
+        TransactionProjection::factory()->create([
+            'account_uuid' => $account->uuid,
+            'type'         => 'deposit',
+            'amount'       => 10000,
+            'asset_code'   => 'USD',
+            'metadata'     => [],
         ]);
 
-        Transaction::factory()->forAccount($account)->create([
-            'meta_data' => [
-                'type' => 'withdrawal',
-            ],
-            'event_properties' => [
-                'amount'    => 5000,
-                'assetCode' => 'USD',
-                'metadata'  => [],
-            ],
+        TransactionProjection::factory()->create([
+            'account_uuid' => $account->uuid,
+            'type'         => 'withdrawal',
+            'amount'       => 5000,
+            'asset_code'   => 'USD',
+            'metadata'     => [],
         ]);
 
         $exportedData = $this->service->exportUserData($user);

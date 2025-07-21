@@ -3,6 +3,7 @@
 namespace App\Domain\Account\Models;
 
 use App\Models\Account;
+use Database\Factories\TransactionProjectionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -46,6 +47,14 @@ class TransactionProjection extends Model
     public function uniqueIds(): array
     {
         return ['uuid'];
+    }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return TransactionProjectionFactory::new();
     }
 
     /**

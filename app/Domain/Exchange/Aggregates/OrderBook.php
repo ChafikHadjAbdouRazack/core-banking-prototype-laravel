@@ -30,7 +30,6 @@ class OrderBook extends AggregateRoot
 
     public function __construct()
     {
-        parent::__construct();
         $this->buyOrders = collect();
         $this->sellOrders = collect();
     }

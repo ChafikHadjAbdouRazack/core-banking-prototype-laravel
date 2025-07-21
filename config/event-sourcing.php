@@ -146,6 +146,7 @@ return [
 
         // Exchange events
         'order_book_created'     => App\Domain\Exchange\Events\OrderBookCreated::class,
+        'order_book_initialized' => App\Domain\Exchange\Events\OrderBookInitialized::class,
         'order_placed'           => App\Domain\Exchange\Events\OrderPlaced::class,
         'order_cancelled'        => App\Domain\Exchange\Events\OrderCancelled::class,
         'order_filled'           => App\Domain\Exchange\Events\OrderFilled::class,

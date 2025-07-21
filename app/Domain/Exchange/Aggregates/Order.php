@@ -33,6 +33,13 @@ class Order extends AggregateRoot
 
     protected array $trades = [];
 
+    public function __construct()
+    {
+        // Initialize properties to avoid uninitialized property errors
+        $this->filledAmount = BigDecimal::zero();
+        $this->status = OrderStatus::PENDING;
+    }
+
     public function placeOrder(
         string $orderId,
         string $accountId,
