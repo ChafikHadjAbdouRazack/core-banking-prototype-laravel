@@ -2,8 +2,8 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Models\ApiKey;
 use App\Filament\Admin\Resources\ApiKeyResource\Pages;
+use App\Models\ApiKey;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

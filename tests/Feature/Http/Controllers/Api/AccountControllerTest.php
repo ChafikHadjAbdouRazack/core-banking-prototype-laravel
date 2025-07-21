@@ -79,12 +79,12 @@ class AccountControllerTest extends ControllerTestCase
                 ],
             ])
             ->assertJsonFragment([
-                'uuid'    => $account1->uuid,
-                'name'    => 'Checking Account',
+                'uuid' => $account1->uuid,
+                'name' => 'Checking Account',
             ])
             ->assertJsonFragment([
-                'uuid'    => $account2->uuid,
-                'name'    => 'Savings Account',
+                'uuid' => $account2->uuid,
+                'name' => 'Savings Account',
             ]);
     }
 

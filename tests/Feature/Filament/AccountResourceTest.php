@@ -48,7 +48,7 @@ describe('Filament Admin Dashboard', function () {
             ->assertHasNoFormErrors();
 
         assertDatabaseHas('accounts', [
-            'name' => 'Test Savings Account',
+            'name'      => 'Test Savings Account',
             'user_uuid' => $user->uuid,
         ]);
     });
@@ -86,8 +86,8 @@ describe('Filament Admin Dashboard', function () {
         // Create initial balance
         AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 1000,
+            'asset_code'   => 'USD',
+            'balance'      => 1000,
         ]);
 
         livewire(AccountResource\Pages\ListAccounts::class)
@@ -105,8 +105,8 @@ describe('Filament Admin Dashboard', function () {
         // Create initial balance
         AccountBalance::factory()->create([
             'account_uuid' => $account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 10000,
+            'asset_code'   => 'USD',
+            'balance'      => 10000,
         ]);
 
         livewire(AccountResource\Pages\ListAccounts::class)
@@ -174,8 +174,8 @@ describe('Filament Admin Dashboard', function () {
         foreach ($poorAccounts as $account) {
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 100,
+                'asset_code'   => 'USD',
+                'balance'      => 100,
             ]);
         }
 
@@ -183,8 +183,8 @@ describe('Filament Admin Dashboard', function () {
         foreach ($richAccounts as $account) {
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 100000,
+                'asset_code'   => 'USD',
+                'balance'      => 100000,
             ]);
         }
 
@@ -216,28 +216,28 @@ describe('Filament Admin Dashboard', function () {
 
     it('shows account statistics widget', function () {
         $accounts = Account::factory()->count(5)->create([
-            'frozen'  => false,
+            'frozen' => false,
         ]);
 
         // Create balances for active accounts
         foreach ($accounts as $account) {
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 10000,
+                'asset_code'   => 'USD',
+                'balance'      => 10000,
             ]);
         }
 
         $frozenAccounts = Account::factory()->count(2)->create([
-            'frozen'  => true,
+            'frozen' => true,
         ]);
 
         // Create balances for frozen accounts
         foreach ($frozenAccounts as $account) {
             AccountBalance::factory()->create([
                 'account_uuid' => $account->uuid,
-                'asset_code' => 'USD',
-                'balance' => 5000,
+                'asset_code'   => 'USD',
+                'balance'      => 5000,
             ]);
         }
 

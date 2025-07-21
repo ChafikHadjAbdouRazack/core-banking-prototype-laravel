@@ -123,7 +123,7 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $account = Account::factory()->forUser($this->user)->create([
-            'name'    => 'Display Account',
+            'name' => 'Display Account',
         ]);
 
         // Create AccountBalance for the account
@@ -173,7 +173,7 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $account = Account::factory()->forUser($this->user)->create([
-            'frozen'  => false,
+            'frozen' => false,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
@@ -213,7 +213,7 @@ class AccountControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $account = Account::factory()->forUser($this->user)->create([
-            'frozen'  => true,
+            'frozen' => true,
         ]);
 
         $response = $this->deleteJson("/api/accounts/{$account->uuid}");
