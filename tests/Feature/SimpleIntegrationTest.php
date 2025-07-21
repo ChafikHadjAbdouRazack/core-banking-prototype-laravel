@@ -37,14 +37,7 @@ it('can create basic models and check relationships', function () {
 });
 
 it('can access account balance methods', function () {
-    $account = Account::factory()->create();
-
-    // Create account balance properly
-    App\Domain\Account\Models\AccountBalance::factory()->create([
-        'account_uuid' => $account->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 1000,
-    ]);
+    $account = Account::factory()->withBalance(1000)->create();
 
     expect($account->getBalance())->toBe(1000);
     expect($account->balance)->toBe(1000);

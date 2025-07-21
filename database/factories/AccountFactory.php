@@ -51,11 +51,15 @@ class AccountFactory extends Factory
     /**
      * Create an account with a specific balance.
      */
-    public function withBalance(int $balance): static
+    public function withBalance(int $balance, string $assetCode = 'USD'): static
     {
-        return $this->state(fn (array $attributes) => [
-            'balance' => $balance,
-        ]);
+        return $this->afterCreating(function (Account $account) use ($balance, $assetCode) {
+            \App\Domain\Account\Models\AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code'   => $assetCode,
+                'balance'      => $balance,
+            ]);
+        });
     }
 
     /**

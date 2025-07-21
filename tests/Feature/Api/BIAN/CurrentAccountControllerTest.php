@@ -121,14 +121,7 @@ it('skipped_can_execute_payment_from_current_account', function () {
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->create();
-
-    // Create account balance
-    App\Domain\Account\Models\AccountBalance::factory()->create([
-        'account_uuid' => $account->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 100,
-    ]);
+    $account = Account::factory()->withBalance(100)->create();
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
         'paymentAmount' => 500,
@@ -143,14 +136,7 @@ it('rejects payment with insufficient funds', function () {
 it('can execute deposit to current account', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->create();
-
-    // Create account balance
-    App\Domain\Account\Models\AccountBalance::factory()->create([
-        'account_uuid' => $account->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 500,
-    ]);
+    $account = Account::factory()->withBalance(500)->create();
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/deposit/execute", [
         'depositAmount'      => 1000,
@@ -177,14 +163,7 @@ it('can execute deposit to current account', function () {
 it('can retrieve account balance', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->create();
-
-    // Create account balance
-    App\Domain\Account\Models\AccountBalance::factory()->create([
-        'account_uuid' => $account->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 3500,
-    ]);
+    $account = Account::factory()->withBalance(3500)->create();
 
     $response = $this->getJson("/api/bian/current-account/{$account->uuid}/account-balance/retrieve");
 
