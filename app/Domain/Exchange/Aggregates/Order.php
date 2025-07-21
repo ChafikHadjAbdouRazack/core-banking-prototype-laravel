@@ -36,6 +36,13 @@ class Order extends AggregateRoot
     public function __construct()
     {
         // Initialize properties to avoid uninitialized property errors
+        $this->orderId = '';
+        $this->accountId = '';
+        $this->type = '';
+        $this->orderType = '';
+        $this->baseCurrency = '';
+        $this->quoteCurrency = '';
+        $this->amount = BigDecimal::zero();
         $this->filledAmount = BigDecimal::zero();
         $this->status = OrderStatus::PENDING;
     }

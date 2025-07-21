@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Wallet\Services;
 
+use App\Domain\Wallet\Services\KeyManagementService;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

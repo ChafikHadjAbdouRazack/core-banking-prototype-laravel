@@ -10,7 +10,7 @@ use App\Domain\Compliance\Services\TransactionMonitoringService;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -18,7 +18,7 @@ use Tests\ServiceTestCase;
 
 class TransactionMonitoringServiceTest extends ServiceTestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
     private TransactionMonitoringService $service;
 
