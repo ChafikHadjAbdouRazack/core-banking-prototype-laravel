@@ -286,7 +286,7 @@ class FraudDetectionServiceTest extends ServiceTestCase
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
-        
+
         $this->caseService->shouldReceive('createFromFraudScore')
             ->withAnyArgs()
             ->andReturn(Mockery::mock(\App\Domain\Fraud\Models\FraudCase::class));
@@ -324,7 +324,7 @@ class FraudDetectionServiceTest extends ServiceTestCase
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
-        
+
         $this->caseService->shouldReceive('createFromFraudScore')
             ->withAnyArgs()
             ->andReturn(Mockery::mock(\App\Domain\Fraud\Models\FraudCase::class));
@@ -363,7 +363,7 @@ class FraudDetectionServiceTest extends ServiceTestCase
             ]);
 
         $this->mlService->shouldReceive('isEnabled')->andReturn(false);
-        
+
         $this->caseService->shouldReceive('createFromFraudScore')
             ->withAnyArgs()
             ->andReturn(Mockery::mock(\App\Domain\Fraud\Models\FraudCase::class));

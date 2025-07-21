@@ -329,4 +329,12 @@ class FraudScore extends Model
     {
         return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\FraudScoreFactory::new();
+    }
 }

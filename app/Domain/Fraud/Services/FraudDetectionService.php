@@ -355,7 +355,7 @@ class FraudDetectionService
         $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
         $transaction->meta_data->set('risk_level', $fraudScore->risk_level);
         $transaction->meta_data->set('status', 'blocked');
-        
+
         $transaction->save();
 
         event(new TransactionBlocked($transaction, $fraudScore));
@@ -372,7 +372,7 @@ class FraudDetectionService
         $transaction->meta_data->set('review_requested_at', now()->toIso8601String());
         $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
         $transaction->meta_data->set('risk_level', $fraudScore->risk_level);
-        
+
         $transaction->save();
 
         // Transaction continues but is flagged
@@ -389,7 +389,7 @@ class FraudDetectionService
         $transaction->meta_data->set('challenge_requested_at', now()->toIso8601String());
         $transaction->meta_data->set('challenge_reason', 'Additional verification required');
         $transaction->meta_data->set('fraud_score_id', $fraudScore->id);
-        
+
         $transaction->save();
 
         event(new ChallengeRequired($transaction, $fraudScore));

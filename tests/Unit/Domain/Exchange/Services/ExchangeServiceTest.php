@@ -282,6 +282,17 @@ class ExchangeServiceTest extends ServiceTestCase
             'status'         => 'pending',
         ]);
 
+        // Create OrderBook projection to avoid ModelNotFoundException
+        \App\Domain\Exchange\Projections\OrderBook::create([
+            'order_book_id' => 'btc-usdt-book',
+            'base_currency' => 'BTC',
+            'quote_currency' => 'USDT',
+            'buy_orders' => [],
+            'sell_orders' => [],
+            'best_bid' => null,
+            'best_ask' => null,
+        ]);
+
         // Use fake aggregates for event sourcing
         $orderAggregate = Order::fake('active-order');
         $orderBookAggregate = OrderBook::fake('btc-usdt-book');

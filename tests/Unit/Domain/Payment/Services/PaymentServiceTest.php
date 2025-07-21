@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Payment\Services;
 
+use App\Domain\Payment\Services\PaymentService;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;

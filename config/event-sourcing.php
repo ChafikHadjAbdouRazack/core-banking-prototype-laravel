@@ -152,6 +152,7 @@ return [
         'order_filled'           => App\Domain\Exchange\Events\OrderFilled::class,
         'order_partially_filled' => App\Domain\Exchange\Events\OrderPartiallyFilled::class,
         'order_matched'          => App\Domain\Exchange\Events\OrderMatched::class,
+        'order_removed_from_book' => App\Domain\Exchange\Events\OrderRemovedFromBook::class,
         'market_depth_updated'   => App\Domain\Exchange\Events\MarketDepthUpdated::class,
 
         // Liquidity pool events

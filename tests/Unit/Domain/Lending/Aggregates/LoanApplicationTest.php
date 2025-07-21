@@ -9,6 +9,7 @@ use App\Domain\Lending\Events\LoanApplicationRejected;
 use App\Domain\Lending\Events\LoanApplicationRiskAssessmentCompleted;
 use App\Domain\Lending\Events\LoanApplicationSubmitted;
 use App\Domain\Lending\Events\LoanApplicationWithdrawn;
+use App\Domain\Lending\Exceptions\LoanApplicationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -33,7 +34,7 @@ class LoanApplicationTest extends DomainTestCase
         ];
 
         $aggregate = LoanApplication::fake($applicationId);
-        
+
         $aggregate->submit(
             $applicationId,
             $borrowerId,
