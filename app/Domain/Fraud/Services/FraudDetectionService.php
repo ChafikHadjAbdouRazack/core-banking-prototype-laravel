@@ -102,7 +102,12 @@ class FraudDetectionService
                         [
                             'total_score'        => $totalScore,
                             'risk_level'         => $riskLevel,
-                            'score_breakdown'    => $this->createScoreBreakdown($ruleResults, $behavioralResults, $deviceResults, $mlResults),
+                            'score_breakdown'    => $this->createScoreBreakdown(
+                                $ruleResults,
+                                $behavioralResults,
+                                $deviceResults,
+                                $mlResults
+                            ),
                             'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
                             'behavioral_factors' => $behavioralResults,
                             'device_factors'     => $deviceResults,
@@ -225,7 +230,9 @@ class FraudDetectionService
 
                 // Historical data
                 'user_transaction_count' => $user->transactions()->count(),
-                'account_balance'        => $transaction->account->getBalance($transaction->event_properties['assetCode'] ?? 'USD'),
+                'account_balance'        => $transaction->account->getBalance(
+                    $transaction->event_properties['assetCode'] ?? 'USD'
+                ),
 
                 // Time-based features
                 'hour_of_day'                 => $transaction->created_at->hour,

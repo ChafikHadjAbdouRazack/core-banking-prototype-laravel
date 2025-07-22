@@ -10,9 +10,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
- * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null,
+ *     string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator,
+ *     string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator,
+ *     string|\DateTimeInterface|null $value = null)
  * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
  * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
  * @method static static updateOrCreate(array $attributes, array $values = [])
@@ -315,7 +318,10 @@ class FraudScore extends Model
             'decision'        => $this->decision,
             'top_factors'     => $this->getMostSignificantFactors(),
             'rules_triggered' => count($this->triggered_rules ?? []),
-            'requires_action' => in_array($this->decision, [self::DECISION_BLOCK, self::DECISION_REVIEW, self::DECISION_CHALLENGE]),
+            'requires_action' => in_array(
+                $this->decision,
+                [self::DECISION_BLOCK, self::DECISION_REVIEW, self::DECISION_CHALLENGE]
+            ),
         ];
     }
 
