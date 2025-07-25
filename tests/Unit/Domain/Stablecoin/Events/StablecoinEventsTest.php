@@ -2,7 +2,30 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
+use App\Domain\Stablecoin\Events\CollateralLocked;
+use App\Domain\Stablecoin\Events\CollateralPositionClosed;
+use App\Domain\Stablecoin\Events\CollateralPositionCreated;
+use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
+use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
+use App\Domain\Stablecoin\Events\CollateralReleased;
+use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
+use App\Domain\Stablecoin\Events\CustodianAdded;
+use App\Domain\Stablecoin\Events\CustodianRemoved;
+use App\Domain\Stablecoin\Events\OracleDeviationDetected;
+use App\Domain\Stablecoin\Events\ProposalCancelled;
+use App\Domain\Stablecoin\Events\ProposalCreated;
+use App\Domain\Stablecoin\Events\ProposalExecuted;
+use App\Domain\Stablecoin\Events\ProposalFinalized;
+use App\Domain\Stablecoin\Events\ProposalVoteCast;
+use App\Domain\Stablecoin\Events\ReserveDeposited;
+use App\Domain\Stablecoin\Events\ReservePoolCreated;
+use App\Domain\Stablecoin\Events\ReserveRebalanced;
+use App\Domain\Stablecoin\Events\ReserveWithdrawn;
+use App\Domain\Stablecoin\Events\StablecoinBurned;
+use App\Domain\Stablecoin\Events\StablecoinMinted;
+use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 use Tests\DomainTestCase;
 
 class StablecoinEventsTest extends DomainTestCase

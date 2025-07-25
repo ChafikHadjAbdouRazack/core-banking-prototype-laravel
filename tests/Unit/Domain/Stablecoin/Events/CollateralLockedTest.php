@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
+use App\Domain\Stablecoin\Events\CollateralLocked;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 use Tests\DomainTestCase;
 
 class CollateralLockedTest extends DomainTestCase

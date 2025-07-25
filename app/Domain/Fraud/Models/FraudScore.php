@@ -10,12 +10,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
- * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null,
- *     string $boolean = 'and')
- * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator,
- *     string|\DateTimeInterface|null $value = null)
- * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator,
- *     string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
  * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
  * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
  * @method static static updateOrCreate(array $attributes, array $values = [])

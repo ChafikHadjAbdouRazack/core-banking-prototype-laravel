@@ -44,17 +44,19 @@ class LoanApplicationTest extends DomainTestCase
             $borrowerInfo
         );
 
-        $aggregate->assertRecorded([
-            new LoanApplicationSubmitted(
-                $applicationId,
-                $borrowerId,
-                $requestedAmount,
-                $termMonths,
-                $purpose,
-                $borrowerInfo,
-                new \DateTimeImmutable()
-            ),
-        ]);
+        $aggregate->assertRecorded(function ($event) use ($applicationId, $borrowerId, $requestedAmount, $termMonths, $purpose, $borrowerInfo) {
+            if (!$event instanceof LoanApplicationSubmitted) {
+                return false;
+            }
+
+            return $event->applicationId === $applicationId
+                && $event->borrowerId === $borrowerId
+                && $event->requestedAmount === $requestedAmount
+                && $event->termMonths === $termMonths
+                && $event->purpose === $purpose
+                && $event->borrowerInfo === $borrowerInfo
+                && $event->submittedAt instanceof \DateTimeImmutable;
+        });
     }
 
     #[Test]
@@ -253,14 +255,16 @@ class LoanApplicationTest extends DomainTestCase
             rejectedBy: 'auto-decisioning'
         );
 
-        $aggregate->assertRecorded(
-            new LoanApplicationRejected(
-                applicationId: $applicationId,
-                reasons: ['credit_score_too_low', 'insufficient_income'],
-                rejectedBy: 'auto-decisioning',
-                rejectedAt: new \DateTimeImmutable()
-            )
-        );
+        $aggregate->assertRecorded(function ($event) use ($applicationId) {
+            if (!$event instanceof LoanApplicationRejected) {
+                return false;
+            }
+
+            return $event->applicationId === $applicationId
+                && $event->reasons === ['credit_score_too_low', 'insufficient_income']
+                && $event->rejectedBy === 'auto-decisioning'
+                && $event->rejectedAt instanceof \DateTimeImmutable;
+        });
     }
 
     #[Test]
@@ -304,7 +308,7 @@ class LoanApplicationTest extends DomainTestCase
         $this->expectException(LoanApplicationException::class);
         $this->expectExceptionMessage('Cannot approve application without credit check');
 
-        $loanApp->approve('15000', 8.0, '1328.25', 'officer-123');
+        $loanApp->approve('15000', 8.0, ['monthly_payment' => '1328.25'], 'officer-123');
     }
 
     #[Test]
@@ -325,7 +329,7 @@ class LoanApplicationTest extends DomainTestCase
         $this->expectException(LoanApplicationException::class);
         $this->expectExceptionMessage('Cannot approve application without risk assessment');
 
-        $loanApp->approve('25000', 9.0, '1142.22', 'officer-456');
+        $loanApp->approve('25000', 9.0, ['monthly_payment' => '1142.22'], 'officer-456');
     }
 
     #[Test]

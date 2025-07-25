@@ -3,10 +3,10 @@
 namespace Tests\Unit\Domain\Exchange\Services;
 
 use App\Domain\Exchange\Aggregates\LiquidityPool;
-use App\Domain\Exchange\DataTransferObjects\LiquidityAdditionInput;
-use App\Domain\Exchange\DataTransferObjects\LiquidityRemovalInput;
+use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
+use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
 use App\Domain\Exchange\Projections\LiquidityProvider;
-use App\Domain\Exchange\Projections\PoolProjection;
+use App\Domain\Exchange\Projections\LiquidityPool as PoolProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\LiquidityPoolService;
 use App\Domain\Exchange\Workflows\LiquidityManagementWorkflow;

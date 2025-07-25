@@ -2,7 +2,17 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Projectors;
 
+use App\Domain\Stablecoin\Events\CollateralLocked;
+use App\Domain\Stablecoin\Events\CollateralPositionClosed;
+use App\Domain\Stablecoin\Events\CollateralPositionCreated;
+use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
+use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
+use App\Domain\Stablecoin\Events\CollateralReleased;
+use App\Domain\Stablecoin\Events\StablecoinBurned;
+use App\Domain\Stablecoin\Events\StablecoinMinted;
+use App\Domain\Stablecoin\Projectors\StablecoinProjector;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Tests\TestCase;
 
 class StablecoinProjectorTest extends TestCase
@@ -236,7 +246,7 @@ class StablecoinProjectorTest extends TestCase
         $endLine = $method->getEndLine();
         $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
 
-        $this->assertStringContainsString('update([', $source);
+        $this->assertStringContainsString('->fill(', $source);
         $this->assertStringContainsString('\'collateral_amount\'', $source);
         $this->assertStringContainsString('\'debt_amount\'', $source);
         $this->assertStringContainsString('\'collateral_ratio\'', $source);

@@ -31,8 +31,8 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         array $metadata = []
     ): string {
         // Check if pool already exists
-        /** @var \Illuminate\Database\Eloquent\Model|null $$existingPool */
-        $$existingPool = PoolProjection::forPair($baseCurrency, $quoteCurrency)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $existingPool */
+        $existingPool = PoolProjection::forPair($baseCurrency, $quoteCurrency)->first();
         if ($existingPool) {
             throw new \DomainException('Liquidity pool already exists for this pair');
         }
