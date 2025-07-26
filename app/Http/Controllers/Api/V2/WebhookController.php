@@ -121,7 +121,7 @@ class WebhookController extends Controller
     {
         $validated = $request->validate(
             [
-                'url'         => 'required|url|https',
+                'url'         => ['required', 'url', 'starts_with:https://'],
                 'events'      => 'required|array|min:1',
                 'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
                 'description' => 'nullable|string|max:255',
@@ -268,7 +268,7 @@ class WebhookController extends Controller
 
         $validated = $request->validate(
             [
-                'url'         => 'sometimes|url|https',
+                'url'         => ['sometimes', 'url', 'starts_with:https://'],
                 'events'      => 'sometimes|array|min:1',
                 'events.*'    => ['required', 'string', Rule::in($this->getAvailableEvents())],
                 'description' => 'nullable|string|max:255',

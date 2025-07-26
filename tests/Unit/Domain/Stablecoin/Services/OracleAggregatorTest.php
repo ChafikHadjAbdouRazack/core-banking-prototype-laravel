@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
+use App\Domain\Stablecoin\Contracts\OracleConnector;
 use App\Domain\Stablecoin\Services\OracleAggregator;
+use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

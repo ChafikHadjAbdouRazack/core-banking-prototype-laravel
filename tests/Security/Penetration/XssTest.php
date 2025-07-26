@@ -2,6 +2,7 @@
 
 namespace Tests\Security\Penetration;
 
+use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

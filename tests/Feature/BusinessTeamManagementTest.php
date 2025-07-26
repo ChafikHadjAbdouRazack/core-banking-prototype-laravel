@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Str;
 use App\Domain\Fraud\Models\FraudCase;
 use App\Models\Account;
 use App\Models\Team;

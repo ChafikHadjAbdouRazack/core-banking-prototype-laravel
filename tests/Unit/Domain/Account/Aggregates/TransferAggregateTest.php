@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Account\Aggregates;
 
+use Illuminate\Support\Str;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;

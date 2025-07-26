@@ -2,6 +2,7 @@
 
 namespace Tests\Domain\Account\Projectors;
 
+use Illuminate\Support\Str;
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Models\AccountBalance;

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Cgo;
 
+use Illuminate\Support\Str;
 use App\Models\Cgo\CgoInvestment;
 use App\Models\Cgo\CgoPricingRound;
 use App\Models\User;
