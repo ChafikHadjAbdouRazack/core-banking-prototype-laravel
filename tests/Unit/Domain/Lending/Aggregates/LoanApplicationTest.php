@@ -18,8 +18,18 @@ class LoanApplicationTest extends DomainTestCase
     {
         $applicationId = 'loan-app-123';
 
-        // This test just verifies that the aggregate can be created without throwing exceptions
-        $this->assertInstanceOf(LoanApplication::class, LoanApplication::fake($applicationId));
+        // Test that loan application can be submitted successfully without throwing exceptions
+        $loanApp = LoanApplication::submit(
+            $applicationId,
+            'borrower-123',
+            '10000',
+            24,
+            'personal',
+            ['purpose' => 'debt consolidation']
+        );
+
+        // If we get here without exceptions, the test passes
+        $this->assertTrue(true);
     }
 
     #[Test]

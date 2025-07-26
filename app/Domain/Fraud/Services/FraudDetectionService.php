@@ -230,7 +230,7 @@ class FraudDetectionService
                 'amount'      => $transaction->event_properties['amount'] ?? 0,
                 'currency'    => $transaction->event_properties['assetCode'] ?? 'USD',
                 'type'        => $transaction->meta_data['type'] ?? 'unknown',
-                'timestamp'   => $transaction->created_at,
+                'timestamp'   => \Carbon\Carbon::parse($transaction->created_at),
                 'metadata'    => $transaction->event_properties['metadata'] ?? [],
 
                 // Velocity metrics
@@ -245,9 +245,9 @@ class FraudDetectionService
                 ),
 
                 // Time-based features
-                'hour_of_day'                 => $transaction->created_at->hour,
-                'day_of_week'                 => $transaction->created_at->dayOfWeek,
-                'is_weekend'                  => $transaction->created_at->isWeekend(),
+                'hour_of_day'                 => \Carbon\Carbon::parse($transaction->created_at)->hour,
+                'day_of_week'                 => \Carbon\Carbon::parse($transaction->created_at)->dayOfWeek,
+                'is_weekend'                  => \Carbon\Carbon::parse($transaction->created_at)->isWeekend(),
                 'time_since_last_transaction' => $this->getTimeSinceLastTransaction($user),
             ],
             $additionalContext
@@ -267,7 +267,7 @@ class FraudDetectionService
             'status'         => $transaction->meta_data['status'] ?? 'completed',
             'account_id'     => $transaction->aggregate_uuid,
             'user_id'        => $transaction->account->user_uuid,
-            'created_at'     => $transaction->created_at->toIso8601String(),
+            'created_at'     => \Carbon\Carbon::parse($transaction->created_at)->toIso8601String(),
             'metadata'       => $transaction->event_properties['metadata'] ?? [],
         ];
     }

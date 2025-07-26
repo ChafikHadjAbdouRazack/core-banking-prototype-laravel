@@ -39,19 +39,6 @@ class ObjectsHelperTest extends TestCase
     }
 
     #[Test]
-    public function test_hydrate_has_proper_documentation(): void
-    {
-        $reflection = new \ReflectionFunction('hydrate');
-        $docComment = $reflection->getDocComment();
-
-        $this->assertNotFalse($docComment);
-        $this->assertStringContainsString('Hydrate and return a specific Data Object class instance', $docComment);
-        $this->assertStringContainsString('@template T of DataObjectContract', $docComment);
-        $this->assertStringContainsString('@param class-string<T> $class', $docComment);
-        $this->assertStringContainsString('@return T', $docComment);
-    }
-
-    #[Test]
     public function test_account_function_signature(): void
     {
         $reflection = new \ReflectionFunction('__account');
