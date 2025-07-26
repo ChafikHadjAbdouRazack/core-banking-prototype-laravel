@@ -2,10 +2,10 @@
 
 namespace Tests\Security\Penetration;
 
-use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -60,7 +60,7 @@ class XssTest extends DomainTestCase
     public function test_transaction_description_is_protected_against_xss($payload)
     {
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -212,7 +212,7 @@ class XssTest extends DomainTestCase
     {
         // Create test data
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(

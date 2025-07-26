@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Domain\Account\Aggregates;
 
-use Illuminate\Support\Str;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;
@@ -10,6 +9,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Events\MoneyTransferred;
 use App\Domain\Account\Events\TransferThresholdReached;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -272,7 +272,7 @@ class TransferAggregateTest extends DomainTestCase
     public function test_snapshot_preserves_transfer_count(): void
     {
         // Create a real aggregate
-        $uuid = (string) \Illuminate\Support\Str::uuid();
+        $uuid = (string) Str::uuid();
         $aggregate = TransferAggregate::retrieve($uuid);
 
         // Make some transfers to build up count

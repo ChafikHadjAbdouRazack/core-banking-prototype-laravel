@@ -2,12 +2,12 @@
 
 namespace Tests\Domain\Account\Projectors;
 
-use Illuminate\Support\Str;
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Utils\ValidatesHash;
 use App\Models\Account;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -40,7 +40,7 @@ class AccountProjectorTest extends TestCase
         $this->resetHash();
 
         // Use a completely fresh aggregate UUID to avoid any existing state
-        $freshUuid = \Illuminate\Support\Str::uuid()->toString();
+        $freshUuid = Str::uuid()->toString();
         \DB::table('accounts')->where('uuid', $this->account->uuid)->update(['uuid' => $freshUuid]);
         $this->account->uuid = $freshUuid;
         $this->account->save();

@@ -8,7 +8,6 @@ return;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
@@ -30,9 +29,9 @@ class ExchangeControllerTest extends ControllerTestCase
         // Create account for the user
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'name' => 'Test Trading Account',
-            'type' => 'personal',
-            'status' => 'active',
+            'name'      => 'Test Trading Account',
+            'type'      => 'personal',
+            'status'    => 'active',
         ]);
 
         $this->accountId = $account->uuid;

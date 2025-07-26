@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Domain\Exchange\Services;
 
-use Illuminate\Support\Str;
 use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Aggregates\OrderBook;
 use App\Domain\Exchange\Projections\Order as OrderProjection;

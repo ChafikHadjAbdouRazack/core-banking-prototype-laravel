@@ -680,8 +680,8 @@ class BehavioralAnalysisService
 
         return [
             'avg_transaction_amount' => $transactionCount > 0 ? $totalAmount / $transactionCount : 0,
-            'transaction_count' => $transactionCount,
-            'unusual_patterns' => $unusualPatterns,
+            'transaction_count'      => $transactionCount,
+            'unusual_patterns'       => $unusualPatterns,
         ];
     }
 }

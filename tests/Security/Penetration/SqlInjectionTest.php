@@ -2,11 +2,11 @@
 
 namespace Tests\Security\Penetration;
 
-use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -32,7 +32,7 @@ class SqlInjectionTest extends DomainTestCase
     public function test_account_search_is_protected_against_sql_injection($payload)
     {
         // Create test account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -80,7 +80,7 @@ class SqlInjectionTest extends DomainTestCase
     public function test_transaction_filters_are_protected_against_sql_injection($payload)
     {
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -165,7 +165,7 @@ class SqlInjectionTest extends DomainTestCase
 
         // Create a test account
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(

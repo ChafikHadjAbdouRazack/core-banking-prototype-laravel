@@ -99,9 +99,9 @@ class FraudDetectionService
 
                     // Build analysis_results for backwards compatibility
                     $analysisResults = [
-                        'rule_engine' => $ruleResults,
+                        'rule_engine'         => $ruleResults,
                         'behavioral_analysis' => $behavioralResults,
-                        'device_analysis' => $deviceResults,
+                        'device_analysis'     => $deviceResults,
                     ];
 
                     if ($mlResults) {
@@ -684,8 +684,8 @@ class FraudDetectionService
 
         $analysis = [
             'behavioral_analysis' => $behavioralData,
-            'risk_indicators' => $this->identifyRiskIndicators($behavioralData),
-            'recommendations' => $this->generateRecommendations($behavioralData),
+            'risk_indicators'     => $this->identifyRiskIndicators($behavioralData),
+            'recommendations'     => $this->generateRecommendations($behavioralData),
         ];
 
         return $analysis;
@@ -706,6 +706,7 @@ class FraudDetectionService
                 ['recalculation_reason' => 'Manual recalculation requested']
             );
             $newScore->save();
+
             return $newScore;
         }
 
@@ -721,8 +722,8 @@ class FraudDetectionService
 
         return [
             'transaction_indicators' => $this->getTransactionIndicators($transaction),
-            'user_indicators' => $this->getUserIndicators($user),
-            'contextual_indicators' => $this->getContextualIndicators($transaction),
+            'user_indicators'        => $this->getUserIndicators($user),
+            'contextual_indicators'  => $this->getContextualIndicators($transaction),
         ];
     }
 
@@ -789,7 +790,7 @@ class FraudDetectionService
             $indicators[] = 'new_account';
         }
 
-        if (!$user->kyc_level || $user->kyc_level === 'none') {
+        if (! $user->kyc_level || $user->kyc_level === 'none') {
             $indicators[] = 'no_kyc';
         }
 

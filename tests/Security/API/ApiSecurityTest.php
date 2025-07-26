@@ -2,11 +2,11 @@
 
 namespace Tests\Security\API;
 
-use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -280,7 +280,7 @@ class ApiSecurityTest extends DomainTestCase
         ];
 
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -310,7 +310,7 @@ class ApiSecurityTest extends DomainTestCase
     {
         // Create many accounts using event sourcing
         for ($i = 0; $i < 100; $i++) {
-            $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+            $accountUuid = Str::uuid()->toString();
             \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
                 ->createAccount(
                     hydrate(
@@ -445,7 +445,7 @@ class ApiSecurityTest extends DomainTestCase
     public function test_api_transaction_idempotency()
     {
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -470,7 +470,7 @@ class ApiSecurityTest extends DomainTestCase
         $balanceBeforeTransfer = $account->getBalance('USD');
 
         // Create a second account for the transfer
-        $toAccountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $toAccountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($toAccountUuid)
             ->createAccount(
                 hydrate(

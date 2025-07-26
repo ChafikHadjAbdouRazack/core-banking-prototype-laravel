@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Lending;
 
-use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 

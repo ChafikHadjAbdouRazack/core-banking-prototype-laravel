@@ -181,7 +181,7 @@ class FraudDetectionServiceTest extends ServiceTestCase
         $this->assertIsArray($fraudScore->analysis_results, 'Analysis results should be an array');
 
         // Debug what's actually in analysis_results
-        if (!isset($fraudScore->analysis_results['ml_prediction'])) {
+        if (! isset($fraudScore->analysis_results['ml_prediction'])) {
             $this->fail('ML prediction not found in analysis_results. Contents: ' . json_encode($fraudScore->analysis_results));
         }
 

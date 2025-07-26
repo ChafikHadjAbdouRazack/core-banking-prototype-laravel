@@ -2,12 +2,12 @@
 
 namespace Tests\Security\Penetration;
 
-use Illuminate\Support\Str;
 use App\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -29,7 +29,7 @@ class CsrfTest extends DomainTestCase
         $this->user = User::factory()->create();
         $this->token = $this->user->createToken('test-token')->plainTextToken;
         // Create account using the proper event sourcing method
-        $accountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $accountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($accountUuid)
             ->createAccount(
                 hydrate(
@@ -305,7 +305,7 @@ class CsrfTest extends DomainTestCase
         $responses = [];
 
         // Create destination account once to avoid hitting model creation limits
-        $destinationAccountUuid = \Illuminate\Support\Str::uuid()->toString();
+        $destinationAccountUuid = Str::uuid()->toString();
         \App\Domain\Account\Aggregates\LedgerAggregate::retrieve($destinationAccountUuid)
             ->createAccount(
                 hydrate(
