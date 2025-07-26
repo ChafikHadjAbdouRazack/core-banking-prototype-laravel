@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
+use App\Domain\Stablecoin\Workflows\Activities\ClosePositionActivity;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

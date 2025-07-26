@@ -145,15 +145,15 @@ return [
         'cgo_refund_cancelled'           => App\Domain\Cgo\Events\RefundCancelled::class,
 
         // Exchange events
-        'order_book_created'     => App\Domain\Exchange\Events\OrderBookCreated::class,
-        'order_book_initialized' => App\Domain\Exchange\Events\OrderBookInitialized::class,
-        'order_placed'           => App\Domain\Exchange\Events\OrderPlaced::class,
-        'order_cancelled'        => App\Domain\Exchange\Events\OrderCancelled::class,
-        'order_filled'           => App\Domain\Exchange\Events\OrderFilled::class,
-        'order_partially_filled' => App\Domain\Exchange\Events\OrderPartiallyFilled::class,
-        'order_matched'          => App\Domain\Exchange\Events\OrderMatched::class,
+        'order_book_created'      => App\Domain\Exchange\Events\OrderBookCreated::class,
+        'order_book_initialized'  => App\Domain\Exchange\Events\OrderBookInitialized::class,
+        'order_placed'            => App\Domain\Exchange\Events\OrderPlaced::class,
+        'order_cancelled'         => App\Domain\Exchange\Events\OrderCancelled::class,
+        'order_filled'            => App\Domain\Exchange\Events\OrderFilled::class,
+        'order_partially_filled'  => App\Domain\Exchange\Events\OrderPartiallyFilled::class,
+        'order_matched'           => App\Domain\Exchange\Events\OrderMatched::class,
         'order_removed_from_book' => App\Domain\Exchange\Events\OrderRemovedFromBook::class,
-        'market_depth_updated'   => App\Domain\Exchange\Events\MarketDepthUpdated::class,
+        'market_depth_updated'    => App\Domain\Exchange\Events\MarketDepthUpdated::class,
 
         // Liquidity pool events
         'liquidity_pool_created'        => App\Domain\Exchange\Events\LiquidityPoolCreated::class,

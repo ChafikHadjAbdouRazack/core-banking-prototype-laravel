@@ -97,30 +97,40 @@ class FraudDetectionService
                     $riskLevel = FraudScore::calculateRiskLevel($totalScore);
                     $decision = $this->makeDecision($totalScore, $riskLevel, $ruleResults);
 
+                    // Build analysis_results for backwards compatibility
+                    $analysisResults = [
+                        'rule_engine' => $ruleResults,
+                        'behavioral_analysis' => $behavioralResults,
+                        'device_analysis' => $deviceResults,
+                    ];
+
+                    if ($mlResults) {
+                        $analysisResults['ml_prediction'] = $mlResults;
+                    }
+
                     // 7. Update fraud score
-                    $fraudScore->update(
-                        [
-                            'total_score'        => $totalScore,
-                            'risk_level'         => $riskLevel,
-                            'score_breakdown'    => $this->createScoreBreakdown(
-                                $ruleResults,
-                                $behavioralResults,
-                                $deviceResults,
-                                $mlResults
-                            ),
-                            'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
-                            'behavioral_factors' => $behavioralResults,
-                            'device_factors'     => $deviceResults,
-                            'network_factors'    => $this->extractNetworkFactors($analysisContext),
-                            'ml_score'           => $mlResults['score'] ?? null,
-                            'ml_model_version'   => $mlResults['model_version'] ?? null,
-                            'ml_features'        => $mlResults['features'] ?? null,
-                            'ml_explanation'     => $mlResults['explanation'] ?? null,
-                            'decision'           => $decision,
-                            'decision_factors'   => $this->extractDecisionFactors($totalScore, $ruleResults),
-                            'decision_at'        => now(),
-                        ]
-                    );
+                    $fraudScore->update([
+                        'total_score'     => $totalScore,
+                        'risk_level'      => $riskLevel,
+                        'score_breakdown' => $this->createScoreBreakdown(
+                            $ruleResults,
+                            $behavioralResults,
+                            $deviceResults,
+                            $mlResults
+                        ),
+                        'triggered_rules'    => $ruleResults['triggered_rules'] ?? [],
+                        'behavioral_factors' => $behavioralResults,
+                        'device_factors'     => $deviceResults,
+                        'network_factors'    => $this->extractNetworkFactors($analysisContext),
+                        'ml_score'           => $mlResults['score'] ?? null,
+                        'ml_model_version'   => $mlResults['model_version'] ?? null,
+                        'ml_features'        => $mlResults['features'] ?? null,
+                        'ml_explanation'     => $mlResults['explanation'] ?? null,
+                        'decision'           => $decision,
+                        'decision_factors'   => $this->extractDecisionFactors($totalScore, $ruleResults),
+                        'decision_at'        => now(),
+                        'analysis_results'   => $analysisResults,
+                    ]);
 
                     // 8. Take action based on decision
                     $this->executeDecision($transaction, $fraudScore, $decision);
@@ -663,5 +673,149 @@ class FraudDetectionService
         }
 
         return $score;
+    }
+
+    /**
+     * Analyze user activity for historical analysis.
+     */
+    public function analyzeUserActivity(User $user, \DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $behavioralData = $this->behavioralAnalysis->getHistoricalBehavior($user, $startDate, $endDate);
+
+        $analysis = [
+            'behavioral_analysis' => $behavioralData,
+            'risk_indicators' => $this->identifyRiskIndicators($behavioralData),
+            'recommendations' => $this->generateRecommendations($behavioralData),
+        ];
+
+        return $analysis;
+    }
+
+    /**
+     * Recalculate fraud score for an existing score.
+     */
+    public function recalculateScore(FraudScore $fraudScore): FraudScore
+    {
+        // Get the entity
+        $entity = $fraudScore->entity;
+
+        if ($entity instanceof Transaction) {
+            $newScore = $this->analyzeTransaction($entity);
+            $newScore->metadata = array_merge(
+                $newScore->metadata ?? [],
+                ['recalculation_reason' => 'Manual recalculation requested']
+            );
+            $newScore->save();
+            return $newScore;
+        }
+
+        return $fraudScore;
+    }
+
+    /**
+     * Get fraud indicators for a transaction.
+     */
+    public function getFraudIndicators(Transaction $transaction): array
+    {
+        $user = $transaction->account->user;
+
+        return [
+            'transaction_indicators' => $this->getTransactionIndicators($transaction),
+            'user_indicators' => $this->getUserIndicators($user),
+            'contextual_indicators' => $this->getContextualIndicators($transaction),
+        ];
+    }
+
+    /**
+     * Identify risk indicators from behavioral data.
+     */
+    protected function identifyRiskIndicators(array $behavioralData): array
+    {
+        $indicators = [];
+
+        if (isset($behavioralData['unusual_patterns']) && count($behavioralData['unusual_patterns']) > 0) {
+            $indicators[] = 'unusual_patterns_detected';
+        }
+
+        if (isset($behavioralData['transaction_count']) && $behavioralData['transaction_count'] > 50) {
+            $indicators[] = 'high_transaction_volume';
+        }
+
+        return $indicators;
+    }
+
+    /**
+     * Generate recommendations based on behavioral data.
+     */
+    protected function generateRecommendations(array $behavioralData): array
+    {
+        $recommendations = [];
+
+        if (isset($behavioralData['unusual_patterns']) && count($behavioralData['unusual_patterns']) > 0) {
+            $recommendations[] = 'Review account for suspicious activity';
+        }
+
+        return $recommendations;
+    }
+
+    /**
+     * Get transaction-specific indicators.
+     */
+    protected function getTransactionIndicators(Transaction $transaction): array
+    {
+        $indicators = [];
+
+        $amount = $transaction->event_properties['amount'] ?? 0;
+        if ($amount > 10000) {
+            $indicators[] = 'high_value_transaction';
+        }
+
+        if ($amount % 10000 == 0) {
+            $indicators[] = 'round_amount';
+        }
+
+        return $indicators;
+    }
+
+    /**
+     * Get user-specific indicators.
+     */
+    protected function getUserIndicators(User $user): array
+    {
+        $indicators = [];
+
+        $accountAge = $user->created_at->diffInDays(now());
+        if ($accountAge < 30) {
+            $indicators[] = 'new_account';
+        }
+
+        if (!$user->kyc_level || $user->kyc_level === 'none') {
+            $indicators[] = 'no_kyc';
+        }
+
+        return $indicators;
+    }
+
+    /**
+     * Get contextual indicators.
+     */
+    protected function getContextualIndicators(Transaction $transaction): array
+    {
+        $indicators = [];
+
+        $createdAt = $transaction->created_at;
+        if ($createdAt instanceof \DateTimeInterface) {
+            $carbonDate = \Carbon\Carbon::instance($createdAt);
+            if ($carbonDate->isWeekend()) {
+                $indicators[] = 'weekend_transaction';
+            }
+
+            $hour = $carbonDate->hour;
+            if ($hour < 6 || $hour > 22) {
+                $indicators[] = 'unusual_hour';
+            }
+        }
+
+        return $indicators;
     }
 }

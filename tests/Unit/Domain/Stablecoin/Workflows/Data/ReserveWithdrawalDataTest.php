@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Data;
 
+use App\Domain\Stablecoin\Workflows\Data\ReserveWithdrawalData;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

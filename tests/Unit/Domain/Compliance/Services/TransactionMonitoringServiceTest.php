@@ -265,10 +265,10 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     // Helper methods
     private function mockGetCustomerRiskProfile($transaction, $riskProfile): void
     {
-        if (!($this->service instanceof \Mockery\MockInterface)) {
+        if (! ($this->service instanceof Mockery\MockInterface)) {
             $this->service = Mockery::mock(TransactionMonitoringService::class, [
                 $this->sarService,
-                $this->riskService
+                $this->riskService,
             ])
                 ->makePartial()
                 ->shouldAllowMockingProtectedMethods();
@@ -296,15 +296,15 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
             $this->service->shouldReceive('createAlert')
                 ->with($rule, $transaction)
                 ->andReturn([
-                    'rule_id' => $rule->id,
-                    'rule_name' => $rule->name,
-                    'rule_code' => 'TEST_RULE',
-                    'category' => 'threshold',
-                    'risk_level' => 'high',
+                    'rule_id'        => $rule->id,
+                    'rule_name'      => $rule->name,
+                    'rule_code'      => 'TEST_RULE',
+                    'category'       => 'threshold',
+                    'risk_level'     => 'high',
                     'transaction_id' => $transaction->id,
-                    'amount' => $transaction->amount ?? 0,
-                    'timestamp' => now()->toIso8601String(),
-                    'description' => 'Test alert'
+                    'amount'         => $transaction->amount ?? 0,
+                    'timestamp'      => now()->toIso8601String(),
+                    'description'    => 'Test alert',
                 ]);
         }
     }

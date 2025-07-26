@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Http\Resources;
 
+use App\Http\Resources\BasketPerformanceResource;
+use Illuminate\Http\Request;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Repositories;
 
+use App\Domain\Stablecoin\Repositories\StablecoinSnapshotRepository;
+use App\Domain\Stablecoin\Snapshots\StablecoinSnapshot;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\EventSourcing\Snapshots\EloquentSnapshotRepository;
 use Tests\DomainTestCase;
 
 class StablecoinSnapshotRepositoryTest extends DomainTestCase

@@ -45,7 +45,7 @@ class LoanApplicationTest extends DomainTestCase
         );
 
         $aggregate->assertRecorded(function ($event) use ($applicationId, $borrowerId, $requestedAmount, $termMonths, $purpose, $borrowerInfo) {
-            if (!$event instanceof LoanApplicationSubmitted) {
+            if (! $event instanceof LoanApplicationSubmitted) {
                 return false;
             }
 
@@ -256,7 +256,7 @@ class LoanApplicationTest extends DomainTestCase
         );
 
         $aggregate->assertRecorded(function ($event) use ($applicationId) {
-            if (!$event instanceof LoanApplicationRejected) {
+            if (! $event instanceof LoanApplicationRejected) {
                 return false;
             }
 

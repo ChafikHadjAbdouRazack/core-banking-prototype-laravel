@@ -4,15 +4,12 @@ namespace Tests\Unit\Domain\Fraud\Services;
 
 use App\Domain\Fraud\Models\FraudRule;
 use App\Domain\Fraud\Services\RuleEngineService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
 class RuleEngineServiceTest extends ServiceTestCase
 {
-    use RefreshDatabase;
-
     private RuleEngineService $service;
 
     protected function setUp(): void
@@ -286,7 +283,7 @@ class RuleEngineServiceTest extends ServiceTestCase
     protected function tearDown(): void
     {
         Cache::flush();
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows;
 
+use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

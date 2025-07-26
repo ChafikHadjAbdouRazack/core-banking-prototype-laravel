@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories;
+namespace Database\Factories\Domain\Stablecoin\Models;
 
 use App\Domain\Stablecoin\Models\Stablecoin;
 use Illuminate\Database\Eloquent\Factories\Factory;

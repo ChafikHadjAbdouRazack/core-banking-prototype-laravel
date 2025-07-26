@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Helpers;
 
+use Faker\Generator;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

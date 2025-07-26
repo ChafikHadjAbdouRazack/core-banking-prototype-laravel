@@ -2,6 +2,12 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Oracles;
 
+use App\Domain\Stablecoin\Contracts\OracleConnector;
+use App\Domain\Stablecoin\Oracles\BinanceOracle;
+use App\Domain\Stablecoin\ValueObjects\PriceData;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

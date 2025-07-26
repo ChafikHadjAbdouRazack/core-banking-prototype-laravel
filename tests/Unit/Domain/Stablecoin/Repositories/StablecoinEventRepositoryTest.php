@@ -2,7 +2,10 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Repositories;
 
+use App\Domain\Stablecoin\Models\StablecoinEvent;
+use App\Domain\Stablecoin\Repositories\StablecoinEventRepository;
 use PHPUnit\Framework\Attributes\Test;
+use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;
 use Tests\DomainTestCase;
 
 class StablecoinEventRepositoryTest extends DomainTestCase

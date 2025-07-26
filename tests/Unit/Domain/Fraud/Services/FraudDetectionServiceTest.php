@@ -15,7 +15,6 @@ use App\Domain\Fraud\Services\RuleEngineService;
 use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
@@ -23,8 +22,6 @@ use Tests\ServiceTestCase;
 
 class FraudDetectionServiceTest extends ServiceTestCase
 {
-    use RefreshDatabase;
-
     private FraudDetectionService $service;
 
     private RuleEngineService $ruleEngine;
@@ -138,13 +135,55 @@ class FraudDetectionServiceTest extends ServiceTestCase
     {
         $transaction = $this->createTransaction();
 
-        $this->mockServicesForLowRisk();
+        // Set up mocks but with ML enabled
+        $this->ruleEngine->shouldReceive('evaluate')
+            ->withAnyArgs()
+            ->andReturn([
+                'total_score'     => 50,
+                'triggered_rules' => [],
+                'blocking_rules'  => [],
+                'rule_scores'     => [],
+                'rule_details'    => [],
+            ]);
+
+        $this->behavioralAnalysis->shouldReceive('analyze')
+            ->withAnyArgs()
+            ->andReturn([
+                'risk_score'   => 20,
+                'anomalies'    => [],
+                'risk_factors' => [],
+            ]);
+
+        $this->behavioralAnalysis->shouldReceive('updateProfile')
+            ->andReturn(null);
+
+        $this->deviceService->shouldReceive('analyzeDevice')
+            ->withAnyArgs()
+            ->andReturn([
+                'risk_score'   => 20,
+                'is_known'     => true,
+                'risk_factors' => [],
+            ]);
+
+        // ML is enabled for this test
         $this->mlService->shouldReceive('isEnabled')->andReturn(true);
         $this->mlService->shouldReceive('predict')
             ->once()
             ->andReturn(['score' => 0.15, 'confidence' => 0.95]);
 
+        $this->caseService->shouldReceive('createFromFraudScore')
+            ->withAnyArgs()
+            ->andReturn(Mockery::mock(\App\Domain\Fraud\Models\FraudCase::class));
+
         $fraudScore = $this->service->analyzeTransaction($transaction);
+
+        $this->assertNotNull($fraudScore->analysis_results, 'Analysis results should not be null');
+        $this->assertIsArray($fraudScore->analysis_results, 'Analysis results should be an array');
+
+        // Debug what's actually in analysis_results
+        if (!isset($fraudScore->analysis_results['ml_prediction'])) {
+            $this->fail('ML prediction not found in analysis_results. Contents: ' . json_encode($fraudScore->analysis_results));
+        }
 
         $this->assertArrayHasKey('ml_prediction', $fraudScore->analysis_results);
         $this->assertEquals(0.15, $fraudScore->analysis_results['ml_prediction']['score']);

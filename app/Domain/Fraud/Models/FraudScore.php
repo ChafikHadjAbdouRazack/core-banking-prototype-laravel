@@ -71,6 +71,8 @@ class FraudScore extends Model
         'outcome_confirmed_at',
         'confirmed_by',
         'outcome_notes',
+        'analysis_results',
+        'metadata',
     ];
 
     protected $casts = [
@@ -83,6 +85,8 @@ class FraudScore extends Model
         'ml_features'          => 'array',
         'ml_explanation'       => 'array',
         'decision_factors'     => 'array',
+        'analysis_results'     => 'array',
+        'metadata'             => 'array',
         'total_score'          => 'decimal:2',
         'ml_score'             => 'decimal:2',
         'is_override'          => 'boolean',

@@ -2,6 +2,9 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Workflows\Activities;
 
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Workflows\Activities\MintStablecoinActivity;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;

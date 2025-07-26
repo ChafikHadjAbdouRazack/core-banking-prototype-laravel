@@ -2,6 +2,10 @@
 
 namespace Tests\Unit\Helpers;
 
+use App\Domain\Account\DataObjects\Account;
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\DataObjects\Money;
+use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -118,7 +122,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_objects_helper_file_structure(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
 
         $this->assertFileExists($helperFile);
 
@@ -136,7 +140,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_hydrate_handles_unit_enums(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check that hydrate function handles UnitEnum
@@ -147,7 +151,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_account_function_returns_same_if_already_account(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check early return
@@ -158,7 +162,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_money_function_returns_same_if_already_money(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check early return
@@ -169,7 +173,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_account_uuid_handles_different_types(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check different type handling
@@ -183,7 +187,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_account_double_uuid_returns_string(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check different return paths
@@ -195,7 +199,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_all_functions_use_hydrate(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Count hydrate calls (should be at least 3: in __account, __money, __account_uuid)
@@ -225,7 +229,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_money_function_creates_with_amount_property(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check that money is created with amount property
@@ -235,7 +239,7 @@ class ObjectsHelperTest extends TestCase
     #[Test]
     public function test_account_uuid_function_creates_with_uuid_property(): void
     {
-        $helperFile = base_path('app/Helpers/objects.php');
+        $helperFile = base_path('app/Domain/Account/Helpers/objects.php');
         $content = file_get_contents($helperFile);
 
         // Check that AccountUuid is created with uuid property

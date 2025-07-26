@@ -2,6 +2,15 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Services\ExchangeRateService;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Services\CollateralService;
+use App\Domain\Stablecoin\Services\LiquidationService;
+use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
+use App\Domain\Wallet\Services\WalletService;
+use App\Traits\HandlesNestedTransactions;
+use Illuminate\Support\Collection;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

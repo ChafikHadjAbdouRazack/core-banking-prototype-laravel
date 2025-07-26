@@ -170,7 +170,7 @@ class BehavioralAnalysisService
      */
     protected function analyzeTransactionAmount(BehavioralProfile $profile, Transaction $transaction): array
     {
-        $amount = $transaction->amount;
+        $amount = $transaction->event_properties['amount'] ?? 0;
         $isUnusual = $profile->isTransactionAmountUnusual($amount);
 
         $riskContribution = 0;
@@ -639,5 +639,49 @@ class BehavioralAnalysisService
 
         // Multiple changes indicate potential account compromise
         return $changes >= 2;
+    }
+
+    /**
+     * Get historical behavior for user.
+     */
+    public function getHistoricalBehavior(User $user, \DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+    {
+        $transactions = Transaction::whereHas('account', function ($query) use ($user) {
+                $query->where('user_uuid', $user->uuid);
+        })
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->get();
+
+        $totalAmount = $transactions->sum(function ($transaction) {
+            return $transaction->event_properties['amount'] ?? 0;
+        });
+        $transactionCount = $transactions->count();
+
+        // Look for unusual patterns
+        $unusualPatterns = [];
+
+        // Check for rapid transactions
+        $rapidTransactions = 0;
+        for ($i = 1; $i < $transactionCount; $i++) {
+            $prevCreatedAt = $transactions[$i - 1]->created_at;
+            $currCreatedAt = $transactions[$i]->created_at;
+
+            if ($prevCreatedAt instanceof \DateTimeInterface && $currCreatedAt instanceof \DateTimeInterface) {
+                $timeDiff = \Carbon\Carbon::instance($prevCreatedAt)->diffInMinutes(\Carbon\Carbon::instance($currCreatedAt));
+                if ($timeDiff < 5) {
+                    $rapidTransactions++;
+                }
+            }
+        }
+
+        if ($rapidTransactions > 3) {
+            $unusualPatterns[] = 'rapid_transactions';
+        }
+
+        return [
+            'avg_transaction_amount' => $transactionCount > 0 ? $totalAmount / $transactionCount : 0,
+            'transaction_count' => $transactionCount,
+            'unusual_patterns' => $unusualPatterns,
+        ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Domain\Stablecoin\ValueObjects;
 
+use App\Domain\Stablecoin\ValueObjects\PriceData;
+use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

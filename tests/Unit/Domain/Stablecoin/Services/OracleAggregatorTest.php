@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Services;
 
+use App\Domain\Stablecoin\Services\OracleAggregator;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

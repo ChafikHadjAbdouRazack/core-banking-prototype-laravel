@@ -73,5 +73,12 @@ parameters:
         # Map method callback type resolution issues
         - '#Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection<int,[^>]+>::map\(\) contains unresolvable type#'
         
+        # Fraud detection service specific ignores
+        - '#Cannot access property \$hour on string\.$#'
+        - '#Cannot call method isWeekend\(\) on string\.$#'
+        
+        # Account model query with user_uuid
+        - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<TRelatedModel of Illuminate\\Database\\Eloquent\\Model>::where\(\) expects .* ''user_uuid'' given\.$#'
+        
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false

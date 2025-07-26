@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Domain\Stablecoin\Events;
 
+use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
 use App\Domain\Stablecoin\Events\CollateralLocked;
 use App\Domain\Stablecoin\Events\CollateralPositionClosed;
 use App\Domain\Stablecoin\Events\CollateralPositionCreated;
 use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
 use App\Domain\Stablecoin\Events\CollateralPositionUpdated;
 use App\Domain\Stablecoin\Events\CollateralReleased;
-use App\Domain\Stablecoin\Events\CollateralizationRatioUpdated;
 use App\Domain\Stablecoin\Events\CustodianAdded;
 use App\Domain\Stablecoin\Events\CustodianRemoved;
 use App\Domain\Stablecoin\Events\OracleDeviationDetected;
