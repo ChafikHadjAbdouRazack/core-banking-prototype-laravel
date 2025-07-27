@@ -6,7 +6,7 @@ namespace App\Domain\Performance\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Models\AccountBalance;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 

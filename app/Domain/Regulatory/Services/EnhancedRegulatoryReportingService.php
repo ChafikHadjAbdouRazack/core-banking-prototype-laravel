@@ -7,7 +7,7 @@ use App\Domain\Fraud\Models\FraudCase;
 use App\Domain\Fraud\Models\FraudScore;
 use App\Domain\Regulatory\Models\RegulatoryReport;
 use App\Domain\Regulatory\Models\RegulatoryThreshold;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

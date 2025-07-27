@@ -9,7 +9,7 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Workflows\AssetTransferWorkflow;
 use App\Domain\Asset\Workflows\OptimizedAssetTransferWorkflow;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

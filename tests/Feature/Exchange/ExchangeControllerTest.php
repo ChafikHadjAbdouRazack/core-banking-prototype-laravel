@@ -5,7 +5,7 @@ namespace Tests\Feature\Exchange;
 // TODO: These tests need to be rewritten to match the current exchange implementation
 return;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;

@@ -7,7 +7,7 @@ namespace App\Domain\Basket\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Workflow\Activity;

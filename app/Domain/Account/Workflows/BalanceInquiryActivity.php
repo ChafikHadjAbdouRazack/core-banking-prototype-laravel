@@ -4,7 +4,7 @@ namespace App\Domain\Account\Workflows;
 
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\Activity;
 
 class BalanceInquiryActivity extends Activity

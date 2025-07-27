@@ -2,7 +2,7 @@
 
 namespace App\Domain\Account\Models;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Database\Factories\TransactionProjectionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

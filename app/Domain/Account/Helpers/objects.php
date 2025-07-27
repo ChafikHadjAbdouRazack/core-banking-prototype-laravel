@@ -3,7 +3,7 @@
 use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
-use App\Models\Account as AccountModel;
+use App\Domain\Account\Models\Account as AccountModel;
 use JustSteveKing\DataObjects\Contracts\DataObjectContract;
 use JustSteveKing\DataObjects\Facades\Hydrator;
 

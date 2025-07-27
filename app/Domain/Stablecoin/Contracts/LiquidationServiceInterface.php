@@ -3,7 +3,7 @@
 namespace App\Domain\Stablecoin\Contracts;
 
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Collection;
 
 interface LiquidationServiceInterface

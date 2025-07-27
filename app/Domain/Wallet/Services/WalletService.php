@@ -7,7 +7,7 @@ use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Domain\Wallet\Workflows\WalletDepositWorkflow;
 use App\Domain\Wallet\Workflows\WalletTransferWorkflow;
 use App\Domain\Wallet\Workflows\WalletWithdrawWorkflow;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\WorkflowStub;
 
 class WalletService implements WalletServiceInterface

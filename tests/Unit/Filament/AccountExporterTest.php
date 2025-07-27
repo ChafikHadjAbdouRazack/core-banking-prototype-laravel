@@ -1,7 +1,7 @@
 <?php
 
 use App\Filament\Exports\AccountExporter;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Filament\Actions\Exports\Models\Export;
 use Tests\UnitTestCase;
 

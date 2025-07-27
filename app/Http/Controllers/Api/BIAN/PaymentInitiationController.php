@@ -8,7 +8,7 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Asset\Workflows\AssetTransferWorkflow;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

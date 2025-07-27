@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 it('creates snapshots for all types by default', function () {
     // Create some test data

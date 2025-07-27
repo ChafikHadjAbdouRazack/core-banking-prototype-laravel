@@ -2,7 +2,7 @@
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\AccountValidationWorkflow;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\WorkflowStub;
 
 it('can validate account with all checks', function () {

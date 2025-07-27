@@ -4,7 +4,7 @@ namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Models\AccountBalance;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 class CreditAssetBalance extends AccountAction
 {

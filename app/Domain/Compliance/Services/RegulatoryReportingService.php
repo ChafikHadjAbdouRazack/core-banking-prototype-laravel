@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Compliance\Services;
 
-use App\Models\Account;
-use App\Models\AuditLog;
+use App\Domain\Account\Models\Account;
+use App\Domain\Compliance\Models\AuditLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

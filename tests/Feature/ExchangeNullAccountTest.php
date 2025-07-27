@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;

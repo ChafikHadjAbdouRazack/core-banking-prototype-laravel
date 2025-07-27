@@ -2,7 +2,7 @@
 
 namespace App\Domain\Payment\Services;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Log;

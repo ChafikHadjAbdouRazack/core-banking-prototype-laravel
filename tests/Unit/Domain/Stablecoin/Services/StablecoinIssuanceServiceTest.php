@@ -8,7 +8,7 @@ use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
@@ -136,7 +136,7 @@ class StablecoinIssuanceServiceTest extends ServiceTestCase
 
         // Check other imports
         $this->assertStringContainsString('use App\Domain\Account\DataObjects\AccountUuid;', $fileContent);
-        $this->assertStringContainsString('use App\Models\Account;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Account\Models\Account;', $fileContent);
         $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
         $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);

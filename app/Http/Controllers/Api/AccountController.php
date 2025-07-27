@@ -14,7 +14,7 @@ use App\Domain\Account\Workflows\DestroyAccountWorkflow;
 use App\Domain\Account\Workflows\FreezeAccountWorkflow;
 use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Rules\NoControlCharacters;
 use App\Rules\NoSqlInjection;
 use Illuminate\Http\JsonResponse;

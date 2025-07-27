@@ -2,7 +2,7 @@
 
 use App\Domain\Account\Actions\UnfreezeAccount;
 use App\Domain\Account\Events\AccountUnfrozen;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 it('can unfreeze an account', function () {
     $account = Account::factory()->create(['frozen' => true]);

@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\AccountResource\Pages;
 use App\Filament\Admin\Resources\AccountResource\RelationManagers;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Filament\Forms;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;

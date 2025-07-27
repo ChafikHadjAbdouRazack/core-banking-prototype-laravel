@@ -8,7 +8,7 @@ use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\LiquidationService;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Traits\HandlesNestedTransactions;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
@@ -116,7 +116,7 @@ class LiquidationServiceTest extends ServiceTestCase
         $fileName = $reflection->getFileName();
         $fileContent = file_get_contents($fileName);
 
-        $this->assertStringContainsString('use App\Models\Account;', $fileContent);
+        $this->assertStringContainsString('use App\Domain\Account\Models\Account;', $fileContent);
         $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
         $this->assertStringContainsString('use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;', $fileContent);
         $this->assertStringContainsString('use Illuminate\Support\Collection;', $fileContent);

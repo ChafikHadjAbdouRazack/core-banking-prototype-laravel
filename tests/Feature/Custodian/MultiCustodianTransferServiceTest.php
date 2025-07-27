@@ -5,7 +5,7 @@ use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\MultiCustodianTransferService;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {

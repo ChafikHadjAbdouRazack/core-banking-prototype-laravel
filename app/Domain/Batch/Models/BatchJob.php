@@ -2,7 +2,10 @@
 
 namespace App\Domain\Batch\Models;
 
+use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
@@ -44,6 +47,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class BatchJob extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'uuid',
         'user_uuid',
@@ -70,11 +75,19 @@ class BatchJob extends Model
     ];
 
     /**
+     * Get the user who created the batch job.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_uuid', 'uuid');
+    }
+
+    /**
      * Get the items for this batch job.
      */
     public function items(): HasMany
     {
-        return $this->hasMany(BatchItem::class);
+        return $this->hasMany(BatchJobItem::class, 'batch_job_uuid', 'uuid');
     }
 
     /**
@@ -118,6 +131,34 @@ class BatchJob extends Model
     {
         return $this->status === 'failed' ||
                ($this->status === 'completed' && $this->failed_items > 0);
+    }
+
+    /**
+     * Check if the batch job is complete.
+     */
+    public function isComplete(): bool
+    {
+        return $this->status === 'completed';
+    }
+
+    /**
+     * Check if the batch job has failed.
+     */
+    public function hasFailed(): bool
+    {
+        return $this->status === 'failed';
+    }
+
+    /**
+     * Get the completion percentage.
+     */
+    public function getCompletionPercentage(): float
+    {
+        if ($this->total_items === 0) {
+            return 0;
+        }
+
+        return round(($this->processed_items / $this->total_items) * 100, 2);
     }
 
     /**

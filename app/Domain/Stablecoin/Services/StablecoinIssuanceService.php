@@ -13,7 +13,7 @@ use App\Domain\Stablecoin\Workflows\AddCollateralWorkflow;
 use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Log;
 use Workflow\WorkflowStub;
 

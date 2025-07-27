@@ -7,7 +7,7 @@ use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Workflows\Activities\OptimizedInitiateAssetTransferActivity;
 use App\Domain\Asset\Workflows\OptimizedAssetTransferWorkflow;
 use App\Domain\Performance\Services\TransferOptimizationService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {

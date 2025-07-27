@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Workflows;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Workflow\Activity;
 

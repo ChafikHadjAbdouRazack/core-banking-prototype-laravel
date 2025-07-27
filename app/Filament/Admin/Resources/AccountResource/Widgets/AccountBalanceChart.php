@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Filament\Widgets\ChartWidget;
 
 class AccountBalanceChart extends ChartWidget

@@ -8,7 +8,7 @@ use App\Domain\Lending\Services\CollateralManagementService;
 use App\Domain\Lending\Services\CreditScoringService;
 use App\Domain\Lending\Services\LoanApplicationService;
 use App\Domain\Lending\Services\RiskAssessmentService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

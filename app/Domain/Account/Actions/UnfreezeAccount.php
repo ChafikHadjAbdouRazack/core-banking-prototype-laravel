@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AccountUnfrozen;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 class UnfreezeAccount
 {

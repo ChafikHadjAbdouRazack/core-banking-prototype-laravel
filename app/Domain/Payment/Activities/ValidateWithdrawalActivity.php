@@ -3,7 +3,7 @@
 namespace App\Domain\Payment\Activities;
 
 use App\Domain\Payment\DataObjects\BankWithdrawal;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\Activity;
 
 class ValidateWithdrawalActivity extends Activity

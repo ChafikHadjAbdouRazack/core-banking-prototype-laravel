@@ -10,7 +10,7 @@ use App\Domain\Account\Models\Turnover;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\User\Values\UserRoles;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use App\Values\EventQueues;
 

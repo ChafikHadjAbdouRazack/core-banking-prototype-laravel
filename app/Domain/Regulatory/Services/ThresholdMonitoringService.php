@@ -3,8 +3,8 @@
 namespace App\Domain\Regulatory\Services;
 
 use App\Domain\Regulatory\Models\RegulatoryThreshold;
-use App\Models\Account;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;

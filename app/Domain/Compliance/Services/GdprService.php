@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Compliance\Services;
 
 use App\Domain\Account\Models\TransactionProjection;
-use App\Models\AuditLog;
+use App\Domain\Compliance\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

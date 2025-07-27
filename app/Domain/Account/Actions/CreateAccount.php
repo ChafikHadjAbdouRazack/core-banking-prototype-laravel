@@ -3,7 +3,7 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AccountCreated;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 class CreateAccount extends AccountAction
 {

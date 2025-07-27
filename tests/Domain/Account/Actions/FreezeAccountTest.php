@@ -2,7 +2,7 @@
 
 use App\Domain\Account\Actions\FreezeAccount;
 use App\Domain\Account\Events\AccountFrozen;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 
 it('can freeze an account', function () {
     $account = Account::factory()->create(['frozen' => false]);

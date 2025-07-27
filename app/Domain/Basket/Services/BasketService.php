@@ -7,7 +7,7 @@ namespace App\Domain\Basket\Services;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Workflows\ComposeBasketWorkflow;
 use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\WorkflowStub;
 
 class BasketService

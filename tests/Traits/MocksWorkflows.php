@@ -4,7 +4,7 @@ namespace Tests\Traits;
 
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Str;
 use Mockery;
 

@@ -2,7 +2,7 @@
 
 namespace Tests\Behat\Contexts;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Behat\Behat\Context\Context;
 use Behat\MinkExtension\Context\MinkContext;

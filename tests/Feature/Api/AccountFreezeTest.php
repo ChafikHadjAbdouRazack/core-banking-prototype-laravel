@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 

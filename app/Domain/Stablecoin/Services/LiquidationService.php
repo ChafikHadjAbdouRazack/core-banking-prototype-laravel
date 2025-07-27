@@ -10,7 +10,7 @@ use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;

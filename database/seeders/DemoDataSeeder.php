@@ -6,7 +6,7 @@ use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Services\VotingTemplateService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use App\Models\UserBankPreference;
 use Illuminate\Database\Seeder;

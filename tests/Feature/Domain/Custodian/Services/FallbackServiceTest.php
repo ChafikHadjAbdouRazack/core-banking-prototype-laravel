@@ -11,7 +11,7 @@ use App\Domain\Custodian\Services\FallbackService;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Custodian\ValueObjects\Money;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;

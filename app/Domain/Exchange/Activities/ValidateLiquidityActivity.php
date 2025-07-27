@@ -6,7 +6,7 @@ use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Exchange\Projections\LiquidityPool as PoolProjection;
 use App\Domain\Exchange\ValueObjects\LiquidityAdditionInput;
 use App\Domain\Exchange\ValueObjects\LiquidityRemovalInput;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Brick\Math\BigDecimal;
 use Workflow\Activity;
 

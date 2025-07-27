@@ -7,7 +7,7 @@ namespace App\Domain\Custodian\Services;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

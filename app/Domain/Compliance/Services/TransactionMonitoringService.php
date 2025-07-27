@@ -6,7 +6,7 @@ use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Domain\Compliance\Events\TransactionBlocked;
 use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Models\TransactionMonitoringRule;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 

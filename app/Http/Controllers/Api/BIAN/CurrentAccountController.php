@@ -13,7 +13,7 @@ use App\Domain\Account\Workflows\FreezeAccountWorkflow;
 use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

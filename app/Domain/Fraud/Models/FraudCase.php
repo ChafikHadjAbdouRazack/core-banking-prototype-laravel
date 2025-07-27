@@ -2,7 +2,7 @@
 
 namespace App\Domain\Fraud\Models;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use App\Traits\BelongsToTeam;
 use Database\Factories\FraudCaseFactory;

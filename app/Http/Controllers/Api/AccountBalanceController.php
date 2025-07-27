@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Http\Controllers\Controller;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;

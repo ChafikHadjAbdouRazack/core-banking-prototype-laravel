@@ -1,7 +1,7 @@
 <?php
 
 use App\Domain\Payment\Services\TransferService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Workflow\WorkflowStub;
 

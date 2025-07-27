@@ -8,8 +8,8 @@ use App\Domain\Exchange\Contracts\ExchangeServiceInterface;
 use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
 use App\Domain\Exchange\ValueObjects\OrderMatchingInput;
 use App\Domain\Exchange\Workflows\OrderMatchingWorkflow;
-use App\Models\Account;
-use App\Models\Asset;
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use Illuminate\Support\Str;
 use Workflow\WorkflowStub;
 

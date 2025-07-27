@@ -13,7 +13,7 @@ use App\Domain\Exchange\Events\PoolParametersUpdated;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityProvider;
 use App\Domain\Exchange\Projections\PoolSwap;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Str;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

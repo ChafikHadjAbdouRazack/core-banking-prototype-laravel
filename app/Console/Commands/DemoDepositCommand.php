@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Services\AccountService;
 use App\Domain\Asset\Models\Asset;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;

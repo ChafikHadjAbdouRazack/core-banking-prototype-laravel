@@ -2,7 +2,7 @@
 
 namespace App\Domain\Account\Repositories;
 
-use App\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use Spatie\EventSourcing\AggregateRoots\Exceptions\InvalidEloquentStoredEventModel;
 use Spatie\EventSourcing\StoredEvents\Models\EloquentStoredEvent;
 use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository;

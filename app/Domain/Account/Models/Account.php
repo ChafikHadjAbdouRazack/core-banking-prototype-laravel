@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Domain\Account\Models;
 
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\TransactionProjection;
@@ -77,7 +77,7 @@ class Account extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(
-            related: User::class,
+            related: \App\Models\User::class,
             foreignKey: 'user_uuid',
             ownerKey: 'uuid'
         );

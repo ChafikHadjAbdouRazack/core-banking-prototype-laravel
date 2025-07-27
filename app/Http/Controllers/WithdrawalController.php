@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Payment\Services\PaymentGatewayService;
-use App\Models\BankAccount;
+use App\Domain\Banking\Models\BankAccountModel;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -175,9 +175,9 @@ class WithdrawalController extends Controller
     /**
      * Remove a bank account.
      */
-    public function removeBankAccount(BankAccount $bankAccount)
+    public function removeBankAccount(BankAccountModel $bankAccount)
     {
-        if ($bankAccount->user_id !== Auth::id()) {
+        if ($bankAccount->user_uuid !== Auth::user()->uuid) {
             abort(403);
         }
 

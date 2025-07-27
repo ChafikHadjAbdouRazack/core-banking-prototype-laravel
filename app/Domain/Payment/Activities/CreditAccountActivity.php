@@ -2,7 +2,7 @@
 
 namespace App\Domain\Payment\Activities;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Workflow\Activity;
 
 class CreditAccountActivity extends Activity

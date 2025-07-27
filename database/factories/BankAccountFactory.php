@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\BankAccount;
+use App\Domain\Banking\Models\BankAccountModel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\BankAccount>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domain\Banking\Models\BankAccountModel>
  */
 class BankAccountFactory extends Factory
 {
@@ -17,7 +17,7 @@ class BankAccountFactory extends Factory
      *
      * @var string
      */
-    protected $model = BankAccount::class;
+    protected $model = BankAccountModel::class;
 
     /**
      * Define the model's default state.

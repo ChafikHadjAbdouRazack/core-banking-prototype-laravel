@@ -4,7 +4,7 @@ namespace Tests\Unit\Domain\Account\Actions;
 
 use App\Domain\Account\Actions\FreezeAccount;
 use App\Domain\Account\Events\AccountFrozen;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

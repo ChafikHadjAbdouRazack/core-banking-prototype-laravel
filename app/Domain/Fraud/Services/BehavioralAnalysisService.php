@@ -4,7 +4,7 @@ namespace App\Domain\Fraud\Services;
 
 use App\Domain\Fraud\Models\BehavioralProfile;
 use App\Domain\Fraud\Models\FraudScore;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 

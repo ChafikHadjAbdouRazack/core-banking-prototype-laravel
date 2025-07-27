@@ -12,7 +12,7 @@ use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Basket\Events\BasketDecomposed;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Wallet\Services\WalletService;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

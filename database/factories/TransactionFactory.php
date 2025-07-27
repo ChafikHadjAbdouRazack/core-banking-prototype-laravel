@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
-use App\Models\Transaction;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

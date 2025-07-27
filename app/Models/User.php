@@ -3,9 +3,12 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\User\Values\UserRoles;
+use App\Domain\Banking\Models\BankAccountModel;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -186,7 +189,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function bankAccounts()
     {
-        return $this->hasMany(BankAccount::class, 'user_uuid', 'uuid');
+        return $this->hasMany(BankAccountModel::class, 'user_uuid', 'uuid');
     }
 
     /**

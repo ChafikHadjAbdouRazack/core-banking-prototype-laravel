@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 

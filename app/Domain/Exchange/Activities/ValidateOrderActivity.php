@@ -4,8 +4,8 @@ namespace App\Domain\Exchange\Activities;
 
 use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Projections\Order as OrderProjection;
-use App\Models\Account;
-use App\Models\Asset;
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use Workflow\Activity;
 
 class ValidateOrderActivity extends Activity

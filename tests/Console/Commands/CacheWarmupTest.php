@@ -2,7 +2,7 @@
 
 use App\Console\Commands\CacheWarmup;
 use App\Domain\Account\Services\Cache\CacheManager;
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
