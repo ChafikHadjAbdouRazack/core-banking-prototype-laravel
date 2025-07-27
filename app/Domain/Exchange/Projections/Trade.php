@@ -40,12 +40,12 @@ class Trade extends Model
 
     public function buyerAccount(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Account::class, 'buyer_account_id', 'id');
+        return $this->belongsTo(\App\Domain\Account\Models\Account::class, 'buyer_account_id', 'id');
     }
 
     public function sellerAccount(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Account::class, 'seller_account_id', 'id');
+        return $this->belongsTo(\App\Domain\Account\Models\Account::class, 'seller_account_id', 'id');
     }
 
     public function getPairAttribute(): string

@@ -56,7 +56,7 @@ class Order extends Model
 
     public function account(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Account::class, 'account_id', 'id');
+        return $this->belongsTo(\App\Domain\Account\Models\Account::class, 'account_id', 'id');
     }
 
     public function relatedTrades(): HasMany

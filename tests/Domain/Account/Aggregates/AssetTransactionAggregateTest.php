@@ -25,7 +25,7 @@ class AssetTransactionAggregateTest extends DomainTestCase
         $this->accountUuid = (string) Str::uuid();
 
         // Create account record for projectors to find
-        \App\Models\Account::factory()->create([
+        \App\Domain\Account\Models\Account::factory()->create([
             'uuid' => $this->accountUuid,
         ]);
     }

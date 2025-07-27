@@ -6,6 +6,7 @@ use App\Domain\Account\Actions\CreditAssetBalance;
 use App\Domain\Account\Actions\DebitAssetBalance;
 use App\Domain\Account\Events\AssetBalanceAdded;
 use App\Domain\Account\Events\AssetBalanceSubtracted;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Services\Cache\CacheManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
@@ -20,7 +21,7 @@ class AssetBalanceProjector extends Projector implements ShouldQueue
         app(CreditAssetBalance::class)($event);
 
         // Invalidate cache after balance update
-        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+        if ($account = Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
         }
     }
@@ -33,7 +34,7 @@ class AssetBalanceProjector extends Projector implements ShouldQueue
         app(DebitAssetBalance::class)($event);
 
         // Invalidate cache after balance update
-        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+        if ($account = Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
         }
     }

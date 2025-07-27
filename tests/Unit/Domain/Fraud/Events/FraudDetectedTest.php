@@ -105,7 +105,7 @@ class FraudDetectedTest extends DomainTestCase
         $entityTypes = [
             Transaction::class         => 'Transaction',
             \App\Models\User::class    => 'User',
-            \App\Models\Account::class => 'Account',
+            \App\Domain\Account\Models\Account::class => 'Account',
         ];
 
         foreach ($entityTypes as $entityClass => $expectedTag) {

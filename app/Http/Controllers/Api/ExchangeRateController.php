@@ -434,7 +434,7 @@ class ExchangeRateController extends Controller
             );
         }
 
-        $account = \App\Models\Account::where('uuid', $validated['account_uuid'])->firstOrFail();
+        $account = \App\Domain\Account\Models\Account::where('uuid', $validated['account_uuid'])->firstOrFail();
         $fromAsset = \App\Domain\Asset\Models\Asset::where('code', $validated['from_currency'])->firstOrFail();
         $toAsset = \App\Domain\Asset\Models\Asset::where('code', $validated['to_currency'])->firstOrFail();
 

@@ -144,7 +144,7 @@ class AssetTest extends TestCase
         $asset = Asset::factory()->create(['code' => 'TEST']);
 
         // Create accounts first to satisfy foreign key constraints
-        $accounts = \App\Models\Account::factory()->count(3)->create();
+        $accounts = \App\Domain\Account\Models\Account::factory()->count(3)->create();
 
         // Create balances for each account
         foreach ($accounts as $account) {
