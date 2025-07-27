@@ -33,7 +33,7 @@ class BankAccountModel extends Model
     /**
      * Create a new factory instance for the model.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     * @return \Database\Factories\BankAccountModelFactory
      */
     protected static function newFactory()
     {

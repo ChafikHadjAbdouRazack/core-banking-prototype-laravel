@@ -299,7 +299,12 @@ class OpenBankingWithdrawalController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
+        /** @var \App\Domain\Account\Models\Account|null $account */
         $account = $user->accounts()->first();
+        
+        if (!$account) {
+            return back()->with('error', 'No account found.');
+        }
 
         // Verify the bank account belongs to the user
         $bankAccounts = $this->bankIntegration->getUserBankAccounts($user, $request->bank_code);

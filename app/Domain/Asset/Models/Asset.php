@@ -65,6 +65,8 @@ class Asset extends Model
 
     /**
      * Create a new factory instance for the model.
+     *
+     * @return \Database\Factories\AssetFactory
      */
     protected static function newFactory()
     {

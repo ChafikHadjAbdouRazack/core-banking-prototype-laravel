@@ -46,7 +46,7 @@ class Account extends Model
     /**
      * Create a new factory instance for the model.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     * @return \Database\Factories\AccountFactory
      */
     protected static function newFactory()
     {
@@ -67,7 +67,7 @@ class Account extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
     protected $appends = ['balance'];
 

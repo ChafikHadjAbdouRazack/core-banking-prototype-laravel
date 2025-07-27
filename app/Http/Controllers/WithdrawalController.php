@@ -73,7 +73,13 @@ class WithdrawalController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
+        /** @var \App\Domain\Account\Models\Account|null $account */
         $account = $user->accounts()->first();
+        
+        if (!$account) {
+            return back()->with('error', 'No account found.');
+        }
+        
         $amountInCents = (int) ($request->amount * 100);
 
         // Check balance

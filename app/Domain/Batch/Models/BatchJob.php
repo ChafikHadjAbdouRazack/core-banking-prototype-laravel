@@ -52,7 +52,7 @@ class BatchJob extends Model
     /**
      * Create a new factory instance for the model.
      *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     * @return \Database\Factories\BatchJobFactory
      */
     protected static function newFactory()
     {
