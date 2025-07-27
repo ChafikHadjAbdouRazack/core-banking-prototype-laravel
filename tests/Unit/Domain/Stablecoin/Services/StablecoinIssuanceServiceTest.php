@@ -8,6 +8,7 @@ use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
 use App\Domain\Wallet\Services\WalletService;
+use App\Models\Account;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

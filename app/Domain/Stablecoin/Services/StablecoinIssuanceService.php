@@ -62,17 +62,15 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
             ->first();
 
         // Execute minting workflow
-        $workflow = WorkflowStub::make(
-            MintStablecoinWorkflow::class,
+        $workflow = WorkflowStub::make(MintStablecoinWorkflow::class);
+        $positionUuid = $workflow->start(
             AccountUuid::fromString((string) $account->uuid),
             $stablecoin->code,
             $collateralAssetCode,
             $collateralAmount,
             $mintAmount,
             $existingPosition?->uuid
-        );
-
-        $positionUuid = $workflow->start()->await();
+        )->await();
 
         // Update stablecoin global statistics
         $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
@@ -153,17 +151,15 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         }
 
         // Execute burning workflow
-        $workflow = WorkflowStub::make(
-            BurnStablecoinWorkflow::class,
+        $workflow = WorkflowStub::make(BurnStablecoinWorkflow::class);
+        $workflow->start(
             AccountUuid::fromString((string) $account->uuid),
             $position->uuid,
             $stablecoin->code,
             $burnAmount,
             $collateralReleaseAmount,
             $newDebtAmount == 0 // closePosition flag
-        );
-
-        $workflow->start()->await();
+        )->await();
 
         // Update stablecoin global statistics
         $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
@@ -212,15 +208,13 @@ class StablecoinIssuanceService implements StablecoinIssuanceServiceInterface
         }
 
         // Execute add collateral workflow
-        $workflow = WorkflowStub::make(
-            AddCollateralWorkflow::class,
+        $workflow = WorkflowStub::make(AddCollateralWorkflow::class);
+        $workflow->start(
             AccountUuid::fromString((string) $account->uuid),
             $position->uuid,
             $collateralAssetCode,
             $collateralAmount
-        );
-
-        $workflow->start()->await();
+        )->await();
 
         // Update global collateral value
         $stablecoin = $position->stablecoin;

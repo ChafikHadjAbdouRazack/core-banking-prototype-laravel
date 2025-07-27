@@ -30,8 +30,8 @@ class WalletService implements WalletServiceInterface
         $account = null;
         // Validate sufficient balance before starting workflow
         $accountUuidObj = __account_uuid($accountUuid);
-        /** @var \Illuminate\Database\Eloquent\Model|null $$account */
-        $$account = Account::where('uuid', (string) $accountUuidObj)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $account */
+        $account = Account::where('uuid', (string) $accountUuidObj)->first();
 
         if (! $account || ! $account->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');
@@ -50,8 +50,8 @@ class WalletService implements WalletServiceInterface
         $fromAccount = null;
         // Validate sufficient balance before starting workflow
         $fromAccountUuidObj = __account_uuid($fromAccountUuid);
-        /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
-        $$fromAccount = Account::where('uuid', (string) $fromAccountUuidObj)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $fromAccount */
+        $fromAccount = Account::where('uuid', (string) $fromAccountUuidObj)->first();
 
         if (! $fromAccount || ! $fromAccount->hasSufficientBalance($assetCode, $amount)) {
             throw new \Exception('Insufficient balance');
