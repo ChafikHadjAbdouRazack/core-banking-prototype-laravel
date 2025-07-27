@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Domain\Account\Models\AuditLog;
+use App\Models\AuditLog;
 use App\Domain\Compliance\Services\KycService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
