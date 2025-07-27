@@ -12,6 +12,16 @@ class Transaction extends EloquentStoredEvent
 
     public $table = 'transactions';
 
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\TransactionFactory::new();
+    }
+
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class, 'aggregate_uuid', 'uuid');
