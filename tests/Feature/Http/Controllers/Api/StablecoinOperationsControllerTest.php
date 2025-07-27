@@ -10,10 +10,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
+use Tests\Traits\MocksWorkflows;
 
 class StablecoinOperationsControllerTest extends ControllerTestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, MocksWorkflows;
 
     protected User $user;
 
@@ -27,10 +28,13 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
     {
         parent::setUp();
 
+        // Mock workflows and sub-products
+        $this->mockWorkflows();
+        $this->mockSubProductService(['stablecoins']);
+
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 1000000, // 10,000.00 in base units
         ]);
 
         // Create necessary models for the tests
@@ -59,6 +63,13 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
                 'is_active'            => true,
             ]
         );
+
+        // Create EUR balance for the account
+        \App\Domain\Account\Models\AccountBalance::create([
+            'account_uuid' => $this->account->uuid,
+            'asset_code'   => 'EUR',
+            'balance'      => 1000000, // 10,000.00 EUR
+        ]);
     }
 
     #[Test]
@@ -73,6 +84,10 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
             'mint_amount'           => 100000, // 1,000.00
             'account_uuid'          => $this->account->uuid,
         ]);
+
+        if ($response->status() !== 200) {
+            dump($response->json());
+        }
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -318,7 +333,7 @@ class StablecoinOperationsControllerTest extends ControllerTestCase
         Sanctum::actingAs($this->user);
 
         $response = $this->postJson('/api/v2/stablecoin-operations/simulation/EURS/mass-liquidation', [
-            'price_drop_percentage' => 20,
+            'price_drop_percentage' => 0.20, // 20% as decimal
         ]);
 
         $response->assertStatus(200)
