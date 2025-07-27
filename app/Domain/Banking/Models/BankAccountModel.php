@@ -30,6 +30,16 @@ class BankAccountModel extends Model
 
     protected $table = 'bank_accounts';
 
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return \Illuminate\Database\Eloquent\Factories\Factory<static>
+     */
+    protected static function newFactory()
+    {
+        return \Database\Factories\BankAccountModelFactory::new();
+    }
+
     protected $keyType = 'string';
 
     public $incrementing = false;
