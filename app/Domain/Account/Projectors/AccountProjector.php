@@ -8,6 +8,7 @@ use App\Domain\Account\Actions\DebitAccount;
 use App\Domain\Account\Actions\DeleteAccount;
 use App\Domain\Account\Actions\FreezeAccount;
 use App\Domain\Account\Actions\UnfreezeAccount;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use App\Domain\Account\Events\AccountFrozen;
@@ -30,7 +31,7 @@ class AccountProjector extends Projector implements ShouldQueue
         app(CreditAccount::class)($event);
 
         // Invalidate cache after balance update
-        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+        if ($account = Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
         }
     }
@@ -40,7 +41,7 @@ class AccountProjector extends Projector implements ShouldQueue
         app(DebitAccount::class)($event);
 
         // Invalidate cache after balance update
-        if ($account = \App\Models\Account::where('uuid', $event->aggregateRootUuid())->first()) {
+        if ($account = Account::where('uuid', $event->aggregateRootUuid())->first()) {
             app(CacheManager::class)->onAccountUpdated($account);
         }
     }
