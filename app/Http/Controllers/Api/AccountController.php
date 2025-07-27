@@ -16,6 +16,7 @@ use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Rules\NoControlCharacters;
+use App\Rules\NoSqlInjection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -122,53 +123,15 @@ class AccountController extends Controller
     {
         $validated = $request->validate(
             [
-                'name'            => ['required', 'string', 'max:255', new NoControlCharacters()],
+                'name'            => ['required', 'string', 'max:255', new NoControlCharacters(), new NoSqlInjection()],
                 'initial_balance' => 'sometimes|integer|min:0',
             ]
         );
 
-        // Sanitize the account name to prevent XSS and injection attacks
+        // Sanitize the account name to prevent XSS
         $sanitizedName = strip_tags($validated['name']);
         $sanitizedName = htmlspecialchars($sanitizedName, ENT_QUOTES, 'UTF-8');
-
-        // Remove potential SQL injection patterns
-        $dangerousPatterns = [
-            '/SELECT.*FROM/i',
-            '/UNION.*SELECT/i',
-            '/INSERT.*INTO/i',
-            '/UPDATE.*SET/i',
-            '/DELETE.*FROM/i',
-            '/DROP.*TABLE/i',
-            '/CREATE.*TABLE/i',
-            '/ALTER.*TABLE/i',
-            '/\-\-/', // SQL comments
-            '/\/\*.*\*\//', // SQL block comments
-            '/\x00/', // Null bytes
-            '/\.\.\//', // Path traversal
-            '/\<\!\[CDATA\[/', // CDATA sections
-            '/\{\{.*\}\}/', // Template injection
-            '/\=.*cmd\|/', // CSV injection
-            '/javascript:/i', // JavaScript protocol
-            '/vbscript:/i', // VBScript protocol
-            '/on\w+\s*=/i', // Event handlers
-        ];
-
-        foreach ($dangerousPatterns as $pattern) {
-            $sanitizedName = preg_replace($pattern, '', $sanitizedName);
-        }
-
-        // Trim the result
         $sanitizedName = trim($sanitizedName);
-
-        // Ensure the name is not empty after sanitization
-        if (empty($sanitizedName)) {
-            return response()->json([
-                'message' => 'The name field contains invalid characters.',
-                'errors'  => [
-                    'name' => ['The name field contains only invalid characters.'],
-                ],
-            ], 422);
-        }
 
         // Generate a UUID for the new account
         $accountUuid = Str::uuid()->toString();
