@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Http\Controllers\Controller;
 use App\Models\Account;
@@ -256,7 +257,7 @@ class AccountBalanceController extends Controller
             ]
         );
 
-        $query = \App\Domain\AccountBalance\Models\AccountBalance::with(['account', 'asset']);
+        $query = AccountBalance::with(['account', 'asset']);
 
         // Apply filters
         if ($request->has('asset')) {
@@ -271,6 +272,7 @@ class AccountBalanceController extends Controller
             $query->whereHas(
                 'account',
                 function ($q) use ($request) {
+                    /** @phpstan-ignore-next-line */
                     $q->where('user_uuid', $request->string('user_uuid')->toString());
                 }
             );
@@ -281,7 +283,7 @@ class AccountBalanceController extends Controller
 
         // Calculate aggregations
         $totalAccounts = Account::count();
-        $totalBalances = \App\Domain\AccountBalance\Models\AccountBalance::count();
+        $totalBalances = AccountBalance::count();
         $assetTotals = $this->calculateAssetTotals();
 
         return response()->json(
@@ -348,7 +350,7 @@ class AccountBalanceController extends Controller
             'asset_totals',
             300,
             function () {
-                $totals = \App\Domain\AccountBalance\Models\AccountBalance::selectRaw('asset_code, SUM(balance) as total')
+                $totals = AccountBalance::selectRaw('asset_code, SUM(balance) as total')
                     ->groupBy('asset_code')
                     ->with('asset')
                     ->get()

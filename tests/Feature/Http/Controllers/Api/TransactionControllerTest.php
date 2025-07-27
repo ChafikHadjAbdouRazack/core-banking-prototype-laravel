@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\User;
@@ -63,6 +64,13 @@ class TransactionControllerTest extends ControllerTestCase
                 'is_active' => true,
             ]
         );
+
+        // Create account balance for USD
+        AccountBalance::create([
+            'account_uuid' => $this->account->uuid,
+            'asset_code'   => 'USD',
+            'balance'      => 100000, // $1000.00
+        ]);
     }
 
     #[Test]

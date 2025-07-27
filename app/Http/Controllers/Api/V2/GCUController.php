@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\V2;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Poll;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;
@@ -481,10 +482,10 @@ class GCUController extends Controller
     private function calculateGCUStatistics(BasketAsset $gcu, ?BasketValue $latestValue): array
     {
         // In production, these would be calculated from real data
-        $totalSupply = \App\Domain\AccountBalance\Models\AccountBalance::where('asset_code', 'GCU')
+        $totalSupply = AccountBalance::where('asset_code', 'GCU')
             ->sum('balance');
 
-        $holdersCount = \App\Domain\AccountBalance\Models\AccountBalance::where('asset_code', 'GCU')
+        $holdersCount = AccountBalance::where('asset_code', 'GCU')
             ->where('balance', '>', 0)
             ->count();
 

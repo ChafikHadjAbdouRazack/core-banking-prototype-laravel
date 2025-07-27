@@ -17,13 +17,13 @@ trait MocksWorkflows
             ->shouldReceive('make')
             ->andReturnUsing(function ($workflowClass) {
                 $mock = Mockery::mock('WorkflowStub');
-                
+
                 // Handle specific workflows
                 if ($workflowClass === \App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow::class) {
                     $mock->shouldReceive('start')->andReturnUsing(function ($accountUuid, $stablecoinCode, $collateralAssetCode, $collateralAmount, $mintAmount, $existingPositionUuid = null) {
                         // Create the position
                         $positionUuid = Str::uuid()->toString();
-                        
+
                         StablecoinCollateralPosition::create([
                             'uuid' => $positionUuid,
                             'account_uuid' => (string) $accountUuid,
@@ -34,7 +34,7 @@ trait MocksWorkflows
                             'collateral_ratio' => $collateralAmount / $mintAmount,
                             'status' => 'active',
                         ]);
-                        
+
                         // Update account balances
                         $account = Account::where('uuid', (string) $accountUuid)->first();
                         if ($account) {
@@ -45,7 +45,7 @@ trait MocksWorkflows
                             if ($collateralBalance) {
                                 $collateralBalance->decrement('balance', $collateralAmount);
                             }
-                            
+
                             // Add minted stablecoins
                             $stablecoinBalance = AccountBalance::firstOrCreate(
                                 [
@@ -58,7 +58,7 @@ trait MocksWorkflows
                             );
                             $stablecoinBalance->increment('balance', $mintAmount);
                         }
-                        
+
                         $resultMock = Mockery::mock('WorkflowResult');
                         $resultMock->shouldReceive('await')->andReturn($positionUuid);
                         return $resultMock;
@@ -68,7 +68,7 @@ trait MocksWorkflows
                     $mock->shouldReceive('start')->andReturnSelf();
                     $mock->shouldReceive('await')->andReturn(Str::uuid()->toString());
                 }
-                
+
                 return $mock;
             });
     }
@@ -77,19 +77,19 @@ trait MocksWorkflows
     {
         $this->app->bind(\App\Domain\Product\Services\SubProductService::class, function () use ($enabledProducts) {
             $mock = Mockery::mock(\App\Domain\Product\Services\SubProductService::class);
-            
+
             foreach ($enabledProducts as $product) {
                 $mock->shouldReceive('isEnabled')
                     ->with($product)
                     ->andReturn(true);
             }
-            
+
             $mock->shouldReceive('isEnabled')
                 ->andReturn(false); // Default for other products
-                
+
             $mock->shouldReceive('isFeatureEnabled')
                 ->andReturn(true);
-                
+
             return $mock;
         });
     }

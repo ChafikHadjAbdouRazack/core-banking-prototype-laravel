@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Domain\Account\Models\AccountBalance;
 use App\Models\Account;
 use App\Models\Asset;
 use App\Models\User;
