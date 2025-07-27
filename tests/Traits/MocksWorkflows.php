@@ -25,14 +25,14 @@ trait MocksWorkflows
                         $positionUuid = Str::uuid()->toString();
 
                         StablecoinCollateralPosition::create([
-                            'uuid' => $positionUuid,
-                            'account_uuid' => (string) $accountUuid,
-                            'stablecoin_code' => $stablecoinCode,
+                            'uuid'                  => $positionUuid,
+                            'account_uuid'          => (string) $accountUuid,
+                            'stablecoin_code'       => $stablecoinCode,
                             'collateral_asset_code' => $collateralAssetCode,
-                            'collateral_amount' => $collateralAmount,
-                            'debt_amount' => $mintAmount,
-                            'collateral_ratio' => $collateralAmount / $mintAmount,
-                            'status' => 'active',
+                            'collateral_amount'     => $collateralAmount,
+                            'debt_amount'           => $mintAmount,
+                            'collateral_ratio'      => $collateralAmount / $mintAmount,
+                            'status'                => 'active',
                         ]);
 
                         // Update account balances
@@ -50,7 +50,7 @@ trait MocksWorkflows
                             $stablecoinBalance = AccountBalance::firstOrCreate(
                                 [
                                     'account_uuid' => $account->uuid,
-                                    'asset_code' => $stablecoinCode,
+                                    'asset_code'   => $stablecoinCode,
                                 ],
                                 [
                                     'balance' => 0,
@@ -61,6 +61,7 @@ trait MocksWorkflows
 
                         $resultMock = Mockery::mock('WorkflowResult');
                         $resultMock->shouldReceive('await')->andReturn($positionUuid);
+
                         return $resultMock;
                     });
                 } else {
