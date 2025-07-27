@@ -1,24 +1,338 @@
 
-  [33;1ms[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m
-  [33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[33;1ms[39;22m[33;1ms[39;22m[90;1m.[39;22m[33;1ms[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
-  [90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m[90;1m.[39;22m
+   WARN  XDEBUG_MODE=coverage (environment variable) or xdebug.mode=coverage (PHP configuration setting) has to be set
 
-  [90mTests:[39m    [33;1m145 skipped[39;22m[90m,[39m[39m [39m[32;1m897 passed[39;22m[90m (6006 assertions)[39m
-  [90mDuration:[39m [39m73.22s[39m
+   PASS  Tests\Unit\Console\Commands\CommandsTest
+  ✓ it cache warmup command has correct signature                        1.51s  
+  ✓ it create snapshot command has correct signature                     0.42s  
+  ✓ it commands extend laravel command class                             0.29s  
+  ✓ it commands have proper visibility                                   0.34s  
+  ✓ it commands have proper names and descriptions                       0.38s  
 
-[1A  [90mParallel:[39m [39m22 processes[39m
+   PASS  Tests\Unit\DataObjects\AccountUuidTest
+  ✓ it can create account uuid from string                               0.41s  
+  ✓ it can create account uuid with specific value                       0.44s  
+  ✓ it can create new instance with different uuid                       0.32s  
+  ✓ it can convert to array                                              0.43s  
+  ✓ it creates consistent account uuid objects                           0.30s  
 
+   PASS  Tests\Unit\DataObjects\HashTest
+  ✓ it can create a hash with valid sha3-512 format                      0.24s  
+  ✓ it validates hash format correctly                                   0.36s  
+  ✓ it throws exception for invalid hash format                          0.23s  
+  ✓ it throws exception for wrong length hash                            0.33s  
+  ✓ it can compare hash equality                                         0.48s  
+  ✓ it can convert to array                                              0.52s  
 
-   WARN  No code coverage driver is available.
+   PASS  Tests\Unit\DataObjects\MoneyTest
+  ✓ it can create money with integer amount                              0.48s  
+  ✓ it can create money with zero amount                                 0.50s  
+  ✓ it can handle negative amounts                                       0.45s  
+  ✓ it can invert money amount                                           0.35s  
+  ✓ it can invert negative money amount                                  0.54s  
+  ✓ it can convert to array                                              0.53s  
+  ✓ it handles large amounts correctly                                   0.53s  
+  ✓ it invert operation creates new instance                             0.53s  
 
+   PASS  Tests\Unit\Domain\Account\Actions\CreditAccountTest
+  ✓ credits existing balance                                             5.15s  
+  ✓ creates new balance if not exists                                    0.48s  
+  ✓ handles multiple credits to same account                             0.34s  
+  ✓ handles different asset codes                                        0.37s  
+
+   PASS  Tests\Unit\Domain\Account\Actions\DebitAccountTest
+  ✓ debits existing balance                                              0.36s  
+  ✓ throws exception if balance not found                                0.46s  
+  ✓ throws exception if insufficient balance                             0.35s  
+  ✓ handles exact balance debit                                          0.37s  
+  ✓ handles multiple debits                                              0.49s  
+
+   PASS  Tests\Unit\Domain\Account\Actions\FreezeAccountTest
+  ✓ freezes account successfully                                         0.77s  
+  ✓ freezes already frozen account                                       0.52s  
+  ✓ throws exception if account not found                                0.47s  
+  ✓ freezes account with balances                                        0.52s  
+
+   PASS  Tests\Unit\Domain\Account\Actions\UnfreezeAccountTest
+  ✓ unfreezes frozen account successfully                                0.56s  
+  ✓ unfreezes already unfrozen account                                   0.53s  
+  ✓ throws exception if account not found                                0.70s  
+  ✓ unfreezes account preserving balances                                0.78s  
+  ✓ unfreezes business account                                           0.61s  
+
+   PASS  Tests\Unit\Domain\Account\Aggregates\TransactionAggregateTest
+  ✓ credits money to account                                             0.62s  
+  ✓ debits money from account                                            0.64s  
+  ✓ throws exception when insufficient funds                             0.55s  
+  ✓ applies money added event                                            0.56s  
+  ✓ applies money subtracted event                                       0.61s  
+  ✓ records transaction threshold reached                                1.89s  
+  ✓ resets count after threshold                                         0.62s  
+  ✓ records account limit hit on debit                                   0.43s  
+  ✓ validates hash for duplicate prevention                              0.48s  
+  ✓ handles different currencies                                         0.51s  
+  ✓ maintains balance across multiple operations                         0.56s  
+  ✓ snapshot preserves state                                             0.49s  
+
+   PASS  Tests\Unit\Domain\Account\Aggregates\TransferAggregateTest
+  ✓ transfers money between accounts                                     0.90s  
+  ✓ applies money transferred event                                      0.40s  
+  ✓ records transfer threshold reached                                   1.62s  
+  ✓ resets count after threshold                                         0.53s  
+  ✓ validates hash for duplicate prevention                              0.44s  
+  ✓ handles different currency transfers                                 0.53s  
+  ✓ maintains count across multiple transfers                            0.52s  
+  ✓ handles large transfer amounts                                       0.49s  
+  ✓ snapshot preserves transfer count                                    0.49s  
+  ✓ transfer between same account allowed                                0.49s  
+
+   PASS  Tests\Unit\Domain\Account\Events\AccountEventsTest
+  ✓ it can create account created event                                  0.62s  
+  ✓ it can create account deleted event                                  0.63s  
+  ✓ it can create account frozen event with reason                       0.33s  
+  ✓ it can create account frozen event with reason and authorized by     0.29s  
+  ✓ it can create account unfrozen event                                 0.46s  
+  ✓ it can create account unfrozen event with authorized by              0.40s  
+  ✓ it events extend ShouldBeStored                                      0.76s  
+
+   PASS  Tests\Unit\Domain\Account\Events\AssetBalanceAddedTest
+  ✓ creates event with required properties                               0.61s  
+  ✓ creates event with metadata                                          0.53s  
+  ✓ get amount returns correct value                                     0.61s  
+  ✓ get asset code returns correct value                                 0.54s  
+  ✓ handles zero amount                                                  0.69s  
+  ✓ stores different asset codes                                         0.56s  
+  ✓ event is immutable                                                   0.69s  
+
+   PASS  Tests\Unit\Domain\Account\Events\AssetBalanceSubtractedTest
+  ✓ creates event with required properties                               0.61s  
+  ✓ creates event with metadata                                          0.63s  
+  ✓ get amount returns correct value                                     0.76s  
+  ✓ get asset code returns correct value                                 0.42s  
+  ✓ handles large amount subtraction                                     0.64s  
+  ✓ metadata can contain complex data                                    0.47s  
+  ✓ event properties are readonly                                        0.43s  
+  ✓ supports crypto asset codes                                          0.59s  
+
+   PASS  Tests\Unit\Domain\Account\Exceptions\ExceptionsTest
+  ✓ it can create invalid hash exception                                 0.45s  
+  ✓ it can create not enough funds exception                             0.45s  
+  ✓ it exceptions have default messages when none provided               0.77s  
+  ✓ it exceptions have proper inheritance                                0.82s  
+  ✓ it can throw and catch invalid hash exception                        0.53s  
+  ✓ it can throw and catch not enough funds exception                    0.66s  
+
+   PASS  Tests\Unit\Domain\Cgo\RefundAggregateTest
+  ✓ can request refund                                                   0.91s  
+  ✓ can approve pending refund                                           0.56s  
+  ✓ cannot approve non pending refund                                    0.47s  
+  ✓ can reject pending refund                                            0.34s  
+  ✓ can process approved refund                                          0.46s  
+  ✓ can complete processing refund                                       0.34s  
+  ✓ can fail refund                                                      0.45s  
+  ✓ can cancel refund                                                    0.51s  
+  ✓ cannot cancel completed refund                                       0.47s  
+
+   PASS  Tests\Unit\Domain\Compliance\Aggregates\AmlScreeningAggregateTest
+  ✓ can start screening                                                  0.58s  
+  ✓ can record screening results                                         0.42s  
+  ✓ can update match status                                              0.39s  
+  ✓ throws exception for invalid match action                            0.46s  
+  ✓ can complete screening                                               0.38s  
+  ✓ throws exception for invalid completion status                       0.47s  
+  ✓ can review screening                                                 0.55s  
+  ✓ throws exception for invalid review decision                         0.57s  
+  ✓ tracks state correctly                                               0.70s  
+
+   WARN  Tests\Unit\Domain\Compliance\Aggregates\ComplianceAggregateTest
+  ! submit kyc records submission and document events → This test did n… 0.61s  
+  ! approve kyc records verification completed → This test did not perf… 0.50s  
+  ! reject kyc records verification rejected → This test did not perfor… 0.53s  
+  ✓ request gdpr export records request event                            0.41s  
+  ✓ complete gdpr export records export event                            0.49s  
+  ! request gdpr deletion records request event → This test did not per… 0.51s  
+  ! complete gdpr deletion records deletion event → This test did not p… 0.51s  
+  ! generate regulatory report records report event → This test did not… 0.52s  
+  ✓ applies kyc submission received event                                0.48s  
+  ✓ applies kyc verification completed event                             0.47s  
+  ✓ applies kyc verification rejected event                              0.40s  
+  ! full kyc workflow → This test did not perform any assertions         0.52s  
+  ✓ full gdpr workflow                                                   0.49s  
+
+   PASS  Tests\Unit\Domain\Compliance\Events\KycDocumentUploadedTest
+  ✓ creates event with user uuid and document                            0.51s  
+  ✓ handles different document types                                     0.49s  
+  ✓ event extends should be stored                                       0.39s  
+  ✓ handles document with validation results                             0.55s  
+  ✓ handles document with security checks                                0.62s  
+  ✓ handles minimal document data                                        0.43s  
+  ✓ handles document with processing metadata                            0.53s  
+
+   PASS  Tests\Unit\Domain\Compliance\Events\KycVerificationCompletedTest
+  ✓ creates event with user uuid and level                               0.66s  
+  ✓ handles different verification levels                                0.61s  
+  ✓ event extends should be stored                                       0.56s  
+  ✓ event properties are public                                          0.44s  
+
+   PASS  Tests\Unit\Domain\Compliance\Events\SuspiciousActivityDetectedTest
+  ✓ creates event with transaction and alerts                            0.56s  
+  ✓ event uses required traits                                           0.54s  
+  ✓ event properties are readonly                                        0.26s  
+  ✓ event serializes correctly                                           0.25s  
+  ✓ handles empty alerts array                                           0.27s  
+  ✓ handles complex alert structures                                     0.27s  
+  ✓ can be dispatched as event                                           0.27s  
+
+   PASS  Tests\Unit\Domain\Compliance\Services\AmlScreeningServiceTest
+  ✓ perform sanctions screening checks multiple lists                    0.29s  
+  ✓ perform pep screening                                                0.26s  
+  ✓ perform adverse media screening                                      0.25s  
+  ✓ calculate overall risk with no matches                               0.25s  
+  ✓ calculate overall risk with sanctions match                          0.24s  
+  ✓ calculate overall risk with pep match                                0.25s  
+  ✓ calculate overall risk with adverse media                            0.26s  
+  ✓ calculate overall risk with serious adverse media                    0.25s  
+  ✓ count total matches                                                  0.25s  
+  ✓ generate unique screening number                                     0.26s  
+  ✓ build search parameters for user                                     0.25s  
+  ✓ build search parameters with additional params                       0.26s  
+  ✓ check ofac list with no matches                                      0.26s  
+  ✓ check ofac list with test match                                      0.28s  
+  ✓ check pep database negative                                          0.29s  
+  ✓ check pep database positive                                          0.32s  
+  ✓ search adverse media no results                                      0.32s  
+  ✓ search adverse media with results                                    0.29s  
+
+   PASS  Tests\Unit\Domain\Compliance\Services\GdprServiceTest
+  ✓ export user data returns complete data structure                     0.42s  
+  ✓ export user data creates audit log                                   0.36s  
+  ✓ delete user data anonymizes user                                     0.39s  
+  ✓ delete user data creates deletion audit log                          0.36s  
+  ✓ delete user data with document deletion option                       0.35s  
+  ✓ delete user data without document deletion                           0.35s  
+  ✓ get user data returns sanitized data                                 0.36s  
+  ✓ export includes transaction history                                  0.38s  
+  ✓ anonymize user preserves data relationships                          0.30s  
+  ✓ export handles user with no data                                     0.32s  
+  ✓ delete creates final audit log after deletion                        0.30s  
+
+   PASS  Tests\Unit\Domain\Compliance\Services\KycServiceTest
+  ✓ submit kyc updates user status                                       0.37s  
+  ✓ submit kyc stores documents                                          0.33s  
+  ✓ submit kyc creates audit log                                         0.33s  
+  ✓ verify kyc approves user                                             0.37s  
+  ✓ verify kyc creates audit log                                         0.35s  
+  ✓ reject kyc updates status                                            0.38s  
+  ✓ get kyc status returns user status                                   0.36s  
+  ✓ is kyc approved returns correct boolean                              0.34s  
+  ✓ store document creates hash                                          0.32s  
+  ✓ handle document with different types                                 0.38s  
+
+   PASS  Tests\Unit\Domain\Compliance\Services\TransactionMonitoringServiceTest
+  ✓ monitor transaction passes when no alerts                            0.38s  
+  ✓ monitor transaction creates alerts for triggered rules               0.40s  
+  ✓ monitor transaction blocks when block action triggered               0.32s  
+  ✓ monitor transaction handles multiple rules                           0.39s  
+  ✓ monitor transaction handles exceptions gracefully                    0.33s  
+  ✓ monitor transaction updates behavioral risk when alerts exist        0.43s  
+  ✓ monitor transaction deduplicates actions                             0.39s  
+
+   PASS  Tests\Unit\Domain\Exchange\LiquidityPool\AutomatedMarketMakerServiceTest
+  ✓ generates market making orders for pool                              0.34s  
+  ✓ adjusts spread based on market conditions                            0.30s  
+  ✓ calculates order sizes based on reserves                             0.28s  
+  ✓ adjusts market making parameters                                     0.27s  
+
+   PASS  Tests\Unit\Domain\Exchange\LiquidityPool\LiquidityIncentivesServiceTest
+  ✓ calculates pool rewards based on tvl                                 0.26s  
+  ✓ applies performance multipliers                                      0.26s  
+  ✓ calculates provider rewards proportionally                           0.24s  
+  ✓ applies early provider bonus                                         0.26s  
+  ✓ calculates provider apy                                              0.24s  
+
+   WARN  Tests\Unit\Domain\Exchange\LiquidityPool\Reactors\SnapshotLiquidityPoolReactorTest
+  - takes snapshot on large liquidity addition → Liquidity pool implementation is incomplete - Events do not exist
+  - takes snapshot on large liquidity removal → Liquidity pool implementation is incomplete - Events do not exist
+  - takes snapshot after multiple rebalances → Liquidity pool implementation is incomplete - Events do not exist
+  - takes snapshot on large reward distribution → Liquidity pool implementation is incomplete - Events do not exist
+  - does not snapshot on small liquidity addition → Liquidity pool implementation is incomplete - Events do not exist
+
+   PASS  Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects\LiquidityShareTest
+  ✓ can create liquidity share                                           0.01s  
+  ✓ handles zero total shares
+  ✓ throws exception for negative amount
+  ✓ can create zero share
+  ✓ can add shares
+  ✓ can subtract shares
+  ✓ throws exception when subtracting more than available
+  ✓ calculate proportional amount
+  ✓ comparison methods
+  ✓ to array
+
+   PASS  Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects\PoolIdTest
+  ✓ can create valid pool id                                             0.01s  
+  ✓ converts to lowercase
+  ✓ throws exception for empty value
+  ✓ throws exception for invalid uuid
+  ✓ can generate new pool id
+  ✓ can create from string
+  ✓ equals method
+  ✓ to array
+
+   PASS  Tests\Unit\Domain\Exchange\LiquidityPool\ValueObjects\PoolRatioTest
+  ✓ can create pool ratio                                                0.01s  
+  ✓ throws exception for negative reserves
+  ✓ throws exception for zero reserves
+  ✓ calculate deviation
+  ✓ is deviation within tolerance
+  ✓ calculate price impact base input
+  ✓ calculate price impact quote input
+  ✓ to array
+
+   PASS  Tests\Unit\Domain\Exchange\Services\CircuitBreakerServiceTest
+  ✓ successful call returns result                                       0.32s  
+  ✓ circuit opens after failure threshold                                0.30s  
+  ✓ circuit transitions to half open                                     0.30s  
+  ✓ circuit closes after success threshold in half open                  0.36s  
+  ✓ circuit reopens on failure in half open                              0.32s  
+  ✓ half open limits requests                                            0.37s  
+
+   PASS  Tests\Unit\Domain\Exchange\Services\ExchangeServiceTest
+  ✓ place order validates account exists                                 0.44s  
+  ✓ place order validates currencies exist                               0.42s  
+  ✓ place order validates currencies are tradeable                       0.31s  
+  ✓ place order requires price for limit orders                          0.34s  
+  ✓ place order requires stop price for stop orders                      0.49s  
+  ✓ place order validates minimum amount                                 0.40s  
+  ✓ place order creates market order successfully                        0.58s  
+  ✓ place order creates limit order with price                           0.60s  
+  ✓ cancel order validates order exists                                  0.77s  
+  ✓ cancel order validates order can be cancelled                        0.62s  
+  ✓ cancel order cancels successfully                                    0.72s  
+  ✓ get order book returns empty for non existent pair                   0.53s  
+  ✓ get order book returns formatted data                                0.70s  
+
+   PASS  Tests\Unit\Domain\Exchange\Services\LiquidityPoolServiceTest
+  ✓ create pool creates new liquidity pool                               0.48s  
+  ✓ create pool throws exception if pool exists                          0.42s  
+  ✓ add liquidity delegates to workflow                                  0.77s  
+  ✓ remove liquidity delegates to workflow                               0.34s  
+  ✓ swap executes pool swap                                              0.37s  
+  ✓ get pool returns pool projection                                     0.43s  
+  ✓ get pool returns null for non existent pool                          0.55s  
+  ✓ get pool by pair returns matching pool                               0.46s  
+  ✓ get active pools returns only active pools                           0.31s  
+  ✓ get provider positions returns positions with pools                  0.31s  
+  ✓ get pool metrics calculates correct values                           0.31s  
+  ✓ rebalance pool delegates to workflow                                 0.29s  
+  ✓ distribute rewards calls aggregate                                   0.29s  
+  ✓ claim rewards processes pending rewards                              0.31s  
+  ✓ claim rewards throws exception when no rewards                       0.34s  
+
+   PASS  Tests\Unit\Domain\Fraud\Events\FraudDetectedTest
+  ✓ creates event with fraud score                                       0.53s  
+  ✓ event uses required traits                                           0.36s  
+  ✓ tags method returns correct tags                                     0.36s  
+  ✓ event serializes correctly                                           0.32s  
+  ✓ can be dispatched as event                                           0.29s  
+  ✓ handles different entity types                                       0.29s  
+  ✓ handles different risk levels                                        0.30s  
