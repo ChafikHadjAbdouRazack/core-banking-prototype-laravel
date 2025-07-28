@@ -145,11 +145,11 @@ class Account extends Model
     /**
      * Get all non-zero balances.
      *
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Database\Eloquent\Collection<int, AccountBalance>
      */
     public function getActiveBalances()
     {
-        return $this->balances()->positive()->with('asset')->get();
+        return $this->balances()->where('balance', '>', 0)->with('asset')->get();
     }
 
     /**

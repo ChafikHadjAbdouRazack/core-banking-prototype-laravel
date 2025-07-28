@@ -474,10 +474,12 @@ class RuleEngineService
             "txn_count_{$userId}_{$timeWindow}",
             60,
             function () use ($userId, $minutes) {
-                return \App\Models\Transaction::whereHas(
+                return \App\Domain\Account\Models\Transaction::whereHas(
                     'account',
                     function ($query) use ($userId) {
-                        $query->where('user_id', $userId);
+                        $query->whereHas('user', function ($q) use ($userId) {
+                            $q->where('id', $userId);
+                        });
                     }
                 )
                     ->where('created_at', '>=', now()->subMinutes($minutes))

@@ -62,7 +62,7 @@ class AccountStatsOverview extends BaseWidget
                 ->descriptionIcon($account->frozen ? 'heroicon-m-lock-closed' : 'heroicon-m-lock-open')
                 ->color($account->frozen ? 'danger' : 'success'),
             Stat::make('Total Transactions', number_format($totalTransactions))
-                ->description($lastTransaction ? 'Last: ' . $lastTransaction->created_at->diffForHumans() : 'No transactions')
+                ->description($lastTransaction ? 'Last: ' . \Carbon\Carbon::parse($lastTransaction->created_at)->diffForHumans() : 'No transactions')
                 ->descriptionIcon('heroicon-m-arrow-path')
                 ->color('info'),
             Stat::make('Monthly Credit', '$' . number_format(($monthlyTurnover?->credit ?? 0) / 100, 2))

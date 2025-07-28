@@ -25,18 +25,17 @@ class ValidateLiquidityActivity extends Activity
 
     private function validateAddition(LiquidityAdditionInput $input): array
     {
-        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
-        $pool = null;
         // Validate account exists
         $account = Account::findOrFail($input->providerId);
 
-        if (! $account->hasKycApproval()) {
+        // Check KYC status through user relationship
+        if (! $account->user || $account->user->kyc_status !== 'approved') {
             throw new \DomainException('Account must have KYC approval to provide liquidity');
         }
 
         // Validate pool exists
-        /** @var \Illuminate\Database\Eloquent\Model|null $$pool */
-        $$pool = PoolProjection::where('pool_id', $input->poolId)->first();
+        /** @var PoolProjection|null $pool */
+        $pool = PoolProjection::where('pool_id', $input->poolId)->first();
 
         if (! $pool) {
             throw new \DomainException('Liquidity pool not found');

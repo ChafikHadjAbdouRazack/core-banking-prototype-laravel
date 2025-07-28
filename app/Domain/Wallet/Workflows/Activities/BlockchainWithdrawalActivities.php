@@ -2,7 +2,7 @@
 
 namespace App\Domain\Wallet\Workflows\Activities;
 
-use App\Domain\Account\Aggregates\Account;
+use App\Domain\Account\Models\Account;
 use App\Domain\Wallet\Services\BlockchainWalletService;
 use App\Domain\Wallet\Services\KeyManagementService;
 use App\Models\User;
@@ -171,10 +171,8 @@ class BlockchainWithdrawalActivities
 
     public function lockAccountBalance(string $accountId, string $amount): void
     {
-        /** @var \App\Models\Account|null $account */
-        $account = null;
-        /** @var Account|null $$account */
-        $$account = Account::find($accountId);
+        /** @var Account|null $account */
+        $account = Account::find($accountId);
         if (! $account) {
             throw new \Exception('Account not found');
         }
@@ -290,13 +288,9 @@ class BlockchainWithdrawalActivities
 
     public function notifyUser(string $userId, string $withdrawalId, string $status): void
     {
-        /** @var mixed|null $user */
-        $user = null;
-        /** @var \App\Models\Account|null $account */
-        $account = null;
         // Send notification to user
-        /** @var User|null $$user */
-        $$user = User::find($userId);
+        /** @var User|null $user */
+        $user = User::find($userId);
         if ($user) {
             // This would trigger a notification
             // For now, just log it

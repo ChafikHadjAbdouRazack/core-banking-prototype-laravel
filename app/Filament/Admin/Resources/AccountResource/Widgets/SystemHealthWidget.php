@@ -2,7 +2,7 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
-use App\Models\Transaction as TransactionEvent;
+use App\Domain\Account\Models\Transaction as TransactionEvent;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;

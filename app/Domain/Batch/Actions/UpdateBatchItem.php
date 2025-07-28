@@ -10,10 +10,8 @@ class UpdateBatchItem
 {
     public function __invoke(BatchItemProcessed $event): void
     {
-        /** @var \App\Models\BatchJob|null $batchJob */
-        $batchJob = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$batchJob */
-        $$batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
+        /** @var BatchJob|null $batchJob */
+        $batchJob = BatchJob::where('uuid', $event->aggregateRootUuid())->first();
 
         if (! $batchJob) {
             return;

@@ -68,10 +68,8 @@ class BatchProcessingService
      */
     public function retryFailedItems(string $batchJobUuid): void
     {
-        /** @var \App\Models\BatchJob|null $batchJob */
-        $batchJob = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$batchJob */
-        $$batchJob = BatchJob::where('uuid', $batchJobUuid)->first();
+        /** @var BatchJob|null $batchJob */
+        $batchJob = BatchJob::where('uuid', $batchJobUuid)->first();
 
         if (! $batchJob) {
             throw new \InvalidArgumentException("Batch job not found: {$batchJobUuid}");
