@@ -93,7 +93,7 @@ class ApiKeyController extends Controller
         }
 
         // Get usage statistics
-        /** @var \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ApiKeyLog> $logsRelation */
+        /** @var \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ApiKeyLog, \App\Models\ApiKey> $logsRelation */
         $logsRelation = $apiKey->logs();
         $weekAgoDate = now()->subDays(7);
 
