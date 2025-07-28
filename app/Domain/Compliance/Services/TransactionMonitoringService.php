@@ -111,11 +111,11 @@ class TransactionMonitoringService
     protected function getCustomerRiskProfile(Transaction $transaction): ?CustomerRiskProfile
     {
         $account = $transaction->account;
-        if (! $account || ! $account->user_id) {
+        if (! $account || ! $account->user) {
             return null;
         }
 
-        return CustomerRiskProfile::where('user_id', $account->user_id)->first();
+        return CustomerRiskProfile::where('user_id', $account->user->id)->first();
     }
 
     /**
@@ -147,7 +147,7 @@ class TransactionMonitoringService
         $query->where(
             function ($q) use ($transaction) {
                 $q->whereNull('applies_to_transaction_types')
-                    ->orWhereJsonContains('applies_to_transaction_types', $transaction->type);
+                    ->orWhereJsonContains('applies_to_transaction_types', $transaction->event_properties['type'] ?? 'unknown');
             }
         );
 
@@ -202,13 +202,21 @@ class TransactionMonitoringService
         };
 
         // Count recent transactions
-        $recentStats = Transaction::where('account_id', $transaction->account_id)
+        $account = $transaction->account;
+        if (!$account) {
+            return false;
+        }
+        
+        $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', $startTime)
-            ->selectRaw('COUNT(*) as count, SUM(amount) as total')
-            ->first();
+            ->get();
+        
+        $count = $recentTransactions->count();
+        $total = $recentTransactions->sum(function ($t) {
+            return $t->event_properties['amount'] ?? 0;
+        });
 
-        return $recentStats->count > $thresholdCount ||
-               $recentStats->total > $thresholdAmount;
+        return $count > $thresholdCount || $total > $thresholdAmount;
     }
 
     /**
@@ -244,7 +252,8 @@ class TransactionMonitoringService
         $threshold = $rule->threshold_amount ?? 0;
 
         // Check transaction amount
-        if ($transaction->amount >= $threshold) {
+        $amount = $transaction->event_properties['amount'] ?? 0;
+        if ($amount >= $threshold) {
             return true;
         }
 
@@ -253,9 +262,18 @@ class TransactionMonitoringService
             $timeWindow = $rule->time_window ?? '24h';
             $startTime = $this->parseTimeWindow($timeWindow);
 
-            $cumulative = Transaction::where('account_id', $transaction->account_id)
+            $account = $transaction->account;
+            if (!$account) {
+                return false;
+            }
+            
+            $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', $startTime)
-                ->sum('amount');
+                ->get();
+            
+            $cumulative = $recentTransactions->sum(function ($t) {
+                return $t->event_properties['amount'] ?? 0;
+            });
 
             return $cumulative >= $threshold;
         }
@@ -271,7 +289,7 @@ class TransactionMonitoringService
         $highRiskCountries = $rule->applies_to_countries ?? [];
 
         // Check transaction metadata for country information
-        $metadata = $transaction->metadata ?? [];
+        $metadata = $transaction->event_properties['metadata'] ?? [];
         $originCountry = $metadata['origin_country'] ?? null;
         $destinationCountry = $metadata['destination_country'] ?? null;
 
@@ -325,12 +343,23 @@ class TransactionMonitoringService
 
         $lowerBound = $reportingThreshold * (1 - $marginPercentage);
 
-        if ($transaction->amount >= $lowerBound && $transaction->amount < $reportingThreshold) {
+        $amount = $transaction->event_properties['amount'] ?? 0;
+        
+        if ($amount >= $lowerBound && $amount < $reportingThreshold) {
             // Check for similar transactions in past 24 hours
-            $similarCount = Transaction::where('account_id', $transaction->account_id)
+            $account = $transaction->account;
+            if (!$account) {
+                return false;
+            }
+            
+            $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', now()->subDay())
-                ->whereBetween('amount', [$lowerBound, $reportingThreshold])
-                ->count();
+                ->get();
+            
+            $similarCount = $recentTransactions->filter(function ($t) use ($lowerBound, $reportingThreshold) {
+                $amt = $t->event_properties['amount'] ?? 0;
+                return $amt >= $lowerBound && $amt < $reportingThreshold;
+            })->count();
 
             return $similarCount >= 3;
         }
@@ -343,16 +372,28 @@ class TransactionMonitoringService
      */
     protected function detectRapidMovement(Transaction $transaction): bool
     {
-        if ($transaction->type !== 'withdrawal') {
+        $type = $transaction->event_properties['type'] ?? '';
+        if ($type !== 'withdrawal') {
             return false;
         }
 
+        $account = $transaction->account;
+        if (!$account) {
+            return false;
+        }
+        
+        $withdrawalAmount = $transaction->event_properties['amount'] ?? 0;
+        
         // Check if funds were recently deposited
-        $deposit = Transaction::where('account_id', $transaction->account_id)
-            ->where('type', 'deposit')
-            ->where('amount', '>=', $transaction->amount * 0.9) // 90% of withdrawal amount
+        $recentDeposits = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', now()->subHours(24))
-            ->first();
+            ->get();
+        
+        $deposit = $recentDeposits->first(function ($t) use ($withdrawalAmount) {
+            $depositType = $t->event_properties['type'] ?? '';
+            $depositAmount = $t->event_properties['amount'] ?? 0;
+            return $depositType === 'deposit' && $depositAmount >= ($withdrawalAmount * 0.9);
+        });
 
         return $deposit !== null;
     }
@@ -362,7 +403,7 @@ class TransactionMonitoringService
      */
     protected function detectRoundAmounts(Transaction $transaction): bool
     {
-        $amount = $transaction->amount;
+        $amount = $transaction->event_properties['amount'] ?? 0;
 
         // Check if amount is round (divisible by 100, 500, or 1000)
         $roundDivisors = [1000, 500, 100];
@@ -370,10 +411,19 @@ class TransactionMonitoringService
         foreach ($roundDivisors as $divisor) {
             if ($amount >= $divisor && $amount % $divisor === 0) {
                 // Check frequency of round amounts
-                $roundCount = Transaction::where('account_id', $transaction->account_id)
+                $account = $transaction->account;
+                if (!$account) {
+                    return false;
+                }
+                
+                $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                     ->where('created_at', '>=', now()->subDays(7))
-                    ->whereRaw('amount % ? = 0', [$divisor])
-                    ->count();
+                    ->get();
+                
+                $roundCount = $recentTransactions->filter(function ($t) use ($divisor) {
+                    $amt = $t->event_properties['amount'] ?? 0;
+                    return $amt >= $divisor && $amt % $divisor === 0;
+                })->count();
 
                 return $roundCount >= 5;
             }
@@ -394,7 +444,7 @@ class TransactionMonitoringService
             'category'       => $rule->category,
             'risk_level'     => $rule->risk_level,
             'transaction_id' => $transaction->id,
-            'amount'         => $transaction->amount,
+            'amount'         => $transaction->event_properties['amount'] ?? 0,
             'timestamp'      => now()->toIso8601String(),
             'description'    => $this->generateAlertDescription($rule, $transaction),
         ];
@@ -405,7 +455,7 @@ class TransactionMonitoringService
      */
     protected function generateAlertDescription(TransactionMonitoringRule $rule, Transaction $transaction): string
     {
-        $amount = number_format($transaction->amount, 2);
+        $amount = number_format($transaction->event_properties['amount'] ?? 0, 2);
         $currency = $transaction->currency;
 
         return match ($rule->category) {
@@ -666,7 +716,7 @@ class TransactionMonitoringService
         }
 
         // Check if amount is more than 3 standard deviations from mean
-        $deviation = abs($transaction->amount - $avgAmount) / $stdDev;
+        $deviation = abs(($transaction->event_properties['amount'] ?? 0) - $avgAmount) / $stdDev;
 
         return $deviation > 3;
     }
@@ -698,7 +748,12 @@ class TransactionMonitoringService
             return false;
         }
 
-        $todayCount = Transaction::where('account_id', $transaction->account_id)
+        $account = $transaction->account;
+        if (!$account) {
+            return false;
+        }
+        
+        $todayCount = Transaction::where('aggregate_uuid', $account->uuid)
             ->whereDate('created_at', today())
             ->count();
 
@@ -711,7 +766,7 @@ class TransactionMonitoringService
     protected function isUnusualDestination(Transaction $transaction, array $behavioralRisk): bool
     {
         $knownDestinations = $behavioralRisk['known_destinations'] ?? [];
-        $metadata = $transaction->metadata ?? [];
+        $metadata = $transaction->event_properties['metadata'] ?? [];
         $destination = $metadata['destination_account'] ?? $metadata['destination_country'] ?? null;
 
         if (! $destination || empty($knownDestinations)) {

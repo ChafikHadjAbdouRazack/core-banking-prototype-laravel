@@ -29,7 +29,7 @@ class TransactionCacheService
         return Cache::remember(
             $this->getCacheKey($accountUuid, "recent_{$limit}"),
             self::CACHE_TTL,
-            fn () => Transaction::where('account_uuid', $accountUuid)
+            fn () => Transaction::where('aggregate_uuid', $accountUuid)
                 ->orderBy('created_at', 'desc')
                 ->take($limit)
                 ->get()
@@ -46,9 +46,11 @@ class TransactionCacheService
         return Cache::remember(
             $cacheKey,
             self::CACHE_TTL,
-            fn () => Transaction::where('account_uuid', $accountUuid)
-                ->orderBy('created_at', 'desc')
-                ->paginate($perPage, ['*'], 'page', $page)
+            function () use ($accountUuid, $perPage, $page) {
+                return Transaction::where('aggregate_uuid', $accountUuid)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(perPage: $perPage, page: $page);
+            }
         );
     }
 
@@ -60,7 +62,7 @@ class TransactionCacheService
         return Cache::remember(
             self::CACHE_PREFIX . 'uuid:' . $uuid,
             self::CACHE_TTL,
-            fn () => Transaction::where('uuid', $uuid)->first()
+            fn () => Transaction::where('id', $uuid)->first()
         );
     }
 
@@ -73,17 +75,30 @@ class TransactionCacheService
             $this->getCacheKey($accountUuid, "daily_summary_{$date}"),
             86400, // 24 hours for daily summaries
             function () use ($accountUuid, $date) {
-                $transactions = Transaction::where('account_uuid', $accountUuid)
+                $transactions = Transaction::where('aggregate_uuid', $accountUuid)
                     ->whereDate('created_at', $date)
                     ->get();
 
+                $totalDeposits = 0;
+                $totalWithdrawals = 0;
+                
+                foreach ($transactions as $t) {
+                    $type = $t->event_properties['type'] ?? '';
+                    $amount = $t->event_properties['amount'] ?? 0;
+                    
+                    if ($type === 'deposit') {
+                        $totalDeposits += $amount;
+                    } elseif ($type === 'withdrawal') {
+                        $totalWithdrawals += $amount;
+                    }
+                }
+
                 return [
                     'date'              => $date,
-                    'total_deposits'    => $transactions->where('type', 'deposit')->sum('amount'),
-                    'total_withdrawals' => $transactions->where('type', 'withdrawal')->sum('amount'),
+                    'total_deposits'    => $totalDeposits,
+                    'total_withdrawals' => $totalWithdrawals,
                     'transaction_count' => $transactions->count(),
-                    'net_change'        => $transactions->where('type', 'deposit')->sum('amount') -
-                                   $transactions->where('type', 'withdrawal')->sum('amount'),
+                    'net_change'        => $totalDeposits - $totalWithdrawals,
                 ];
             }
         );
@@ -116,13 +131,13 @@ class TransactionCacheService
     {
         // Cache the individual transaction
         Cache::put(
-            self::CACHE_PREFIX . 'uuid:' . $transaction->uuid,
+            self::CACHE_PREFIX . 'uuid:' . $transaction->id,
             $transaction,
             self::CACHE_TTL
         );
 
         // Invalidate account-related caches to force refresh
-        $this->forget($transaction->account_uuid);
+        $this->forget($transaction->aggregate_uuid);
     }
 
     /**

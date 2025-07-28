@@ -484,7 +484,7 @@ class FraudDetectionService
             ->skip(1) // Skip current transaction
             ->first();
 
-        return $lastTransaction ? $lastTransaction->created_at->diffInMinutes(now()) : null;
+        return $lastTransaction ? (int) $lastTransaction->created_at->diffInMinutes(now()) : null;
     }
 
     /**

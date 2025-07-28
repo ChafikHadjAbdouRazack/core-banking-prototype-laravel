@@ -18,6 +18,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * multiple external accounts across different custodians.
  */
 /**
+ * @property int $id
+ * @property string $uuid
+ * @property string $account_uuid
+ * @property string $custodian_name
+ * @property string $custodian_account_id
+ * @property string|null $custodian_account_name
+ * @property string $status
+ * @property bool $is_primary
+ * @property array|null $metadata
+ * @property int|null $last_known_balance
+ * @property \Illuminate\Support\Carbon|null $last_synced_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
  * @method static \Illuminate\Database\Eloquent\Builder whereNull(string $column)

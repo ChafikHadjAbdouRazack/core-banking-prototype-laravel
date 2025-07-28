@@ -8,6 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property string $id
+ * @property string $user_uuid
+ * @property string $bank_code
+ * @property string $external_id
+ * @property string $account_number
+ * @property string $iban
+ * @property string|null $swift
+ * @property string $currency
+ * @property string $account_type
+ * @property string $status
+ * @property array|null $metadata
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
  * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $value)
@@ -35,7 +49,7 @@ class BankAccountModel extends Model
      *
      * @return \Database\Factories\BankAccountModelFactory
      */
-    protected static function newFactory()
+    protected static function newFactory(): \Database\Factories\BankAccountModelFactory
     {
         return \Database\Factories\BankAccountModelFactory::new();
     }

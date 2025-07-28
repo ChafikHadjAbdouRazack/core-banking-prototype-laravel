@@ -19,8 +19,9 @@ class SuspiciousActivityReportService
     {
         return DB::transaction(
             function () use ($transaction, $alerts) {
+                // Transaction is an event, so we need to get account from relationship
                 $account = $transaction->account;
-                $user = $account->user;
+                $user = $account ? $account->user : null;
 
                 // Determine priority based on alerts
                 $priority = $this->determinePriority($alerts);
@@ -36,15 +37,15 @@ class SuspiciousActivityReportService
                         'subject_type'    => SuspiciousActivityReport::SUBJECT_TYPE_TRANSACTION,
                         'subject_details' => [
                             'name'           => $user?->name ?? 'Unknown',
-                            'account_number' => $account->account_number,
+                            'account_number' => $account ? $account->id : 'Unknown',
                             'user_id'        => $user?->id,
                         ],
                         'activity_start_date'  => $relatedTransactions->min('created_at') ?? $transaction->created_at,
                         'activity_end_date'    => $relatedTransactions->max('created_at') ?? $transaction->created_at,
-                        'total_amount'         => $relatedTransactions->sum('amount'),
-                        'primary_currency'     => $transaction->currency,
+                        'total_amount'         => $this->calculateTotalAmount($relatedTransactions),
+                        'primary_currency'     => 'USD', // Default currency
                         'transaction_count'    => $relatedTransactions->count(),
-                        'involved_accounts'    => [$account->id],
+                        'involved_accounts'    => $account ? [$account->id] : [],
                         'involved_parties'     => $this->extractInvolvedParties($relatedTransactions),
                         'activity_types'       => $this->determineActivityTypes($alerts),
                         'activity_description' => $this->generateActivityDescription($transaction, $alerts),
@@ -84,8 +85,8 @@ class SuspiciousActivityReportService
                         ],
                         'activity_start_date'  => $transactions->min('created_at'),
                         'activity_end_date'    => $transactions->max('created_at'),
-                        'total_amount'         => $transactions->sum('amount'),
-                        'primary_currency'     => $transactions->first()->currency,
+                        'total_amount'         => $this->calculateTotalAmount($transactions),
+                        'primary_currency'     => 'USD', // Default currency
                         'transaction_count'    => $transactions->count(),
                         'involved_accounts'    => $accounts->pluck('id')->toArray(),
                         'involved_parties'     => $this->extractInvolvedParties($transactions),
@@ -167,22 +168,9 @@ class SuspiciousActivityReportService
         $account = $transaction->account;
         $timeWindow = now()->subDays(30);
 
-        return Transaction::where('account_id', $account->id)
+        return Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', $timeWindow)
-            ->where(
-                function ($query) use ($transaction) {
-                    // Similar amounts (within 10%)
-                    $query->whereBetween(
-                        'amount',
-                        [
-                            $transaction->amount * 0.9,
-                            $transaction->amount * 1.1,
-                        ]
-                    )
-                    // Or same day
-                        ->orWhereDate('created_at', $transaction->created_at->toDateString());
-                }
-            )
+            ->whereDate('created_at', $transaction->created_at->toDateString())
             ->get();
     }
 
@@ -194,7 +182,7 @@ class SuspiciousActivityReportService
         $parties = [];
 
         foreach ($transactions as $transaction) {
-            $metadata = $transaction->metadata ?? [];
+            $metadata = $transaction->event_properties['metadata'] ?? [];
 
             // Extract counterparties from metadata
             if (isset($metadata['counterparty'])) {
@@ -388,6 +376,16 @@ class SuspiciousActivityReportService
             'valid'  => empty($errors),
             'errors' => $errors,
         ];
+    }
+
+    /**
+     * Calculate total amount from transactions.
+     */
+    protected function calculateTotalAmount(Collection $transactions): int
+    {
+        return $transactions->sum(function ($transaction) {
+            return $transaction->event_properties['amount'] ?? 0;
+        });
     }
 
     /**

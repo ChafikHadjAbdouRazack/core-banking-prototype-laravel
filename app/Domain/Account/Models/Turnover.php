@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property int $id
+ * @property \Illuminate\Support\Carbon $date
+ * @property string $account_uuid
+ * @property int $count
+ * @property int $amount
+ * @property int $debit
+ * @property int $credit
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder lockForUpdate()
  * @method static static updateOrCreate(array $attributes, array $values = [])
  */
@@ -16,7 +26,7 @@ class Turnover extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function newFactory(): TurnoverFactory
     {
         return TurnoverFactory::new();
     }

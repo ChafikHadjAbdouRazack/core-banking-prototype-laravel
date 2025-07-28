@@ -12,6 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property int $id
+ * @property string $account_uuid
+ * @property string $asset_code
+ * @property int $balance
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
  * @method static \Illuminate\Database\Eloquent\Builder whereNull(string $column)
@@ -57,7 +64,7 @@ class AccountBalance extends Model
      *
      * @return AccountBalanceFactory
      */
-    protected static function newFactory()
+    protected static function newFactory(): AccountBalanceFactory
     {
         return AccountBalanceFactory::new();
     }

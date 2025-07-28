@@ -15,6 +15,16 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property int $id
+ * @property string $uuid
+ * @property string $name
+ * @property string $user_uuid
+ * @property int $balance
+ * @property bool $frozen
+ * @property string|null $team_uuid
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
  * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
  * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
@@ -48,7 +58,7 @@ class Account extends Model
      *
      * @return \Database\Factories\AccountFactory
      */
-    protected static function newFactory()
+    protected static function newFactory(): \Database\Factories\AccountFactory
     {
         return \Database\Factories\AccountFactory::new();
     }
@@ -69,7 +79,7 @@ class Account extends Model
      *
      * @var list<string>
      */
-    protected $appends = ['balance'];
+    protected $appends = [];
 
     /**
      * Get the balance attribute (USD balance for backward compatibility).
@@ -95,6 +105,8 @@ class Account extends Model
 
     /**
      * Get all balances for this account.
+     *
+     * @return HasMany<AccountBalance, $this>
      */
     public function balances(): HasMany
     {
@@ -147,13 +159,16 @@ class Account extends Model
      *
      * @return \Illuminate\Database\Eloquent\Collection<int, AccountBalance>
      */
-    public function getActiveBalances()
+    public function getActiveBalances(): \Illuminate\Database\Eloquent\Collection
     {
+        /** @var \Illuminate\Database\Eloquent\Collection<int, AccountBalance> */
         return $this->balances()->where('balance', '>', 0)->with('asset')->get();
     }
 
     /**
      * Get the custodian accounts for this account.
+     *
+     * @return HasMany<CustodianAccount, $this>
      */
     public function custodianAccounts(): HasMany
     {

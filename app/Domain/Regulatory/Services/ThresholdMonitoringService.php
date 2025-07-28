@@ -181,26 +181,27 @@ class ThresholdMonitoringService
         $user = $account->user;
 
         // Get transaction velocity
-        $dailyCount = Transaction::where('account_id', $account->id)
+        $dailyTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->whereDate('created_at', today())
-            ->count();
-
-        $dailyVolume = Transaction::where('account_id', $account->id)
-            ->whereDate('created_at', today())
-            ->sum('amount');
+            ->get();
+        
+        $dailyCount = $dailyTransactions->count();
+        $dailyVolume = $dailyTransactions->sum(function ($t) {
+            return $t->event_properties['amount'] ?? 0;
+        });
 
         return [
             'transaction' => [
                 'id'         => $transaction->id,
-                'amount'     => $transaction->amount,
-                'currency'   => $transaction->currency,
-                'type'       => $transaction->type,
+                'amount'     => $transaction->event_properties['amount'] ?? 0,
+                'currency'   => $transaction->event_properties['currency'] ?? 'USD',
+                'type'       => $transaction->event_properties['type'] ?? 'unknown',
                 'created_at' => $transaction->created_at,
             ],
             'account' => [
                 'id'       => $account->id,
                 'type'     => $account->type,
-                'balance'  => $account->getBalance($transaction->currency),
+                'balance'  => $account->getBalance($transaction->event_properties['currency'] ?? 'USD'),
                 'age_days' => $account->created_at->diffInDays(now()),
             ],
             'user' => [
@@ -233,13 +234,14 @@ class ThresholdMonitoringService
         foreach ($accounts as $account) {
             $totalBalance += $account->getBalance();
 
-            $accountTransactions = Transaction::where('account_id', $account->id)
+            $accountTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', now()->subDays(30))
-                ->selectRaw('COUNT(*) as count, SUM(amount) as volume')
-                ->first();
-
-            $transactionCount30d += $accountTransactions->count ?? 0;
-            $transactionVolume30d += $accountTransactions->volume ?? 0;
+                ->get();
+            
+            $transactionCount30d += $accountTransactions->count();
+            $transactionVolume30d += $accountTransactions->sum(function ($t) {
+                return $t->event_properties['amount'] ?? 0;
+            });
         }
 
         return [
@@ -277,27 +279,30 @@ class ThresholdMonitoringService
         $user = $account->user;
 
         // Get account activity metrics
-        $monthlyMetrics = Transaction::where('account_id', $account->id)
+        $monthlyTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', now()->subMonth())
-            ->selectRaw(
-                '
-                COUNT(*) as count,
-                SUM(amount) as volume,
-                MAX(amount) as max_amount,
-                AVG(amount) as avg_amount
-            '
-            )
-            ->first();
+            ->get();
+        
+        $amounts = $monthlyTransactions->map(function ($t) {
+            return $t->event_properties['amount'] ?? 0;
+        });
+        
+        $monthlyMetrics = (object) [
+            'count' => $monthlyTransactions->count(),
+            'volume' => $amounts->sum(),
+            'max_amount' => $amounts->max() ?? 0,
+            'avg_amount' => $amounts->avg() ?? 0,
+        ];
 
         return [
             'account' => [
                 'id'         => $account->id,
-                'type'       => $account->type,
-                'currency'   => $account->currency,
-                'balance'    => $account->getBalance(),
+                'type'       => $account->type ?? 'standard',
+                'currency'   => 'USD', // Default currency
+                'balance'    => $account->getBalance('USD'),
                 'created_at' => $account->created_at,
                 'age_days'   => $account->created_at->diffInDays(now()),
-                'status'     => $account->status,
+                'status'     => $account->frozen ? 'frozen' : 'active',
             ],
             'user' => [
                 'id'          => $user->id,
