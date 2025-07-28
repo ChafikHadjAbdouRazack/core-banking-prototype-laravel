@@ -7,12 +7,13 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
 
 class TransactionStatusController extends Controller
 {
     /**
      * Display the transaction status tracking page.
+     *
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {
@@ -38,8 +39,8 @@ class TransactionStatusController extends Controller
         // Get transaction statistics
         $statistics = $this->getTransactionStatistics($user);
 
-        return Inertia::render(
-            'Transactions/StatusTracking',
+        return view(
+            'transactions.status-tracking',
             [
                 'accounts'              => $accounts,
                 'pendingTransactions'   => $pendingTransactions,
@@ -52,6 +53,8 @@ class TransactionStatusController extends Controller
 
     /**
      * Get details for a specific transaction.
+     *
+     * @return \Illuminate\Contracts\View\View
      */
     public function show($transactionId)
     {
@@ -71,8 +74,8 @@ class TransactionStatusController extends Controller
         // Get related transactions (if any)
         $relatedTransactions = $this->getRelatedTransactions($transaction);
 
-        return Inertia::render(
-            'Transactions/StatusDetail',
+        return view(
+            'transactions.status-detail',
             [
                 'transaction'         => $transaction,
                 'timeline'            => $timeline,
