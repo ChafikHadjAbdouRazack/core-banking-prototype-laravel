@@ -591,6 +591,7 @@ class StablecoinOperationsController extends Controller
     public function liquidatePosition(string $positionUuid): JsonResponse
     {
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
+        /** @var \App\Domain\Account\Models\Account|null $liquidator */
         $liquidator = Auth::user()?->account;
 
         try {
@@ -783,6 +784,7 @@ class StablecoinOperationsController extends Controller
      */
     public function executeAutoLiquidation(): JsonResponse
     {
+        /** @var \App\Domain\Account\Models\Account|null $liquidator */
         $liquidator = Auth::user()?->account;
 
         try {

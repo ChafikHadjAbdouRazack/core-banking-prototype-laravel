@@ -17,8 +17,7 @@ class CreateGcuVotingProposal extends CreateRecord
 
         // Calculate total GCU supply if status is active
         if ($data['status'] === 'active') {
-            $data['total_gcu_supply'] = Account::where('currency', 'GCU')
-                ->where('type', 'personal')
+            $data['total_gcu_supply'] = \App\Domain\Account\Models\AccountBalance::where('asset_code', 'GCU')
                 ->sum('balance');
         }
 

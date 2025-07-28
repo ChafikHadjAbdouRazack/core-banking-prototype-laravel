@@ -105,7 +105,9 @@ class LiquidityPoolController extends Controller
         }
 
         $account = Account::where('uuid', $validated['account_id'])
-            ->where('user_id', Auth::id())
+            ->whereHas('user', function ($query) {
+                $query->where('id', Auth::id());
+            })
             ->first();
 
         if (! $account) {
@@ -183,7 +185,9 @@ class LiquidityPoolController extends Controller
         }
 
         $account = Account::where('uuid', $validated['account_id'])
-            ->where('user_id', Auth::id())
+            ->whereHas('user', function ($query) {
+                $query->where('id', Auth::id());
+            })
             ->first();
 
         if (! $account) {

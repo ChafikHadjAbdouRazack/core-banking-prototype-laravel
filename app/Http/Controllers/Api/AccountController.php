@@ -131,6 +131,10 @@ class AccountController extends Controller
         // Sanitize the account name to prevent XSS
         $sanitizedName = strip_tags($validated['name']);
         $sanitizedName = htmlspecialchars($sanitizedName, ENT_QUOTES, 'UTF-8');
+        // Remove dangerous protocols
+        $sanitizedName = preg_replace('/javascript:/i', '', $sanitizedName);
+        $sanitizedName = preg_replace('/data:/i', '', $sanitizedName);
+        $sanitizedName = preg_replace('/vbscript:/i', '', $sanitizedName);
         $sanitizedName = trim($sanitizedName);
 
         // Generate a UUID for the new account
