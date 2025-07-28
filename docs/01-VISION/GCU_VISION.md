@@ -1,14 +1,14 @@
-# Global Currency Unit (GCU) - Platform Vision
+# Global Currency Unit (GCU) - Conceptual Vision
 
 ## Overview
 
-**FinAegis** is a powerful enterprise-grade core banking platform built with event sourcing, multi-asset support, and democratic governance capabilities. 
+**FinAegis** is an open-source prototype demonstrating modern banking architecture with event sourcing, multi-asset support, and democratic governance patterns. 
 
-**Global Currency Unit (GCU)** is the flagship implementation on FinAegis - a revolutionary user-controlled digital currency where:
-- Your money stays in **real banks** with government deposit insurance
-- You **choose which banks** hold your funds across multiple countries
-- You **vote monthly** on the currency basket composition
-- Full **regulatory compliance** ensures bank and government support
+**Global Currency Unit (GCU)** is a conceptual demonstration showing how a democratic digital currency could work:
+- **Concept**: Money could stay in real banks with deposit insurance
+- **Demonstration**: Shows how users could choose banks across countries
+- **Prototype Feature**: Voting system for currency basket composition
+- **Architecture Pattern**: How regulatory compliance could be implemented
 
 ## The GCU Difference
 
@@ -42,27 +42,27 @@ Built on the proven FinAegis platform:
 - **Performance**: 10,000+ TPS with sub-100ms latency
 - **Security**: Quantum-resistant hashing (SHA3-512)
 
-## Current Implementation Status
+## Prototype Implementation Status
 
-### ✅ Completed (80% Done)
-- Multi-asset ledger with basket support
-- Democratic governance system
-- Event sourcing architecture
-- Admin dashboard with analytics
-- API layer with documentation
-- Test coverage >50%
+### ✅ Demonstrated Concepts
+- Multi-asset ledger patterns
+- Voting system architecture
+- Event sourcing implementation
+- Admin dashboard example
+- API structure demonstration
+- Testing patterns
 
-### 🔄 In Progress
-- GCU basket configuration
-- User bank preferences
-- Monthly voting templates
-- Compliance enhancements
+### 📚 Educational Value
+- Shows how basket assets could work
+- Demonstrates voting mechanisms
+- Examples of compliance patterns
+- Banking integration architecture
 
-### 📋 Next Steps
-- Real bank API integration (Paysera, Deutsche Bank, Santander)
-- Mobile applications
-- Lithuanian EMI license
-- Public beta launch
+### 🚧 Prototype Limitations
+- No real bank connections (mock implementations only)
+- Conceptual demonstrations, not production-ready
+- Educational purposes only
+- Requires significant work for real-world use
 
 ## Market Opportunity
 
