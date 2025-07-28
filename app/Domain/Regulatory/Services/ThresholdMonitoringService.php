@@ -184,7 +184,7 @@ class ThresholdMonitoringService
         $dailyTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->whereDate('created_at', today())
             ->get();
-        
+
         $dailyCount = $dailyTransactions->count();
         $dailyVolume = $dailyTransactions->sum(function ($t) {
             return $t->event_properties['amount'] ?? 0;
@@ -237,7 +237,7 @@ class ThresholdMonitoringService
             $accountTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', now()->subDays(30))
                 ->get();
-            
+
             $transactionCount30d += $accountTransactions->count();
             $transactionVolume30d += $accountTransactions->sum(function ($t) {
                 return $t->event_properties['amount'] ?? 0;
@@ -282,11 +282,11 @@ class ThresholdMonitoringService
         $monthlyTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', now()->subMonth())
             ->get();
-        
+
         $amounts = $monthlyTransactions->map(function ($t) {
             return $t->event_properties['amount'] ?? 0;
         });
-        
+
         $monthlyMetrics = (object) [
             'count' => $monthlyTransactions->count(),
             'volume' => $amounts->sum(),

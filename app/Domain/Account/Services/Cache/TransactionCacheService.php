@@ -81,11 +81,11 @@ class TransactionCacheService
 
                 $totalDeposits = 0;
                 $totalWithdrawals = 0;
-                
+
                 foreach ($transactions as $t) {
                     $type = $t->event_properties['type'] ?? '';
                     $amount = $t->event_properties['amount'] ?? 0;
-                    
+
                     if ($type === 'deposit') {
                         $totalDeposits += $amount;
                     } elseif ($type === 'withdrawal') {

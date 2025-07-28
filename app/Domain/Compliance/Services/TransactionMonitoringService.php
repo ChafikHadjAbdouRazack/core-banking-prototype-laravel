@@ -206,11 +206,11 @@ class TransactionMonitoringService
         if (!$account) {
             return false;
         }
-        
+
         $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', $startTime)
             ->get();
-        
+
         $count = $recentTransactions->count();
         $total = $recentTransactions->sum(function ($t) {
             return $t->event_properties['amount'] ?? 0;
@@ -266,11 +266,11 @@ class TransactionMonitoringService
             if (!$account) {
                 return false;
             }
-            
+
             $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', $startTime)
                 ->get();
-            
+
             $cumulative = $recentTransactions->sum(function ($t) {
                 return $t->event_properties['amount'] ?? 0;
             });
@@ -344,18 +344,18 @@ class TransactionMonitoringService
         $lowerBound = $reportingThreshold * (1 - $marginPercentage);
 
         $amount = $transaction->event_properties['amount'] ?? 0;
-        
+
         if ($amount >= $lowerBound && $amount < $reportingThreshold) {
             // Check for similar transactions in past 24 hours
             $account = $transaction->account;
             if (!$account) {
                 return false;
             }
-            
+
             $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                 ->where('created_at', '>=', now()->subDay())
                 ->get();
-            
+
             $similarCount = $recentTransactions->filter(function ($t) use ($lowerBound, $reportingThreshold) {
                 $amt = $t->event_properties['amount'] ?? 0;
                 return $amt >= $lowerBound && $amt < $reportingThreshold;
@@ -381,14 +381,14 @@ class TransactionMonitoringService
         if (!$account) {
             return false;
         }
-        
+
         $withdrawalAmount = $transaction->event_properties['amount'] ?? 0;
-        
+
         // Check if funds were recently deposited
         $recentDeposits = Transaction::where('aggregate_uuid', $account->uuid)
             ->where('created_at', '>=', now()->subHours(24))
             ->get();
-        
+
         $deposit = $recentDeposits->first(function ($t) use ($withdrawalAmount) {
             $depositType = $t->event_properties['type'] ?? '';
             $depositAmount = $t->event_properties['amount'] ?? 0;
@@ -415,11 +415,11 @@ class TransactionMonitoringService
                 if (!$account) {
                     return false;
                 }
-                
+
                 $recentTransactions = Transaction::where('aggregate_uuid', $account->uuid)
                     ->where('created_at', '>=', now()->subDays(7))
                     ->get();
-                
+
                 $roundCount = $recentTransactions->filter(function ($t) use ($divisor) {
                     $amt = $t->event_properties['amount'] ?? 0;
                     return $amt >= $divisor && $amt % $divisor === 0;
@@ -752,7 +752,7 @@ class TransactionMonitoringService
         if (!$account) {
             return false;
         }
-        
+
         $todayCount = Transaction::where('aggregate_uuid', $account->uuid)
             ->whereDate('created_at', today())
             ->count();
