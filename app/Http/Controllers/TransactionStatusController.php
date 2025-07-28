@@ -301,7 +301,7 @@ class TransactionStatusController extends Controller
                 DB::raw('SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending'),
                 DB::raw('SUM(CASE WHEN status = "processing" THEN 1 ELSE 0 END) as processing'),
                 DB::raw('SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed'),
-                DB::raw('AVG(CASE WHEN status = "completed" THEN TIMESTAMPDIFF(SECOND, created_at, updated_at) END) as avg_completion_time')
+                DB::raw('AVG(CASE WHEN status = "completed" THEN TIMESTAMPDIFF(SECOND, transaction_projections.created_at, transaction_projections.updated_at) END) as avg_completion_time')
             )
             ->first();
 
