@@ -1,4 +1,16 @@
-<x-guest-layout>
+@extends('layouts.public')
+
+@section('title', 'System Status - FinAegis')
+
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'System Status - FinAegis',
+        'description' => 'Real-time status of FinAegis prototype platform services and functionality.',
+        'keywords' => 'FinAegis status, system status, platform uptime, service availability',
+    ])
+@endsection
+
+@section('content')
     <div class="bg-white">
         <!-- Header -->
         <div class="bg-gradient-to-r from-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-600 to-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-700">
@@ -20,7 +32,7 @@
                         System Status
                     </h1>
                     <p class="mt-4 text-xl text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-100">
-                        Real-time status of FinAegis platform services
+                        Real-time status of FinAegis prototype platform
                     </p>
                     <p class="mt-2 text-sm text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-200">
                         Last updated: {{ $status['last_checked']->diffForHumans() }}
@@ -74,10 +86,25 @@
                 </div>
             </div>
 
+            <!-- Prototype Notice -->
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-12">
+                <div class="flex items-start">
+                    <svg class="w-6 h-6 text-amber-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-amber-900 mb-2">Prototype Platform</h3>
+                        <p class="text-amber-800">
+                            This is a demonstration of FinAegis core banking functionality. The status page shows actual prototype system health and available features.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Service Status -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-12">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">Service Status</h2>
+                    <h2 class="text-xl font-semibold text-gray-900">Prototype Services</h2>
                 </div>
                 <div class="divide-y divide-gray-200">
                     @foreach($services as $service)
@@ -97,6 +124,71 @@
                         </div>
                     </div>
                     @endforeach
+                </div>
+            </div>
+
+            <!-- Available Features -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-12">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-xl font-semibold text-gray-900">Available Features</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">User Authentication</h4>
+                                <p class="text-gray-600">Registration, login, and session management</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Account Management</h4>
+                                <p class="text-gray-600">Create and manage banking accounts</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Transaction Processing</h4>
+                                <p class="text-gray-600">Deposits, withdrawals, and transfers</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">API Access</h4>
+                                <p class="text-gray-600">RESTful API with authentication</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Multi-Currency Support</h4>
+                                <p class="text-gray-600">GCU and traditional currencies</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            </svg>
+                            <div>
+                                <h4 class="text-lg font-medium text-gray-900">Ledger System</h4>
+                                <p class="text-gray-600">Double-entry bookkeeping</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -196,4 +288,4 @@
             </div>
         </div>
     </div>
-</x-guest-layout>
+@endsection
