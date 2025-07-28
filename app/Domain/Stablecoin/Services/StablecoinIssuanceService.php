@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\StablecoinIssuanceServiceInterface;
 use App\Domain\Stablecoin\Models\Stablecoin;
@@ -13,7 +14,6 @@ use App\Domain\Stablecoin\Workflows\AddCollateralWorkflow;
 use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
 use App\Domain\Wallet\Services\WalletService;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Log;
 use Workflow\WorkflowStub;
 

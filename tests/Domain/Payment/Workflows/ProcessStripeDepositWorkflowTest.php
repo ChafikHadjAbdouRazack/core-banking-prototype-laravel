@@ -1,8 +1,8 @@
 <?php
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Payment\DataObjects\StripeDeposit;
 use App\Domain\Payment\Models\PaymentTransaction;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Str;
 
 beforeEach(function () {

@@ -3,8 +3,8 @@
 namespace App\Domain\Account\Actions;
 
 use App\Domain\Account\Events\AssetBalanceAdded;
-use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 
 class CreditAssetBalance extends AccountAction
 {

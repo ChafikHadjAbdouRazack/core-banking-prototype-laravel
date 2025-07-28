@@ -2,12 +2,12 @@
 
 namespace App\Domain\Wallet\Services;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Wallet\Contracts\WalletServiceInterface;
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Domain\Wallet\Workflows\WalletDepositWorkflow;
 use App\Domain\Wallet\Workflows\WalletTransferWorkflow;
 use App\Domain\Wallet\Workflows\WalletWithdrawWorkflow;
-use App\Domain\Account\Models\Account;
 use Workflow\WorkflowStub;
 
 class WalletService implements WalletServiceInterface

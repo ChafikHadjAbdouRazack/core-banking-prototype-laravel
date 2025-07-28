@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Domain\Fraud\Events;
 
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Fraud\Events\FraudDetected;
 use App\Domain\Fraud\Models\FraudScore;
-use App\Domain\Account\Models\Transaction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use PHPUnit\Framework\Attributes\Test;
@@ -103,8 +103,8 @@ class FraudDetectedTest extends DomainTestCase
     public function test_handles_different_entity_types(): void
     {
         $entityTypes = [
-            Transaction::class         => 'Transaction',
-            \App\Models\User::class    => 'User',
+            Transaction::class                        => 'Transaction',
+            \App\Models\User::class                   => 'User',
             \App\Domain\Account\Models\Account::class => 'Account',
         ];
 

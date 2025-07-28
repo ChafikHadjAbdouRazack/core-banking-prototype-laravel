@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\LiquidationService;
 use App\Domain\Stablecoin\Services\StablecoinIssuanceService;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -591,7 +591,7 @@ class StablecoinOperationsController extends Controller
     public function liquidatePosition(string $positionUuid): JsonResponse
     {
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
-        /** @var \App\Domain\Account\Models\Account|null $liquidator */
+        /** @var Account|null $liquidator */
         $liquidator = Auth::user()?->account;
 
         try {
@@ -784,7 +784,7 @@ class StablecoinOperationsController extends Controller
      */
     public function executeAutoLiquidation(): JsonResponse
     {
-        /** @var \App\Domain\Account\Models\Account|null $liquidator */
+        /** @var Account|null $liquidator */
         $liquidator = Auth::user()?->account;
 
         try {

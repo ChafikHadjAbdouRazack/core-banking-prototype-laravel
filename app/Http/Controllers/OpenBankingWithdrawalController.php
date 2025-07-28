@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Banking\Services\BankIntegrationService;
 use App\Domain\Payment\Services\PaymentGatewayService;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -299,10 +299,10 @@ class OpenBankingWithdrawalController extends Controller
 
         $user = Auth::user();
         /** @var User $user */
-        /** @var \App\Domain\Account\Models\Account|null $account */
+        /** @var Account|null $account */
         $account = $user->accounts()->first();
 
-        if (!$account) {
+        if (! $account) {
             return back()->with('error', 'No account found.');
         }
 

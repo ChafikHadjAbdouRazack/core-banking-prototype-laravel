@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Governance\Strategies;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Governance\Contracts\IVotingPowerStrategy;
 use App\Domain\Governance\Models\Poll;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 
 class AssetWeightedVoteStrategy implements IVotingPowerStrategy

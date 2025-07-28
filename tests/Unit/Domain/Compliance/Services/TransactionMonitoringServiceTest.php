@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Models\TransactionMonitoringRule;
 use App\Domain\Compliance\Services\CustomerRiskService;
 use App\Domain\Compliance\Services\SuspiciousActivityReportService;
 use App\Domain\Compliance\Services\TransactionMonitoringService;
-use App\Domain\Account\Models\Account;
-use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;

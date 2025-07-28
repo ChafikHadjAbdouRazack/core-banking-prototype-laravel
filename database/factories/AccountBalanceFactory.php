@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
-use App\Domain\Account\Models\Account;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

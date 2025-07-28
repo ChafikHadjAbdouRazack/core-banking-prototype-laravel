@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Domain\Asset\Projectors;
 
-use App\Domain\Account\Models\AccountBalance;
-use App\Domain\Asset\Events\AssetTransactionCreated;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Asset\Events\AssetTransactionCreated;
 use Illuminate\Support\Facades\Log;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 

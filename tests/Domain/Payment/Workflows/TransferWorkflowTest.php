@@ -2,8 +2,8 @@
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
-use App\Domain\Payment\Workflows\TransferWorkflow;
 use App\Domain\Account\Models\Account;
+use App\Domain\Payment\Workflows\TransferWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Workflow\WorkflowStub;
 

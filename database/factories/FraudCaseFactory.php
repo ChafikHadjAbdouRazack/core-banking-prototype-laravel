@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Domain\Fraud\Models\FraudCase;
 use App\Domain\Account\Models\Account;
+use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

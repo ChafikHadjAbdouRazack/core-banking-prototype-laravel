@@ -2,14 +2,14 @@
 
 namespace Tests\Unit\Domain\Exchange\Services;
 
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use App\Domain\Exchange\Aggregates\Order;
 use App\Domain\Exchange\Aggregates\OrderBook;
 use App\Domain\Exchange\Projections\Order as OrderProjection;
 use App\Domain\Exchange\Projections\OrderBook as OrderBookProjection;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\FeeCalculator;
-use App\Domain\Account\Models\Account;
-use App\Domain\Asset\Models\Asset;
 use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;

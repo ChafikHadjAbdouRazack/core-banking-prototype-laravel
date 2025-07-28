@@ -2,9 +2,9 @@
 
 namespace App\Domain\Regulatory\Services;
 
-use App\Domain\Regulatory\Models\RegulatoryThreshold;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Regulatory\Models\RegulatoryThreshold;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -288,8 +288,8 @@ class ThresholdMonitoringService
         });
 
         $monthlyMetrics = (object) [
-            'count' => $monthlyTransactions->count(),
-            'volume' => $amounts->sum(),
+            'count'      => $monthlyTransactions->count(),
+            'volume'     => $amounts->sum(),
             'max_amount' => $amounts->max() ?? 0,
             'avg_amount' => $amounts->avg() ?? 0,
         ];
@@ -576,9 +576,9 @@ class ThresholdMonitoringService
         // For now, we'll log the blocking action
         \Log::warning('Transaction blocking requested', [
             'transaction_id' => $transaction->id,
-            'threshold_id' => $threshold->id,
+            'threshold_id'   => $threshold->id,
             'threshold_code' => $threshold->threshold_code,
-            'blocked_at' => now()->toIso8601String(),
+            'blocked_at'     => now()->toIso8601String(),
         ]);
     }
 

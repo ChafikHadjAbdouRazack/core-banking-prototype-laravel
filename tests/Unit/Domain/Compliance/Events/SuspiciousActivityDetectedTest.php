@@ -2,9 +2,9 @@
 
 namespace Tests\Unit\Domain\Compliance\Events;
 
-use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;

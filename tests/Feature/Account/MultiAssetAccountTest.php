@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Account;
 
-use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

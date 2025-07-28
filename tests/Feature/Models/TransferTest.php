@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
-use App\Domain\Account\Models\Transfer;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

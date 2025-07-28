@@ -2,8 +2,8 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Domain\Fraud\Models\FraudScore;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Fraud\Models\FraudScore;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;

@@ -6,11 +6,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transfer;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Wallet\Workflows\WalletTransferWorkflow;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;

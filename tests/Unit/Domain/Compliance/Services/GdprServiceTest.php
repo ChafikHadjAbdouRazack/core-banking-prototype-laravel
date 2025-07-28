@@ -2,11 +2,11 @@
 
 namespace Tests\Unit\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\TransactionProjection;
+use App\Domain\Compliance\Models\AuditLog;
 use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\Compliance\Services\GdprService;
-use App\Domain\Account\Models\Account;
-use App\Domain\Compliance\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;

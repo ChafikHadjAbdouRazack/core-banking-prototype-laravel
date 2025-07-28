@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Domain\Account\Services\Cache\AccountCacheService;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Services\Cache\AccountCacheService;
 use Illuminate\Support\Facades\Cache;
 
 beforeEach(function () {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Workflows;
 
-use App\Domain\Account\Models\Turnover;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Workflow\Activity;
@@ -156,7 +156,7 @@ class ReverseBatchOperationActivity extends Activity
                     // This is a simplified reversal for demonstration
                     logger()->warning('Balance reversal should be done through event sourcing', [
                         'account_uuid' => $interestTx['account_uuid'],
-                        'amount' => $interestTx['amount']
+                        'amount'       => $interestTx['amount'],
                     ]);
 
                     logger()->info(

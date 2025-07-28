@@ -2,9 +2,9 @@
 
 namespace Tests\Feature\Account;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
-use App\Domain\Account\Models\Account;
 use Database\Factories\AccountBalanceFactory;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

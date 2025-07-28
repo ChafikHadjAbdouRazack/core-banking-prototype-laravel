@@ -2,10 +2,10 @@
 
 namespace App\Domain\Account\Workflows;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Account\Models\TransactionProjection as Transaction;
 use App\Domain\Account\Models\Turnover;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;

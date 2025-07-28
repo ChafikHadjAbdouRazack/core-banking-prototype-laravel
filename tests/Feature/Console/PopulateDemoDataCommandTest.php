@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use App\Models\UserBankPreference;
 use Illuminate\Foundation\Testing\RefreshDatabase;

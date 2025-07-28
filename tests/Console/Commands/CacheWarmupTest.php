@@ -1,8 +1,8 @@
 <?php
 
 use App\Console\Commands\CacheWarmup;
-use App\Domain\Account\Services\Cache\CacheManager;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Services\Cache\CacheManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);

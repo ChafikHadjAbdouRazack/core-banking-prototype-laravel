@@ -2,6 +2,7 @@
 
 namespace App\Domain\Exchange\Projectors;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Exchange\Events\LiquidityAdded;
 use App\Domain\Exchange\Events\LiquidityPoolCreated;
 use App\Domain\Exchange\Events\LiquidityPoolRebalanced;
@@ -13,7 +14,6 @@ use App\Domain\Exchange\Events\PoolParametersUpdated;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityProvider;
 use App\Domain\Exchange\Projections\PoolSwap;
-use App\Domain\Account\Models\Account;
 use Brick\Math\BigDecimal;
 use Illuminate\Support\Str;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;

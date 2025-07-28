@@ -6,9 +6,9 @@ namespace App\Domain\Asset\Workflows\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Aggregates\AssetTransferAggregate;
-use App\Domain\Account\Models\Account;
 use Workflow\Activity;
 
 class InitiateAssetTransferActivity extends Activity

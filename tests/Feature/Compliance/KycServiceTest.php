@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Domain\Compliance\Services\KycService;
 use App\Domain\Compliance\Models\AuditLog;
+use App\Domain\Compliance\Services\KycService;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;

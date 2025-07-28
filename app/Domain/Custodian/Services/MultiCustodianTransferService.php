@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Custodian\Services;
 
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
 use App\Domain\Custodian\Contracts\ICustodianConnector;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\TransactionReceipt;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

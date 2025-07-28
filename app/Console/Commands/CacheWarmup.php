@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Domain\Account\Services\Cache\CacheManager;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Services\Cache\CacheManager;
 use Illuminate\Console\Command;
 
 class CacheWarmup extends Command

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Account\Models\Account;
+use App\Domain\Transaction\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

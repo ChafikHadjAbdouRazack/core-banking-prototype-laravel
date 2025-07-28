@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Domain\Stablecoin\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Wallet\Services\WalletService;
-use App\Domain\Account\Models\Account;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;

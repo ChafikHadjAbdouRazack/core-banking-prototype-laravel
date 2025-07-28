@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Exchange\Contracts\ExchangeServiceInterface;
 use App\Domain\Exchange\Contracts\LiquidityPoolServiceInterface;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

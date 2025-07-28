@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
@@ -13,7 +14,6 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Workflows\AssetDepositWorkflow;
 use App\Domain\Asset\Workflows\AssetWithdrawWorkflow;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Workflow\WorkflowStub;

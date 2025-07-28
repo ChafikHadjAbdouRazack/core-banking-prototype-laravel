@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
+use App\Domain\Asset\Models\Asset;
 use App\Domain\Exchange\Aggregates\LiquidityPool;
 use App\Domain\Exchange\Projections\LiquidityPool as PoolProjection;
 use App\Domain\Exchange\Projections\LiquidityProvider;
 use App\Domain\Exchange\Services\LiquidityPoolService;
-use App\Domain\Account\Models\Account;
-use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;

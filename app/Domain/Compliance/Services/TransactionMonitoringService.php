@@ -2,11 +2,11 @@
 
 namespace App\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Compliance\Events\SuspiciousActivityDetected;
 use App\Domain\Compliance\Events\TransactionBlocked;
 use App\Domain\Compliance\Models\CustomerRiskProfile;
 use App\Domain\Compliance\Models\TransactionMonitoringRule;
-use App\Domain\Account\Models\Transaction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
@@ -203,7 +203,7 @@ class TransactionMonitoringService
 
         // Count recent transactions
         $account = $transaction->account;
-        if (!$account) {
+        if (! $account) {
             return false;
         }
 
@@ -263,7 +263,7 @@ class TransactionMonitoringService
             $startTime = $this->parseTimeWindow($timeWindow);
 
             $account = $transaction->account;
-            if (!$account) {
+            if (! $account) {
                 return false;
             }
 
@@ -348,7 +348,7 @@ class TransactionMonitoringService
         if ($amount >= $lowerBound && $amount < $reportingThreshold) {
             // Check for similar transactions in past 24 hours
             $account = $transaction->account;
-            if (!$account) {
+            if (! $account) {
                 return false;
             }
 
@@ -358,6 +358,7 @@ class TransactionMonitoringService
 
             $similarCount = $recentTransactions->filter(function ($t) use ($lowerBound, $reportingThreshold) {
                 $amt = $t->event_properties['amount'] ?? 0;
+
                 return $amt >= $lowerBound && $amt < $reportingThreshold;
             })->count();
 
@@ -378,7 +379,7 @@ class TransactionMonitoringService
         }
 
         $account = $transaction->account;
-        if (!$account) {
+        if (! $account) {
             return false;
         }
 
@@ -392,6 +393,7 @@ class TransactionMonitoringService
         $deposit = $recentDeposits->first(function ($t) use ($withdrawalAmount) {
             $depositType = $t->event_properties['type'] ?? '';
             $depositAmount = $t->event_properties['amount'] ?? 0;
+
             return $depositType === 'deposit' && $depositAmount >= ($withdrawalAmount * 0.9);
         });
 
@@ -412,7 +414,7 @@ class TransactionMonitoringService
             if ($amount >= $divisor && $amount % $divisor === 0) {
                 // Check frequency of round amounts
                 $account = $transaction->account;
-                if (!$account) {
+                if (! $account) {
                     return false;
                 }
 
@@ -422,6 +424,7 @@ class TransactionMonitoringService
 
                 $roundCount = $recentTransactions->filter(function ($t) use ($divisor) {
                     $amt = $t->event_properties['amount'] ?? 0;
+
                     return $amt >= $divisor && $amt % $divisor === 0;
                 })->count();
 
@@ -749,7 +752,7 @@ class TransactionMonitoringService
         }
 
         $account = $transaction->account;
-        if (!$account) {
+        if (! $account) {
             return false;
         }
 

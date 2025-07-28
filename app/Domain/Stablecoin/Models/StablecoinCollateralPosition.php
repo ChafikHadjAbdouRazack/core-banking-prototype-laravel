@@ -2,8 +2,8 @@
 
 namespace App\Domain\Stablecoin\Models;
 
-use App\Domain\Asset\Models\Asset;
 use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

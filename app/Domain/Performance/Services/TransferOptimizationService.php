@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Performance\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 

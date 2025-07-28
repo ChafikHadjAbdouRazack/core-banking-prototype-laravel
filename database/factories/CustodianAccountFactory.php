@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Account\Models\Account;
+use App\Domain\Custodian\Models\CustodianAccount;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

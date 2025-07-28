@@ -2,8 +2,8 @@
 
 namespace App\Domain\Payment\Activities;
 
-use App\Domain\Payment\DataObjects\BankWithdrawal;
 use App\Domain\Account\Models\Account;
+use App\Domain\Payment\DataObjects\BankWithdrawal;
 use Workflow\Activity;
 
 class ValidateWithdrawalActivity extends Activity

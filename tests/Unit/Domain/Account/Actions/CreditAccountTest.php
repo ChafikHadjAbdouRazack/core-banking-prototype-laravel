@@ -4,9 +4,9 @@ namespace Tests\Unit\Domain\Account\Actions;
 
 use App\Domain\Account\Actions\CreditAccount;
 use App\Domain\Account\Events\AssetBalanceAdded;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Repositories\AccountRepository;
-use App\Domain\Account\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;

@@ -2,8 +2,8 @@
 
 namespace App\Domain\Account\Repositories;
 
-use App\Domain\Account\Models\Turnover;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Turnover;
 use DateTimeInterface;
 use Illuminate\Support\Facades\DB;
 

@@ -5,8 +5,8 @@ namespace App\Domain\Batch\Activities;
 use App\Domain\Account\Aggregates\TransferAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
-use App\Domain\Batch\Aggregates\BatchAggregate;
 use App\Domain\Account\Models\Account;
+use App\Domain\Batch\Aggregates\BatchAggregate;
 use Illuminate\Support\Str;
 use Workflow\Activity;
 

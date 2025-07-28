@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Custodian\Events\ReconciliationCompleted;
 use App\Domain\Custodian\Events\ReconciliationDiscrepancyFound;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\Services\BalanceSynchronizationService;
 use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Domain\Custodian\Services\DailyReconciliationService;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {

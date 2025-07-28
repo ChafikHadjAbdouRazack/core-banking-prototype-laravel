@@ -7,9 +7,9 @@ namespace App\Console\Commands;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
-use App\Domain\Account\Models\Transfer;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 

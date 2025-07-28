@@ -9,8 +9,8 @@ use App\Domain\Account\Events\AccountUnfrozen;
 use App\Domain\Account\Events\MoneyAdded;
 use App\Domain\Account\Events\MoneySubtracted;
 use App\Domain\Account\Events\MoneyTransferred;
-use App\Domain\Webhook\Services\WebhookService;
 use App\Domain\Account\Models\Account;
+use App\Domain\Webhook\Services\WebhookService;
 use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class WebhookEventListener extends Projector

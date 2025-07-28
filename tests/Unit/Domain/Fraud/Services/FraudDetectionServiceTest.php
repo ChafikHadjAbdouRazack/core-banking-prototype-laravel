@@ -2,6 +2,8 @@
 
 namespace Tests\Unit\Domain\Fraud\Services;
 
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Fraud\Events\ChallengeRequired;
 use App\Domain\Fraud\Events\FraudDetected;
 use App\Domain\Fraud\Events\TransactionBlocked;
@@ -12,8 +14,6 @@ use App\Domain\Fraud\Services\FraudCaseService;
 use App\Domain\Fraud\Services\FraudDetectionService;
 use App\Domain\Fraud\Services\MachineLearningService;
 use App\Domain\Fraud\Services\RuleEngineService;
-use App\Domain\Account\Models\Account;
-use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
 use Mockery;

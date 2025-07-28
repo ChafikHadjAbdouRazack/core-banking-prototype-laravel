@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Basket;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Services\BasketAccountService;
 use App\Domain\Basket\Services\BasketValueCalculationService;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;

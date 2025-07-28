@@ -2,11 +2,11 @@
 
 namespace App\Domain\Fraud\Services;
 
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Fraud\Events\ChallengeRequired;
 use App\Domain\Fraud\Events\FraudDetected;
 use App\Domain\Fraud\Events\TransactionBlocked;
 use App\Domain\Fraud\Models\FraudScore;
-use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;

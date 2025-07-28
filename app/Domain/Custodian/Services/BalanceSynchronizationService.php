@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Domain\Custodian\Services;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Custodian\Events\AccountBalanceUpdated;
 use App\Domain\Custodian\Models\CustodianAccount;
 use App\Domain\Custodian\ValueObjects\AccountInfo;
 use App\Domain\Wallet\Services\WalletService;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

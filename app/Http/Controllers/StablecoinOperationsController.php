@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Stablecoin\Models\StablecoinOperation;
 use App\Domain\Stablecoin\Workflows\BurnStablecoinWorkflow;
 use App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V2;
 
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Services\AccountService;
 use App\Domain\Asset\Services\ExchangeRateService;
@@ -12,7 +13,6 @@ use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketValue;
 use App\Domain\Wallet\Workflows\WalletConvertWorkflow;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

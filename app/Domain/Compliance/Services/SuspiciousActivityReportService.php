@@ -2,10 +2,10 @@
 
 namespace App\Domain\Compliance\Services;
 
+use App\Domain\Account\Models\Transaction;
 use App\Domain\Compliance\Events\SARCreated;
 use App\Domain\Compliance\Events\SARSubmitted;
 use App\Domain\Compliance\Models\SuspiciousActivityReport;
-use App\Domain\Account\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;

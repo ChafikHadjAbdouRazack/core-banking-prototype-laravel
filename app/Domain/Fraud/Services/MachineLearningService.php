@@ -2,8 +2,8 @@
 
 namespace App\Domain\Fraud\Services;
 
-use App\Domain\Fraud\Models\FraudScore;
 use App\Domain\Account\Models\Transaction;
+use App\Domain\Fraud\Models\FraudScore;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;

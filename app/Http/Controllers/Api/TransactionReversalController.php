@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Workflows\TransactionReversalWorkflow;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

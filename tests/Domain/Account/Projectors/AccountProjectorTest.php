@@ -4,9 +4,9 @@ namespace Tests\Domain\Account\Projectors;
 
 use App\Domain\Account\Aggregates\AssetTransactionAggregate;
 use App\Domain\Account\Aggregates\LedgerAggregate;
+use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Utils\ValidatesHash;
-use App\Domain\Account\Models\Account;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;

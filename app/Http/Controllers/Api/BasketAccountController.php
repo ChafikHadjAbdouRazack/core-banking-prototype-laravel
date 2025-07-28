@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Basket\Services\BasketService;
 use App\Http\Controllers\Controller;
-use App\Domain\Account\Models\Account;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

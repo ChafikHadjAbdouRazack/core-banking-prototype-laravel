@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Domain\Asset\Models\Asset;
 use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use App\Providers\AppServiceProvider;
 

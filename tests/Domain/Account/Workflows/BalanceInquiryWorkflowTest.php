@@ -1,8 +1,8 @@
 <?php
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\Workflows\BalanceInquiryWorkflow;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Workflows\BalanceInquiryWorkflow;
 use Workflow\WorkflowStub;
 
 it('can perform balance inquiry', function () {

@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\GcuVotingProposalResource\Pages;
 
 use App\Filament\Admin\Resources\GcuVotingProposalResource;
-use App\Domain\Account\Models\Account;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateGcuVotingProposal extends CreateRecord

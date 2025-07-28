@@ -2,7 +2,6 @@
 
 namespace App\Domain\Account\Models;
 
-use App\Domain\Account\Models\Account;
 use Database\Factories\TurnoverFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
