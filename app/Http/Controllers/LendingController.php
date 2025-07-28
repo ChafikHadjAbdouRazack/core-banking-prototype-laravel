@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Lending\DataObjects\LoanApplication;
-use App\Domain\Lending\Projections\Loan;
+use App\Domain\Lending\Models\Loan;
+use App\Domain\Lending\Models\LoanApplication as LoanApplicationModel;
+use App\Domain\Lending\Models\LoanRepayment;
 use App\Domain\Lending\Services\CollateralManagementService;
 use App\Domain\Lending\Services\CreditScoringService;
 use App\Domain\Lending\Services\LoanApplicationService;
@@ -33,14 +35,8 @@ class LendingController extends Controller
         /** @var User $user */
 
         // Get user's loans
-        $loans = Loan::where(
-            'borrower_account_uuid',
-            function ($query) use ($user) {
-                $query->select('uuid')
-                    ->from('accounts')
-                    ->where('user_uuid', $user->uuid);
-            }
-        )->with(['repayments', 'collaterals'])->get();
+        $loans = Loan::where('borrower_id', $user->id)
+            ->with(['repayments'])->get();
 
         // Calculate statistics
         $statistics = $this->calculateUserStatistics($loans);
@@ -152,7 +148,7 @@ class LendingController extends Controller
     public function showLoan($loanId)
     {
         /** @var Loan|null $loan */
-        $loan = Loan::where('loan_uuid', $loanId)->first();
+        $loan = Loan::where('id', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
@@ -172,7 +168,7 @@ class LendingController extends Controller
     public function repay($loanId)
     {
         /** @var Loan|null $loan */
-        $loan = Loan::where('loan_uuid', $loanId)->first();
+        $loan = Loan::where('id', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
@@ -199,7 +195,7 @@ class LendingController extends Controller
         );
 
         /** @var Loan|null $loan */
-        $loan = Loan::where('loan_uuid', $loanId)->first();
+        $loan = Loan::where('id', $loanId)->first();
 
         if (! $loan || ! $this->userOwnsLoan($loan)) {
             abort(404, 'Loan not found');
