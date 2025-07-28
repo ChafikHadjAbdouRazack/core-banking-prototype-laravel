@@ -1,67 +1,67 @@
-# FinAegis Core Banking Platform
+# FinAegis Core Banking Prototype
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 
-**Enterprise-Grade Core Banking Platform with Event Sourcing & Multi-Asset Support**
+**Open Source Core Banking Prototype Demonstrating Modern Banking Architecture**
 
-FinAegis is a production-ready core banking platform built with event sourcing, domain-driven design, and regulatory compliance at its core. It provides the technical foundation for revolutionary financial products including the **Global Currency Unit (GCU)** - a democratic digital currency backed by real banks with government deposit insurance.
+FinAegis is a comprehensive prototype of a core banking platform built with event sourcing, domain-driven design, and modern banking patterns. It demonstrates the technical architecture for innovative financial products including the **Global Currency Unit (GCU)** concept - a democratic digital currency vision backed by real banks.
 
 📖 **See [GCU_VISION.md](GCU_VISION.md) for the complete platform vision and GCU implementation details.**
 
 **🤖 AI-Friendly Architecture**: This project is designed for AI-assisted development. The comprehensive documentation, domain-driven design, and well-structured patterns make it ideal for AI coding assistants (Claude Code, GitHub Copilot, Cursor) to understand and contribute effectively.
 
-## 🚀 Key Features
+## 🚧 Prototype Status
 
-FinAegis provides a comprehensive foundation for modern financial services:
+**This is a demonstration prototype** showcasing modern banking architecture and concepts. While it includes many advanced features, it is not production-ready and serves as:
 
-### 🌍 Featured Implementation: Global Currency Unit (GCU)
+- A technical demonstration of core banking patterns
+- An educational resource for developers
+- A foundation for future development
+- A showcase of modern financial technology concepts
 
-The platform includes support for implementing products like the GCU - a democratic digital currency:
+### 🌍 Conceptual Implementation: Global Currency Unit (GCU)
 
-- **Real Bank Backing**: User bank preference model supports multiple banks (e.g., Paysera, Deutsche Bank, Santander)
-- **User-Controlled**: Monthly voting templates for currency basket composition
-- **Multi-Currency Basket**: Configurable basket with default USD (40%), EUR (30%), GBP (15%), CHF (10%), JPY (3%), Gold (2%)
-- **Deposit Insurance**: Designed for government protection through real bank storage
-- **Democratic Governance**: Asset-weighted voting (1 unit = 1 vote)
-- **Low Fees**: Platform supports configurable fee structures
+The prototype demonstrates how a democratic digital currency could work:
 
-## 🏛️ Platform Capabilities
+- **Conceptual Bank Integration**: Models for multi-bank support (placeholder implementations)
+- **Voting System Demo**: Showcases democratic governance concepts
+- **Multi-Currency Basket**: Demonstrates basket asset management
+- **Architecture Patterns**: Shows how such a system could be built
 
-FinAegis provides the technical foundation for diverse financial products:
+## 🏛️ Technical Demonstrations
 
-### Core Banking Excellence
-- **Event Sourcing Architecture**: Complete audit trail of all transactions
-- **Saga Pattern Workflows**: Reliable business process orchestration with compensation
-- **Domain-Driven Design**: Clean, maintainable code architecture
-- **Quantum-Resistant Security**: SHA3-512 cryptographic hashing
-- **Real-time Processing**: High-performance transaction processing (10,000+ TPS)
-- **Regulatory Compliance**: Built-in audit trails and compliance features
+The prototype showcases advanced banking architecture patterns:
 
-### Multi-Asset Capabilities (✅ Implemented)
-- **Asset-Agnostic Ledger**: Support for fiat, crypto, commodities, and custom assets
-- **Multi-Currency Operations**: Seamless cross-currency transactions with real-time rates
-- **Exchange Rate Management**: Pluggable rate providers with caching
-- **Account Balance System**: Per-asset balance tracking with automatic USD creation
-- **Basket Assets**: Composite assets with fixed/dynamic rebalancing and performance tracking
+### Core Banking Architecture
+- **Event Sourcing Pattern**: Demonstrates audit trail implementation
+- **Saga Pattern Workflows**: Shows compensation and rollback handling
+- **Domain-Driven Design**: Example of clean architecture patterns
+- **Security Patterns**: Demonstrates hashing and validation approaches
+- **Performance Optimization**: Shows caching and optimization techniques
+- **Compliance Patterns**: Examples of audit and compliance features
 
-### Decentralized Architecture (✅ Implemented)
-- **Custodian Abstraction**: Complete interface with multiple connector implementations
-- **Multi-Custodian Support**: Paysera, Deutsche Bank, Santander connectors implemented
-- **Automated Reconciliation**: BalanceSynchronizationService with scheduled sync
-- **Risk Distribution**: Multi-bank allocation with intelligent routing
-- **User Bank Preferences**: Complete implementation with 5-bank support
+### Implemented Features (Prototype Demonstrations)
 
-### Democratic Governance (✅ Enhanced)
-- **User Voting System**: Complete polling system for platform decisions
-- **Configurable Voting Power**: One-user-one-vote and asset-weighted voting strategies
-- **Asset-Weighted Voting**: Voting power based on primary asset holdings (1 unit = 1 vote)
-- **Automated Execution**: Poll results trigger system workflows (UpdateBasketCompositionWorkflow, etc.)
-- **Monthly Voting Templates**: Pre-configured polls for currency basket composition
-- **Transparency**: Complete audit trail of all governance actions
-- **Admin Interface**: Full poll management and vote monitoring in admin dashboard
+#### Multi-Asset Support
+- **Asset Management**: Models for various asset types (fiat, crypto, commodities)
+- **Multi-Currency Demo**: Shows cross-currency transaction concepts
+- **Exchange Rate System**: Demonstrates rate provider integration patterns
+- **Balance Tracking**: Per-asset balance demonstration
+- **Basket Assets**: Composite asset implementation example
+
+#### Architecture Patterns
+- **Service Abstraction**: Shows how to integrate with external services
+- **Event-Driven Design**: Demonstrates event sourcing patterns
+- **Workflow Orchestration**: Examples of complex business processes
+- **Domain Modeling**: Clean separation of business logic
+
+#### Governance Concepts
+- **Voting System**: Demonstrates democratic decision-making
+- **Poll Management**: Shows how voting could work
+- **Automated Workflows**: Examples of vote-triggered actions
 
 ## 🚀 Quick Start
 
@@ -598,9 +598,9 @@ POST   /api/bian/payment-initiation     # BIAN payment processing
 - **SOX**: Financial reporting controls
 - **Basel III**: Risk management framework
 
-## 🚀 Deployment
+## 🚀 Local Development Setup
 
-### Docker Deployment
+### Docker Development Environment
 
 ```yaml
 version: '3.8'
@@ -610,7 +610,7 @@ services:
     ports:
       - "8000:80"
     environment:
-      - APP_ENV=production
+      - APP_ENV=local
       - DB_CONNECTION=mysql
       - REDIS_HOST=redis
       - QUEUE_CONNECTION=redis
@@ -625,11 +625,11 @@ services:
     image: redis:7-alpine
 ```
 
-### Production Considerations
-- Load balancing for high availability
-- Database clustering for scalability
-- Redis clustering for cache/queue resilience
-- Comprehensive monitoring and alerting
+### Important Notes
+- This is a prototype for demonstration purposes
+- Not intended for production use without significant additional work
+- Requires proper security review before any real-world deployment
+- Bank integrations are conceptual demonstrations only
 
 ## 🤝 Contributing
 
@@ -682,8 +682,8 @@ We welcome contributions from the community, including **AI coding assistants an
 
 See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementation phases.
 
-### Current Status: Ready for Production (Q1 2025)
-The FinAegis platform has completed all major technical phases and is ready for production deployment with regulatory approval.
+### Current Status: Prototype Demonstration
+The FinAegis prototype demonstrates comprehensive banking architecture patterns and serves as a foundation for future development.
 
 #### Completed Phases ✅
 - **Phase 1-3**: Multi-asset foundation, exchange rates, and platform integration
@@ -725,12 +725,12 @@ The FinAegis platform has completed all major technical phases and is ready for 
 - **Error Handling**: Robust failure recovery across banks
 - **Performance Optimization**: Sub-second transaction processing
 
-### Next Phase: GCU Launch (Q2 2025)
-- [ ] **User Interface**: GCU wallet and bank selection flow
-- [ ] **Mobile Apps**: Native iOS/Android applications
-- [ ] **Public API**: External developer API with SDKs
-- [ ] **Beta Testing**: Limited user beta program
-- [ ] **Regulatory Approval**: Lithuanian EMI license finalization
+### Future Development Opportunities
+- [ ] **Production Hardening**: Security review and production readiness
+- [ ] **Real Bank Integration**: Actual API integration with partner banks
+- [ ] **Regulatory Compliance**: Full compliance implementation
+- [ ] **User Interface**: Complete web and mobile applications
+- [ ] **Testing & Validation**: Comprehensive testing for production use
 
 ## 🆘 Support
 

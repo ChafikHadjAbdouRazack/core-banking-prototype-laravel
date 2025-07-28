@@ -1,19 +1,19 @@
-# FinAegis Platform Documentation
+# FinAegis Prototype Documentation
 
-Welcome to the **FinAegis Platform** documentation - the enterprise-grade financial infrastructure powering the next generation of banking services.
+Welcome to the **FinAegis Prototype** documentation - a comprehensive demonstration of modern banking architecture and financial service patterns.
 
-## 🏛️ Platform Overview
+## 🏛️ Prototype Overview
 
-**FinAegis** is a comprehensive financial platform that delivers:
+**FinAegis** is an open-source banking prototype that demonstrates:
 
-**🌟 Core Product:**
-- **Global Currency Unit (GCU)** - Revolutionary user-controlled global currency with democratic governance
+**🌟 Core Concepts:**
+- **Global Currency Unit (GCU)** - Conceptual demonstration of a democratic digital currency
 
-**⚙️ Sub-Products:**
-- **FinAegis Exchange** - Multi-currency and crypto trading marketplace
-- **FinAegis Lending** - P2P lending platform for businesses and individuals  
-- **FinAegis Stablecoins** - EUR-pegged and multi-backed stable token issuance
-- **FinAegis Treasury** - Advanced multi-bank allocation and treasury management
+**⚙️ Technical Demonstrations:**
+- **Exchange Module** - Example multi-currency trading architecture
+- **Lending Module** - P2P lending platform patterns  
+- **Stablecoin Framework** - Collateralized token issuance concepts
+- **Treasury Management** - Multi-bank allocation patterns
 
 ## 📚 Documentation Structure
 

@@ -1,7 +1,7 @@
 {
     "name": "finaegis",
     "version": "1.0.0",
-    "description": "Core Banking as a Service",
+    "description": "Core Banking Prototype - Educational Demonstration",
     "author": "Marijus Planciunas <yozaz.mandac@gmail.com>",
     "license": "Apache-2.0",
     "repository": {
