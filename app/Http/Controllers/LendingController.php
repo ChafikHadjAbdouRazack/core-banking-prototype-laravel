@@ -35,7 +35,7 @@ class LendingController extends Controller
         /** @var User $user */
 
         // Get user's loans
-        $loans = Loan::where('borrower_id', $user->id)
+        $loans = Loan::where('borrower_id', $user->uuid)
             ->with(['repayments'])->get();
 
         // Calculate statistics
