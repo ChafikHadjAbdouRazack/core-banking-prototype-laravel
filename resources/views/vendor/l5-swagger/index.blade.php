@@ -126,6 +126,12 @@
         const urls = [];
 
         @foreach($urlsToDocs as $title => $url)
+            @php
+                // Fix the URL format - replace ?api-docs.json with /api-docs.json
+                if (strpos($url, '?api-docs.json') !== false) {
+                    $url = str_replace('?api-docs.json', '/api-docs.json', $url);
+                }
+            @endphp
             urls.push({name: "{{ $title }}", url: "{{ $url }}"});
         @endforeach
 

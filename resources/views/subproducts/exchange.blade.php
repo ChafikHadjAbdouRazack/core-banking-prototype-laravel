@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FinAegis Exchange - Professional trading platform for digital and traditional assets with institutional-grade infrastructure.">
-        <meta name="keywords" content="FinAegis Exchange, crypto trading, forex, asset exchange, trading platform">
-        
-        <title>FinAegis Exchange - Multi-Asset Trading Platform</title>
+@extends('layouts.public')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'FinAegis Exchange - Multi-Asset Trading Platform')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-        </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FinAegis Exchange - Multi-Asset Trading Platform',
+        'description' => 'FinAegis Exchange - Professional trading platform for digital and traditional assets with institutional-grade infrastructure.',
+        'keywords' => 'FinAegis Exchange, crypto trading, forex, asset exchange, trading platform',
+    ])
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section -->
         <section class="pt-16 gradient-bg text-white">
@@ -200,6 +194,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

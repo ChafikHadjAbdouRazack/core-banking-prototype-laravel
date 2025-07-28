@@ -99,7 +99,11 @@ class SocialAuthController extends Controller
      *
      * @OA\JsonContent(
      *
-     * @OA\Property(property="user",    ref="#/components/schemas/User"),
+     * @OA\Property(property="user",    type="object",
+     *     @OA\Property(property="id", type="integer", example=1),
+     *     @OA\Property(property="name", type="string", example="John Doe"),
+     *     @OA\Property(property="email", type="string", example="john@example.com")
+     * ),
      * @OA\Property(property="token",   type="string", example="1|laravel_sanctum_token..."),
      * @OA\Property(property="message", type="string", example="Authenticated successfully")
      *         )

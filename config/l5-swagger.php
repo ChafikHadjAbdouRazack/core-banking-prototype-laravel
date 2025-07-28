@@ -13,6 +13,11 @@ return [
                  * Route for accessing api documentation interface
                  */
                 'api' => 'api/documentation',
+                
+                /*
+                 * Route for accessing parsed swagger annotations.
+                 */
+                'docs' => 'docs',
             ],
             'paths' => [
                 /*
@@ -29,6 +34,11 @@ return [
                  * File name of the generated json documentation file
                  */
                 'docs_json' => 'api-docs.json',
+                
+                /*
+                 * Absolute path to file containing the swagger annotations
+                 */
+                'docs_url' => '/docs/api-docs.json',
 
                 /*
                  * File name of the generated YAML documentation file
@@ -44,7 +54,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/Http/Controllers/Api/V2'),
                 ],
             ],
         ],
@@ -312,7 +322,7 @@ return [
          * Constants which can be used in annotations
          */
         'constants' => [
-            'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
+            'L5_SWAGGER_CONST_HOST' => env('APP_URL', 'http://localhost') . '/api/v2',
         ],
     ],
 ];

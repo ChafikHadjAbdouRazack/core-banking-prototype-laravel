@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FinAegis Treasury - Multi-bank cash management and FX optimization for enterprises. Maximize returns while minimizing risk.">
-        <meta name="keywords" content="FinAegis Treasury, cash management, FX optimization, corporate treasury">
-        
-        <title>FinAegis Treasury - Coming Soon</title>
+@extends('layouts.public')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'FinAegis Treasury - Coming Soon')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-        </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FinAegis Treasury - Coming Soon',
+        'description' => 'FinAegis Treasury - Multi-bank cash management and FX optimization for enterprises. Maximize returns while minimizing risk.',
+        'keywords' => 'FinAegis Treasury, cash management, FX optimization, corporate treasury',
+    ])
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section -->
         <section class="pt-16 gradient-bg text-white">
@@ -171,6 +165,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

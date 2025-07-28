@@ -41,6 +41,7 @@
                 <ul class="space-y-2">
                     <li><a href="{{ route('platform') }}" class="text-gray-400 hover:text-white">Platform</a></li>
                     <li><a href="{{ route('pricing') }}" class="text-gray-400 hover:text-white">Pricing</a></li>
+                    <li><a href="{{ route('cgo') }}" class="text-gray-400 hover:text-white">CGO Investment</a></li>
                     <li><a href="{{ route('security') }}" class="text-gray-400 hover:text-white">Security</a></li>
                     <li><a href="{{ route('compliance') }}" class="text-gray-400 hover:text-white">Compliance</a></li>
                     <li><a href="{{ route('status') }}" class="text-gray-400 hover:text-white">System Status</a></li>

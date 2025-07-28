@@ -1,30 +1,24 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FinAegis Stablecoins - Issue and manage stable digital currencies with transparent reserves and regulatory compliance.">
-        <meta name="keywords" content="FinAegis Stablecoins, EUR stablecoin, digital currency, asset-backed tokens">
-        
-        <title>FinAegis Stablecoins - EUR-Pegged Digital Currency</title>
+@extends('layouts.public')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'FinAegis Stablecoins - EUR-Pegged Digital Currency')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-        </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FinAegis Stablecoins - EUR-Pegged Digital Currency',
+        'description' => 'FinAegis Stablecoins - Issue and manage stable digital currencies with transparent reserves and regulatory compliance.',
+        'keywords' => 'FinAegis Stablecoins, EUR stablecoin, digital currency, asset-backed tokens',
+    ])
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section -->
         <section class="pt-16 gradient-bg text-white">
@@ -171,6 +165,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

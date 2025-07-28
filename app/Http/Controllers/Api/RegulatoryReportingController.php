@@ -726,7 +726,7 @@ class RegulatoryReportingController extends Controller
      *             header="Content-Disposition",
      *             description="Attachment header with filename",
      *
-     * @OA\Schema(type="string", example="attachment; filename=\"ctr-2024-01-15.json\"")
+     * @OA\Schema(type="string", example="attachment; filename=ctr-2024-01-15.json")
      *         )
      *     ),
      *

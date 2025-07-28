@@ -99,7 +99,7 @@ class ExchangeRateProviderController extends Controller
      *
      * @OA\Get(
      *     path="/api/exchange-rates/providers/{provider}/rate",
-     *     operationId="getExchangeRate",
+     *     operationId="getProviderExchangeRate",
      *     tags={"Exchange Rates"},
      *     summary="Get exchange rate from specific provider",
      *     description="Retrieves the current exchange rate for a currency pair from the specified provider",

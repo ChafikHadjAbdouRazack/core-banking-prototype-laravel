@@ -1,43 +1,32 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        <title>FinAegis Platform - Open Banking for Developers</title>
+@extends('layouts.public')
 
-        @include('partials.favicon')
-        
-        @include('partials.seo', [
-            'title' => 'FinAegis Platform - Open Banking for Developers',
-            'description' => 'FinAegis Platform - Open-source banking infrastructure for developers. Build, deploy, and scale financial services with our MIT-licensed platform.',
-            'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development',
-        ])
+@section('title', 'FinAegis Platform - Open Banking for Developers')
 
-        {{-- Schema.org Markup --}}
-        <x-schema type="software" />
-        <x-schema type="breadcrumb" :data="[
-            ['name' => 'Home', 'url' => url('/')],
-            ['name' => 'Platform', 'url' => url('/platform')]
-        ]" />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FinAegis Platform - Open Banking for Developers',
+        'description' => 'FinAegis Platform - Open-source banking infrastructure for developers. Build, deploy, and scale financial services with our MIT-licensed platform.',
+        'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development',
+    ])
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.bunny.net/css?family=fira-code:400,500&display=swap" rel="stylesheet" />
+    {{-- Schema.org Markup --}}
+    <x-schema type="software" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Platform', 'url' => url('/platform')]
+    ]" />
+@endsection
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-            .terminal-gradient {
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            }
-            .code-font {
+@push('styles')
+<link href="https://fonts.bunny.net/css?family=fira-code:400,500&display=swap" rel="stylesheet" />
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .terminal-gradient {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    .code-font {
                 font-family: 'Fira Code', monospace;
             }
             @keyframes typing {
@@ -81,13 +70,12 @@
                 box-shadow: 0 12px 24px rgba(0,0,0,0.15);
             }
         </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+@endpush
+
+@section('content')
 
         <!-- Hero Section - Terminal Style -->
-        <section class="pt-16 terminal-gradient text-white relative overflow-hidden">
+        <section class="terminal-gradient text-white relative overflow-hidden">
             <!-- Matrix effect background -->
             <div class="absolute inset-0 matrix-bg opacity-20"></div>
             
@@ -223,7 +211,7 @@
                         <div class="pl-12">
                             <h3 class="text-lg font-semibold mb-2">Clone the Repository</h3>
                             <div class="bg-gray-900 rounded-lg p-4 code-font text-sm">
-                                <span class="text-gray-400">$</span> <span class="text-green-400">git clone</span> <span class="text-blue-400">finaegis/core</span>
+                                <span class="text-gray-400">$</span> <span class="text-green-400">git clone</span> <span class="text-blue-400">https://github.com/FinAegis/core-banking-prototype-laravel</span>
                             </div>
                         </div>
                     </div>
@@ -506,6 +494,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

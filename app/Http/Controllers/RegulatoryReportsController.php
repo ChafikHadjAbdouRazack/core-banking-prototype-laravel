@@ -80,15 +80,27 @@ class RegulatoryReportsController extends Controller
         );
 
         try {
-            $report = $this->reportGenerator->generateReport(
-                $request->report_type,
-                $request->start_date,
-                $request->end_date,
-                [
-                    'jurisdiction'    => $request->jurisdiction,
-                    'include_details' => $request->boolean('include_details'),
-                ]
-            );
+            $data = [
+                'report_type' => $request->report_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'jurisdiction' => $request->jurisdiction,
+                'include_details' => $request->boolean('include_details'),
+            ];
+
+            // Call the appropriate method based on report type
+            switch ($request->report_type) {
+                case 'ctr':
+                    $report = $this->reportGenerator->generateCTRReport($data);
+                    break;
+                case 'sar':
+                    $report = $this->reportGenerator->generateSARReport($data);
+                    break;
+                default:
+                    // For other report types, use a generic approach
+                    $report = $this->reportGenerator->generateCTRReport($data);
+                    break;
+            }
 
             return redirect()->route('regulatory.reports.show', $report)
                 ->with('success', 'Report generated successfully.');

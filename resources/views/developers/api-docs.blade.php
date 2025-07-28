@@ -1,4 +1,16 @@
-<x-guest-layout>
+@extends('layouts.public')
+
+@section('title', 'API Documentation - FinAegis')
+
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'API Documentation - FinAegis',
+        'description' => 'Complete reference documentation for the FinAegis REST API with interactive examples and code samples.',
+        'keywords' => 'FinAegis API, REST API, API documentation, developer reference',
+    ])
+@endsection
+
+@section('content')
     <div class="bg-white">
         <!-- Header -->
         <div class="bg-gradient-to-r from-gray-900 to-gray-800">
@@ -25,6 +37,7 @@
                     <a href="#transfers" class="text-gray-600 hover:text-gray-900">Transfers</a>
                     <a href="#gcu" class="text-gray-600 hover:text-gray-900">GCU</a>
                     <a href="#assets" class="text-gray-600 hover:text-gray-900">Assets</a>
+                    <a href="#baskets" class="text-gray-600 hover:text-gray-900">Baskets</a>
                     <a href="#webhooks" class="text-gray-600 hover:text-gray-900">Webhooks</a>
                     <a href="#errors" class="text-gray-600 hover:text-gray-900">Errors</a>
                 </nav>
@@ -43,21 +56,21 @@
                             <p>The FinAegis API provides programmatic access to our multi-asset banking platform. Our API is organized around REST principles with predictable, resource-oriented URLs.</p>
                             
                             <h3>Base URL</h3>
-                            <div class="bg-gray-100 rounded-lg p-4 font-mono text-sm">
-                                https://api.finaegis.org/v1
-                            </div>
+                            <x-code-block language="plaintext">
+https://api.finaegis.org/v2
+                            </x-code-block>
                             
                             <h3>Response Format</h3>
                             <p>All API responses are returned in JSON format with a consistent structure:</p>
                             
-                            <div class="bg-gray-900 rounded-lg p-6 overflow-x-auto">
-                                <pre class="text-green-400 text-sm"><code>{
+                            <x-code-block language="json">
+{
   "data": { ... },          // Main response data
   "meta": { ... },          // Metadata (pagination, etc.)
   "links": { ... },         // Related links
   "errors": [ ... ]         // Error details (if any)
-}</code></pre>
-                            </div>
+}
+                            </x-code-block>
                         </div>
                     </section>
 
@@ -78,11 +91,11 @@
                             <h3>API Key Authentication</h3>
                             <p>Include your API key in the Authorization header:</p>
                             
-                            <div class="bg-gray-900 rounded-lg p-6 overflow-x-auto">
-                                <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer fak_your_api_key_here" \
+                            <x-code-block language="bash">
+curl -H "Authorization: Bearer fak_your_api_key_here" \
      -H "Content-Type: application/json" \
-     https://api.finaegis.org/v2/accounts</code></pre>
-                            </div>
+     https://api.finaegis.org/v2/accounts
+                            </x-code-block>
                             
                             <h3>API Key Security</h3>
                             <ul>
@@ -96,8 +109,8 @@
                             <h3>Sandbox vs Production</h3>
                             <p>Use these base URLs for testing and production:</p>
                             <ul>
-                                <li><strong>Sandbox:</strong> https://api-sandbox.finaegis.org/v1</li>
-                                <li><strong>Production:</strong> https://api.finaegis.org/v1</li>
+                                <li><strong>Sandbox:</strong> https://api-sandbox.finaegis.org/v2</li>
+                                <li><strong>Production:</strong> https://api.finaegis.org/v2</li>
                             </ul>
                         </div>
                     </section>
@@ -117,10 +130,10 @@
                                 
                                 <p class="text-gray-600 mb-4">Retrieve a list of all accounts for the authenticated user.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/accounts</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/accounts
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6">
@@ -134,10 +147,10 @@
                                 
                                 <p class="text-gray-600 mb-4">Retrieve detailed information about a specific account.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/accounts/acct_1234567890</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/accounts/acct_1234567890
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6">
@@ -151,8 +164,8 @@
                                 
                                 <p class="text-gray-600 mb-4">Get current balances for all assets in an account.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>{
+                                <x-code-block language="json">
+{
   "data": {
     "account_uuid": "acct_1234567890",
     "balances": [
@@ -174,8 +187,87 @@
       "total_usd_equivalent": "2,850.75"
     }
   }
-}</code></pre>
+}
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="transactions" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Transactions</h2>
+                        
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">List Transactions</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/transactions</span>
+                                    </div>
                                 </div>
+                                
+                                <p class="text-gray-600 mb-4">Get a paginated list of all transactions.</p>
+                                
+                                <h4 class="font-semibold mb-2">Query Parameters:</h4>
+                                <ul class="list-disc list-inside text-gray-600 mb-4 space-y-1">
+                                    <li><code class="bg-gray-100 px-1">page</code> - Page number (default: 1)</li>
+                                    <li><code class="bg-gray-100 px-1">per_page</code> - Items per page (default: 20, max: 100)</li>
+                                    <li><code class="bg-gray-100 px-1">asset_code</code> - Filter by asset code</li>
+                                    <li><code class="bg-gray-100 px-1">status</code> - Filter by status</li>
+                                </ul>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     "https://api.finaegis.org/v2/transactions?page=1&per_page=20"
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Deposit Funds</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/accounts/{uuid}/deposit</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Deposit funds into an account.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": "500.00",
+    "asset_code": "USD",
+    "reference": "Initial deposit"
+  }' \
+  https://api.finaegis.org/v2/accounts/acct_1234567890/deposit
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Withdraw Funds</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/accounts/{uuid}/withdraw</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Withdraw funds from an account.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": "100.00",
+    "asset_code": "USD",
+    "reference": "ATM withdrawal"
+  }' \
+  https://api.finaegis.org/v2/accounts/acct_1234567890/withdraw
+                                </x-code-block>
                             </div>
                         </div>
                     </section>
@@ -183,19 +275,20 @@
                     <section id="transfers" class="mb-16">
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">Transfers</h2>
                         
-                        <div class="border rounded-lg p-6">
-                            <h3 class="text-xl font-semibold mb-4">Create Transfer</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                    <span class="ml-2 font-mono text-sm">/transfers</span>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Create Transfer</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/transfers</span>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <p class="text-gray-600 mb-4">Create a new transfer between accounts or to external recipients.</p>
-                            
-                            <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                <pre class="text-green-400 text-sm"><code>curl -X POST \
+                                
+                                <p class="text-gray-600 mb-4">Create a new transfer between accounts.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
   -H "Authorization: Bearer your_api_key" \
   -H "Content-Type: application/json" \
   -d '{
@@ -206,7 +299,25 @@
     "reference": "Payment for services",
     "workflow_enabled": true
   }' \
-  https://api.finaegis.org/v1/transfers</code></pre>
+  https://api.finaegis.org/v2/transfers
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Get Transfer History</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/accounts/{uuid}/transfers</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Get transfer history for a specific account.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/accounts/acct_1234567890/transfers
+                                </x-code-block>
                             </div>
                         </div>
                     </section>
@@ -230,10 +341,10 @@
                                 
                                 <p class="text-gray-600 mb-4">Get current information about the Global Currency Unit including composition and value.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/gcu
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6">
@@ -247,14 +358,14 @@
                                 
                                 <p class="text-gray-600 mb-4">Get detailed real-time composition data including current weights, values, and recent changes for each component asset.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto mb-4">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/composition</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/gcu/composition
+                                </x-code-block>
                                 
                                 <h4 class="font-semibold mb-2">Response Example:</h4>
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>{
+                                <x-code-block language="json">
+{
   "data": {
     "basket_code": "GCU",
     "last_updated": "2024-01-15T10:30:00Z",
@@ -298,8 +409,8 @@
       "30d_change_percent": 1.62
     }
   }
-}</code></pre>
-                                </div>
+}
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6">
@@ -319,10 +430,10 @@
                                     <li><code class="bg-gray-100 px-1">interval</code> - Data interval: hourly, daily, weekly, monthly (default: daily)</li>
                                 </ul>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/gcu/value-history?period=7d&interval=hourly"</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     "https://api.finaegis.org/v2/gcu/value-history?period=7d&interval=hourly"
+                                </x-code-block>
                             </div>
 
                             <!-- Voting Endpoints -->
@@ -347,10 +458,10 @@
                                     <li><code class="bg-gray-100 px-1">status</code> - Filter by status: active, upcoming, past (optional)</li>
                                 </ul>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/gcu/voting/proposals?status=active"</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     "https://api.finaegis.org/v2/gcu/voting/proposals?status=active"
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6 mb-6">
@@ -364,10 +475,10 @@
                                 
                                 <p class="text-gray-600 mb-4">Get detailed information about a specific voting proposal.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/voting/proposals/123</code></pre>
-                                </div>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/gcu/voting/proposals/123
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6 mb-6">
@@ -385,19 +496,19 @@
                                 <p class="text-gray-600 mb-4">Cast your vote on a proposal. Voting power is determined by your GCU balance.</p>
                                 
                                 <h4 class="font-semibold mb-2">Request Body:</h4>
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto mb-4">
-                                    <pre class="text-green-400 text-sm"><code>{
+                                <x-code-block language="json">
+{
   "vote": "for"  // Options: "for", "against", "abstain"
-}</code></pre>
-                                </div>
+}
+                                </x-code-block>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -X POST \
+                                <x-code-block language="bash">
+curl -X POST \
      -H "Authorization: Bearer your_api_key" \
      -H "Content-Type: application/json" \
      -d '{"vote": "for"}' \
-     https://api.finaegis.org/v2/gcu/voting/proposals/123/vote</code></pre>
-                                </div>
+     https://api.finaegis.org/v2/gcu/voting/proposals/123/vote
+                                </x-code-block>
                             </div>
 
                             <div class="border rounded-lg p-6">
@@ -414,10 +525,185 @@
                                 
                                 <p class="text-gray-600 mb-4">Get your voting history across all proposals.</p>
                                 
-                                <div class="bg-gray-900 rounded-lg p-4 overflow-x-auto">
-                                    <pre class="text-green-400 text-sm"><code>curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/voting/my-votes</code></pre>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/gcu/voting/my-votes
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="baskets" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Baskets</h2>
+                        
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Baskets are multi-asset currency units that can be composed and decomposed. The GCU is our primary basket.</p>
+                        </div>
+                        
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">List Baskets</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/baskets</span>
+                                    </div>
                                 </div>
+                                
+                                <p class="text-gray-600 mb-4">Get a list of all available baskets.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/baskets
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Get Basket Details</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/baskets/{code}</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Get detailed information about a specific basket.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/baskets/GCU
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Compose Basket</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/accounts/{uuid}/baskets/compose</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Convert individual assets into basket units.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "basket_code": "GCU",
+    "amount": "100.00"
+  }' \
+  https://api.finaegis.org/v2/accounts/acct_123/baskets/compose
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Decompose Basket</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/accounts/{uuid}/baskets/decompose</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Convert basket units back to individual assets.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "basket_code": "GCU",
+    "amount": "50.00"
+  }' \
+  https://api.finaegis.org/v2/accounts/acct_123/baskets/decompose
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="webhooks" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Webhooks</h2>
+                        
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Webhooks allow you to receive real-time notifications when events occur in your FinAegis account.</p>
+                        </div>
+                        
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">List Webhook Events</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/webhooks/events</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Get a list of all available webhook event types.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/webhooks/events
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Create Webhook</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                        <span class="ml-2 font-mono text-sm">/webhooks</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Create a new webhook endpoint.</p>
+                                
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/webhook",
+    "events": ["transaction.created", "transfer.completed"],
+    "description": "Main webhook endpoint"
+  }' \
+  https://api.finaegis.org/v2/webhooks
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">List Webhooks</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/webhooks</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Get all webhook endpoints for your account.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/webhooks
+                                </x-code-block>
+                            </div>
+                            
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Get Webhook Deliveries</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                        <span class="ml-2 font-mono text-sm">/webhooks/{id}/deliveries</span>
+                                    </div>
+                                </div>
+                                
+                                <p class="text-gray-600 mb-4">Get delivery history for a specific webhook.</p>
+                                
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     https://api.finaegis.org/v2/webhooks/webhook_123/deliveries
+                                </x-code-block>
                             </div>
                         </div>
                     </section>
@@ -437,15 +723,41 @@
                         </div>
 
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                            <h3 class="text-lg font-semibold text-blue-900 mb-4">Interactive API Explorer</h3>
-                            <p class="text-blue-800 mb-4">Try our API endpoints directly in your browser with our interactive documentation.</p>
-                            <a href="/docs/api-docs.json" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200">
-                                Open API Explorer
-                            </a>
+                            <h3 class="text-lg font-semibold text-blue-900 mb-4">OpenAPI Specification</h3>
+                            <p class="text-blue-800 mb-4">Download the OpenAPI specification file or view it in your preferred API client.</p>
+                            <div class="flex gap-3">
+                                <a href="/docs/api-docs.json" download="finaegis-api-v2.json" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200">
+                                    Download OpenAPI JSON
+                                </a>
+                                <a href="/api/documentation" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200">
+                                    Interactive API Explorer
+                                </a>
+                            </div>
+                            <p class="text-xs text-gray-600 mt-3">Import the JSON file into Postman, Insomnia, or any OpenAPI-compatible tool</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</x-guest-layout>
+@endsection
+
+@push('scripts')
+<script>
+function copyCode(button) {
+    const codeBlock = button.parentElement.querySelector('code');
+    const text = codeBlock.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        button.classList.add('text-green-400');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('text-green-400');
+        }, 2000);
+    });
+}
+</script>
+@endpush

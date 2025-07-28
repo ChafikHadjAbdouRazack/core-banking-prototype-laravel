@@ -1,4 +1,16 @@
-<x-guest-layout>
+@extends('layouts.public')
+
+@section('title', 'Postman Collection - FinAegis')
+
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Postman Collection - FinAegis',
+        'description' => 'Ready-to-use Postman collection with all FinAegis API endpoints pre-configured for testing.',
+        'keywords' => 'FinAegis API, Postman collection, API testing, developer tools',
+    ])
+@endsection
+
+@section('content')
     <div class="bg-white">
         <!-- Header -->
         <div class="bg-gradient-to-r from-orange-600 to-red-600">
@@ -59,8 +71,18 @@
                                 <h3 class="text-xl font-semibold">Import Collection</h3>
                             </div>
                             <p class="text-gray-600 mb-4">Open Postman and import the downloaded collection file.</p>
-                            <div class="bg-gray-100 rounded p-3 text-sm font-mono">
-                                File → Import → Select FinAegis-API.postman_collection.json
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center space-x-2 text-sm">
+                                    <span class="bg-white px-3 py-1 rounded border border-gray-300 font-medium">File</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    <span class="bg-white px-3 py-1 rounded border border-gray-300 font-medium">Import</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    <span class="bg-blue-50 px-3 py-1 rounded border border-blue-200 font-medium text-blue-700">FinAegis-API.postman_collection.json</span>
+                                </div>
                             </div>
                         </div>
 
@@ -72,8 +94,18 @@
                                 <h3 class="text-xl font-semibold">Setup Environment</h3>
                             </div>
                             <p class="text-gray-600 mb-4">Import the environment file and configure your API key.</p>
-                            <div class="bg-gray-100 rounded p-3 text-sm font-mono">
-                                Environments → Import → Select FinAegis-Environment.postman_environment.json
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center space-x-2 text-sm">
+                                    <span class="bg-white px-3 py-1 rounded border border-gray-300 font-medium">Environments</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    <span class="bg-white px-3 py-1 rounded border border-gray-300 font-medium">Import</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                    <span class="bg-blue-50 px-3 py-1 rounded border border-blue-200 font-medium text-blue-700">FinAegis-Environment.postman_environment.json</span>
+                                </div>
                             </div>
                         </div>
 
@@ -85,8 +117,18 @@
                                 <h3 class="text-xl font-semibold">Configure API Key</h3>
                             </div>
                             <p class="text-gray-600 mb-4">Set your API key in the environment variables.</p>
-                            <div class="bg-gray-100 rounded p-3 text-sm font-mono">
-                                Set api_key variable to your actual API key
+                            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <svg class="w-5 h-5 text-blue-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Configure API Key</p>
+                                        <p class="text-sm text-gray-600 mt-1">Replace <code class="bg-white px-2 py-1 rounded text-xs border border-gray-200">api_key</code> variable with your actual API key</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -94,25 +136,60 @@
                     <div class="bg-gray-50 rounded-lg p-6">
                         <h3 class="text-lg font-semibold mb-4">Environment Variables</h3>
                         <div class="space-y-3">
-                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                                <span class="font-mono text-sm">base_url</span>
-                                <span class="text-gray-600 text-sm">https://api.finaegis.org/v1</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        <code class="text-sm font-medium text-blue-600">base_url</code>
+                                    </div>
+                                    <span class="text-sm text-gray-600">http://finaegis.local/api/v2</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                                <span class="font-mono text-sm">sandbox_url</span>
-                                <span class="text-gray-600 text-sm">https://api-sandbox.finaegis.org/v1</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        <code class="text-sm font-medium text-blue-600">sandbox_url</code>
+                                    </div>
+                                    <span class="text-sm text-gray-600">http://finaegis.local/api/v2</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                                <span class="font-mono text-sm">api_key</span>
-                                <span class="text-gray-600 text-sm">your_api_key_here</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                        </svg>
+                                        <code class="text-sm font-medium text-orange-600">api_key</code>
+                                    </div>
+                                    <span class="text-sm text-gray-500 italic">your_api_key_here</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                                <span class="font-mono text-sm">account_uuid</span>
-                                <span class="text-gray-600 text-sm">set_after_account_creation</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        <code class="text-sm font-medium text-gray-600">account_uuid</code>
+                                    </div>
+                                    <span class="text-sm text-gray-500 italic">set_after_account_creation</span>
+                                </div>
                             </div>
-                            <div class="flex justify-between items-center py-2">
-                                <span class="font-mono text-sm">transfer_uuid</span>
-                                <span class="text-gray-600 text-sm">set_after_transfer_creation</span>
+                            <div class="bg-white rounded-lg p-3 border border-gray-200">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center space-x-2">
+                                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                        <code class="text-sm font-medium text-gray-600">transfer_uuid</code>
+                                    </div>
+                                    <span class="text-sm text-gray-500 italic">set_after_transfer_creation</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -230,8 +307,8 @@
 
                         <div>
                             <h3 class="text-lg font-semibold mb-4">Example Test Script</h3>
-                            <div class="bg-gray-900 rounded p-4 overflow-x-auto">
-                                <pre class="text-green-400 text-sm"><code>pm.test("Status code is 200", function () {
+                            <x-code-block language="javascript">
+pm.test("Status code is 200", function () {
     pm.response.to.have.status(200);
 });
 
@@ -242,12 +319,12 @@ pm.test("Response has data property", function () {
 
 pm.test("Account UUID is valid", function () {
     const jsonData = pm.response.json();
-    pm.expect(jsonData.data.uuid).to.match(/^acct_/);
+    pm.expect(jsonData.data.uuid).to.be.a('string');
     
     // Set account UUID for use in other requests
     pm.environment.set("account_uuid", jsonData.data.uuid);
-});</code></pre>
-                            </div>
+});
+                            </x-code-block>
                         </div>
                     </div>
                 </div>
@@ -262,12 +339,32 @@ pm.test("Account UUID is valid", function () {
                         <a href="{{ route('developers.show', 'api-docs') }}" class="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700 transition duration-200">
                             View API Docs
                         </a>
-                        <a href="{{ route('developers.show', 'examples') }}" class="bg-white text-orange-600 border-2 border-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition duration-200">
-                            See Examples
+                        <a href="{{ route('support.contact') }}" class="bg-white text-orange-600 border-2 border-orange-600 px-6 py-3 rounded-lg font-semibold hover:bg-orange-50 transition duration-200">
+                            Contact Support
                         </a>
                     </div>
                 </div>
             </section>
         </div>
     </div>
-</x-guest-layout>
+@endsection
+
+@push('scripts')
+<script>
+function copyCode(button) {
+    const codeBlock = button.parentElement.querySelector('code');
+    const text = codeBlock.textContent;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+        button.classList.add('text-green-400');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('text-green-400');
+        }, 2000);
+    });
+}
+</script>
+@endpush

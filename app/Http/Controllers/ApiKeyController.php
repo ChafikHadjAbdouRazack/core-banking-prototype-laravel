@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Account\Models\ApiKey;
+use App\Models\ApiKey;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -93,12 +93,22 @@ class ApiKeyController extends Controller
         }
 
         // Get usage statistics
+        /** @var \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\ApiKeyLog> $logsRelation */
+        $logsRelation = $apiKey->logs();
+        $weekAgoDate = now()->subDays(7);
+
+        $todayLogsCount = $logsRelation->newQuery()->where('created_at', '>=', now()->startOfDay())->count();
+        $monthLogsCount = $logsRelation->newQuery()->where('created_at', '>=', now()->startOfMonth())->count();
+        $weeklyAvgResponseTime = $logsRelation->newQuery()->where('created_at', '>=', $weekAgoDate)->avg('response_time') ?? 0;
+        $weeklyLogsCount = $logsRelation->newQuery()->where('created_at', '>=', $weekAgoDate)->count();
+        $weeklyFailedCount = $weeklyLogsCount > 0 ? $logsRelation->newQuery()->where('created_at', '>=', $weekAgoDate)->where('response_code', '>=', 400)->count() : 0;
+
         $stats = [
             'total_requests'      => $apiKey->request_count,
-            'requests_today'      => $apiKey->logs()->where('created_at', '>=', now()->startOfDay())->count(),
-            'requests_this_month' => $apiKey->logs()->where('created_at', '>=', now()->startOfMonth())->count(),
-            'avg_response_time'   => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->avg('response_time'),
-            'error_rate'          => $apiKey->logs()->where('created_at', '>=', now()->subDays(7))->failed()->count() / max($apiKey->logs()->where('created_at', '>=', now()->subDays(7))->count(), 1) * 100,
+            'requests_today'      => $todayLogsCount,
+            'requests_this_month' => $monthLogsCount,
+            'avg_response_time'   => $weeklyAvgResponseTime,
+            'error_rate'          => $weeklyLogsCount > 0 ? ($weeklyFailedCount / $weeklyLogsCount * 100) : 0,
         ];
 
         // Get recent logs

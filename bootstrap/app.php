@@ -12,13 +12,30 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api-bian.php'));
+            // Check if we're on the api subdomain
+            $isApiSubdomain = str_starts_with(request()->getHost(), 'api.');
+            
+            if ($isApiSubdomain) {
+                // For api.finaegis.org, load API routes without /api prefix
+                Route::middleware('api')
+                    ->group(base_path('routes/api.php'));
+                    
+                Route::middleware('api')
+                    ->group(base_path('routes/api-bian.php'));
 
-            Route::middleware('api')
-                ->prefix('api/v2')
-                ->group(base_path('routes/api-v2.php'));
+                Route::middleware('api')
+                    ->prefix('v2')
+                    ->group(base_path('routes/api-v2.php'));
+            } else {
+                // For main domain, keep the /api prefix
+                Route::middleware('api')
+                    ->prefix('api')
+                    ->group(base_path('routes/api-bian.php'));
+
+                Route::middleware('api')
+                    ->prefix('api/v2')
+                    ->group(base_path('routes/api-v2.php'));
+            }
         },
     )
     ->withMiddleware(function (Middleware $middleware) {

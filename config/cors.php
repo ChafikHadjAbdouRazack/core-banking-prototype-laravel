@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*', 'v1/*', 'v2/*', 'auth/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 
@@ -24,9 +24,12 @@ return [
         'http://localhost:3000',
         'http://localhost:8080',
         'http://localhost:5173',
-        // Add production origins here when deployed
-        // 'https://app.finaegis.com',
-        // 'https://dashboard.finaegis.com',
+        // Production origins
+        'https://finaegis.org',
+        'https://www.finaegis.org',
+        'https://api.finaegis.org',
+        'https://app.finaegis.org',
+        'https://dashboard.finaegis.org',
     ],
 
     'allowed_origins_patterns' => [],

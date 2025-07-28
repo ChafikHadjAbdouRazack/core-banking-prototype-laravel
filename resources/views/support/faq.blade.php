@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Frequently asked questions about FinAegis alpha platform, Global Currency Unit (GCU), and upcoming features.">
-    
-    <title>FAQ - Frequently Asked Questions | FinAegis</title>
+@extends('layouts.public')
 
-    @include('partials.favicon')
+@section('title', 'FAQ - Frequently Asked Questions | FinAegis')
+
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FAQ - Frequently Asked Questions | FinAegis',
+        'description' => 'Frequently asked questions about FinAegis alpha platform, Global Currency Unit (GCU), and upcoming features.',
+    ])
     
     {{-- Schema.org FAQ Markup --}}
     @php
@@ -40,41 +39,31 @@
         ['name' => 'Support', 'url' => url('/support')],
         ['name' => 'FAQ', 'url' => url('/support/faq')]
     ]" />
+@endsection
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .faq-item {
+        transition: all 0.3s ease;
+    }
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+    .faq-answer.active {
+        max-height: 800px;
+    }
+</style>
+@endpush
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .faq-item {
-            transition: all 0.3s ease;
-        }
-        .faq-answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .faq-answer.active {
-            max-height: 800px;
-        }
-    </style>
-</head>
-<body class="antialiased bg-gray-50">
-    <x-platform-banners />
-    
-    <!-- Spacer for fixed banner -->
-    <div class="h-12"></div>
-    
-    <x-main-navigation />
+@section('content')
 
     <!-- Hero Section -->
-    <section class="pt-16 pb-20 gradient-bg text-white">
+    <section class="pb-20 gradient-bg text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <h1 class="text-5xl font-bold mb-6">Frequently Asked Questions</h1>
@@ -512,5 +501,4 @@
             });
         });
     </script>
-</body>
-</html>
+@endsection
