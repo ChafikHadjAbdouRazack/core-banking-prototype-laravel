@@ -16,27 +16,27 @@ enum PollStatus: string
 
     public function getLabel(): string
     {
-        return match($this) {
-            self::DRAFT => 'Draft',
-            self::PENDING => 'Pending',
-            self::ACTIVE => 'Active',
-            self::CLOSED => 'Closed',
-            self::EXECUTED => 'Executed',
+        return match ($this) {
+            self::DRAFT     => 'Draft',
+            self::PENDING   => 'Pending',
+            self::ACTIVE    => 'Active',
+            self::CLOSED    => 'Closed',
+            self::EXECUTED  => 'Executed',
             self::CANCELLED => 'Cancelled',
-            self::FAILED => 'Failed',
+            self::FAILED    => 'Failed',
         };
     }
 
     public function getColor(): string
     {
-        return match($this) {
-            self::DRAFT => 'gray',
-            self::PENDING => 'yellow',
-            self::ACTIVE => 'green',
-            self::CLOSED => 'blue',
-            self::EXECUTED => 'purple',
+        return match ($this) {
+            self::DRAFT     => 'gray',
+            self::PENDING   => 'yellow',
+            self::ACTIVE    => 'green',
+            self::CLOSED    => 'blue',
+            self::EXECUTED  => 'purple',
             self::CANCELLED => 'red',
-            self::FAILED => 'red',
+            self::FAILED    => 'red',
         };
     }
 

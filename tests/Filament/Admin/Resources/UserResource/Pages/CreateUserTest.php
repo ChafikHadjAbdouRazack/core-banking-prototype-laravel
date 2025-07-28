@@ -12,8 +12,8 @@ it('has correct resource', function () {
     $reflection = new ReflectionClass(CreateUser::class);
     $property = $reflection->getProperty('resource');
     $property->setAccessible(true);
-    
-    expect($property->getValue())->toBe(\App\Filament\Admin\Resources\UserResource::class);
+
+    expect($property->getValue())->toBe(App\Filament\Admin\Resources\UserResource::class);
 });
 
 it('can be instantiated', function () {

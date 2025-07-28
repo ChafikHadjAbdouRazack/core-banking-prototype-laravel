@@ -15,8 +15,9 @@ class BatchJob extends Data
         public array $items,
         public ?string $scheduledAt = null,
         public array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public static function create(
         string $userUuid,
         string $name,

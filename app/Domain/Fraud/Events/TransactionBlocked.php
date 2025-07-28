@@ -2,17 +2,20 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Models\Transaction;
-use App\Models\FraudScore;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Fraud\Models\FraudScore;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class TransactionBlocked
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public Transaction $transaction;
+
     public FraudScore $fraudScore;
 
     public function __construct(Transaction $transaction, FraudScore $fraudScore)
@@ -22,7 +25,7 @@ class TransactionBlocked
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

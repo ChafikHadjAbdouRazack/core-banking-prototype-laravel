@@ -2,13 +2,13 @@
 
 namespace App\Domain\Account\Aggregates;
 
+use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Hash;
 use App\Domain\Account\Events\AssetTransferred;
 use App\Domain\Account\Events\TransferThresholdReached;
 use App\Domain\Account\Repositories\TransferRepository;
 use App\Domain\Account\Repositories\TransferSnapshotRepository;
 use App\Domain\Account\Utils\ValidatesHash;
-use App\Domain\Account\DataObjects\AccountUuid;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class AssetTransferAggregate extends AggregateRoot
@@ -17,16 +17,12 @@ class AssetTransferAggregate extends AggregateRoot
 
     public const int COUNT_THRESHOLD = 1000;
 
-    /**
-     * @param int $count
-     */
     public function __construct(
         public int $count = 0,
     ) {
     }
 
     /**
-     * @return TransferRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransferRepository
@@ -47,12 +43,6 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
-     * @param array|null $metadata
-     *
      * @return $this
      */
     public function transfer(
@@ -77,8 +67,6 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetTransferred $event
-     *
      * @return AssetTransferAggregate
      */
     public function applyAssetTransferred(AssetTransferred $event): static
@@ -104,13 +92,7 @@ class AssetTransferAggregate extends AggregateRoot
     }
 
     /**
-     * Generate hash for asset transfer
-     *
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
-     * @return Hash
+     * Generate hash for asset transfer.
      */
     protected function generateHashForAssetTransfer(
         AccountUuid $from,
@@ -126,18 +108,12 @@ class AssetTransferAggregate extends AggregateRoot
             $amount,
             time()
         );
+
         return new Hash(hash('sha3-512', $data));
     }
 
     /**
-     * Validate hash for asset transfer
-     *
-     * @param Hash $hash
-     * @param AccountUuid $from
-     * @param AccountUuid $to
-     * @param string $assetCode
-     * @param int $amount
-     * @return void
+     * Validate hash for asset transfer.
      */
     protected function validateHashForAssetTransfer(
         Hash $hash,
@@ -148,7 +124,7 @@ class AssetTransferAggregate extends AggregateRoot
     ): void {
         // For now, just validate that the hash exists and is in correct format
         // In production, you would implement proper hash validation logic
-        if (!$hash->getHash() || strlen($hash->getHash()) !== 128) {
+        if (! $hash->getHash() || strlen($hash->getHash()) !== 128) {
             throw new \InvalidArgumentException('Invalid hash format');
         }
     }

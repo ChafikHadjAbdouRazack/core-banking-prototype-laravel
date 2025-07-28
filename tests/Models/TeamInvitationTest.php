@@ -12,7 +12,7 @@ it('extends JetstreamTeamInvitation', function () {
 
 it('has correct fillable attributes', function () {
     $invitation = new TeamInvitation();
-    
+
     expect($invitation->getFillable())->toBe([
         'email',
         'role',

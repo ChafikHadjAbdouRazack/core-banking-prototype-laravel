@@ -10,21 +10,31 @@ use App\Domain\Exchange\Events\LiquidityRewardsClaimed;
 use App\Domain\Exchange\Events\LiquidityRewardsDistributed;
 use App\Domain\Exchange\Events\PoolFeeCollected;
 use App\Domain\Exchange\Events\PoolParametersUpdated;
-use App\Domain\Exchange\Exceptions\InsufficientLiquidityException;
+use App\Domain\Exchange\LiquidityPool\Repositories\LiquidityPoolEventRepository;
+use App\Domain\Exchange\LiquidityPool\Repositories\LiquidityPoolSnapshotRepository;
 use Brick\Math\BigDecimal;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class LiquidityPool extends AggregateRoot
 {
     private ?string $poolId = null;
+
     private ?string $baseCurrency = null;
+
     private ?string $quoteCurrency = null;
+
     private BigDecimal $baseReserve;
+
     private BigDecimal $quoteReserve;
+
     private BigDecimal $totalShares;
+
     private array $providers = [];
+
     private BigDecimal $feeRate;
+
     private bool $isActive = false;
+
     private array $metadata = [];
 
     public function __construct()
@@ -33,6 +43,26 @@ class LiquidityPool extends AggregateRoot
         $this->quoteReserve = BigDecimal::zero();
         $this->totalShares = BigDecimal::zero();
         $this->feeRate = BigDecimal::of('0.003'); // 0.3% default
+    }
+
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getStoredEventRepository(): LiquidityPoolEventRepository
+    {
+        return app()->make(
+            abstract: LiquidityPoolEventRepository::class
+        );
+    }
+
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function getSnapshotRepository(): LiquidityPoolSnapshotRepository
+    {
+        return app()->make(
+            abstract: LiquidityPoolSnapshotRepository::class
+        );
     }
 
     public function createPool(
@@ -46,13 +76,15 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('Pool already created');
         }
 
-        $this->recordThat(new LiquidityPoolCreated(
-            poolId: $poolId,
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            feeRate: $feeRate,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityPoolCreated(
+                poolId: $poolId,
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                feeRate: $feeRate,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -64,7 +96,7 @@ class LiquidityPool extends AggregateRoot
         string $minShares = '0',
         array $metadata = []
     ): self {
-        if (!$this->isActive) {
+        if (! $this->isActive) {
             throw new \DomainException('Pool is not active');
         }
 
@@ -72,14 +104,14 @@ class LiquidityPool extends AggregateRoot
         $quoteAmountDecimal = BigDecimal::of($quoteAmount);
 
         // Validate ratio for subsequent liquidity additions
-        if (!$this->totalShares->isZero()) {
+        if (! $this->totalShares->isZero()) {
             $currentRatio = $this->quoteReserve->dividedBy($this->baseReserve, 18, \Brick\Math\RoundingMode::DOWN);
             $inputRatio = $quoteAmountDecimal->dividedBy($baseAmountDecimal, 18, \Brick\Math\RoundingMode::DOWN);
-            
+
             // Allow 1% deviation
             $tolerance = BigDecimal::of('0.01');
             $deviation = $inputRatio->minus($currentRatio)->abs()->dividedBy($currentRatio, 18, \Brick\Math\RoundingMode::UP);
-            
+
             if ($deviation->isGreaterThan($tolerance)) {
                 throw new \DomainException('Input amounts deviate too much from pool ratio');
             }
@@ -87,22 +119,24 @@ class LiquidityPool extends AggregateRoot
 
         // Calculate shares to mint
         $shares = $this->calculateSharesForLiquidity($baseAmountDecimal, $quoteAmountDecimal);
-        
+
         if ($shares->isLessThan($minShares)) {
             throw new \DomainException('Slippage tolerance exceeded');
         }
 
-        $this->recordThat(new LiquidityAdded(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            baseAmount: $baseAmount,
-            quoteAmount: $quoteAmount,
-            sharesMinted: $shares->__toString(),
-            newBaseReserve: $this->baseReserve->plus($baseAmountDecimal)->__toString(),
-            newQuoteReserve: $this->quoteReserve->plus($quoteAmountDecimal)->__toString(),
-            newTotalShares: $this->totalShares->plus($shares)->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityAdded(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                baseAmount: $baseAmount,
+                quoteAmount: $quoteAmount,
+                sharesMinted: $shares->__toString(),
+                newBaseReserve: $this->baseReserve->plus($baseAmountDecimal)->__toString(),
+                newQuoteReserve: $this->quoteReserve->plus($quoteAmountDecimal)->__toString(),
+                newTotalShares: $this->totalShares->plus($shares)->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -114,7 +148,7 @@ class LiquidityPool extends AggregateRoot
         string $minQuoteAmount = '0',
         array $metadata = []
     ): self {
-        if (!$this->isActive) {
+        if (! $this->isActive) {
             throw new \DomainException('Pool is not active');
         }
 
@@ -134,17 +168,19 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('Slippage tolerance exceeded');
         }
 
-        $this->recordThat(new LiquidityRemoved(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            sharesBurned: $shares,
-            baseAmount: $baseAmount->__toString(),
-            quoteAmount: $quoteAmount->__toString(),
-            newBaseReserve: $this->baseReserve->minus($baseAmount)->__toString(),
-            newQuoteReserve: $this->quoteReserve->minus($quoteAmount)->__toString(),
-            newTotalShares: $this->totalShares->minus($sharesDecimal)->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRemoved(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                sharesBurned: $shares,
+                baseAmount: $baseAmount->__toString(),
+                quoteAmount: $quoteAmount->__toString(),
+                newBaseReserve: $this->baseReserve->minus($baseAmount)->__toString(),
+                newQuoteReserve: $this->quoteReserve->minus($quoteAmount)->__toString(),
+                newTotalShares: $this->totalShares->minus($sharesDecimal)->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -154,7 +190,7 @@ class LiquidityPool extends AggregateRoot
         string $inputAmount,
         string $minOutputAmount = '0'
     ): array {
-        if (!$this->isActive) {
+        if (! $this->isActive) {
             throw new \DomainException('Pool is not active');
         }
 
@@ -184,20 +220,22 @@ class LiquidityPool extends AggregateRoot
 
         // Collect fee
         $feeAmount = $inputAmountDecimal->multipliedBy($this->feeRate);
-        
-        $this->recordThat(new PoolFeeCollected(
-            poolId: $this->poolId,
-            currency: $inputCurrency,
-            feeAmount: $feeAmount->__toString(),
-            swapVolume: $inputAmount,
-            metadata: ['output_amount' => $outputAmount->__toString()]
-        ));
+
+        $this->recordThat(
+            new PoolFeeCollected(
+                poolId: $this->poolId,
+                currency: $inputCurrency,
+                feeAmount: $feeAmount->__toString(),
+                swapVolume: $inputAmount,
+                metadata: ['output_amount' => $outputAmount->__toString()]
+            )
+        );
 
         return [
-            'outputAmount' => $outputAmount->__toString(),
+            'outputAmount'   => $outputAmount->__toString(),
             'outputCurrency' => $outputCurrency,
-            'feeAmount' => $feeAmount->__toString(),
-            'priceImpact' => $this->calculatePriceImpact($inputAmountDecimal, $isBaseInput)->__toString()
+            'feeAmount'      => $feeAmount->__toString(),
+            'priceImpact'    => $this->calculatePriceImpact($inputAmountDecimal, $isBaseInput)->__toString(),
         ];
     }
 
@@ -206,25 +244,27 @@ class LiquidityPool extends AggregateRoot
         string $maxSlippage = '0.01',
         array $metadata = []
     ): self {
-        if (!$this->isActive) {
+        if (! $this->isActive) {
             throw new \DomainException('Pool is not active');
         }
 
         $targetRatioDecimal = BigDecimal::of($targetRatio);
         $currentRatio = $this->baseReserve->dividedBy($this->quoteReserve, 18);
-        
+
         $deviation = $currentRatio->minus($targetRatioDecimal)->abs()
             ->dividedBy($targetRatioDecimal, 18);
 
         if ($deviation->isGreaterThan($maxSlippage)) {
-            $this->recordThat(new LiquidityPoolRebalanced(
-                poolId: $this->poolId,
-                oldRatio: $currentRatio->__toString(),
-                newRatio: $targetRatio,
-                rebalanceAmount: '0', // Calculated by workflow
-                rebalanceCurrency: '', // Determined by workflow
-                metadata: $metadata
-            ));
+            $this->recordThat(
+                new LiquidityPoolRebalanced(
+                    poolId: $this->poolId,
+                    oldRatio: $currentRatio->__toString(),
+                    newRatio: $targetRatio,
+                    rebalanceAmount: '0', // Calculated by workflow
+                    rebalanceCurrency: '', // Determined by workflow
+                    metadata: $metadata
+                )
+            );
         }
 
         return $this;
@@ -239,13 +279,15 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('No liquidity providers to distribute rewards to');
         }
 
-        $this->recordThat(new LiquidityRewardsDistributed(
-            poolId: $this->poolId,
-            rewardAmount: $rewardAmount,
-            rewardCurrency: $rewardCurrency,
-            totalShares: $this->totalShares->__toString(),
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRewardsDistributed(
+                poolId: $this->poolId,
+                rewardAmount: $rewardAmount,
+                rewardCurrency: $rewardCurrency,
+                totalShares: $this->totalShares->__toString(),
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -255,7 +297,7 @@ class LiquidityPool extends AggregateRoot
         array $metadata = []
     ): self {
         $provider = $this->providers[$providerId] ?? null;
-        if (!$provider) {
+        if (! $provider) {
             throw new \DomainException('Provider not found in pool');
         }
 
@@ -264,12 +306,14 @@ class LiquidityPool extends AggregateRoot
             throw new \DomainException('No rewards to claim');
         }
 
-        $this->recordThat(new LiquidityRewardsClaimed(
-            poolId: $this->poolId,
-            providerId: $providerId,
-            rewards: $pendingRewards,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new LiquidityRewardsClaimed(
+                poolId: $this->poolId,
+                providerId: $providerId,
+                rewards: $pendingRewards,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -280,21 +324,23 @@ class LiquidityPool extends AggregateRoot
         array $metadata = []
     ): self {
         $changes = [];
-        
+
         if ($feeRate !== null) {
             $changes['fee_rate'] = $feeRate;
         }
-        
+
         if ($isActive !== null) {
             $changes['is_active'] = $isActive;
         }
 
-        if (!empty($changes)) {
-            $this->recordThat(new PoolParametersUpdated(
-                poolId: $this->poolId,
-                changes: $changes,
-                metadata: $metadata
-            ));
+        if (! empty($changes)) {
+            $this->recordThat(
+                new PoolParametersUpdated(
+                    poolId: $this->poolId,
+                    changes: $changes,
+                    metadata: $metadata
+                )
+            );
         }
 
         return $this;
@@ -312,10 +358,10 @@ class LiquidityPool extends AggregateRoot
         // Calculate shares proportionally
         $baseRatio = $baseAmount->dividedBy($this->baseReserve, 18, \Brick\Math\RoundingMode::DOWN);
         $quoteRatio = $quoteAmount->dividedBy($this->quoteReserve, 18, \Brick\Math\RoundingMode::DOWN);
-        
+
         // Use the minimum ratio to prevent manipulation
         $ratio = $baseRatio->isLessThan($quoteRatio) ? $baseRatio : $quoteRatio;
-        
+
         return $this->totalShares->multipliedBy($ratio);
     }
 
@@ -326,27 +372,27 @@ class LiquidityPool extends AggregateRoot
     ): BigDecimal {
         // Apply fee
         $inputWithFee = $inputAmount->multipliedBy(BigDecimal::one()->minus($this->feeRate));
-        
+
         // Constant product formula: (x + dx) * (y - dy) = x * y
         // dy = y * dx / (x + dx)
         $numerator = $outputReserve->multipliedBy($inputWithFee);
         $denominator = $inputReserve->plus($inputWithFee);
-        
+
         return $numerator->dividedBy($denominator, 18);
     }
 
     private function calculatePriceImpact(BigDecimal $inputAmount, bool $isBaseInput): BigDecimal
     {
-        $spotPrice = $isBaseInput 
+        $spotPrice = $isBaseInput
             ? $this->quoteReserve->dividedBy($this->baseReserve, 18)
             : $this->baseReserve->dividedBy($this->quoteReserve, 18);
-            
+
         $outputAmount = $isBaseInput
             ? $this->calculateOutputAmount($inputAmount, $this->baseReserve, $this->quoteReserve)
             : $this->calculateOutputAmount($inputAmount, $this->quoteReserve, $this->baseReserve);
-            
+
         $executionPrice = $outputAmount->dividedBy($inputAmount, 18);
-        
+
         return $spotPrice->minus($executionPrice)
             ->dividedBy($spotPrice, 18)
             ->abs()
@@ -369,14 +415,14 @@ class LiquidityPool extends AggregateRoot
         $this->baseReserve = BigDecimal::of($event->newBaseReserve);
         $this->quoteReserve = BigDecimal::of($event->newQuoteReserve);
         $this->totalShares = BigDecimal::of($event->newTotalShares);
-        
-        if (!isset($this->providers[$event->providerId])) {
+
+        if (! isset($this->providers[$event->providerId])) {
             $this->providers[$event->providerId] = [
-                'shares' => '0',
-                'pending_rewards' => []
+                'shares'          => '0',
+                'pending_rewards' => [],
             ];
         }
-        
+
         $currentShares = BigDecimal::of($this->providers[$event->providerId]['shares']);
         $this->providers[$event->providerId]['shares'] = $currentShares
             ->plus($event->sharesMinted)
@@ -388,7 +434,7 @@ class LiquidityPool extends AggregateRoot
         $this->baseReserve = BigDecimal::of($event->newBaseReserve);
         $this->quoteReserve = BigDecimal::of($event->newQuoteReserve);
         $this->totalShares = BigDecimal::of($event->newTotalShares);
-        
+
         $currentShares = BigDecimal::of($this->providers[$event->providerId]['shares']);
         $this->providers[$event->providerId]['shares'] = $currentShares
             ->minus($event->sharesBurned)
@@ -400,7 +446,7 @@ class LiquidityPool extends AggregateRoot
         if (isset($event->changes['fee_rate'])) {
             $this->feeRate = BigDecimal::of($event->changes['fee_rate']);
         }
-        
+
         if (isset($event->changes['is_active'])) {
             $this->isActive = $event->changes['is_active'];
         }
@@ -414,11 +460,11 @@ class LiquidityPool extends AggregateRoot
             if ($providerShares->isGreaterThan(0)) {
                 $shareRatio = $providerShares->dividedBy($this->totalShares, 18);
                 $providerReward = BigDecimal::of($event->rewardAmount)->multipliedBy($shareRatio);
-                
-                if (!isset($provider['pending_rewards'][$event->rewardCurrency])) {
+
+                if (! isset($provider['pending_rewards'][$event->rewardCurrency])) {
                     $provider['pending_rewards'][$event->rewardCurrency] = '0';
                 }
-                
+
                 $currentRewards = BigDecimal::of($provider['pending_rewards'][$event->rewardCurrency]);
                 $provider['pending_rewards'][$event->rewardCurrency] = $currentRewards
                     ->plus($providerReward)

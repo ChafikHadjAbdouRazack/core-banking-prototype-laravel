@@ -11,7 +11,8 @@ final readonly class PollOption
         public string $label,
         public ?string $description = null,
         public ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -26,14 +27,14 @@ final readonly class PollOption
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'label' => $this->label,
+            'id'          => $this->id,
+            'label'       => $this->label,
             'description' => $this->description,
-            'metadata' => $this->metadata,
+            'metadata'    => $this->metadata,
         ];
     }
 
-    public function equals(PollOption $other): bool
+    public function equals(self $other): bool
     {
         return $this->id === $other->id;
     }

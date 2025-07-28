@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Resources\AccountResource\Widgets;
 
-use App\Models\Account;
-use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\Turnover;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
@@ -12,16 +12,16 @@ use Illuminate\Database\Eloquent\Model;
 class AccountStatsOverview extends BaseWidget
 {
     public ?Model $record = null;
-    
+
     protected function getStats(): array
     {
-        if (!$this->record) {
+        if (! $this->record) {
             // Dashboard stats for all accounts
             $totalAccounts = Account::count();
             $activeAccounts = Account::where('frozen', false)->count();
             $frozenAccounts = Account::where('frozen', true)->count();
             $totalBalance = Account::sum('balance');
-            
+
             return [
                 Stat::make('Total Accounts', number_format($totalAccounts))
                     ->description($activeAccounts . ' active, ' . $frozenAccounts . ' frozen')
@@ -41,28 +41,28 @@ class AccountStatsOverview extends BaseWidget
                     ->color($frozenAccounts > 0 ? 'danger' : 'success'),
             ];
         }
-        
+
         // Individual account stats
         $account = $this->record;
-        
+
         $lastTransaction = Transaction::where('account_uuid', $account->uuid)
             ->latest()
             ->first();
-            
+
         $monthlyTurnover = Turnover::where('account_uuid', $account->uuid)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->first();
-            
+
         $totalTransactions = Transaction::where('account_uuid', $account->uuid)->count();
-        
+
         return [
             Stat::make('Current Balance', '$' . number_format($account->balance / 100, 2))
                 ->description($account->frozen ? 'Account Frozen' : 'Account Active')
                 ->descriptionIcon($account->frozen ? 'heroicon-m-lock-closed' : 'heroicon-m-lock-open')
                 ->color($account->frozen ? 'danger' : 'success'),
             Stat::make('Total Transactions', number_format($totalTransactions))
-                ->description($lastTransaction ? 'Last: ' . $lastTransaction->created_at->diffForHumans() : 'No transactions')
+                ->description($lastTransaction ? 'Last: ' . \Carbon\Carbon::parse($lastTransaction->created_at)->diffForHumans() : 'No transactions')
                 ->descriptionIcon('heroicon-m-arrow-path')
                 ->color('info'),
             Stat::make('Monthly Credit', '$' . number_format(($monthlyTurnover?->credit ?? 0) / 100, 2))

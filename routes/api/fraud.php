@@ -1,12 +1,12 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\Fraud\FraudDetectionController;
 use App\Http\Controllers\API\Fraud\FraudCaseController;
+use App\Http\Controllers\API\Fraud\FraudDetectionController;
 use App\Http\Controllers\API\Fraud\FraudRuleController;
+use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->prefix('fraud')->group(function () {
-    
+
     // Fraud Detection
     Route::prefix('detection')->group(function () {
         Route::post('analyze/transaction/{transaction}', [FraudDetectionController::class, 'analyzeTransaction'])
@@ -22,7 +22,7 @@ Route::middleware(['auth:sanctum'])->prefix('fraud')->group(function () {
         Route::get('model/metrics', [FraudDetectionController::class, 'getModelMetrics'])
             ->name('fraud.model.metrics');
     });
-    
+
     // Fraud Cases
     Route::prefix('cases')->group(function () {
         Route::get('/', [FraudCaseController::class, 'index'])
@@ -44,7 +44,7 @@ Route::middleware(['auth:sanctum'])->prefix('fraud')->group(function () {
         Route::get('{case}/timeline', [FraudCaseController::class, 'timeline'])
             ->name('fraud.cases.timeline');
     });
-    
+
     // Fraud Rules
     Route::prefix('rules')->group(function () {
         Route::get('/', [FraudRuleController::class, 'index'])

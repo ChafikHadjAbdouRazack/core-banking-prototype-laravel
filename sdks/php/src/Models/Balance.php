@@ -11,7 +11,7 @@ class Balance extends BaseModel
     {
         return $this->asset_code;
     }
-    
+
     /**
      * Get total balance.
      */
@@ -19,7 +19,7 @@ class Balance extends BaseModel
     {
         return $this->total_balance;
     }
-    
+
     /**
      * Get available balance.
      */
@@ -27,7 +27,7 @@ class Balance extends BaseModel
     {
         return $this->available_balance;
     }
-    
+
     /**
      * Get reserved balance.
      */

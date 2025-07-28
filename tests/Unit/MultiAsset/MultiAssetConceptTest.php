@@ -2,8 +2,8 @@
 
 namespace Tests\Unit\MultiAsset;
 
-use Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\UnitTestCase;
 
 /**
  * Conceptual tests for multi-asset platform features.
@@ -17,10 +17,10 @@ class MultiAssetConceptTest extends UnitTestCase
         // This test shows how accounts will support multiple assets
         $expectedStructure = [
             'account' => [
-                'uuid' => 'acc-123',
-                'name' => 'John Doe Savings',
+                'uuid'      => 'acc-123',
+                'name'      => 'John Doe Savings',
                 'user_uuid' => 'user-456',
-                'balances' => [
+                'balances'  => [
                     ['asset_code' => 'USD', 'balance' => 150000, 'precision' => 2], // $1,500.00
                     ['asset_code' => 'EUR', 'balance' => 100000, 'precision' => 2], // €1,000.00
                     ['asset_code' => 'BTC', 'balance' => 50000000, 'precision' => 8], // 0.5 BTC
@@ -40,23 +40,23 @@ class MultiAssetConceptTest extends UnitTestCase
         // Asset entity structure
         $assets = [
             [
-                'code' => 'USD',
-                'name' => 'US Dollar',
-                'type' => 'fiat',
+                'code'      => 'USD',
+                'name'      => 'US Dollar',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ],
             [
-                'code' => 'BTC',
-                'name' => 'Bitcoin',
-                'type' => 'crypto',
+                'code'      => 'BTC',
+                'name'      => 'Bitcoin',
+                'type'      => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ],
             [
-                'code' => 'XAU',
-                'name' => 'Gold (Troy Ounce)',
-                'type' => 'commodity',
+                'code'      => 'XAU',
+                'name'      => 'Gold (Troy Ounce)',
+                'type'      => 'commodity',
                 'precision' => 3,
                 'is_active' => true,
             ],
@@ -82,14 +82,14 @@ class MultiAssetConceptTest extends UnitTestCase
         // Convert $1,000 USD to EUR
         $usd_amount = 100000; // cents
         $eur_amount = (int) round($usd_amount * $rates['USD_EUR']);
-        
+
         $this->assertEquals(85000, $eur_amount); // €850.00
 
         // Convert 0.1 BTC to USD
         $btc_amount = 10000000; // satoshis (0.1 BTC)
         $btc_in_whole = $btc_amount / 100000000;
         $usd_value = (int) round($btc_in_whole * $rates['BTC_USD'] * 100);
-        
+
         $this->assertEquals(450000, $usd_value); // $4,500.00
     }
 
@@ -98,13 +98,13 @@ class MultiAssetConceptTest extends UnitTestCase
     {
         // Expected custodian connector behavior
         $mockTransfer = [
-            'id' => 'txn-789',
+            'id'           => 'txn-789',
             'from_account' => 'acc-123',
-            'to_account' => 'acc-456',
-            'asset_code' => 'USD',
-            'amount' => 50000, // $500.00
-            'status' => 'pending',
-            'custodian' => 'paysera',
+            'to_account'   => 'acc-456',
+            'asset_code'   => 'USD',
+            'amount'       => 50000, // $500.00
+            'status'       => 'pending',
+            'custodian'    => 'paysera',
             'external_ref' => 'PAY-2025-001',
         ];
 
@@ -118,9 +118,9 @@ class MultiAssetConceptTest extends UnitTestCase
     {
         // Governance poll example
         $poll = [
-            'id' => 1,
-            'title' => 'Should we add support for Japanese Yen (JPY)?',
-            'type' => 'single_choice',
+            'id'      => 1,
+            'title'   => 'Should we add support for Japanese Yen (JPY)?',
+            'type'    => 'single_choice',
             'options' => [
                 ['id' => 'yes', 'label' => 'Yes, add JPY support'],
                 ['id' => 'no', 'label' => 'No, not needed now'],
@@ -131,10 +131,10 @@ class MultiAssetConceptTest extends UnitTestCase
                 ['user_uuid' => 'user-3', 'option' => 'no', 'power' => 1],
             ],
             'results' => [
-                'yes' => 2,
-                'no' => 1,
+                'yes'         => 2,
+                'no'          => 1,
                 'total_votes' => 3,
-                'winner' => 'yes',
+                'winner'      => 'yes',
             ],
         ];
 
@@ -147,17 +147,17 @@ class MultiAssetConceptTest extends UnitTestCase
     {
         // Multi-asset transfer event structure
         $event = [
-            'type' => 'MoneyTransferred',
+            'type'           => 'MoneyTransferred',
             'aggregate_uuid' => 'acc-123',
-            'data' => [
+            'data'           => [
                 'from_account' => 'acc-123',
-                'to_account' => 'acc-456',
-                'asset_code' => 'EUR',
-                'amount' => 25000, // €250.00
-                'hash' => hash('sha3-512', 'acc-123:acc-456:EUR:25000'),
-                'metadata' => [
+                'to_account'   => 'acc-456',
+                'asset_code'   => 'EUR',
+                'amount'       => 25000, // €250.00
+                'hash'         => hash('sha3-512', 'acc-123:acc-456:EUR:25000'),
+                'metadata'     => [
                     'description' => 'Invoice payment',
-                    'reference' => 'INV-2025-001',
+                    'reference'   => 'INV-2025-001',
                 ],
             ],
         ];
@@ -172,9 +172,9 @@ class MultiAssetConceptTest extends UnitTestCase
     {
         // Example of a currency basket (like SDR)
         $basket = [
-            'code' => 'BASKET',
-            'name' => 'Currency Basket',
-            'type' => 'composite',
+            'code'        => 'BASKET',
+            'name'        => 'Currency Basket',
+            'type'        => 'composite',
             'composition' => [
                 ['asset' => 'USD', 'weight' => 0.40], // 40% USD
                 ['asset' => 'EUR', 'weight' => 0.30], // 30% EUR
@@ -209,8 +209,8 @@ class MultiAssetConceptTest extends UnitTestCase
             $custodian = $custodian_balances[$asset] ?? 0;
             if ($internal !== $custodian) {
                 $discrepancies[$asset] = [
-                    'internal' => $internal,
-                    'custodian' => $custodian,
+                    'internal'   => $internal,
+                    'custodian'  => $custodian,
                     'difference' => $internal - $custodian,
                 ];
             }
@@ -231,15 +231,15 @@ class MultiAssetConceptTest extends UnitTestCase
         ];
 
         // One user, one vote
-        $oneUserOneVote = array_map(fn($user) => 1, $users);
+        $oneUserOneVote = array_map(fn ($user) => 1, $users);
         $this->assertEquals([1, 1, 1], $oneUserOneVote);
 
         // Balance-weighted voting
-        $balanceWeighted = array_map(fn($user) => $user['balance_usd'], $users);
+        $balanceWeighted = array_map(fn ($user) => $user['balance_usd'], $users);
         $this->assertEquals([100000, 400000, 2500000], $balanceWeighted);
 
         // Square root weighted (reduces whale influence)
-        $sqrtWeighted = array_map(fn($user) => (int) sqrt($user['balance_usd']), $users);
+        $sqrtWeighted = array_map(fn ($user) => (int) sqrt($user['balance_usd']), $users);
         $this->assertEquals([316, 632, 1581], $sqrtWeighted);
     }
 }

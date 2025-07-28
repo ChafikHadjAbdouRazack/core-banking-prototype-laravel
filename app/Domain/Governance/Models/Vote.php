@@ -4,19 +4,35 @@ declare(strict_types=1);
 
 namespace App\Domain\Governance\Models;
 
+use App\Domain\Governance\Database\Factories\VoteFactory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Database\Factories\VoteFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Hash;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
+ * @method static static|null find(mixed $id, array $columns = ['*'])
+ * @method static static|null first(array $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static int count(string $columns = '*')
+ * @method static mixed sum(string $column)
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ */
 class Vote extends Model
 {
     use HasFactory;
 
     /**
-     * Flag to prevent auto-generation of signature during testing
+     * Flag to prevent auto-generation of signature during testing.
      */
     public bool $skipSignatureGeneration = false;
 
@@ -37,28 +53,32 @@ class Vote extends Model
 
     protected $casts = [
         'selected_options' => 'array',
-        'voting_power' => 'integer',
-        'voted_at' => 'datetime',
-        'metadata' => 'array',
+        'voting_power'     => 'integer',
+        'voted_at'         => 'datetime',
+        'metadata'         => 'array',
     ];
 
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($vote) {
-            if (empty($vote->voted_at)) {
-                $vote->voted_at = now();
+        static::creating(
+            function ($vote) {
+                if (empty($vote->voted_at)) {
+                    $vote->voted_at = now();
+                }
             }
-        });
-        
-        static::created(function ($vote) {
-            // Generate signature after the vote is created and has an ID
-            if (!$vote->skipSignatureGeneration && empty($vote->signature)) {
-                $vote->signature = $vote->generateSignature();
-                $vote->saveQuietly(); // Save without triggering events
+        );
+
+        static::created(
+            function ($vote) {
+                // Generate signature after the vote is created and has an ID
+                if (! $vote->skipSignatureGeneration && empty($vote->signature)) {
+                    $vote->signature = $vote->generateSignature();
+                    $vote->saveQuietly(); // Save without triggering events
+                }
             }
-        });
+        );
     }
 
     public function poll(): BelongsTo
@@ -89,11 +109,11 @@ class Vote extends Model
     public function generateSignature(): string
     {
         $data = [
-            'poll_id' => $this->poll_id,
-            'user_uuid' => $this->user_uuid,
+            'poll_id'          => $this->poll_id,
+            'user_uuid'        => $this->user_uuid,
             'selected_options' => $this->selected_options,
-            'voting_power' => $this->voting_power,
-            'voted_at' => $this->voted_at?->toISOString(),
+            'voting_power'     => $this->voting_power,
+            'voted_at'         => $this->voted_at?->toISOString(),
         ];
 
         return hash_hmac('sha256', json_encode($data), config('app.key'));
@@ -106,13 +126,14 @@ class Vote extends Model
         }
 
         $expectedSignature = $this->generateSignature();
+
         return hash_equals($expectedSignature, $this->signature);
     }
 
     public function isValid(): bool
     {
-        return $this->verifySignature() 
-            && !empty($this->selected_options)
+        return $this->verifySignature()
+            && ! empty($this->selected_options)
             && $this->voting_power > 0;
     }
 
@@ -138,22 +159,39 @@ class Vote extends Model
 
     public function getVotingPowerWeight(): float
     {
-        if (!$this->poll) {
+        if (! $this->poll) {
             return 0.0;
         }
 
         $totalPower = $this->poll->getTotalVotingPower();
-        
+
         return $totalPower > 0 ? ($this->voting_power / $totalPower) * 100 : 0.0;
     }
 
     public function toArray(): array
     {
-        return array_merge(parent::toArray(), [
-            'selected_options_string' => $this->getSelectedOptionsAsString(),
-            'selected_option_count' => $this->getSelectedOptionCount(),
-            'voting_power_weight' => $this->getVotingPowerWeight(),
-            'is_valid' => $this->isValid(),
-        ]);
+        return array_merge(
+            parent::toArray(),
+            [
+                'selected_options_string' => $this->getSelectedOptionsAsString(),
+                'selected_option_count'   => $this->getSelectedOptionCount(),
+                'voting_power_weight'     => $this->getVotingPowerWeight(),
+                'is_valid'                => $this->isValid(),
+            ]
+        );
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

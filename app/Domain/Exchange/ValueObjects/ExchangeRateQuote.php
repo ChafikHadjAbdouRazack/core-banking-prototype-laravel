@@ -19,10 +19,11 @@ final class ExchangeRateQuote
         public readonly ?float $volume24h = null,
         public readonly ?float $change24h = null,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
-     * Get the mid-market rate
+     * Get the mid-market rate.
      */
     public function getMidRate(): float
     {
@@ -30,7 +31,7 @@ final class ExchangeRateQuote
     }
 
     /**
-     * Get the spread between bid and ask
+     * Get the spread between bid and ask.
      */
     public function getSpread(): float
     {
@@ -38,19 +39,19 @@ final class ExchangeRateQuote
     }
 
     /**
-     * Get spread as percentage
+     * Get spread as percentage.
      */
     public function getSpreadPercentage(): float
     {
         if ($this->rate == 0) {
             return 0;
         }
-        
+
         return ($this->getSpread() / $this->rate) * 100;
     }
 
     /**
-     * Check if quote is fresh (within given seconds)
+     * Check if quote is fresh (within given seconds).
      */
     public function isFresh(int $maxAgeSeconds = 300): bool
     {
@@ -58,7 +59,7 @@ final class ExchangeRateQuote
     }
 
     /**
-     * Get age in seconds
+     * Get age in seconds.
      */
     public function getAgeInSeconds(): int
     {
@@ -66,7 +67,7 @@ final class ExchangeRateQuote
     }
 
     /**
-     * Convert an amount using this quote
+     * Convert an amount using this quote.
      */
     public function convert(float $amount, bool $useBidAsk = false, string $direction = 'buy'): float
     {
@@ -75,12 +76,12 @@ final class ExchangeRateQuote
         } else {
             $rate = $this->rate;
         }
-        
+
         return $amount * $rate;
     }
 
     /**
-     * Create inverse quote
+     * Create inverse quote.
      */
     public function inverse(): self
     {
@@ -99,24 +100,24 @@ final class ExchangeRateQuote
     }
 
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
-            'from_currency' => $this->fromCurrency,
-            'to_currency' => $this->toCurrency,
-            'rate' => $this->rate,
-            'bid' => $this->bid,
-            'ask' => $this->ask,
-            'spread' => $this->getSpread(),
+            'from_currency'     => $this->fromCurrency,
+            'to_currency'       => $this->toCurrency,
+            'rate'              => $this->rate,
+            'bid'               => $this->bid,
+            'ask'               => $this->ask,
+            'spread'            => $this->getSpread(),
             'spread_percentage' => $this->getSpreadPercentage(),
-            'provider' => $this->provider,
-            'timestamp' => $this->timestamp->toISOString(),
-            'age_seconds' => $this->getAgeInSeconds(),
-            'volume_24h' => $this->volume24h,
-            'change_24h' => $this->change24h,
-            'metadata' => $this->metadata,
+            'provider'          => $this->provider,
+            'timestamp'         => $this->timestamp->toISOString(),
+            'age_seconds'       => $this->getAgeInSeconds(),
+            'volume_24h'        => $this->volume24h,
+            'change_24h'        => $this->change24h,
+            'metadata'          => $this->metadata,
         ];
     }
 }

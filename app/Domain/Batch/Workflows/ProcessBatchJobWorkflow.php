@@ -2,19 +2,14 @@
 
 namespace App\Domain\Batch\Workflows;
 
-use App\Domain\Batch\Activities\ValidateBatchJobActivity;
-use App\Domain\Batch\Activities\ProcessBatchItemActivity;
 use App\Domain\Batch\Activities\CompleteBatchJobActivity;
-use App\Domain\Batch\DataObjects\BatchJob;
+use App\Domain\Batch\Activities\ProcessBatchItemActivity;
+use App\Domain\Batch\Activities\ValidateBatchJobActivity;
 use Workflow\ActivityStub;
 use Workflow\Workflow;
 
 class ProcessBatchJobWorkflow extends Workflow
 {
-    /**
-     * @param string $batchJobUuid
-     * @return \Generator
-     */
     public function execute(string $batchJobUuid): \Generator
     {
         try {
@@ -23,7 +18,7 @@ class ProcessBatchJobWorkflow extends Workflow
                 ValidateBatchJobActivity::class,
                 $batchJobUuid
             );
-            
+
             // Process each item
             $results = [];
             foreach ($batchJob->items as $index => $item) {
@@ -39,20 +34,19 @@ class ProcessBatchJobWorkflow extends Workflow
                     // Continue processing other items even if one fails
                     $results[$index] = [
                         'status' => 'failed',
-                        'error' => $e->getMessage()
+                        'error'  => $e->getMessage(),
                     ];
                 }
             }
-            
+
             // Complete the batch job
             yield ActivityStub::make(
                 CompleteBatchJobActivity::class,
                 $batchJobUuid,
                 $results
             );
-            
+
             return $results;
-            
         } catch (\Throwable $th) {
             // Compensate if needed
             yield from $this->compensate();

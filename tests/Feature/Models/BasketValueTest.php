@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Models;
 
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class BasketValueTest extends TestCase
 {
-
     protected BasketAsset $basket;
 
     protected function setUp(): void
@@ -19,22 +18,22 @@ class BasketValueTest extends TestCase
         parent::setUp();
 
         $this->basket = BasketAsset::create([
-            'code' => 'TEST_BSK',
-            'name' => 'Test Basket',
-            'type' => 'fixed',
+            'code'                => 'TEST_BSK',
+            'name'                => 'Test Basket',
+            'type'                => 'fixed',
             'rebalance_frequency' => 'never',
-            'is_active' => true,
+            'is_active'           => true,
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_create_a_basket_value()
     {
         $value = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.2345,
-            'calculated_at' => now(),
-            'component_values' => [
+            'value'             => 1.2345,
+            'calculated_at'     => now(),
+            'component_values'  => [
                 'USD' => ['value' => 0.5, 'weight' => 40.0],
                 'EUR' => ['value' => 0.7345, 'weight' => 60.0],
             ],
@@ -45,26 +44,26 @@ class BasketValueTest extends TestCase
         $this->assertIsArray($value->component_values);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_basket()
     {
         $value = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now(),
+            'value'             => 1.0,
+            'calculated_at'     => now(),
         ]);
 
         $this->assertInstanceOf(BasketAsset::class, $value->basket);
         $this->assertEquals('TEST_BSK', $value->basket->code);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_check_if_fresh()
     {
         $freshValue = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now(),
+            'value'             => 1.0,
+            'calculated_at'     => now(),
         ]);
 
         $this->assertTrue($freshValue->isFresh(5));
@@ -72,22 +71,22 @@ class BasketValueTest extends TestCase
 
         $oldValue = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now()->subMinutes(10),
+            'value'             => 1.0,
+            'calculated_at'     => now()->subMinutes(10),
         ]);
 
         $this->assertFalse($oldValue->isFresh(5));
         $this->assertTrue($oldValue->isFresh(15));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_component_value()
     {
         $value = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now(),
-            'component_values' => [
+            'value'             => 1.0,
+            'calculated_at'     => now(),
+            'component_values'  => [
                 'USD' => ['weighted_value' => 0.4],
                 'EUR' => ['weighted_value' => 0.6],
             ],
@@ -98,14 +97,14 @@ class BasketValueTest extends TestCase
         $this->assertNull($value->getComponentValue('GBP'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_actual_weight()
     {
         $value = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now(),
-            'component_values' => [
+            'value'             => 1.0,
+            'calculated_at'     => now(),
+            'component_values'  => [
                 'USD' => ['weighted_value' => 0.4],
                 'EUR' => ['weighted_value' => 0.6],
             ],
@@ -116,19 +115,19 @@ class BasketValueTest extends TestCase
         $this->assertNull($value->getActualWeight('GBP'));
     }
 
-    /** @test */
+    #[Test]
     public function it_can_calculate_performance()
     {
         $previousValue = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now()->subDay(),
+            'value'             => 1.0,
+            'calculated_at'     => now()->subDay(),
         ]);
 
         $currentValue = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.1,
-            'calculated_at' => now(),
+            'value'             => 1.1,
+            'calculated_at'     => now(),
         ]);
 
         $performance = $currentValue->getPerformance($previousValue);
@@ -139,25 +138,25 @@ class BasketValueTest extends TestCase
         $this->assertEqualsWithDelta(10.0, $performance['percentage_change'], 0.0000001);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_between_dates_scope()
     {
         BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.0,
-            'calculated_at' => now()->subDays(5),
+            'value'             => 1.0,
+            'calculated_at'     => now()->subDays(5),
         ]);
 
         BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.1,
-            'calculated_at' => now()->subDays(3),
+            'value'             => 1.1,
+            'calculated_at'     => now()->subDays(3),
         ]);
 
         BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.2,
-            'calculated_at' => now()->subDay(),
+            'value'             => 1.2,
+            'calculated_at'     => now()->subDay(),
         ]);
 
         $values = BasketValue::betweenDates(
@@ -170,14 +169,14 @@ class BasketValueTest extends TestCase
         $this->assertEquals(1.2, $values->last()->value);
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_attributes_correctly()
     {
         $value = BasketValue::create([
             'basket_asset_code' => 'TEST_BSK',
-            'value' => 1.2345,
-            'calculated_at' => '2025-06-18 12:00:00',
-            'component_values' => ['USD' => 0.5],
+            'value'             => 1.2345,
+            'calculated_at'     => '2025-06-18 12:00:00',
+            'component_values'  => ['USD' => 0.5],
         ]);
 
         $fresh = BasketValue::find($value->id);

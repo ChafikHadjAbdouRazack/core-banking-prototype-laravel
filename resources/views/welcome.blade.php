@@ -1,87 +1,79 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.public')
 
-        <title>FinAegis - The Enterprise Financial Platform</title>
+@section('title', 'FinAegis - The Enterprise Financial Platform')
 
-        @include('partials.favicon')
-        
-        @include('partials.seo', [
-            'title' => 'FinAegis - The Enterprise Financial Platform',
-            'description' => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
-            'keywords' => 'FinAegis, banking platform, GCU, global currency unit, democratic banking, fintech, multi-asset, enterprise banking, core banking system',
-        ])
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'FinAegis - The Enterprise Financial Platform',
+        'description' => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
+        'keywords' => 'FinAegis, banking platform, GCU, global currency unit, democratic banking, fintech, multi-asset, enterprise banking, core banking system',
+    ])
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+    {{-- Schema.org Markup --}}
+    <x-schema type="organization" />
+    <x-schema type="website" />
+@endsection
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-            .feature-card {
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
-            }
-            .feature-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            }
-            .stat-number {
-                font-size: 3rem;
-                font-weight: 800;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-            .sub-product-card {
-                transition: all 0.3s ease;
-                border: 2px solid transparent;
-            }
-            .sub-product-card:hover {
-                border-color: #667eea;
-                transform: scale(1.02);
-            }
-            .gcu-highlight {
-                background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-                border: 2px solid #667eea;
-            }
-            .floating-invest {
-                position: fixed;
-                bottom: 2rem;
-                right: 2rem;
-                z-index: 40;
-                animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-            }
-            @keyframes pulse {
-                0%, 100% {
-                    opacity: 1;
-                }
-                50% {
-                    opacity: .8;
-                    transform: scale(1.05);
-                }
-            }
-            @media (max-width: 768px) {
-                .floating-invest {
-                    bottom: 1rem;
-                    right: 1rem;
-                }
-            }
-        </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .sub-product-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .sub-product-card:hover {
+        border-color: #667eea;
+        transform: scale(1.02);
+    }
+    .gcu-highlight {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border: 2px solid #667eea;
+    }
+    .floating-invest {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 40;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: .8;
+            transform: scale(1.05);
+        }
+    }
+    @media (max-width: 768px) {
+        .floating-invest {
+            bottom: 1rem;
+            right: 1rem;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section -->
-        <section class="pt-16 gradient-bg text-white">
+        <section class="gradient-bg text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
                 <div class="text-center">
                     <h1 class="text-5xl md:text-6xl font-bold mb-6">
@@ -114,7 +106,7 @@
         </section>
 
         <!-- Investment CTA Section -->
-        <section class="py-16 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <section class="py-20 bg-gradient-to-r from-indigo-50 to-purple-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
                     <div class="grid md:grid-cols-2">
@@ -168,15 +160,15 @@
                                     <div class="space-y-3">
                                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                             <span class="font-medium">Bronze Tier</span>
-                                            <span class="text-indigo-600 font-semibold">€1,000 - €9,999</span>
+                                            <span class="text-indigo-600 font-semibold">$100 - $999</span>
                                         </div>
                                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                             <span class="font-medium">Silver Tier</span>
-                                            <span class="text-indigo-600 font-semibold">€10,000 - €49,999</span>
+                                            <span class="text-indigo-600 font-semibold">$1,000 - $9,999</span>
                                         </div>
                                         <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                             <span class="font-medium">Gold Tier</span>
-                                            <span class="text-indigo-600 font-semibold">€50,000+</span>
+                                            <span class="text-indigo-600 font-semibold">$10,000+</span>
                                         </div>
                                     </div>
                                 </div>
@@ -651,9 +643,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
-        @include('partials.footer')
-
         <!-- Floating Investment Button -->
         <div class="floating-invest">
             <a href="{{ route('cgo') }}" class="flex items-center bg-gradient-to-r from-indigo-600 to-purple-700 text-white px-6 py-3 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 group">
@@ -664,5 +653,4 @@
                 <span class="ml-2 bg-white/20 px-2 py-1 rounded text-xs">Alpha</span>
             </a>
         </div>
-    </body>
-</html>
+@endsection

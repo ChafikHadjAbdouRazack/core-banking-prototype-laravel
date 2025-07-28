@@ -27,25 +27,29 @@ class ValidateLiquidityActivity extends Activity
     {
         // Validate account exists
         $account = Account::findOrFail($input->providerId);
-        
-        if (!$account->hasKycApproval()) {
+
+        // Check KYC status through user relationship
+        if (! $account->user || $account->user->kyc_status !== 'approved') {
             throw new \DomainException('Account must have KYC approval to provide liquidity');
         }
 
         // Validate pool exists
+        /** @var PoolProjection|null $pool */
         $pool = PoolProjection::where('pool_id', $input->poolId)->first();
-        
-        if (!$pool) {
+
+        if (! $pool) {
             throw new \DomainException('Liquidity pool not found');
         }
 
-        if (!$pool->is_active) {
+        if (! $pool->is_active) {
             throw new \DomainException('Liquidity pool is not active');
         }
 
         // Validate currencies match
-        if ($pool->base_currency !== $input->baseCurrency || 
-            $pool->quote_currency !== $input->quoteCurrency) {
+        if (
+            $pool->base_currency !== $input->baseCurrency
+            || $pool->quote_currency !== $input->quoteCurrency
+        ) {
             throw new \DomainException('Currency mismatch with pool');
         }
 
@@ -58,11 +62,11 @@ class ValidateLiquidityActivity extends Activity
             ->where('currency_code', $input->quoteCurrency)
             ->first();
 
-        if (!$baseBalance || BigDecimal::of($baseBalance->available_balance)->isLessThan($input->baseAmount)) {
+        if (! $baseBalance || BigDecimal::of($baseBalance->available_balance)->isLessThan($input->baseAmount)) {
             throw new \DomainException("Insufficient {$input->baseCurrency} balance");
         }
 
-        if (!$quoteBalance || BigDecimal::of($quoteBalance->available_balance)->isLessThan($input->quoteAmount)) {
+        if (! $quoteBalance || BigDecimal::of($quoteBalance->available_balance)->isLessThan($input->quoteAmount)) {
             throw new \DomainException("Insufficient {$input->quoteCurrency} balance");
         }
 
@@ -70,7 +74,7 @@ class ValidateLiquidityActivity extends Activity
         if (BigDecimal::of($pool->total_shares)->isGreaterThan(0)) {
             $poolRatio = BigDecimal::of($pool->base_reserve)->dividedBy($pool->quote_reserve, 18);
             $inputRatio = BigDecimal::of($input->baseAmount)->dividedBy($input->quoteAmount, 18);
-            
+
             $deviation = $poolRatio->minus($inputRatio)->abs()
                 ->dividedBy($poolRatio, 18)
                 ->multipliedBy(100);
@@ -81,18 +85,21 @@ class ValidateLiquidityActivity extends Activity
         }
 
         return [
-            'valid' => true,
+            'valid'      => true,
             'account_id' => $account->id,
-            'pool' => $pool->toArray(),
+            'pool'       => $pool->toArray(),
         ];
     }
 
     private function validateRemoval(LiquidityRemovalInput $input): array
     {
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
         // Validate pool exists
-        $pool = PoolProjection::where('pool_id', $input->poolId)->first();
-        
-        if (!$pool) {
+        /** @var \Illuminate\Database\Eloquent\Model|null $$pool */
+        $$pool = PoolProjection::where('pool_id', $input->poolId)->first();
+
+        if (! $pool) {
             throw new \DomainException('Liquidity pool not found');
         }
 
@@ -101,7 +108,7 @@ class ValidateLiquidityActivity extends Activity
             ->where('provider_id', $input->providerId)
             ->first();
 
-        if (!$provider) {
+        if (! $provider) {
             throw new \DomainException('Provider not found in pool');
         }
 
@@ -110,8 +117,8 @@ class ValidateLiquidityActivity extends Activity
         }
 
         return [
-            'valid' => true,
-            'pool' => $pool->toArray(),
+            'valid'           => true,
+            'pool'            => $pool->toArray(),
             'provider_shares' => $provider->shares,
         ];
     }

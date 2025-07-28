@@ -5,13 +5,13 @@ namespace App\Actions\Jetstream;
 use App\Models\Team;
 use App\Models\User;
 use App\Traits\HandlesNestedTransactions;
-use Illuminate\Support\Facades\DB;
 use Laravel\Jetstream\Contracts\DeletesTeams;
 use Laravel\Jetstream\Contracts\DeletesUsers;
 
 class DeleteUser implements DeletesUsers
 {
     use HandlesNestedTransactions;
+
     /**
      * Create a new action instance.
      */
@@ -24,12 +24,14 @@ class DeleteUser implements DeletesUsers
      */
     public function delete(User $user): void
     {
-        $this->executeInTransaction(function () use ($user) {
-            $this->deleteTeams($user);
-            $user->deleteProfilePhoto();
-            $user->tokens->each->delete();
-            $user->delete();
-        });
+        $this->executeInTransaction(
+            function () use ($user) {
+                $this->deleteTeams($user);
+                $user->deleteProfilePhoto();
+                $user->tokens->each->delete();
+                $user->delete();
+            }
+        );
     }
 
     /**
@@ -39,8 +41,10 @@ class DeleteUser implements DeletesUsers
     {
         $user->teams()->detach();
 
-        $user->ownedTeams->each(function (Team $team) {
-            $this->deletesTeams->delete($team);
-        });
+        $user->ownedTeams->each(
+            function (Team $team) {
+                $this->deletesTeams->delete($team);
+            }
+        );
     }
 }

@@ -10,5 +10,6 @@ class CustodianRemoved extends ShouldBeStored
         public readonly string $poolId,
         public readonly string $custodianId,
         public readonly string $reason
-    ) {}
+    ) {
+    }
 }

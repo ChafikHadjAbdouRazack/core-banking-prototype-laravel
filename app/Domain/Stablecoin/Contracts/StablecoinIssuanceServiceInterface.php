@@ -2,19 +2,19 @@
 
 namespace App\Domain\Stablecoin\Contracts;
 
-use App\Models\Account;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Account\Models\Account;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 
 interface StablecoinIssuanceServiceInterface
 {
     /**
-     * Mint stablecoins by locking collateral
+     * Mint stablecoins by locking collateral.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param string $collateralAssetCode
-     * @param int $collateralAmount
-     * @param int $mintAmount
+     * @param  Account $account
+     * @param  string  $stablecoinCode
+     * @param  string  $collateralAssetCode
+     * @param  int     $collateralAmount
+     * @param  int     $mintAmount
      * @return StablecoinCollateralPosition
      */
     public function mint(
@@ -26,12 +26,12 @@ interface StablecoinIssuanceServiceInterface
     ): StablecoinCollateralPosition;
 
     /**
-     * Burn stablecoins and release collateral
+     * Burn stablecoins and release collateral.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param int $burnAmount
-     * @param int|null $collateralReleaseAmount
+     * @param  Account  $account
+     * @param  string   $stablecoinCode
+     * @param  int      $burnAmount
+     * @param  int|null $collateralReleaseAmount
      * @return StablecoinCollateralPosition
      */
     public function burn(
@@ -42,12 +42,12 @@ interface StablecoinIssuanceServiceInterface
     ): StablecoinCollateralPosition;
 
     /**
-     * Add collateral to an existing position
+     * Add collateral to an existing position.
      *
-     * @param Account $account
-     * @param string $stablecoinCode
-     * @param string $collateralAssetCode
-     * @param int $collateralAmount
+     * @param  Account $account
+     * @param  string  $stablecoinCode
+     * @param  string  $collateralAssetCode
+     * @param  int     $collateralAmount
      * @return StablecoinCollateralPosition
      */
     public function addCollateral(

@@ -16,16 +16,16 @@ class VoteFactory extends Factory
     public function definition(): array
     {
         return [
-            'poll_id' => Poll::factory()->create()->id,
-            'user_uuid' => User::factory()->create()->uuid,
+            'poll_id'          => Poll::factory()->create()->id,
+            'user_uuid'        => User::factory()->create()->uuid,
             'selected_options' => $this->generateSelectedOptions(),
-            'voting_power' => fake()->numberBetween(1, 100),
-            'voted_at' => fake()->dateTimeBetween('-1 week', 'now'),
-            'signature' => null, // Will be generated automatically
-            'metadata' => [
+            'voting_power'     => fake()->numberBetween(1, 100),
+            'voted_at'         => fake()->dateTimeBetween('-1 week', 'now'),
+            'signature'        => null, // Will be generated automatically
+            'metadata'         => [
                 'ip_address' => fake()->ipv4,
                 'user_agent' => fake()->userAgent,
-                'location' => fake()->optional(0.3)->city,
+                'location'   => fake()->optional(0.3)->city,
             ],
         ];
     }
@@ -37,7 +37,7 @@ class VoteFactory extends Factory
             $pollOptions = $poll->options ?? [];
             $selectedOptions = [];
 
-            if (!empty($pollOptions)) {
+            if (! empty($pollOptions)) {
                 // For single choice polls, select one option
                 if ($poll->type->value === 'single_choice' || $poll->type->value === 'yes_no') {
                     $selectedOptions = [fake()->randomElement($pollOptions)['id']];
@@ -61,7 +61,7 @@ class VoteFactory extends Factory
             }
 
             return [
-                'poll_id' => $poll->id,
+                'poll_id'          => $poll->id,
                 'selected_options' => $selectedOptions,
             ];
         });
@@ -106,7 +106,7 @@ class VoteFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($availableOptions) {
             $options = $availableOptions ?? ['option1', 'option2', 'option3'];
-            
+
             return [
                 'selected_options' => [fake()->randomElement($options)],
             ];
@@ -118,7 +118,7 @@ class VoteFactory extends Factory
         return $this->state(function (array $attributes) use ($availableOptions) {
             $options = $availableOptions ?? ['option1', 'option2', 'option3', 'option4'];
             $count = fake()->numberBetween(1, min(3, count($options)));
-            
+
             return [
                 'selected_options' => fake()->randomElements($options, $count),
             ];

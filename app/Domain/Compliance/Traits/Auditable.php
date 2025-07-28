@@ -4,76 +4,82 @@ declare(strict_types=1);
 
 namespace App\Domain\Compliance\Traits;
 
-use App\Models\AuditLog;
+use App\Domain\Compliance\Models\AuditLog;
 use Illuminate\Database\Eloquent\Model;
 
 trait Auditable
 {
     /**
-     * Boot the auditable trait
+     * Boot the auditable trait.
      */
     public static function bootAuditable(): void
     {
-        static::created(function (Model $model) {
-            if (!$model->shouldAudit()) {
-                return;
-            }
-
-            AuditLog::log(
-                'created',
-                $model,
-                null,
-                $model->getAuditableAttributes(),
-                $model->getAuditMetadata(),
-                $model->getAuditTags()
-            );
-        });
-
-        static::updated(function (Model $model) {
-            if (!$model->shouldAudit() || !$model->wasChanged()) {
-                return;
-            }
-
-            $old = [];
-            $new = [];
-            
-            foreach ($model->getChanges() as $attribute => $value) {
-                if (in_array($attribute, $model->getAuditableAttributes())) {
-                    $old[$attribute] = $model->getOriginal($attribute);
-                    $new[$attribute] = $value;
+        static::created(
+            function (Model $model) {
+                if (! $model->shouldAudit()) {
+                    return;
                 }
-            }
 
-            if (!empty($old)) {
                 AuditLog::log(
-                    'updated',
+                    'created',
                     $model,
-                    $old,
-                    $new,
+                    null,
+                    $model->getAuditableAttributes(),
                     $model->getAuditMetadata(),
                     $model->getAuditTags()
                 );
             }
-        });
+        );
 
-        static::deleted(function (Model $model) {
-            if (!$model->shouldAudit()) {
-                return;
+        static::updated(
+            function (Model $model) {
+                if (! $model->shouldAudit() || ! $model->wasChanged()) {
+                    return;
+                }
+
+                $old = [];
+                $new = [];
+
+                foreach ($model->getChanges() as $attribute => $value) {
+                    if (in_array($attribute, $model->getAuditableAttributes())) {
+                        $old[$attribute] = $model->getOriginal($attribute);
+                        $new[$attribute] = $value;
+                    }
+                }
+
+                if (! empty($old)) {
+                    AuditLog::log(
+                        'updated',
+                        $model,
+                        $old,
+                        $new,
+                        $model->getAuditMetadata(),
+                        $model->getAuditTags()
+                    );
+                }
             }
+        );
 
-            AuditLog::log(
-                'deleted',
-                $model,
-                $model->getAuditableAttributes(),
-                null,
-                $model->getAuditMetadata(),
-                $model->getAuditTags()
-            );
-        });
+        static::deleted(
+            function (Model $model) {
+                if (! $model->shouldAudit()) {
+                    return;
+                }
+
+                AuditLog::log(
+                    'deleted',
+                    $model,
+                    $model->getAuditableAttributes(),
+                    null,
+                    $model->getAuditMetadata(),
+                    $model->getAuditTags()
+                );
+            }
+        );
     }
 
     /**
-     * Get the attributes that should be audited
+     * Get the attributes that should be audited.
      */
     public function getAuditableAttributes(): array
     {
@@ -85,7 +91,7 @@ trait Auditable
     }
 
     /**
-     * Get additional metadata for the audit log
+     * Get additional metadata for the audit log.
      */
     public function getAuditMetadata(): ?array
     {
@@ -93,7 +99,7 @@ trait Auditable
     }
 
     /**
-     * Get tags for the audit log
+     * Get tags for the audit log.
      */
     public function getAuditTags(): ?string
     {
@@ -101,7 +107,7 @@ trait Auditable
     }
 
     /**
-     * Determine if the model should be audited
+     * Determine if the model should be audited.
      */
     public function shouldAudit(): bool
     {
@@ -113,7 +119,7 @@ trait Auditable
     }
 
     /**
-     * Get the audit logs for this model
+     * Get the audit logs for this model.
      */
     public function auditLogs()
     {

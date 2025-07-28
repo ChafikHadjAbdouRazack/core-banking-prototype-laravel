@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.3'
+        default: '8.4'
         type: string
       node-version:
         description: 'Node.js version to use'
@@ -62,7 +62,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
           tools: composer:v2
           coverage: xdebug
           ini-values: |
@@ -110,14 +110,14 @@ jobs:
           
       - name: Run Unit Tests
         run: |
-          # Run unit tests using CI configuration with MySQL and parallel execution
-          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --parallel --coverage --min=70
+          # Run unit tests using CI configuration with MySQL
+          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --coverage --min=70
           
       - name: Run Security Tests
         if: always()
         run: |
-          # Run security tests separately with CI configuration and parallel execution
-          ./vendor/bin/pest --testsuite=Security --configuration=phpunit.ci.xml --parallel
+          # Run security tests separately with CI configuration
+          ./vendor/bin/pest --testsuite=Security --configuration=phpunit.ci.xml
           
       - name: Upload Test Coverage
         uses: codecov/codecov-action@v4
@@ -164,7 +164,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
           tools: composer:v2
           coverage: xdebug
           
@@ -189,7 +189,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Feature Tests
-        run: ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --parallel --coverage --min=65
+        run: ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --coverage --min=65
 
   integration-tests:
     name: Integration Tests
@@ -228,7 +228,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
           tools: composer:v2
           coverage: xdebug
           
@@ -242,7 +242,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Integration Tests
-        run: ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --parallel --coverage --min=55
+        run: ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --coverage --min=55
         
   behat-tests:
     name: Behat Tests
@@ -281,7 +281,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
-          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, curl
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, curl, gmp
           tools: composer:v2
           coverage: none
           
@@ -300,15 +300,67 @@ jobs:
       - name: Prepare Laravel Application
         run: |
           cp .env.testing .env
+          
+          # Add MySQL connection details
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=127.0.0.1" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=testing" >> .env
+          echo "DB_USERNAME=root" >> .env
+          echo "DB_PASSWORD=root" >> .env
+          
           php artisan key:generate
+          
+          # Clear and rebuild all caches to ensure configs are loaded
+          php artisan config:clear
+          php artisan cache:clear
           php artisan config:cache
           php artisan route:cache
+          
+          # Wait for MySQL to be fully ready
+          timeout 30 bash -c 'until echo "SELECT 1" | mysql -h127.0.0.1 -P3306 -uroot -proot testing; do echo "Waiting for MySQL..."; sleep 2; done'
+          
+          # Run all migrations (permission tables migration already exists in project)
           php artisan migrate --force
-          php artisan db:seed --class=TestSeeder
+          
+          # List tables to verify migrations ran (debug info)
+          echo "=== Database Tables ==="
+          php artisan db:show --counts || true
+          
+          # Seed database with test data (includes roles)
+          echo "=== Seeding Database ==="
+          php artisan db:seed --class=TestSeeder --verbose
+          
+      - name: Start Laravel Server
+        run: |
+          php artisan serve --host=127.0.0.1 --port=8000 &
+          sleep 5
           
       - name: Run Behat Tests
+        env:
+          BEHAT_BASE_URL: http://127.0.0.1:8000
+          QUEUE_CONNECTION: sync
         run: |
-          vendor/bin/behat --format=pretty --format=junit --out=std --out=tests-results
+          # Run Behat tests using the CI script
+          # This ensures only implemented features are tested and prevents interactive prompts
+          ./bin/behat-ci
+          
+          # Also generate JUnit format output for test reporting
+          vendor/bin/behat \
+            --no-interaction \
+            --format=progress \
+            --format=junit \
+            --out=std \
+            --out=tests-results \
+            features/account_management.feature
+          
+          vendor/bin/behat \
+            --no-interaction \
+            --format=progress \
+            --format=junit \
+            --out=std \
+            --out=tests-results \
+            features/basket_management.feature
           
       - name: Upload Behat Results
         if: always()

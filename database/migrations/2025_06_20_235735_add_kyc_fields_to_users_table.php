@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -19,21 +18,21 @@ return new class extends Migration
             $table->timestamp('kyc_submitted_at')->nullable()->after('kyc_status');
             $table->timestamp('kyc_approved_at')->nullable()->after('kyc_submitted_at');
             $table->timestamp('kyc_expires_at')->nullable()->after('kyc_approved_at');
-            
+
             // KYC Level (for tiered verification)
             $table->enum('kyc_level', ['basic', 'enhanced', 'full'])->default('basic')->after('kyc_expires_at');
-            
+
             // Compliance fields
             $table->boolean('pep_status')->default(false)->comment('Politically Exposed Person')->after('kyc_level');
             $table->string('risk_rating')->nullable()->comment('low, medium, high')->after('pep_status');
             $table->json('kyc_data')->nullable()->comment('Encrypted KYC data')->after('risk_rating');
-            
+
             // GDPR and consent fields
             $table->timestamp('privacy_policy_accepted_at')->nullable()->after('kyc_data');
             $table->timestamp('terms_accepted_at')->nullable()->after('privacy_policy_accepted_at');
             $table->timestamp('marketing_consent_at')->nullable()->after('terms_accepted_at');
             $table->boolean('data_retention_consent')->default(false)->after('marketing_consent_at');
-            
+
             // Indexes for performance
             $table->index('kyc_status');
             $table->index('kyc_level');
@@ -50,7 +49,7 @@ return new class extends Migration
             $table->dropIndex(['kyc_status']);
             $table->dropIndex(['kyc_level']);
             $table->dropIndex(['risk_rating']);
-            
+
             $table->dropColumn([
                 'kyc_status',
                 'kyc_submitted_at',

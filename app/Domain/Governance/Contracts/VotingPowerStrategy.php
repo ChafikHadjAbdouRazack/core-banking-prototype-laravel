@@ -10,17 +10,17 @@ use App\Models\User;
 interface VotingPowerStrategy
 {
     /**
-     * Calculate the voting power for a user in a specific poll
+     * Calculate the voting power for a user in a specific poll.
      */
     public function calculatePower(User $user, Poll $poll): int;
-    
+
     /**
-     * Get a human-readable description of this voting strategy
+     * Get a human-readable description of this voting strategy.
      */
     public function getDescription(): string;
-    
+
     /**
-     * Check if a user is eligible to vote in this poll
+     * Check if a user is eligible to vote in this poll.
      */
     public function isEligible(User $user, Poll $poll): bool;
 }

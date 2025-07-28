@@ -2,19 +2,19 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Config;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class DemoEnvironmentTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Force demo environment for these tests
         App::detectEnvironment(fn () => 'demo');
-        
+
         // Re-bootstrap the app to apply demo configurations
         $this->app->bootstrapWith([
             \Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables::class,
@@ -26,7 +26,7 @@ class DemoEnvironmentTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_treats_demo_environment_as_production()
     {
         $this->assertEquals('demo', App::environment());
@@ -34,7 +34,7 @@ class DemoEnvironmentTest extends TestCase
         $this->assertNotEmpty(config('app.debug_blacklist'));
     }
 
-    /** @test */
+    #[Test]
     public function it_loads_demo_configuration()
     {
         $this->assertIsArray(config('demo'));
@@ -43,14 +43,14 @@ class DemoEnvironmentTest extends TestCase
         $this->assertArrayHasKey('rate_limits', config('demo'));
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_demo_rate_limits()
     {
         $this->assertEquals(60, config('app.rate_limits.api'));
         $this->assertEquals(10, config('app.rate_limits.transactions'));
     }
 
-    /** @test */
+    #[Test]
     public function it_has_demo_restrictions()
     {
         $this->assertIsInt(config('demo.restrictions.max_transaction_amount'));
@@ -58,11 +58,11 @@ class DemoEnvironmentTest extends TestCase
         $this->assertIsBool(config('demo.restrictions.disable_real_banks'));
     }
 
-    /** @test */
+    #[Test]
     public function it_does_not_expose_sensitive_data_in_demo()
     {
         $debugBlacklist = config('app.debug_blacklist._ENV', []);
-        
+
         $this->assertContains('APP_KEY', $debugBlacklist);
         $this->assertContains('DB_PASSWORD', $debugBlacklist);
         $this->assertContains('REDIS_PASSWORD', $debugBlacklist);
@@ -72,7 +72,7 @@ class DemoEnvironmentTest extends TestCase
     {
         // Reset to testing environment
         App::detectEnvironment(fn () => 'testing');
-        
+
         parent::tearDown();
     }
 }

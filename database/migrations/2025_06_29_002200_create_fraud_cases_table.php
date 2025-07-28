@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -33,7 +32,7 @@ return new class extends Migration
             $table->json('actions_taken')->nullable(); // Log of actions
             $table->text('resolution_notes')->nullable();
             $table->timestamps();
-            
+
             $table->index('case_number');
             $table->index('type');
             $table->index('status');

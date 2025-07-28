@@ -7,13 +7,19 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Events\AccountCreated;
 use App\Domain\Account\Events\AccountDeleted;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\DomainTestCase;
 
-class LedgerAggregateTest extends TestCase
+class LedgerAggregateTest extends DomainTestCase
 {
     private const string ACCOUNT_UUID = 'account-uuid';
 
     private const string ACCOUNT_NAME = 'fake-account';
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->createDefaultAccounts();
+    }
 
     #[Test]
     public function can_create(): void
@@ -28,7 +34,7 @@ class LedgerAggregateTest extends TestCase
             ->assertRecorded([
                 new AccountCreated(
                     account: $this->fakeAccount()
-                )
+                ),
             ]);
     }
 
@@ -39,19 +45,16 @@ class LedgerAggregateTest extends TestCase
             ->given([
                 new AccountCreated(
                     account: $this->fakeAccount()
-                )
+                ),
             ])
             ->when(function (LedgerAggregate $ledger): void {
                 $ledger->deleteAccount();
             })
             ->assertRecorded([
-                new AccountDeleted()
+                new AccountDeleted(),
             ]);
     }
 
-    /**
-     * @return \App\Domain\Account\DataObjects\Account
-     */
     protected function fakeAccount(): Account
     {
         return hydrate(

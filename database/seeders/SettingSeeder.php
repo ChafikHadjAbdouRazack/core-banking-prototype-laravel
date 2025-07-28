@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Services\SettingsService;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class SettingSeeder extends Seeder
@@ -15,7 +14,7 @@ class SettingSeeder extends Seeder
     {
         $settingsService = app(SettingsService::class);
         $settingsService->initializeSettings();
-        
+
         $this->command->info('Settings initialized successfully.');
     }
 }

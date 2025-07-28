@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\SubProductService;
+use App\Domain\Product\Services\SubProductService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,12 +11,13 @@ class EnsureSubProductEnabled
 {
     public function __construct(
         private SubProductService $subProductService
-    ) {}
+    ) {
+    }
 
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $parameter): Response
     {
@@ -28,28 +29,28 @@ class EnsureSubProductEnabled
         // Parse parameter for sub-product and features
         if (str_contains($parameter, ':')) {
             [$subProduct, $features] = explode(':', $parameter, 2);
-            
+
             // Handle multiple features with OR logic
             if (str_contains($features, '|')) {
                 $featureList = explode('|', $features);
                 $anyEnabled = false;
-                
+
                 foreach ($featureList as $feature) {
                     if ($this->subProductService->isFeatureEnabled($subProduct, $feature)) {
                         $anyEnabled = true;
                         break;
                     }
                 }
-                
-                if (!$anyEnabled) {
+
+                if (! $anyEnabled) {
                     return $this->errorResponse(
-                        "None of the required features [" . implode(', ', $featureList) . "] are enabled for sub-product {$subProduct}",
+                        'None of the required features [' . implode(', ', $featureList) . "] are enabled for sub-product {$subProduct}",
                         403
                     );
                 }
             } else {
                 // Single feature check
-                if (!$this->subProductService->isFeatureEnabled($subProduct, $features)) {
+                if (! $this->subProductService->isFeatureEnabled($subProduct, $features)) {
                     return $this->errorResponse(
                         "Feature {$features} is not enabled for sub-product {$subProduct}",
                         403
@@ -59,8 +60,8 @@ class EnsureSubProductEnabled
         } else {
             // Just sub-product check
             $subProduct = $parameter;
-            
-            if (!$this->subProductService->isEnabled($subProduct)) {
+
+            if (! $this->subProductService->isEnabled($subProduct)) {
                 return $this->errorResponse("Sub-product {$subProduct} is not enabled", 403);
             }
         }
@@ -72,12 +73,15 @@ class EnsureSubProductEnabled
     }
 
     /**
-     * Create error response
+     * Create error response.
      */
     private function errorResponse(string $message, int $statusCode): Response
     {
-        return response()->json([
-            'error' => $message,
-        ], $statusCode);
+        return response()->json(
+            [
+                'error' => $message,
+            ],
+            $statusCode
+        );
     }
 }

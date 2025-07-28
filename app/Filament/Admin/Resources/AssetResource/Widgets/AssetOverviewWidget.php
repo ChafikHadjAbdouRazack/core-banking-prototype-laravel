@@ -15,7 +15,9 @@ class AssetOverviewWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        /** @var Asset $asset */
+        /**
+         * @var Asset $asset
+         */
         $asset = $this->record;
 
         $totalBalances = $asset->accountBalances()->count();
@@ -49,6 +51,7 @@ class AssetOverviewWidget extends BaseWidget
     private function formatAssetValue(float $value, Asset $asset): string
     {
         $formatted = number_format($value / (10 ** $asset->precision), $asset->precision);
+
         return "{$formatted} {$asset->code}";
     }
 }

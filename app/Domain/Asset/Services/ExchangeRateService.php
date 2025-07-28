@@ -7,28 +7,22 @@ namespace App\Domain\Asset\Services;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class ExchangeRateService
 {
     /**
-     * Cache TTL for exchange rates in minutes
+     * Cache TTL for exchange rates in minutes.
      */
     private const CACHE_TTL = 15;
-    
+
     /**
-     * Maximum age for rates before considering them stale (in minutes)
+     * Maximum age for rates before considering them stale (in minutes).
      */
     private const MAX_RATE_AGE = 60;
-    
+
     /**
-     * Get the current exchange rate between two assets
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return ExchangeRate|null
+     * Get the current exchange rate between two assets.
      */
     public function getRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
@@ -36,65 +30,59 @@ class ExchangeRateService
         if ($fromAsset === $toAsset) {
             return $this->createIdentityRate($fromAsset, $toAsset);
         }
-        
+
         $cacheKey = "exchange_rate:{$fromAsset}:{$toAsset}";
-        
-        return Cache::remember($cacheKey, self::CACHE_TTL * 60, function () use ($fromAsset, $toAsset) {
-            // Try to get the most recent valid rate
-            $rate = ExchangeRate::between($fromAsset, $toAsset)
-                ->valid()
-                ->latest()
-                ->first();
-            
-            // If no rate found or rate is stale, try to fetch a new one
-            if (!$rate || $rate->getAgeInMinutes() > self::MAX_RATE_AGE) {
-                $fetchedRate = $this->fetchAndStoreRate($fromAsset, $toAsset);
-                if ($fetchedRate) {
-                    $rate = $fetchedRate;
+
+        return Cache::remember(
+            $cacheKey,
+            self::CACHE_TTL * 60,
+            function () use ($fromAsset, $toAsset) {
+                // Try to get the most recent valid rate
+                $rate = ExchangeRate::between($fromAsset, $toAsset)
+                    ->valid()
+                    ->latest()
+                    ->first();
+
+                // If no rate found or rate is stale, try to fetch a new one
+                if (! $rate || $rate->getAgeInMinutes() > self::MAX_RATE_AGE) {
+                    $fetchedRate = $this->fetchAndStoreRate($fromAsset, $toAsset);
+                    if ($fetchedRate) {
+                        $rate = $fetchedRate;
+                    }
                 }
+
+                return $rate;
             }
-            
-            return $rate;
-        });
+        );
     }
-    
+
     /**
-     * Get the inverse rate (to -> from)
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return ExchangeRate|null
+     * Get the inverse rate (to -> from).
      */
     public function getInverseRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
         return $this->getRate($toAsset, $fromAsset);
     }
-    
+
     /**
-     * Convert an amount from one asset to another
+     * Convert an amount from one asset to another.
      *
-     * @param int $amount Amount in smallest unit
-     * @param string $fromAsset
-     * @param string $toAsset
+     * @param  int  $amount  Amount in smallest unit
      * @return int|null Converted amount in smallest unit, null if no rate available
      */
     public function convert(int $amount, string $fromAsset, string $toAsset): ?int
     {
         $rate = $this->getRate($fromAsset, $toAsset);
-        
-        if (!$rate) {
+
+        if (! $rate) {
             return null;
         }
-        
+
         return $rate->convert($amount);
     }
-    
+
     /**
-     * Fetch exchange rate from external API and store it
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return ExchangeRate|null
+     * Fetch exchange rate from external API and store it.
      */
     public function fetchAndStoreRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
@@ -103,17 +91,21 @@ class ExchangeRateService
             if ($fromAsset !== 'USD' && $toAsset !== 'USD') {
                 return $this->fetchChainedRate($fromAsset, $toAsset);
             }
-            
+
             $rateData = $this->fetchRateFromProvider($fromAsset, $toAsset);
-            
-            if (!$rateData) {
-                Log::warning("Failed to fetch exchange rate", [
-                    'from' => $fromAsset,
-                    'to' => $toAsset
-                ]);
+
+            if (! $rateData) {
+                Log::warning(
+                    'Failed to fetch exchange rate',
+                    [
+                        'from' => $fromAsset,
+                        'to'   => $toAsset,
+                    ]
+                );
+
                 return null;
             }
-            
+
             return $this->storeRate(
                 $fromAsset,
                 $toAsset,
@@ -122,66 +114,68 @@ class ExchangeRateService
                 $rateData['metadata'] ?? []
             );
         } catch (\Exception $e) {
-            Log::error("Error fetching exchange rate", [
-                'from' => $fromAsset,
-                'to' => $toAsset,
-                'error' => $e->getMessage()
-            ]);
+            Log::error(
+                'Error fetching exchange rate',
+                [
+                    'from'  => $fromAsset,
+                    'to'    => $toAsset,
+                    'error' => $e->getMessage(),
+                ]
+            );
+
             return null;
         }
     }
-    
+
     /**
-     * Fetch a chained rate through USD (e.g., EUR->USD->BTC)
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return ExchangeRate|null
+     * Fetch a chained rate through USD (e.g., EUR->USD->BTC).
      */
     private function fetchChainedRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
         // Get both rates to/from USD
         $fromToUsdData = $this->fetchRateFromProvider($fromAsset, 'USD');
         $usdToToData = $this->fetchRateFromProvider('USD', $toAsset);
-        
-        if (!$fromToUsdData || !$usdToToData) {
+
+        if (! $fromToUsdData || ! $usdToToData) {
             return null;
         }
-        
+
         // Calculate chained rate
         $chainedRate = $fromToUsdData['rate'] * $usdToToData['rate'];
-        
+
         return $this->storeRate(
             $fromAsset,
             $toAsset,
             $chainedRate,
             ExchangeRate::SOURCE_API,
             [
-                'chained' => true,
-                'via' => 'USD',
+                'chained'       => true,
+                'via'           => 'USD',
                 'from_usd_rate' => $fromToUsdData['rate'],
-                'usd_to_rate' => $usdToToData['rate'],
+                'usd_to_rate'   => $usdToToData['rate'],
             ]
         );
     }
-    
+
     /**
-     * Fetch rate from external provider
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return array|null
+     * Fetch rate from external provider.
      */
     private function fetchRateFromProvider(string $fromAsset, string $toAsset): ?array
     {
+        /** @var Asset|null $toAssetModel */
+        $toAssetModel = null;
+        /** @var Asset|null $fromAssetModel */
+        $fromAssetModel = null;
         // Determine the best provider based on asset types
-        $fromAssetModel = Asset::find($fromAsset);
-        $toAssetModel = Asset::find($toAsset);
-        
-        if (!$fromAssetModel || !$toAssetModel) {
+        /** @var Asset|null $$fromAssetModel */
+        $$fromAssetModel = Asset::find($fromAsset);
+        /** @var Asset|null $$toAssetModel */
+        $$toAssetModel = Asset::find($toAsset);
+
+        if (! $fromAssetModel || ! $toAssetModel) {
             return null;
         }
-        
+
         // Use appropriate provider based on asset types
         if ($fromAssetModel->isCrypto() || $toAssetModel->isCrypto()) {
             return $this->fetchFromCryptoProvider($fromAsset, $toAsset);
@@ -190,16 +184,12 @@ class ExchangeRateService
         } elseif ($fromAssetModel->isCommodity() || $toAssetModel->isCommodity()) {
             return $this->fetchFromCommodityProvider($fromAsset, $toAsset);
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Fetch rate from cryptocurrency API
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return array|null
+     * Fetch rate from cryptocurrency API.
      */
     private function fetchFromCryptoProvider(string $fromAsset, string $toAsset): ?array
     {
@@ -212,27 +202,23 @@ class ExchangeRateService
             'BTC-ETH' => 16.8,
             'ETH-BTC' => 0.0595,
         ];
-        
+
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_crypto_api',
+                    'provider'  => 'mock_crypto_api',
                     'timestamp' => now()->toISOString(),
-                ]
+                ],
             ];
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Fetch rate from fiat currency API
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return array|null
+     * Fetch rate from fiat currency API.
      */
     private function fetchFromFiatProvider(string $fromAsset, string $toAsset): ?array
     {
@@ -245,27 +231,23 @@ class ExchangeRateService
             'EUR-GBP' => 0.86,
             'GBP-EUR' => 1.16,
         ];
-        
+
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_fiat_api',
+                    'provider'  => 'mock_fiat_api',
                     'timestamp' => now()->toISOString(),
-                ]
+                ],
             ];
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Fetch rate from commodity API
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return array|null
+     * Fetch rate from commodity API.
      */
     private function fetchFromCommodityProvider(string $fromAsset, string $toAsset): ?array
     {
@@ -274,30 +256,23 @@ class ExchangeRateService
             'XAU-USD' => 2000.00,
             'USD-XAU' => 0.0005,
         ];
-        
+
         $pair = "$fromAsset-$toAsset";
         if (isset($mockRates[$pair])) {
             return [
-                'rate' => $mockRates[$pair],
+                'rate'     => $mockRates[$pair],
                 'metadata' => [
-                    'provider' => 'mock_commodity_api',
+                    'provider'  => 'mock_commodity_api',
                     'timestamp' => now()->toISOString(),
-                ]
+                ],
             ];
         }
-        
+
         return null;
     }
-    
+
     /**
-     * Store a new exchange rate
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @param float $rate
-     * @param string $source
-     * @param array $metadata
-     * @return ExchangeRate
+     * Store a new exchange rate.
      */
     public function storeRate(
         string $fromAsset,
@@ -306,66 +281,67 @@ class ExchangeRateService
         string $source = ExchangeRate::SOURCE_MANUAL,
         array $metadata = []
     ): ExchangeRate {
-        $exchangeRate = ExchangeRate::create([
-            'from_asset_code' => $fromAsset,
-            'to_asset_code' => $toAsset,
-            'rate' => $rate,
-            'source' => $source,
-            'valid_at' => now(),
-            'expires_at' => now()->addHours(1), // Default 1 hour expiry
-            'is_active' => true,
-            'metadata' => $metadata,
-        ]);
-        
+        $exchangeRate = ExchangeRate::create(
+            [
+                'from_asset_code' => $fromAsset,
+                'to_asset_code'   => $toAsset,
+                'rate'            => $rate,
+                'source'          => $source,
+                'valid_at'        => now(),
+                'expires_at'      => now()->addHours(1), // Default 1 hour expiry
+                'is_active'       => true,
+                'metadata'        => $metadata,
+            ]
+        );
+
         // Clear cache
         Cache::forget("exchange_rate:{$fromAsset}:{$toAsset}");
-        
+
         return $exchangeRate;
     }
-    
+
     /**
-     * Create an identity rate (1:1) for same asset conversions
-     *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @return ExchangeRate
+     * Create an identity rate (1:1) for same asset conversions.
      */
     private function createIdentityRate(string $fromAsset, string $toAsset): ExchangeRate
     {
-        $rate = new ExchangeRate([
-            'from_asset_code' => $fromAsset,
-            'to_asset_code' => $toAsset,
-            'rate' => 1.0,
-            'source' => ExchangeRate::SOURCE_MANUAL,
-            'valid_at' => now(),
-            'expires_at' => null,
-            'is_active' => true,
-            'metadata' => ['identity' => true],
-        ]);
-        
+        $rate = new ExchangeRate(
+            [
+                'from_asset_code' => $fromAsset,
+                'to_asset_code'   => $toAsset,
+                'rate'            => 1.0,
+                'source'          => ExchangeRate::SOURCE_MANUAL,
+                'valid_at'        => now(),
+                'expires_at'      => null,
+                'is_active'       => true,
+                'metadata'        => ['identity' => true],
+            ]
+        );
+
         // Don't save identity rates to database
         return $rate;
     }
-    
+
     /**
-     * Get all available exchange rates for an asset
+     * Get all available exchange rates for an asset.
      *
-     * @param string $assetCode
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAvailableRatesFor(string $assetCode)
     {
-        return ExchangeRate::where(function ($query) use ($assetCode) {
-            $query->where('from_asset_code', $assetCode)
-                  ->orWhere('to_asset_code', $assetCode);
-        })
-        ->valid()
-        ->latest()
-        ->get();
+        return ExchangeRate::where(
+            function ($query) use ($assetCode) {
+                $query->where('from_asset_code', $assetCode)
+                    ->orWhere('to_asset_code', $assetCode);
+            }
+        )
+            ->valid()
+            ->latest()
+            ->get();
     }
-    
+
     /**
-     * Refresh all stale rates
+     * Refresh all stale rates.
      *
      * @return int Number of rates refreshed
      */
@@ -374,24 +350,21 @@ class ExchangeRateService
         $staleRates = ExchangeRate::where('valid_at', '<', now()->subMinutes(self::MAX_RATE_AGE))
             ->active()
             ->get();
-        
+
         $refreshed = 0;
-        
+
         foreach ($staleRates as $staleRate) {
             if ($this->fetchAndStoreRate($staleRate->from_asset_code, $staleRate->to_asset_code)) {
                 $refreshed++;
             }
         }
-        
+
         return $refreshed;
     }
-    
+
     /**
-     * Get rate history for a specific pair
+     * Get rate history for a specific pair.
      *
-     * @param string $fromAsset
-     * @param string $toAsset
-     * @param int $days
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getRateHistory(string $fromAsset, string $toAsset, int $days = 30)

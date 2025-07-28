@@ -21,29 +21,29 @@ class PollFactory extends Factory
         $endDate = fake()->dateTimeBetween($startDate, '+2 weeks');
 
         return [
-            'uuid' => (string) Str::uuid(),
-            'title' => fake()->sentence(6),
-            'description' => fake()->paragraph(3),
-            'type' => fake()->randomElement(PollType::cases()),
-            'options' => $this->generateOptions(),
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'status' => fake()->randomElement(PollStatus::cases()),
+            'uuid'                   => (string) Str::uuid(),
+            'title'                  => fake()->sentence(6),
+            'description'            => fake()->paragraph(3),
+            'type'                   => fake()->randomElement(PollType::cases()),
+            'options'                => $this->generateOptions(),
+            'start_date'             => $startDate,
+            'end_date'               => $endDate,
+            'status'                 => fake()->randomElement(PollStatus::cases()),
             'required_participation' => fake()->optional(0.3)->numberBetween(10, 80),
-            'voting_power_strategy' => fake()->randomElement([
+            'voting_power_strategy'  => fake()->randomElement([
                 'one_user_one_vote',
-                'asset_weighted_vote'
+                'asset_weighted_vote',
             ]),
             'execution_workflow' => fake()->optional(0.5)->randomElement([
                 'AddAssetWorkflow',
                 'UpdateConfigurationWorkflow',
-                'FeatureToggleWorkflow'
+                'FeatureToggleWorkflow',
             ]),
             'created_by' => User::factory()->create()->uuid,
-            'metadata' => [
+            'metadata'   => [
                 'category' => fake()->randomElement(['governance', 'features', 'assets', 'policy']),
                 'priority' => fake()->randomElement(['low', 'medium', 'high']),
-                'tags' => fake()->words(3),
+                'tags'     => fake()->words(3),
             ],
         ];
     }
@@ -51,27 +51,27 @@ class PollFactory extends Factory
     public function active(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => PollStatus::ACTIVE,
+            'status'     => PollStatus::ACTIVE,
             'start_date' => now()->subHour(),
-            'end_date' => now()->addDays(7),
+            'end_date'   => now()->addDays(7),
         ]);
     }
 
     public function draft(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => PollStatus::DRAFT,
+            'status'     => PollStatus::DRAFT,
             'start_date' => now()->addDays(1),
-            'end_date' => now()->addDays(8),
+            'end_date'   => now()->addDays(8),
         ]);
     }
 
     public function completed(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => PollStatus::CLOSED,
+            'status'     => PollStatus::CLOSED,
             'start_date' => now()->subWeeks(2),
-            'end_date' => now()->subWeek(),
+            'end_date'   => now()->subWeek(),
         ]);
     }
 
@@ -85,7 +85,7 @@ class PollFactory extends Factory
     public function yesNo(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PollType::YES_NO,
+            'type'    => PollType::YES_NO,
             'options' => [
                 ['id' => 'yes', 'label' => 'Yes', 'description' => 'I support this proposal'],
                 ['id' => 'no', 'label' => 'No', 'description' => 'I do not support this proposal'],
@@ -96,7 +96,7 @@ class PollFactory extends Factory
     public function singleChoice(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PollType::SINGLE_CHOICE,
+            'type'    => PollType::SINGLE_CHOICE,
             'options' => $this->generateOptions(3, 5),
         ]);
     }
@@ -104,7 +104,7 @@ class PollFactory extends Factory
     public function multipleChoice(): static
     {
         return $this->state(fn (array $attributes) => [
-            'type' => PollType::MULTIPLE_CHOICE,
+            'type'    => PollType::MULTIPLE_CHOICE,
             'options' => $this->generateOptions(4, 6),
         ]);
     }
@@ -144,12 +144,12 @@ class PollFactory extends Factory
 
         for ($i = 0; $i < $count; $i++) {
             $options[] = [
-                'id' => Str::slug(fake()->unique()->words(2, true)),
-                'label' => fake()->sentence(3),
+                'id'          => Str::slug(fake()->unique()->words(2, true)),
+                'label'       => fake()->sentence(3),
                 'description' => fake()->optional(0.7)->sentence(8),
-                'metadata' => fake()->optional(0.3)->randomElement([
+                'metadata'    => fake()->optional(0.3)->randomElement([
                     ['impact' => 'high'],
-                    ['cost' => 'low'],
+                    ['cost'       => 'low'],
                     ['complexity' => 'medium'],
                 ]),
             ];

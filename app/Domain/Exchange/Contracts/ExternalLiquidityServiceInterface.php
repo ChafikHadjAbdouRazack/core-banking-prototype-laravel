@@ -5,22 +5,12 @@ namespace App\Domain\Exchange\Contracts;
 interface ExternalLiquidityServiceInterface
 {
     /**
-     * Find arbitrage opportunities between internal and external exchanges
-     *
-     * @param string $baseCurrency
-     * @param string $quoteCurrency
-     * @return array
+     * Find arbitrage opportunities between internal and external exchanges.
      */
     public function findArbitrageOpportunities(string $baseCurrency, string $quoteCurrency): array;
 
     /**
-     * Provide liquidity from external sources when needed
-     *
-     * @param string $baseCurrency
-     * @param string $quoteCurrency
-     * @param string $side
-     * @param string $amount
-     * @return array
+     * Provide liquidity from external sources when needed.
      */
     public function provideLiquidity(
         string $baseCurrency,
@@ -30,12 +20,7 @@ interface ExternalLiquidityServiceInterface
     ): array;
 
     /**
-     * Align internal prices with external market prices
-     *
-     * @param string $baseCurrency
-     * @param string $quoteCurrency
-     * @param float $maxDeviationPercentage
-     * @return array
+     * Align internal prices with external market prices.
      */
     public function alignPrices(
         string $baseCurrency,
@@ -44,43 +29,27 @@ interface ExternalLiquidityServiceInterface
     ): array;
 
     /**
-     * Execute arbitrage trade
-     *
-     * @param array $opportunity
-     * @return array
+     * Execute arbitrage trade.
      */
     public function executeArbitrage(array $opportunity): array;
 
     /**
-     * Get liquidity depth from external sources
-     *
-     * @param string $baseCurrency
-     * @param string $quoteCurrency
-     * @return array
+     * Get liquidity depth from external sources.
      */
     public function getExternalLiquidityDepth(string $baseCurrency, string $quoteCurrency): array;
 
     /**
-     * Monitor price divergence
-     *
-     * @return array
+     * Monitor price divergence.
      */
     public function monitorPriceDivergence(): array;
 
     /**
-     * Rebalance liquidity across exchanges
-     *
-     * @param array $targetDistribution
-     * @return array
+     * Rebalance liquidity across exchanges.
      */
     public function rebalanceLiquidity(array $targetDistribution): array;
 
     /**
-     * Get arbitrage statistics
-     *
-     * @param \DateTimeInterface|null $from
-     * @param \DateTimeInterface|null $to
-     * @return array
+     * Get arbitrage statistics.
      */
     public function getArbitrageStats(?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): array;
 }

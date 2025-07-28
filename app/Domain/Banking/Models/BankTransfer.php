@@ -28,111 +28,113 @@ class BankTransfer
         public readonly ?Carbon $failedAt,
         public readonly ?string $failureReason,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Check if transfer is pending
+     * Check if transfer is pending.
      */
     public function isPending(): bool
     {
         return in_array($this->status, ['pending', 'processing', 'submitted']);
     }
-    
+
     /**
-     * Check if transfer is completed
+     * Check if transfer is completed.
      */
     public function isCompleted(): bool
     {
         return $this->status === 'completed' && $this->executedAt !== null;
     }
-    
+
     /**
-     * Check if transfer failed
+     * Check if transfer failed.
      */
     public function isFailed(): bool
     {
         return $this->status === 'failed' || $this->failedAt !== null;
     }
-    
+
     /**
-     * Check if transfer can be cancelled
+     * Check if transfer can be cancelled.
      */
     public function isCancellable(): bool
     {
-        return $this->isPending() && !in_array($this->status, ['submitted', 'processing']);
+        return $this->isPending() && ! in_array($this->status, ['submitted', 'processing']);
     }
-    
+
     /**
-     * Get total amount including fees
+     * Get total amount including fees.
      */
     public function getTotalAmount(): float
     {
         $totalFees = array_sum(array_column($this->fees, 'amount'));
+
         return $this->amount + $totalFees;
     }
-    
+
     /**
-     * Get net amount after fees
+     * Get net amount after fees.
      */
     public function getNetAmount(): float
     {
         if ($this->metadata['fee_mode'] === 'shared') {
             return $this->amount - (array_sum(array_column($this->fees, 'amount')) / 2);
         }
-        
+
         return $this->metadata['fee_mode'] === 'sender' ? $this->amount : $this->amount - array_sum(array_column($this->fees, 'amount'));
     }
-    
+
     /**
-     * Get estimated arrival time
+     * Get estimated arrival time.
      */
     public function getEstimatedArrival(): ?Carbon
     {
         if ($this->isCompleted() || $this->isFailed()) {
             return null;
         }
-        
-        $estimatedHours = match($this->type) {
-            'INTERNAL' => 0,
-            'SEPA' => 24,
+
+        $estimatedHours = match ($this->type) {
+            'INTERNAL'     => 0,
+            'SEPA'         => 24,
             'SEPA_INSTANT' => 0,
-            'SWIFT' => 72,
-            default => 48,
+            'SWIFT'        => 72,
+            default        => 48,
         };
-        
+
         return $this->createdAt->copy()->addHours($estimatedHours);
     }
-    
+
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'bank_code' => $this->bankCode,
-            'type' => $this->type,
-            'status' => $this->status,
+            'id'              => $this->id,
+            'bank_code'       => $this->bankCode,
+            'type'            => $this->type,
+            'status'          => $this->status,
             'from_account_id' => $this->fromAccountId,
-            'to_account_id' => $this->toAccountId,
-            'to_bank_code' => $this->toBankCode,
-            'amount' => $this->amount,
-            'currency' => $this->currency,
-            'reference' => $this->reference,
-            'description' => $this->description,
-            'fees' => $this->fees,
-            'exchange_rate' => $this->exchangeRate,
-            'created_at' => $this->createdAt->toIso8601String(),
-            'updated_at' => $this->updatedAt->toIso8601String(),
-            'executed_at' => $this->executedAt?->toIso8601String(),
-            'failed_at' => $this->failedAt?->toIso8601String(),
-            'failure_reason' => $this->failureReason,
-            'metadata' => $this->metadata,
+            'to_account_id'   => $this->toAccountId,
+            'to_bank_code'    => $this->toBankCode,
+            'amount'          => $this->amount,
+            'currency'        => $this->currency,
+            'reference'       => $this->reference,
+            'description'     => $this->description,
+            'fees'            => $this->fees,
+            'exchange_rate'   => $this->exchangeRate,
+            'created_at'      => $this->createdAt->toIso8601String(),
+            'updated_at'      => $this->updatedAt->toIso8601String(),
+            'executed_at'     => $this->executedAt?->toIso8601String(),
+            'failed_at'       => $this->failedAt?->toIso8601String(),
+            'failure_reason'  => $this->failureReason,
+            'metadata'        => $this->metadata,
         ];
     }
-    
+
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

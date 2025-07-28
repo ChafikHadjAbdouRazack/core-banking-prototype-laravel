@@ -2,18 +2,18 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\BasketAsset;
-use App\Models\BasketPerformance;
+use App\Domain\Basket\Models\BasketAsset;
 use Filament\Widgets\ChartWidget;
 use Filament\Widgets\Concerns\InteractsWithPageFilters;
-use Illuminate\Support\Carbon;
 
 class BasketPerformanceChart extends ChartWidget
 {
     use InteractsWithPageFilters;
 
     protected static ?string $heading = 'Basket Performance';
+
     protected static ?int $sort = 3;
+
     protected static ?string $maxHeight = '400px';
 
     protected int|string|array $columnSpan = 'full';
@@ -25,19 +25,19 @@ class BasketPerformanceChart extends ChartWidget
         $basketCode = $this->filters['basket'] ?? 'GCU';
         $periodType = $this->filters['period'] ?? 'day';
         $limit = match ($periodType) {
-            'hour' => 24,
-            'day' => 30,
-            'week' => 12,
+            'hour'  => 24,
+            'day'   => 30,
+            'week'  => 12,
             'month' => 12,
             default => 30,
         };
 
         $basket = BasketAsset::where('code', $basketCode)->first();
-        
-        if (!$basket) {
+
+        if (! $basket) {
             return [
                 'datasets' => [],
-                'labels' => [],
+                'labels'   => [],
             ];
         }
 
@@ -56,21 +56,21 @@ class BasketPerformanceChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Return %',
-                    'data' => $returns->toArray(),
-                    'borderColor' => 'rgb(34, 197, 94)',
+                    'label'           => 'Return %',
+                    'data'            => $returns->toArray(),
+                    'borderColor'     => 'rgb(34, 197, 94)',
                     'backgroundColor' => 'rgba(34, 197, 94, 0.1)',
-                    'tension' => 0.1,
-                    'fill' => true,
+                    'tension'         => 0.1,
+                    'fill'            => true,
                 ],
                 [
-                    'label' => 'Volatility %',
-                    'data' => $volatility->toArray(),
-                    'borderColor' => 'rgb(251, 146, 60)',
+                    'label'           => 'Volatility %',
+                    'data'            => $volatility->toArray(),
+                    'borderColor'     => 'rgb(251, 146, 60)',
                     'backgroundColor' => 'rgba(251, 146, 60, 0.1)',
-                    'tension' => 0.1,
-                    'fill' => true,
-                    'yAxisID' => 'y1',
+                    'tension'         => 0.1,
+                    'fill'            => true,
+                    'yAxisID'         => 'y1',
                 ],
             ],
             'labels' => $labels->toArray(),
@@ -82,36 +82,36 @@ class BasketPerformanceChart extends ChartWidget
         return [
             'plugins' => [
                 'legend' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'top',
                 ],
                 'tooltip' => [
-                    'mode' => 'index',
+                    'mode'      => 'index',
                     'intersect' => false,
                 ],
             ],
             'scales' => [
                 'x' => [
                     'display' => true,
-                    'title' => [
+                    'title'   => [
                         'display' => true,
-                        'text' => 'Period',
+                        'text'    => 'Period',
                     ],
                 ],
                 'y' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'left',
-                    'title' => [
+                    'title'    => [
                         'display' => true,
-                        'text' => 'Return %',
+                        'text'    => 'Return %',
                     ],
                 ],
                 'y1' => [
-                    'display' => true,
+                    'display'  => true,
                     'position' => 'right',
-                    'title' => [
+                    'title'    => [
                         'display' => true,
-                        'text' => 'Volatility %',
+                        'text'    => 'Volatility %',
                     ],
                     'grid' => [
                         'drawOnChartArea' => false,
@@ -119,8 +119,8 @@ class BasketPerformanceChart extends ChartWidget
                 ],
             ],
             'interaction' => [
-                'mode' => 'nearest',
-                'axis' => 'x',
+                'mode'      => 'nearest',
+                'axis'      => 'x',
                 'intersect' => false,
             ],
         ];
@@ -136,9 +136,9 @@ class BasketPerformanceChart extends ChartWidget
         return [
             'basket' => BasketAsset::active()->pluck('name', 'code')->toArray(),
             'period' => [
-                'hour' => 'Hourly',
-                'day' => 'Daily',
-                'week' => 'Weekly',
+                'hour'  => 'Hourly',
+                'day'   => 'Daily',
+                'week'  => 'Weekly',
                 'month' => 'Monthly',
             ],
         ];

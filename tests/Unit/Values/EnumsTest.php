@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Domain\User\Values\UserRoles;
 use App\Values\EventQueues;
-use App\Values\UserRoles;
 use Tests\UnitTestCase;
 
 uses(UnitTestCase::class);
@@ -13,6 +13,7 @@ it('event queues enum has correct values', function () {
     expect(EventQueues::LEDGER->value)->toBe('ledger');
     expect(EventQueues::TRANSACTIONS->value)->toBe('transactions');
     expect(EventQueues::TRANSFERS->value)->toBe('transfers');
+    expect(EventQueues::LIQUIDITY_POOLS->value)->toBe('liquidity_pools');
 });
 
 it('user roles enum has correct values', function () {
@@ -23,15 +24,15 @@ it('user roles enum has correct values', function () {
 
 it('can get all event queue values', function () {
     $cases = EventQueues::cases();
-    
-    expect($cases)->toHaveCount(4);
+
+    expect($cases)->toHaveCount(5);
     expect(collect($cases)->pluck('value')->toArray())
-        ->toBe(['events', 'ledger', 'transactions', 'transfers']);
+        ->toBe(['events', 'ledger', 'transactions', 'transfers', 'liquidity_pools']);
 });
 
 it('can get all user role values', function () {
     $cases = UserRoles::cases();
-    
+
     expect($cases)->toHaveCount(3);
     expect(collect($cases)->pluck('value')->toArray())
         ->toBe(['business', 'private', 'admin']);

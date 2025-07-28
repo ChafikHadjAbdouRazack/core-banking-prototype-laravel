@@ -2,11 +2,10 @@
 
 namespace Tests\Behat\Contexts;
 
+use App\Domain\Account\Models\Account;
 use App\Models\User;
-use App\Models\Account;
 use Behat\Behat\Context\Context;
 use Behat\MinkExtension\Context\MinkContext;
-use Illuminate\Support\Facades\Auth;
 use PHPUnit\Framework\Assert;
 
 class AccountCreationContext extends MinkContext implements Context
@@ -19,19 +18,19 @@ class AccountCreationContext extends MinkContext implements Context
     public function iAmLoggedInAsAUser()
     {
         $this->currentUser = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password')
+            'name'     => 'Test User',
+            'email'    => 'test@example.com',
+            'password' => bcrypt('password'),
         ]);
 
         $this->visit('/login');
         $this->fillField('email', 'test@example.com');
         $this->fillField('password', 'password');
         $this->pressButton('Log in');
-        
+
         // Wait for redirect
         $this->getSession()->wait(2000);
-        
+
         Assert::assertStringContainsString('/dashboard', $this->getSession()->getCurrentUrl());
     }
 
@@ -40,14 +39,14 @@ class AccountCreationContext extends MinkContext implements Context
      */
     public function iHaveAnAccountNamed($accountName)
     {
-        if (!$this->currentUser) {
+        if (! $this->currentUser) {
             $this->iAmLoggedInAsAUser();
         }
 
         Account::factory()->create([
             'user_uuid' => $this->currentUser->uuid,
-            'name' => $accountName,
-            'balance' => 0
+            'name'      => $accountName,
+            'balance'   => 0,
         ]);
     }
 
@@ -57,9 +56,9 @@ class AccountCreationContext extends MinkContext implements Context
     public function iClick($text)
     {
         $button = $this->getSession()->getPage()->findButton($text);
-        if (!$button) {
+        if (! $button) {
             $link = $this->getSession()->getPage()->findLink($text);
-            if (!$link) {
+            if (! $link) {
                 throw new \Exception("Could not find button or link with text: $text");
             }
             $link->click();
@@ -87,7 +86,7 @@ class AccountCreationContext extends MinkContext implements Context
         $btn = $modal->findButton($button);
         Assert::assertNotNull($btn, "Button '$button' not found in modal");
         $btn->click();
-        
+
         // Wait for AJAX request to complete
         $this->getSession()->wait(3000);
     }

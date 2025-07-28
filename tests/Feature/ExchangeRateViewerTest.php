@@ -2,32 +2,33 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Team;
-use App\Models\Asset;
+use App\Domain\Asset\Models\Asset;
 use App\Domain\Exchange\Models\ExchangeRate;
+use App\Models\Team;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class ExchangeRateViewerTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Team $team;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create user with team
         $this->user = User::factory()->create();
         $this->team = Team::factory()->create(['user_id' => $this->user->id]);
         $this->user->teams()->attach($this->team);
         $this->user->switchTeam($this->team);
-        
+
         // Create some assets
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
         Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -40,7 +41,7 @@ class ExchangeRateViewerTest extends TestCase
     public function authenticated_user_can_view_exchange_rates()
     {
         $response = $this->actingAs($this->user)->get(route('exchange-rates.index'));
-        
+
         $response->assertOk();
         $response->assertViewIs('exchange-rates.index');
         $response->assertViewHas(['assets', 'baseCurrency', 'selectedAssets', 'rates', 'historicalData', 'statistics']);
@@ -50,7 +51,7 @@ class ExchangeRateViewerTest extends TestCase
     public function guest_cannot_view_exchange_rates()
     {
         $response = $this->get(route('exchange-rates.index'));
-        
+
         $response->assertRedirect(route('login'));
     }
 
@@ -60,28 +61,28 @@ class ExchangeRateViewerTest extends TestCase
         // Create some exchange rates
         ExchangeRate::create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => 0.92,
-            'source' => 'test',
-            'valid_at' => now(),
-            'is_active' => true,
+            'to_asset_code'   => 'EUR',
+            'rate'            => 0.92,
+            'source'          => 'test',
+            'valid_at'        => now(),
+            'is_active'       => true,
         ]);
-        
+
         ExchangeRate::create([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'GBP',
-            'rate' => 0.79,
-            'source' => 'test',
-            'valid_at' => now(),
-            'is_active' => true,
+            'to_asset_code'   => 'GBP',
+            'rate'            => 0.79,
+            'source'          => 'test',
+            'valid_at'        => now(),
+            'is_active'       => true,
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->postJson(route('exchange-rates.rates'), [
-                'base' => 'USD',
+                'base'   => 'USD',
                 'assets' => ['EUR', 'GBP'],
             ]);
-        
+
         $response->assertOk();
         $response->assertJsonStructure([
             'base',
@@ -107,26 +108,26 @@ class ExchangeRateViewerTest extends TestCase
             now()->subDays(1),
             now(),
         ];
-        
+
         foreach ($timestamps as $timestamp) {
             ExchangeRate::create([
                 'from_asset_code' => 'USD',
-                'to_asset_code' => 'EUR',
-                'rate' => 0.92 + (rand(-10, 10) / 1000),
-                'source' => 'test',
-                'valid_at' => $timestamp,
-                'is_active' => true,
-                'created_at' => $timestamp,
+                'to_asset_code'   => 'EUR',
+                'rate'            => 0.92 + (rand(-10, 10) / 1000),
+                'source'          => 'test',
+                'valid_at'        => $timestamp,
+                'is_active'       => true,
+                'created_at'      => $timestamp,
             ]);
         }
-        
+
         $response = $this->actingAs($this->user)
             ->getJson(route('exchange-rates.historical'), [
-                'base' => 'USD',
+                'base'   => 'USD',
                 'target' => 'EUR',
                 'period' => '7d',
             ]);
-        
+
         $response->assertOk();
         $response->assertJsonStructure([
             'base',
@@ -136,7 +137,7 @@ class ExchangeRateViewerTest extends TestCase
                 '*' => ['timestamp', 'rate'],
             ],
         ]);
-        
+
         $data = $response->json('data');
         $this->assertCount(8, $data);
     }
@@ -145,7 +146,7 @@ class ExchangeRateViewerTest extends TestCase
     public function exchange_rates_page_displays_correct_ui_elements()
     {
         $response = $this->actingAs($this->user)->get(route('exchange-rates.index'));
-        
+
         $response->assertOk();
         $response->assertSee('Exchange Rates');
         $response->assertSee('Base Currency');
@@ -160,7 +161,7 @@ class ExchangeRateViewerTest extends TestCase
     public function can_filter_by_base_currency()
     {
         $response = $this->actingAs($this->user)->get(route('exchange-rates.index', ['base' => 'EUR']));
-        
+
         $response->assertOk();
         $response->assertViewHas('baseCurrency', 'EUR');
     }
@@ -169,10 +170,10 @@ class ExchangeRateViewerTest extends TestCase
     public function can_select_specific_assets_to_display()
     {
         $response = $this->actingAs($this->user)->get(route('exchange-rates.index', [
-            'base' => 'USD',
+            'base'   => 'USD',
             'assets' => ['EUR', 'GCU'],
         ]));
-        
+
         $response->assertOk();
         $response->assertViewHas('selectedAssets', ['EUR', 'GCU']);
     }
@@ -182,13 +183,13 @@ class ExchangeRateViewerTest extends TestCase
     {
         // Ensure no exchange rates in database
         ExchangeRate::truncate();
-        
+
         $response = $this->actingAs($this->user)
             ->postJson(route('exchange-rates.rates'), [
-                'base' => 'USD',
+                'base'   => 'USD',
                 'assets' => ['EUR', 'GBP'],
             ]);
-        
+
         $response->assertOk();
         $response->assertJsonStructure([
             'rates' => [
@@ -196,7 +197,7 @@ class ExchangeRateViewerTest extends TestCase
                 'GBP' => ['rate'],
             ],
         ]);
-        
+
         // Should return default rates
         $this->assertEquals(0.92, $response->json('rates.EUR.rate'));
         $this->assertEquals(0.79, $response->json('rates.GBP.rate'));
@@ -207,42 +208,42 @@ class ExchangeRateViewerTest extends TestCase
     {
         // Clear any existing rates
         ExchangeRate::truncate();
-        
+
         // Create rate from 24h ago using DB insert to ensure timestamps are correct
         $oldDate = now()->subHours(25);
         DB::table('exchange_rates')->insert([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => 0.90,
-            'source' => 'test',
-            'valid_at' => $oldDate,
-            'is_active' => true,
-            'created_at' => $oldDate,
-            'updated_at' => $oldDate,
+            'to_asset_code'   => 'EUR',
+            'rate'            => 0.90,
+            'source'          => 'test',
+            'valid_at'        => $oldDate,
+            'is_active'       => true,
+            'created_at'      => $oldDate,
+            'updated_at'      => $oldDate,
         ]);
-        
+
         // Create current rate
         $currentDate = now();
         DB::table('exchange_rates')->insert([
             'from_asset_code' => 'USD',
-            'to_asset_code' => 'EUR',
-            'rate' => 0.92,
-            'source' => 'test',
-            'valid_at' => $currentDate,
-            'is_active' => true,
-            'created_at' => $currentDate,
-            'updated_at' => $currentDate,
+            'to_asset_code'   => 'EUR',
+            'rate'            => 0.92,
+            'source'          => 'test',
+            'valid_at'        => $currentDate,
+            'is_active'       => true,
+            'created_at'      => $currentDate,
+            'updated_at'      => $currentDate,
         ]);
-        
+
         $response = $this->actingAs($this->user)
             ->postJson(route('exchange-rates.rates'), [
-                'base' => 'USD',
+                'base'   => 'USD',
                 'assets' => ['EUR'],
             ]);
-        
+
         $response->assertOk();
         $eurRate = $response->json('rates.EUR');
-        
+
         // The current rate should be 0.92 and the 24h change should be positive
         $this->assertEquals(0.92, $eurRate['rate']);
         $this->assertGreaterThan(0, $eurRate['change_24h']);

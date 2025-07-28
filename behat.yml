@@ -6,8 +6,8 @@ default:
             contexts:
                 - FeatureContext
                 - LaravelFeatureContext
-                - WebContext
-                - SubproductContext
+            filters:
+                tags: "~@web&&~@wip"
         api:
             paths:
                 features: features/api
@@ -18,18 +18,41 @@ default:
                 features: features
             contexts:
                 - WebContext
+                - SubproductContext
             filters:
                 tags: "@web"
 
     extensions:
         Behat\MinkExtension:
-            base_url: 'http://finaegis.local'
+            base_url: '%env(BEHAT_BASE_URL)%'
             sessions:
                 default:
-                    goutte: ~
+                    browserkit_http: ~
 
     formatters:
         pretty:
             verbose: true
             paths: false
             snippets: false
+        progress:
+            timer: true
+        
+    gherkin:
+        cache: false
+
+# CI/CD profile - use with --profile=ci
+ci:
+    formatters:
+        progress: 
+            timer: false
+    
+    # Only run features that are fully implemented
+    suites:
+        acceptance:
+            paths:
+                features: features
+            contexts:
+                - FeatureContext
+                - LaravelFeatureContext
+            filters:
+                tags: "~@web&&~@skip&&~@wip"

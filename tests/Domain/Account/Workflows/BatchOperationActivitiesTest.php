@@ -1,11 +1,8 @@
 <?php
 
-use App\Domain\Account\Workflows\SingleBatchOperationActivity;
-use App\Domain\Account\Workflows\ReverseBatchOperationActivity;
 use App\Domain\Account\Workflows\CreateBatchSummaryActivity;
-use App\Models\Account;
-use App\Models\Transaction;
-use App\Models\Turnover;
+use App\Domain\Account\Workflows\ReverseBatchOperationActivity;
+use App\Domain\Account\Workflows\SingleBatchOperationActivity;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
@@ -19,9 +16,9 @@ it('has all required batch operation activities', function () {
 });
 
 it('single batch operation activity handles all required operations', function () {
-    $reflection = new \ReflectionClass(SingleBatchOperationActivity::class);
+    $reflection = new ReflectionClass(SingleBatchOperationActivity::class);
     $methodBody = file_get_contents($reflection->getFileName());
-    
+
     // Check that all required operations are handled
     expect($methodBody)->toContain('calculate_daily_turnover');
     expect($methodBody)->toContain('generate_account_statements');
@@ -32,9 +29,9 @@ it('single batch operation activity handles all required operations', function (
 });
 
 it('reverse batch operation activity handles all operations', function () {
-    $reflection = new \ReflectionClass(ReverseBatchOperationActivity::class);
+    $reflection = new ReflectionClass(ReverseBatchOperationActivity::class);
     $methodBody = file_get_contents($reflection->getFileName());
-    
+
     // Check that reversal methods exist for each operation
     expect($methodBody)->toContain('reverseDailyTurnover');
     expect($methodBody)->toContain('reverseAccountStatements');
@@ -45,9 +42,9 @@ it('reverse batch operation activity handles all operations', function () {
 });
 
 it('activities track operation results for potential reversal', function () {
-    $reflection = new \ReflectionClass(SingleBatchOperationActivity::class);
+    $reflection = new ReflectionClass(SingleBatchOperationActivity::class);
     $methodBody = file_get_contents($reflection->getFileName());
-    
+
     // Check that operations track data needed for reversal
     expect($methodBody)->toContain('processed_data');
     expect($methodBody)->toContain('generated_files');

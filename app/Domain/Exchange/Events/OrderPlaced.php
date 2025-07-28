@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderPlaced extends ShouldBeStored
@@ -18,5 +17,6 @@ class OrderPlaced extends ShouldBeStored
         public readonly ?string $price = null, // null for market orders
         public readonly ?string $stopPrice = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

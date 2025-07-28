@@ -12,7 +12,7 @@ class InitiateDepositActivity extends Activity
     public function execute(array $input): array
     {
         $depositUuid = Str::uuid()->toString();
-        
+
         $deposit = new StripeDeposit(
             accountUuid: $input['account_uuid'],
             amount: $input['amount'],
@@ -23,14 +23,14 @@ class InitiateDepositActivity extends Activity
             paymentMethodType: $input['payment_method_type'],
             metadata: $input['metadata'] ?? []
         );
-        
+
         PaymentDepositAggregate::retrieve($depositUuid)
             ->initiateDeposit($deposit)
             ->persist();
-        
+
         return [
             'deposit_uuid' => $depositUuid,
-            'status' => 'initiated'
+            'status'       => 'initiated',
         ];
     }
 }

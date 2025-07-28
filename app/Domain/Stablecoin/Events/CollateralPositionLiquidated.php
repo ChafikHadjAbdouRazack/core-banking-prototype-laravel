@@ -15,5 +15,6 @@ class CollateralPositionLiquidated extends ShouldBeStored
         public readonly int $debt_repaid,
         public readonly int $liquidation_penalty,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

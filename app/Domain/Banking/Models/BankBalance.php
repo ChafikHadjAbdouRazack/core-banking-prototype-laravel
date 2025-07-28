@@ -17,34 +17,35 @@ class BankBalance
         public readonly float $reserved,
         public readonly Carbon $asOf,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Get total balance (current + pending)
+     * Get total balance (current + pending).
      */
     public function getTotal(): float
     {
         return $this->current + $this->pending;
     }
-    
+
     /**
-     * Get usable balance (available - reserved)
+     * Get usable balance (available - reserved).
      */
     public function getUsable(): float
     {
         return $this->available - $this->reserved;
     }
-    
+
     /**
-     * Check if balance is sufficient for an amount
+     * Check if balance is sufficient for an amount.
      */
     public function hasSufficientFunds(float $amount): bool
     {
         return $this->getUsable() >= $amount;
     }
-    
+
     /**
-     * Format balance for display
+     * Format balance for display.
      */
     public function format(): string
     {
@@ -55,26 +56,26 @@ class BankBalance
             $this->available / 100
         );
     }
-    
+
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
             'account_id' => $this->accountId,
-            'currency' => $this->currency,
-            'available' => $this->available,
-            'current' => $this->current,
-            'pending' => $this->pending,
-            'reserved' => $this->reserved,
-            'as_of' => $this->asOf->toIso8601String(),
-            'metadata' => $this->metadata,
+            'currency'   => $this->currency,
+            'available'  => $this->available,
+            'current'    => $this->current,
+            'pending'    => $this->pending,
+            'reserved'   => $this->reserved,
+            'as_of'      => $this->asOf->toIso8601String(),
+            'metadata'   => $this->metadata,
         ];
     }
-    
+
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

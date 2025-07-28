@@ -2,7 +2,6 @@
 
 namespace App\Domain\Cgo\Events;
 
-use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class RefundCancelled extends ShouldBeStored
@@ -15,5 +14,6 @@ class RefundCancelled extends ShouldBeStored
         public readonly string $cancelledBy,
         public readonly string $cancelledAt,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

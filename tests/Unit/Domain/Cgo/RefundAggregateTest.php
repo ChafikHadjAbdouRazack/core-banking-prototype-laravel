@@ -12,25 +12,29 @@ use App\Domain\Cgo\Events\RefundRejected;
 use App\Domain\Cgo\Events\RefundRequested;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class RefundAggregateTest extends TestCase
+class RefundAggregateTest extends DomainTestCase
 {
     use RefreshDatabase;
 
     private string $refundId;
+
     private string $investmentId;
+
     private string $userId;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->refundId = Str::uuid()->toString();
         $this->investmentId = Str::uuid()->toString();
         $this->userId = Str::uuid()->toString();
     }
 
+    #[Test]
     public function test_can_request_refund()
     {
         RefundAggregate::fake()
@@ -58,10 +62,11 @@ class RefundAggregateTest extends TestCase
                     'Customer changed their mind',
                     $this->userId,
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_can_approve_pending_refund()
     {
         RefundAggregate::fake()
@@ -75,7 +80,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     'Customer changed their mind',
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->approve(
@@ -89,10 +94,11 @@ class RefundAggregateTest extends TestCase
                     'admin-user-id',
                     'Refund approved per company policy',
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_cannot_approve_non_pending_refund()
     {
         $this->expectException(\DomainException::class);
@@ -114,7 +120,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Already approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->approve(
@@ -124,6 +130,7 @@ class RefundAggregateTest extends TestCase
             });
     }
 
+    #[Test]
     public function test_can_reject_pending_refund()
     {
         RefundAggregate::fake()
@@ -137,7 +144,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     null,
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->reject(
@@ -151,10 +158,11 @@ class RefundAggregateTest extends TestCase
                     'admin-user-id',
                     'Refund not eligible per terms and conditions',
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_can_process_approved_refund()
     {
         RefundAggregate::fake()
@@ -173,7 +181,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->process(
@@ -191,10 +199,11 @@ class RefundAggregateTest extends TestCase
                     'succeeded',
                     ['stripe_response' => 'data'],
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_can_complete_processing_refund()
     {
         RefundAggregate::fake()
@@ -220,7 +229,7 @@ class RefundAggregateTest extends TestCase
                     're_test123',
                     'succeeded',
                     []
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->complete(now()->toIso8601String());
@@ -232,10 +241,11 @@ class RefundAggregateTest extends TestCase
                     10000,
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_can_fail_refund()
     {
         RefundAggregate::fake()
@@ -254,7 +264,7 @@ class RefundAggregateTest extends TestCase
                     $this->refundId,
                     'admin-user-id',
                     'Approved'
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->fail(
@@ -268,10 +278,11 @@ class RefundAggregateTest extends TestCase
                     'Payment processor error: Insufficient funds',
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_can_cancel_refund()
     {
         RefundAggregate::fake()
@@ -285,7 +296,7 @@ class RefundAggregateTest extends TestCase
                     'customer_request',
                     null,
                     $this->userId
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->cancel(
@@ -301,10 +312,11 @@ class RefundAggregateTest extends TestCase
                     $this->userId,
                     now()->toIso8601String(),
                     []
-                )
+                ),
             ]);
     }
 
+    #[Test]
     public function test_cannot_cancel_completed_refund()
     {
         $this->expectException(\DomainException::class);
@@ -339,7 +351,7 @@ class RefundAggregateTest extends TestCase
                     $this->investmentId,
                     10000,
                     now()->toIso8601String()
-                )
+                ),
             ])
             ->when(function (RefundAggregate $aggregate) {
                 $aggregate->cancel(

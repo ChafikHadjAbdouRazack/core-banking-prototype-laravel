@@ -25,3 +25,4 @@ work/
 # Generated SEO files
 /public/sitemap.xml
 /public/robots.txt
+.php-cs-fixer.cache

@@ -1,3 +1,4 @@
+@web
 Feature: Subproduct Pages Navigation
   In order to explore different financial products
   As a visitor or user

@@ -13,24 +13,32 @@ The project uses GitHub Actions for automated deployments:
 
 **Note**: Deployments will be automatically skipped if the corresponding server variables are not configured in GitHub. This allows you to use the same workflow even if you haven't set up all environments yet.
 
-#### Required GitHub Secrets
+#### Required GitHub Configuration
 
-Configure these secrets in your repository settings:
+##### GitHub Variables (non-sensitive configuration)
+Configure these variables in your repository settings under Settings > Secrets and variables > Actions > Variables:
 
 ```
-DEMO_SERVER
-DEMO_USER
-DEMO_PATH
-DEMO_URL
-DEMO_SSH_PRIVATE_KEY
-DEMO_SSH_KNOWN_HOSTS
+DEMO_SERVER          # Demo server hostname/IP
+DEMO_USER            # SSH username for demo
+DEMO_PATH            # Deployment path on demo server
+DEMO_URL             # Demo site URL
 
-PRODUCTION_SERVER
-PRODUCTION_USER
-PRODUCTION_PATH
-PRODUCTION_URL
-PRODUCTION_SSH_PRIVATE_KEY
-PRODUCTION_SSH_KNOWN_HOSTS
+PRODUCTION_SERVER    # Production server hostname/IP
+PRODUCTION_USER      # SSH username for production
+PRODUCTION_PATH      # Deployment path on production server
+PRODUCTION_URL       # Production site URL
+```
+
+##### GitHub Secrets (sensitive data)
+Configure these secrets in your repository settings under Settings > Secrets and variables > Actions > Secrets:
+
+```
+DEMO_SSH_PRIVATE_KEY        # SSH private key for demo server
+DEMO_SSH_KNOWN_HOSTS        # SSH known_hosts entry for demo
+
+PRODUCTION_SSH_PRIVATE_KEY  # SSH private key for production
+PRODUCTION_SSH_KNOWN_HOSTS  # SSH known_hosts entry for production
 ```
 
 ### 2. Laravel Envoy
@@ -73,8 +81,11 @@ envoy run rollback --on=production
 
 ## Server Requirements
 
-- PHP 8.3+
-- MariaDB 10.11+
+- PHP 8.4+ with extensions:
+  - GMP (required for cryptographic operations)
+  - BCMath, Intl, MB String, PDO
+  - Redis, OPCache, SOAP, Imagick
+- MariaDB 10.11+ or PostgreSQL 14+
 - Redis 7+
 - Node.js 20+
 - Nginx

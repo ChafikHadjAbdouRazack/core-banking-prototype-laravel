@@ -12,5 +12,6 @@ class CollateralPositionClosed extends ShouldBeStored
         public readonly string $position_uuid,
         public readonly string $reason = 'user_closed',
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

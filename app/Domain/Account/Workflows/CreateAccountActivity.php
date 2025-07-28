@@ -9,22 +9,17 @@ use Workflow\Activity;
 
 class CreateAccountActivity extends Activity
 {
-    /**
-     * @param \App\Domain\Account\DataObjects\Account $account
-     *
-     * @return string
-     */
-    public function execute( Account $account ): string
+    public function execute(Account $account): string
     {
         $uuid = $account->getUuid() ?: Str::uuid()->toString();
-        
+
         $ledger = app(LedgerAggregate::class);
-        
+
         $accountWithUuid = $account->withUuid($uuid);
-        
-        $ledger->retrieve( $uuid )
-               ->createAccount( $accountWithUuid )
-               ->persist();
+
+        $ledger->retrieve($uuid)
+            ->createAccount($accountWithUuid)
+            ->persist();
 
         return $uuid;
     }

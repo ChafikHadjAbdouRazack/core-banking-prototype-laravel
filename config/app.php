@@ -30,6 +30,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Local Development Hostnames
+    |--------------------------------------------------------------------------
+    |
+    | These hostnames will not have HTTPS forced in local development.
+    | Add any local development hostnames you use here.
+    |
+    */
+
+    'local_hostnames' => env('APP_LOCAL_HOSTNAMES', 'localhost,127.0.0.1,finaegis.local,finaegis.test'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Debug Mode
     |--------------------------------------------------------------------------
     |
@@ -120,7 +132,7 @@ return [
 
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
-        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+        'store'  => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
 ];

@@ -2,50 +2,51 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Account;
-use App\Models\AccountBalance;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Domain\Transaction\Models\Transaction;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\DomainTestCase;
 
-class TransactionStatusTrackingTest extends TestCase
+class TransactionStatusTrackingTest extends DomainTestCase
 {
     use RefreshDatabase;
 
     protected User $user;
+
     protected Account $account;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create user and account
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
         ]);
-        
+
         // Create USD asset
         Asset::updateOrCreate(
             ['code' => 'USD'],
             [
-                'name' => 'US Dollar',
-                'symbol' => '$',
-                'type' => 'fiat',
+                'name'      => 'US Dollar',
+                'symbol'    => '$',
+                'type'      => 'fiat',
                 'precision' => 2,
                 'is_active' => true,
             ]
         );
-        
+
         // Add balance
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
-            'asset_code' => 'USD',
-            'balance' => 100000, // $1,000
+            'asset_code'   => 'USD',
+            'balance'      => 100000, // $1,000
         ]);
     }
 
@@ -53,17 +54,18 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_view_transaction_status_tracking_page()
     {
         $this->actingAs($this->user);
-        
+
         $response = $this->get(route('transactions.status'));
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn (Assert $page) => $page
-            ->component('Transactions/StatusTracking')
-            ->has('accounts')
-            ->has('pendingTransactions')
-            ->has('completedTransactions')
-            ->has('statistics')
-            ->has('filters')
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Transactions/StatusTracking')
+                ->has('accounts')
+                ->has('pendingTransactions')
+                ->has('completedTransactions')
+                ->has('statistics')
+                ->has('filters')
         );
     }
 
@@ -71,17 +73,18 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_filter_transactions_by_status()
     {
         $this->actingAs($this->user);
-        
+
         // Create test transactions
         $this->createTestTransaction('pending');
         $this->createTestTransaction('completed');
         $this->createTestTransaction('failed');
-        
+
         $response = $this->get(route('transactions.status', ['status' => 'pending']));
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn (Assert $page) => $page
-            ->where('filters.status', 'pending')
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->where('filters.status', 'pending')
         );
     }
 
@@ -89,17 +92,18 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_view_transaction_details()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('processing');
-        
+
         $response = $this->get(route('transactions.status.show', $transaction->id));
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn (Assert $page) => $page
-            ->component('Transactions/StatusDetail')
-            ->has('transaction')
-            ->has('timeline')
-            ->has('relatedTransactions')
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->component('Transactions/StatusDetail')
+                ->has('transaction')
+                ->has('timeline')
+                ->has('relatedTransactions')
         );
     }
 
@@ -107,14 +111,14 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_get_real_time_transaction_status()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('processing');
-        
+
         $response = $this->get(route('transactions.status.status', $transaction->id));
-        
+
         $response->assertStatus(200);
         $response->assertJson([
-            'id' => $transaction->id,
+            'id'     => $transaction->id,
             'status' => 'processing',
         ]);
         $response->assertJsonStructure([
@@ -131,11 +135,11 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_cancel_pending_transaction()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('pending');
-        
+
         $response = $this->post(route('transactions.status.cancel', $transaction->id));
-        
+
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
@@ -147,11 +151,11 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_cannot_cancel_completed_transaction()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('completed');
-        
+
         $response = $this->post(route('transactions.status.cancel', $transaction->id));
-        
+
         $response->assertStatus(400);
         $response->assertJson([
             'error' => 'Transaction cannot be cancelled',
@@ -162,11 +166,11 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_retry_failed_transaction()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('failed');
-        
+
         $response = $this->post(route('transactions.status.retry', $transaction->id));
-        
+
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
@@ -183,11 +187,11 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_cannot_retry_successful_transaction()
     {
         $this->actingAs($this->user);
-        
+
         $transaction = $this->createTestTransaction('completed');
-        
+
         $response = $this->post(route('transactions.status.retry', $transaction->id));
-        
+
         $response->assertStatus(400);
         $response->assertJson([
             'error' => 'Transaction cannot be retried',
@@ -198,18 +202,21 @@ class TransactionStatusTrackingTest extends TestCase
     public function user_can_filter_transactions_by_date_range()
     {
         $this->actingAs($this->user);
-        
+
         $response = $this->get(route('transactions.status', [
             'date_from' => now()->subDays(7)->format('Y-m-d'),
-            'date_to' => now()->format('Y-m-d'),
+            'date_to'   => now()->format('Y-m-d'),
         ]));
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn (Assert $page) => $page
-            ->has('filters', fn (Assert $filters) => $filters
-                ->where('date_from', now()->subDays(7)->format('Y-m-d'))
-                ->where('date_to', now()->format('Y-m-d'))
-            )
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->has(
+                    'filters',
+                    fn (Assert $filters) => $filters
+                        ->where('date_from', now()->subDays(7)->format('Y-m-d'))
+                        ->where('date_to', now()->format('Y-m-d'))
+                )
         );
     }
 
@@ -217,24 +224,27 @@ class TransactionStatusTrackingTest extends TestCase
     public function statistics_show_correct_transaction_counts()
     {
         $this->actingAs($this->user);
-        
+
         // Create various transactions
         $this->createTestTransaction('completed');
         $this->createTestTransaction('completed');
         $this->createTestTransaction('pending');
         $this->createTestTransaction('failed');
-        
+
         $response = $this->get(route('transactions.status'));
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn (Assert $page) => $page
-            ->has('statistics', fn (Assert $stats) => $stats
-                ->where('total', 4)
-                ->where('completed', 2)
-                ->where('pending', 1)
-                ->where('failed', 1)
-                ->where('success_rate', 50.0)
-            )
+        $response->assertInertia(
+            fn (Assert $page) => $page
+                ->has(
+                    'statistics',
+                    fn (Assert $stats) => $stats
+                        ->where('total', 4)
+                        ->where('completed', 2)
+                        ->where('pending', 1)
+                        ->where('failed', 1)
+                        ->where('success_rate', 50.0)
+                )
         );
     }
 
@@ -245,43 +255,43 @@ class TransactionStatusTrackingTest extends TestCase
         $otherAccount = Account::factory()->create([
             'user_uuid' => $otherUser->uuid,
         ]);
-        
+
         // Create transaction for other user
         $transaction = Transaction::forceCreate([
-            'id' => \Str::uuid(),
+            'id'           => \Str::uuid(),
             'account_uuid' => $otherAccount->uuid,
-            'type' => 'deposit',
-            'amount' => 10000,
-            'currency' => 'USD',
-            'status' => 'pending',
-            'reference' => 'TEST-' . uniqid(),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'type'         => 'deposit',
+            'amount'       => 10000,
+            'currency'     => 'USD',
+            'status'       => 'pending',
+            'reference'    => 'TEST-' . uniqid(),
+            'created_at'   => now(),
+            'updated_at'   => now(),
         ]);
-        
+
         $this->actingAs($this->user);
-        
+
         $response = $this->get(route('transactions.status.show', $transaction->id));
-        
+
         $response->assertStatus(404);
     }
 
     /**
-     * Helper method to create test transactions
+     * Helper method to create test transactions.
      */
     private function createTestTransaction($status = 'pending', $type = 'deposit')
     {
         return Transaction::forceCreate([
-            'id' => \Str::uuid(),
+            'id'           => \Str::uuid(),
             'account_uuid' => $this->account->uuid,
-            'type' => $type,
-            'amount' => rand(1000, 50000),
-            'currency' => 'USD',
-            'status' => $status,
-            'reference' => 'TEST-' . uniqid(),
-            'metadata' => json_encode([
+            'type'         => $type,
+            'amount'       => rand(1000, 50000),
+            'currency'     => 'USD',
+            'status'       => $status,
+            'reference'    => 'TEST-' . uniqid(),
+            'metadata'     => json_encode([
                 'description' => 'Test transaction',
-                'source' => 'test',
+                'source'      => 'test',
             ]),
             'created_at' => now()->subMinutes(rand(1, 60)),
             'updated_at' => now(),

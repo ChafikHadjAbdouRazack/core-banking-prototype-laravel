@@ -5,6 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static static|null find(mixed $id, array $columns = ['*'])
+ * @method static static|null first(array $columns = ['*'])
+ * @method static static firstOrFail(array $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static bool exists()
+ * @method static static create(array $attributes = [])
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ */
 class SystemHealthCheck extends Model
 {
     use HasFactory;
@@ -20,13 +33,13 @@ class SystemHealthCheck extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
-        'checked_at' => 'datetime',
+        'metadata'      => 'array',
+        'checked_at'    => 'datetime',
         'response_time' => 'float',
     ];
 
     /**
-     * Get checks for a specific service
+     * Get checks for a specific service.
      */
     public function scopeForService($query, string $service)
     {
@@ -34,7 +47,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get checks within a time range
+     * Get checks within a time range.
      */
     public function scopeInTimeRange($query, $start, $end)
     {
@@ -42,7 +55,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get only operational checks
+     * Get only operational checks.
      */
     public function scopeOperational($query)
     {
@@ -50,7 +63,7 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get only failed checks
+     * Get only failed checks.
      */
     public function scopeFailed($query)
     {
@@ -58,35 +71,35 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Calculate uptime percentage for a service
+     * Calculate uptime percentage for a service.
      */
     public static function calculateUptime(string $service, int $days = 30)
     {
         $startDate = now()->subDays($days);
-        
+
         $totalChecks = self::forService($service)
             ->where('checked_at', '>=', $startDate)
             ->count();
-            
+
         if ($totalChecks === 0) {
             return 100.0;
         }
-        
+
         $operationalChecks = self::forService($service)
             ->operational()
             ->where('checked_at', '>=', $startDate)
             ->count();
-            
+
         return round(($operationalChecks / $totalChecks) * 100, 2);
     }
 
     /**
-     * Get average response time for a service
+     * Get average response time for a service.
      */
     public static function averageResponseTime(string $service, int $hours = 24)
     {
         $startDate = now()->subHours($hours);
-        
+
         return self::forService($service)
             ->where('checked_at', '>=', $startDate)
             ->whereNotNull('response_time')
@@ -94,17 +107,31 @@ class SystemHealthCheck extends Model
     }
 
     /**
-     * Get the latest status for each service
+     * Get the latest status for each service.
      */
     public static function getLatestStatuses()
     {
         return self::select('service', 'status', 'response_time', 'checked_at', 'error_message')
-            ->whereIn('id', function ($query) {
-                $query->select(\DB::raw('MAX(id)'))
-                    ->from('system_health_checks')
-                    ->groupBy('service');
-            })
+            ->whereIn(
+                'id',
+                function ($query) {
+                    $query->select(\DB::raw('MAX(id)'))
+                        ->from('system_health_checks')
+                        ->groupBy('service');
+                }
+            )
             ->get()
             ->keyBy('service');
+    }
+
+    /**
+     * Get the activity logs for this model.
+     */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs()
+    {
+        return $this->morphMany(\App\Domain\Activity\Models\Activity::class, 'subject');
     }
 }

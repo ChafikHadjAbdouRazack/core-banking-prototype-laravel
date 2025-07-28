@@ -3,19 +3,19 @@
 namespace App\Domain\Payment\Aggregates;
 
 use App\Domain\Payment\DataObjects\BankWithdrawal;
-use App\Domain\Payment\Events\WithdrawalInitiated;
 use App\Domain\Payment\Events\WithdrawalCompleted;
 use App\Domain\Payment\Events\WithdrawalFailed;
+use App\Domain\Payment\Events\WithdrawalInitiated;
 use App\Domain\Payment\Repositories\PaymentWithdrawalRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class PaymentWithdrawalAggregate extends AggregateRoot
 {
     protected string $withdrawalStatus = 'pending';
+
     protected ?string $transactionId = null;
-    
+
     /**
-     * @return PaymentWithdrawalRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): PaymentWithdrawalRepository
@@ -26,7 +26,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Initiate a new withdrawal
+     * Initiate a new withdrawal.
      */
     public function initiateWithdrawal(BankWithdrawal $withdrawal): static
     {
@@ -47,7 +47,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Complete the withdrawal
+     * Complete the withdrawal.
      */
     public function completeWithdrawal(string $transactionId): static
     {
@@ -66,7 +66,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Fail the withdrawal
+     * Fail the withdrawal.
      */
     public function failWithdrawal(string $reason): static
     {
@@ -85,7 +85,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Apply withdrawal initiated event
+     * Apply withdrawal initiated event.
      */
     protected function applyWithdrawalInitiated(WithdrawalInitiated $event): void
     {
@@ -93,7 +93,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Apply withdrawal completed event
+     * Apply withdrawal completed event.
      */
     protected function applyWithdrawalCompleted(WithdrawalCompleted $event): void
     {
@@ -102,7 +102,7 @@ class PaymentWithdrawalAggregate extends AggregateRoot
     }
 
     /**
-     * Apply withdrawal failed event
+     * Apply withdrawal failed event.
      */
     protected function applyWithdrawalFailed(WithdrawalFailed $event): void
     {

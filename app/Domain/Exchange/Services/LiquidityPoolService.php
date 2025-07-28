@@ -18,10 +18,11 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
 {
     public function __construct(
         private readonly ExchangeService $exchangeService
-    ) {}
+    ) {
+    }
 
     /**
-     * Create a new liquidity pool
+     * Create a new liquidity pool.
      */
     public function createPool(
         string $baseCurrency,
@@ -30,6 +31,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         array $metadata = []
     ): string {
         // Check if pool already exists
+        /** @var \Illuminate\Database\Eloquent\Model|null $existingPool */
         $existingPool = PoolProjection::forPair($baseCurrency, $quoteCurrency)->first();
         if ($existingPool) {
             throw new \DomainException('Liquidity pool already exists for this pair');
@@ -51,25 +53,27 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Add liquidity to a pool
+     * Add liquidity to a pool.
      */
     public function addLiquidity(LiquidityAdditionInput $input): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->addLiquidity($input);
     }
 
     /**
-     * Remove liquidity from a pool
+     * Remove liquidity from a pool.
      */
     public function removeLiquidity(LiquidityRemovalInput $input): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->removeLiquidity($input);
     }
 
     /**
-     * Execute a swap through the pool
+     * Execute a swap through the pool.
      */
     public function swap(
         string $poolId,
@@ -79,10 +83,10 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
         string $minOutputAmount = '0'
     ): array {
         $pool = LiquidityPool::retrieve($poolId);
-        
+
         // Calculate swap details
         $swapDetails = $pool->executeSwap($inputCurrency, $inputAmount, $minOutputAmount);
-        
+
         // Execute the actual asset transfers
         $this->exchangeService->executePoolSwap(
             poolId: $poolId,
@@ -98,7 +102,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get pool details
+     * Get pool details.
      */
     public function getPool(string $poolId): ?PoolProjection
     {
@@ -106,7 +110,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get pool by currency pair
+     * Get pool by currency pair.
      */
     public function getPoolByPair(string $baseCurrency, string $quoteCurrency): ?PoolProjection
     {
@@ -114,7 +118,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get all active pools
+     * Get all active pools.
      */
     public function getActivePools(): Collection
     {
@@ -122,7 +126,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get provider's positions
+     * Get provider's positions.
      */
     public function getProviderPositions(string $providerId): Collection
     {
@@ -132,52 +136,76 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Calculate pool metrics
+     * Calculate pool metrics.
      */
     public function getPoolMetrics(string $poolId): array
     {
-        $pool = PoolProjection::where('pool_id', $poolId)->firstOrFail();
-        
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var \App\Domain\Liquidity\Models\LiquidityPool|null $pool */
+        $pool = null;
+        /** @var PoolProjection $$pool */
+        $$pool = PoolProjection::where()->firstOrFail();
+
         $baseReserve = BigDecimal::of($pool->base_reserve);
         $quoteReserve = BigDecimal::of($pool->quote_reserve);
-        
+
         // Calculate TVL (Total Value Locked) in quote currency
         $spotPrice = $quoteReserve->dividedBy($baseReserve, 18);
         $baseValueInQuote = $baseReserve->multipliedBy($spotPrice);
         $tvl = $baseValueInQuote->plus($quoteReserve);
-        
+
         // Calculate APY based on fees collected
         $feesCollected24h = BigDecimal::of($pool->fees_collected_24h);
         $dailyReturn = $tvl->isZero() ? BigDecimal::zero() : $feesCollected24h->dividedBy($tvl, 18);
         $apy = $dailyReturn->multipliedBy(365)->multipliedBy(100);
 
         return [
-            'pool_id' => $poolId,
-            'base_currency' => $pool->base_currency,
+            'pool_id'        => $poolId,
+            'base_currency'  => $pool->base_currency,
             'quote_currency' => $pool->quote_currency,
-            'base_reserve' => $pool->base_reserve,
-            'quote_reserve' => $pool->quote_reserve,
-            'total_shares' => $pool->total_shares,
-            'spot_price' => $spotPrice->__toString(),
-            'tvl' => $tvl->__toString(),
-            'volume_24h' => $pool->volume_24h,
-            'fees_24h' => $pool->fees_collected_24h,
-            'apy' => $apy->__toString(),
+            'base_reserve'   => $pool->base_reserve,
+            'quote_reserve'  => $pool->quote_reserve,
+            'total_shares'   => $pool->total_shares,
+            'spot_price'     => $spotPrice->__toString(),
+            'tvl'            => $tvl->__toString(),
+            'volume_24h'     => $pool->volume_24h,
+            'fees_24h'       => $pool->fees_collected_24h,
+            'apy'            => $apy->__toString(),
             'provider_count' => $pool->providers()->count(),
         ];
     }
 
     /**
-     * Rebalance pool to target ratio
+     * Rebalance pool to target ratio.
      */
     public function rebalancePool(string $poolId, string $targetRatio): array
     {
         $workflow = WorkflowStub::make(LiquidityManagementWorkflow::class);
+
         return $workflow->rebalancePool($poolId, $targetRatio);
     }
 
     /**
-     * Distribute rewards to liquidity providers
+     * Distribute rewards to liquidity providers.
      */
     public function distributeRewards(
         string $poolId,
@@ -191,7 +219,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Claim rewards for a provider
+     * Claim rewards for a provider.
      */
     public function claimRewards(string $poolId, string $providerId): array
     {
@@ -200,7 +228,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
             ->firstOrFail();
 
         $rewards = $provider->pending_rewards ?? [];
-        
+
         if (empty($rewards)) {
             throw new \DomainException('No rewards to claim');
         }
@@ -224,7 +252,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Update pool parameters
+     * Update pool parameters.
      */
     public function updatePoolParameters(
         string $poolId,
@@ -238,7 +266,7 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
     }
 
     /**
-     * Get all liquidity pools
+     * Get all liquidity pools.
      */
     public function getAllPools(): Collection
     {
@@ -246,21 +274,22 @@ class LiquidityPoolService implements LiquidityPoolServiceInterface
             ->where('is_active', true)
             ->get();
 
-        return $pools->map(function ($pool) {
-            $metrics = $this->getPoolMetrics($pool->pool_id);
-            
-            return [
-                'id' => $pool->pool_id,
-                'base_currency' => $pool->base_currency,
-                'quote_currency' => $pool->quote_currency,
-                'fee_rate' => $pool->fee_rate,
-                'tvl' => $metrics['tvl'] ?? 0,
-                'volume_24h' => $metrics['volume_24h'] ?? 0,
-                'apy' => $metrics['fee_apy'] ?? 0,
-                'provider_count' => $pool->providers->count(),
-                'is_active' => $pool->is_active,
-            ];
-        });
-    }
+        return $pools->map(
+            function ($pool) {
+                $metrics = $this->getPoolMetrics($pool->pool_id);
 
+                return [
+                'id'             => $pool->pool_id,
+                'base_currency'  => $pool->base_currency,
+                'quote_currency' => $pool->quote_currency,
+                'fee_rate'       => $pool->fee_rate,
+                'tvl'            => $metrics['tvl'] ?? 0,
+                'volume_24h'     => $metrics['volume_24h'] ?? 0,
+                'apy'            => $metrics['fee_apy'] ?? 0,
+                'provider_count' => $pool->providers->count(),
+                'is_active'      => $pool->is_active,
+                ];
+            }
+        );
+    }
 }

@@ -16,7 +16,8 @@ final class MarketPair
         public readonly int $amountPrecision,
         public readonly bool $isActive,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -36,15 +37,15 @@ final class MarketPair
     public function toArray(): array
     {
         return [
-            'base_currency' => $this->baseCurrency,
-            'quote_currency' => $this->quoteCurrency,
-            'min_order_size' => $this->minOrderSize->__toString(),
-            'max_order_size' => $this->maxOrderSize->__toString(),
-            'tick_size' => $this->tickSize->__toString(),
-            'price_precision' => $this->pricePrecision,
+            'base_currency'    => $this->baseCurrency,
+            'quote_currency'   => $this->quoteCurrency,
+            'min_order_size'   => $this->minOrderSize->__toString(),
+            'max_order_size'   => $this->maxOrderSize->__toString(),
+            'tick_size'        => $this->tickSize->__toString(),
+            'price_precision'  => $this->pricePrecision,
             'amount_precision' => $this->amountPrecision,
-            'is_active' => $this->isActive,
-            'metadata' => $this->metadata,
+            'is_active'        => $this->isActive,
+            'metadata'         => $this->metadata,
         ];
     }
 
@@ -61,12 +62,13 @@ final class MarketPair
 
         // Check if price respects tick size
         $remainder = $price->remainder($this->tickSize);
+
         return $remainder->isZero();
     }
 
     public function validateAmount(BigDecimal $amount): bool
     {
-        return $amount->isGreaterThanOrEqualTo($this->minOrderSize) 
+        return $amount->isGreaterThanOrEqualTo($this->minOrderSize)
             && $amount->isLessThanOrEqualTo($this->maxOrderSize);
     }
 }

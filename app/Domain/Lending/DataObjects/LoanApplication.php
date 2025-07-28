@@ -22,7 +22,8 @@ class LoanApplication
         public readonly array $documents,
         public readonly ?Carbon $submittedAt = null,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -46,19 +47,19 @@ class LoanApplication
     public function toArray(): array
     {
         return [
-            'application_id' => $this->applicationId,
+            'application_id'      => $this->applicationId,
             'borrower_account_id' => $this->borrowerAccountId,
-            'amount' => $this->amount,
-            'term_months' => $this->termMonths,
-            'purpose' => $this->purpose->value,
+            'amount'              => $this->amount,
+            'term_months'         => $this->termMonths,
+            'purpose'             => $this->purpose->value,
             'purpose_description' => $this->purposeDescription,
-            'employment_status' => $this->employmentStatus->value,
-            'monthly_income' => $this->monthlyIncome,
-            'monthly_expenses' => $this->monthlyExpenses,
-            'collateral' => $this->collateral,
-            'documents' => $this->documents,
-            'submitted_at' => $this->submittedAt?->toIso8601String(),
-            'metadata' => $this->metadata
+            'employment_status'   => $this->employmentStatus->value,
+            'monthly_income'      => $this->monthlyIncome,
+            'monthly_expenses'    => $this->monthlyExpenses,
+            'collateral'          => $this->collateral,
+            'documents'           => $this->documents,
+            'submitted_at'        => $this->submittedAt?->toIso8601String(),
+            'metadata'            => $this->metadata,
         ];
     }
 
@@ -66,11 +67,11 @@ class LoanApplication
     {
         $monthlyIncome = (float) $this->monthlyIncome;
         $monthlyExpenses = (float) $this->monthlyExpenses;
-        
+
         if ($monthlyIncome <= 0) {
             return 1.0; // Maximum ratio if no income
         }
-        
+
         return $monthlyExpenses / $monthlyIncome;
     }
 
@@ -79,19 +80,19 @@ class LoanApplication
         $principal = (float) $this->amount;
         $monthlyRate = $interestRate / 12 / 100;
         $numPayments = $this->termMonths;
-        
+
         if ($monthlyRate == 0) {
             return number_format($principal / $numPayments, 2, '.', '');
         }
-        
-        $monthlyPayment = $principal * ($monthlyRate * pow(1 + $monthlyRate, $numPayments)) / 
+
+        $monthlyPayment = $principal * ($monthlyRate * pow(1 + $monthlyRate, $numPayments)) /
                          (pow(1 + $monthlyRate, $numPayments) - 1);
-        
+
         return number_format($monthlyPayment, 2, '.', '');
     }
 
     public function isCollateralized(): bool
     {
-        return !empty($this->collateral);
+        return ! empty($this->collateral);
     }
 }

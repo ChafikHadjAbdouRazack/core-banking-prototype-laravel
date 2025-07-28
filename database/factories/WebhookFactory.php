@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Webhook;
+use App\Domain\Webhook\Models\Webhook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,17 +18,17 @@ class WebhookFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->company() . ' Webhook',
+            'name'        => fake()->company() . ' Webhook',
             'description' => fake()->sentence(),
-            'url' => fake()->url(),
-            'events' => fake()->randomElements(array_keys(Webhook::EVENTS), rand(1, 5)),
-            'headers' => [
+            'url'         => fake()->url(),
+            'events'      => fake()->randomElements(array_keys(Webhook::EVENTS), rand(1, 5)),
+            'headers'     => [
                 'X-Custom-Header' => fake()->word(),
             ],
-            'secret' => fake()->sha256(),
-            'is_active' => true,
-            'retry_attempts' => 3,
-            'timeout_seconds' => 30,
+            'secret'               => fake()->sha256(),
+            'is_active'            => true,
+            'retry_attempts'       => 3,
+            'timeout_seconds'      => 30,
             'consecutive_failures' => 0,
         ];
     }
@@ -50,7 +50,7 @@ class WebhookFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'consecutive_failures' => $count,
-            'last_failure_at' => now(),
+            'last_failure_at'      => now(),
         ]);
     }
 

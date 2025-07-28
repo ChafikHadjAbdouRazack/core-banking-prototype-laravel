@@ -12,5 +12,6 @@ class CustodianAdded extends ShouldBeStored
         public readonly string $name,
         public readonly string $type,
         public readonly array $config
-    ) {}
+    ) {
+    }
 }

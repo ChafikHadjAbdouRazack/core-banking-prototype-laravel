@@ -10,35 +10,38 @@ class KycSubmissionActivity extends Activity
 {
     public function __construct(
         private KycService $kycService
-    ) {}
+    ) {
+    }
 
     /**
      * Execute KYC submission activity.
-     * 
-     * @param array $input Expected format: [
-     *   'user_uuid' => string,
-     *   'documents' => array
-     * ]
-     * @return array
+     *
+     * @param  array  $input  Expected format: [
+     *                        'user_uuid' => string,
+     *                        'documents' => array
+     *                        ]
      */
     public function execute(array $input): array
     {
+        /** @var mixed|null $user */
+        $user = null;
         $userUuid = $input['user_uuid'] ?? null;
         $documents = $input['documents'] ?? [];
 
-        if (!$userUuid || empty($documents)) {
+        if (! $userUuid || empty($documents)) {
             throw new \InvalidArgumentException('Missing required parameters: user_uuid, documents');
         }
 
-        $user = User::where('uuid', $userUuid)->firstOrFail();
+        /** @var User $$user */
+        $$user = User::where()->firstOrFail();
 
         $this->kycService->submitKyc($user, $documents);
 
         return [
-            'user_uuid' => $userUuid,
-            'status' => 'submitted',
+            'user_uuid'      => $userUuid,
+            'status'         => 'submitted',
             'document_count' => count($documents),
-            'submitted_at' => now()->toISOString(),
+            'submitted_at'   => now()->toISOString(),
         ];
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\BasketAsset;
 use App\Domain\Asset\Models\Asset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Database\Seeder;
 
 class PrimaryBasketSeeder extends Seeder
@@ -15,17 +15,17 @@ class PrimaryBasketSeeder extends Seeder
     {
         // Create the primary basket asset
         $basket = BasketAsset::create([
-            'code' => config('baskets.primary_code', 'PRIMARY'),
-            'name' => config('baskets.primary_name', 'Primary Currency Basket'),
-            'type' => 'fixed',
+            'code'                => config('baskets.primary_code', 'PRIMARY'),
+            'name'                => config('baskets.primary_name', 'Primary Currency Basket'),
+            'type'                => 'fixed',
             'rebalance_frequency' => 'monthly',
-            'is_active' => true,
-            'created_by' => 'system',
-            'metadata' => [
-                'description' => config('baskets.primary_description', 'Platform primary currency basket'),
+            'is_active'           => true,
+            'created_by'          => 'system',
+            'metadata'            => [
+                'description'    => config('baskets.primary_description', 'Platform primary currency basket'),
                 'voting_enabled' => true,
                 'next_rebalance' => now()->addMonth()->startOfMonth()->toDateString(),
-            ]
+            ],
         ]);
 
         // Add basket components with proposed weights
@@ -41,8 +41,8 @@ class PrimaryBasketSeeder extends Seeder
         foreach ($components as $component) {
             $basket->components()->create([
                 'asset_code' => $component['asset_code'],
-                'weight' => $component['weight'],
-                'is_active' => true,
+                'weight'     => $component['weight'],
+                'is_active'  => true,
             ]);
         }
 
@@ -50,16 +50,16 @@ class PrimaryBasketSeeder extends Seeder
         $asset = Asset::firstOrCreate(
             ['code' => config('baskets.primary_code', 'PRIMARY')],
             [
-                'name' => config('baskets.primary_name', 'Primary Currency Basket'),
-                'type' => 'custom',
+                'name'      => config('baskets.primary_name', 'Primary Currency Basket'),
+                'type'      => 'custom',
                 'precision' => 2,
                 'is_active' => true,
                 'is_basket' => true,
-                'metadata' => [
-                    'symbol' => config('baskets.primary_symbol', '$'),
+                'metadata'  => [
+                    'symbol'      => config('baskets.primary_symbol', '$'),
                     'basket_code' => config('baskets.primary_code', 'PRIMARY'),
                     'description' => config('baskets.primary_description', 'Platform primary currency basket'),
-                ]
+                ],
             ]
         );
 

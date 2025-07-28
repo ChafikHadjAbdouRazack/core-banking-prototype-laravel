@@ -12,5 +12,6 @@ class ProposalExecuted extends ShouldBeStored
         public readonly string $executedBy,
         public readonly array $executionData,
         public readonly Carbon $timestamp
-    ) {}
+    ) {
+    }
 }

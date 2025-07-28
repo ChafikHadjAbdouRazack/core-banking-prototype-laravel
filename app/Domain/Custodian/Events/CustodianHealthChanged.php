@@ -9,12 +9,14 @@ use Illuminate\Queue\SerializesModels;
 
 class CustodianHealthChanged
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public function __construct(
         public readonly string $custodian,
         public readonly string $previousStatus,
         public readonly string $newStatus,
         public readonly \DateTimeInterface $timestamp
-    ) {}
+    ) {
+    }
 }

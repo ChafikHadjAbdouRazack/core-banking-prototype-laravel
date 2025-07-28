@@ -22,14 +22,14 @@ final class LiquidityAdditionInput
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
-            'provider_id' => $this->providerId,
-            'base_currency' => $this->baseCurrency,
+            'pool_id'        => $this->poolId,
+            'provider_id'    => $this->providerId,
+            'base_currency'  => $this->baseCurrency,
             'quote_currency' => $this->quoteCurrency,
-            'base_amount' => $this->baseAmount,
-            'quote_amount' => $this->quoteAmount,
-            'min_shares' => $this->minShares,
-            'metadata' => $this->metadata,
+            'base_amount'    => $this->baseAmount,
+            'quote_amount'   => $this->quoteAmount,
+            'min_shares'     => $this->minShares,
+            'metadata'       => $this->metadata,
         ];
     }
 }

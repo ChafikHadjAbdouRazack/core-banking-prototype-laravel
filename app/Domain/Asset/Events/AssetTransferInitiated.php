@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Domain\Asset\Events;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\DataObjects\Hash;
+use App\Domain\Account\DataObjects\Money;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class AssetTransferInitiated extends ShouldBeStored
@@ -22,34 +22,35 @@ class AssetTransferInitiated extends ShouldBeStored
         public readonly Hash $hash,
         public readonly ?string $description = null,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Check if this is a same-asset transfer
+     * Check if this is a same-asset transfer.
      */
     public function isSameAssetTransfer(): bool
     {
         return $this->fromAssetCode === $this->toAssetCode;
     }
-    
+
     /**
-     * Check if this is a cross-asset transfer (exchange)
+     * Check if this is a cross-asset transfer (exchange).
      */
     public function isCrossAssetTransfer(): bool
     {
         return $this->fromAssetCode !== $this->toAssetCode;
     }
-    
+
     /**
-     * Get the source amount in smallest unit
+     * Get the source amount in smallest unit.
      */
     public function getFromAmount(): int
     {
         return $this->fromAmount->getAmount();
     }
-    
+
     /**
-     * Get the destination amount in smallest unit
+     * Get the destination amount in smallest unit.
      */
     public function getToAmount(): int
     {

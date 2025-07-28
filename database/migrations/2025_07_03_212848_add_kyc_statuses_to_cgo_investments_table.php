@@ -2,11 +2,10 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,25 +14,25 @@ return new class extends Migration
         // SQLite doesn't support modifying enum columns directly
         // So we need to check the database type
         $driver = DB::connection()->getDriverName();
-        
+
         if ($driver === 'mysql' || $driver === 'mariadb') {
             DB::statement("ALTER TABLE cgo_investments MODIFY COLUMN status ENUM('pending', 'confirmed', 'cancelled', 'refunded', 'kyc_required', 'aml_review', 'payment_failed', 'expired') DEFAULT 'pending'");
         } elseif ($driver === 'pgsql') {
             // First, remove the default constraint
-            DB::statement("ALTER TABLE cgo_investments ALTER COLUMN status DROP DEFAULT");
-            
+            DB::statement('ALTER TABLE cgo_investments ALTER COLUMN status DROP DEFAULT');
+
             // Add new values to the enum type
             DB::statement("ALTER TYPE cgo_investments_status_enum ADD VALUE IF NOT EXISTS 'kyc_required'");
             DB::statement("ALTER TYPE cgo_investments_status_enum ADD VALUE IF NOT EXISTS 'aml_review'");
             DB::statement("ALTER TYPE cgo_investments_status_enum ADD VALUE IF NOT EXISTS 'payment_failed'");
             DB::statement("ALTER TYPE cgo_investments_status_enum ADD VALUE IF NOT EXISTS 'expired'");
-            
+
             // Re-add the default
             DB::statement("ALTER TABLE cgo_investments ALTER COLUMN status SET DEFAULT 'pending'");
         } else {
             // For SQLite and other databases, we need to recreate the table
             // This is acceptable for testing but should be avoided in production
-            
+
             // Create temporary table with new schema
             Schema::create('cgo_investments_temp', function (Blueprint $table) {
                 $table->id();
@@ -80,14 +79,14 @@ return new class extends Migration
                 $table->json('aml_flags')->nullable();
                 $table->timestamps();
             });
-            
+
             // Copy data from old table
             DB::statement('INSERT INTO cgo_investments_temp SELECT * FROM cgo_investments');
-            
+
             // Drop old table and rename new one
             Schema::drop('cgo_investments');
             Schema::rename('cgo_investments_temp', 'cgo_investments');
-            
+
             // Recreate indexes
             Schema::table('cgo_investments', function (Blueprint $table) {
                 $table->index('user_id');
@@ -105,7 +104,7 @@ return new class extends Migration
     public function down(): void
     {
         $driver = DB::connection()->getDriverName();
-        
+
         if ($driver === 'mysql' || $driver === 'mariadb') {
             DB::statement("ALTER TABLE cgo_investments MODIFY COLUMN status ENUM('pending', 'confirmed', 'cancelled', 'refunded') DEFAULT 'pending'");
         } elseif ($driver === 'pgsql') {

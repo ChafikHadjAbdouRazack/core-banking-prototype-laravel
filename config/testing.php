@@ -20,6 +20,6 @@ return [
         | When running tests in parallel, transactions can cause conflicts.
         |
         */
-        'use_transactions' => env('DB_USE_TRANSACTIONS', !env('PEST_PARALLEL', false)),
+        'use_transactions' => env('DB_USE_TRANSACTIONS', ! env('PEST_PARALLEL', false)),
     ],
 ];

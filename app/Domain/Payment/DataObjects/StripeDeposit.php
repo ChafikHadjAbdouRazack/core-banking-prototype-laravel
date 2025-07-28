@@ -18,7 +18,8 @@ final readonly class StripeDeposit extends DataObject implements DataObjectContr
         private string $paymentMethod,
         private string $paymentMethodType,
         private array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function getAccountUuid(): string
     {
@@ -63,14 +64,14 @@ final readonly class StripeDeposit extends DataObject implements DataObjectContr
     public function toArray(): array
     {
         return [
-            'account_uuid' => $this->accountUuid,
-            'amount' => $this->amount,
-            'currency' => $this->currency,
-            'reference' => $this->reference,
-            'external_reference' => $this->externalReference,
-            'payment_method' => $this->paymentMethod,
+            'account_uuid'        => $this->accountUuid,
+            'amount'              => $this->amount,
+            'currency'            => $this->currency,
+            'reference'           => $this->reference,
+            'external_reference'  => $this->externalReference,
+            'payment_method'      => $this->paymentMethod,
             'payment_method_type' => $this->paymentMethodType,
-            'metadata' => $this->metadata,
+            'metadata'            => $this->metadata,
         ];
     }
 }

@@ -11,7 +11,7 @@ class Webhook extends BaseModel
     {
         return $this->uuid;
     }
-    
+
     /**
      * Get webhook name.
      */
@@ -19,7 +19,7 @@ class Webhook extends BaseModel
     {
         return $this->name;
     }
-    
+
     /**
      * Get webhook URL.
      */
@@ -27,7 +27,7 @@ class Webhook extends BaseModel
     {
         return $this->url;
     }
-    
+
     /**
      * Get subscribed events.
      */
@@ -35,7 +35,7 @@ class Webhook extends BaseModel
     {
         return $this->events;
     }
-    
+
     /**
      * Get custom headers.
      */
@@ -43,7 +43,7 @@ class Webhook extends BaseModel
     {
         return $this->headers;
     }
-    
+
     /**
      * Check if webhook is active.
      */

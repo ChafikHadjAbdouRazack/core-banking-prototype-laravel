@@ -186,7 +186,7 @@
                                 <p class="text-2xl font-bold text-gray-900 dark:text-white">
                                     {{ Auth::user()->accounts->count() > 0 ? Auth::user()->accounts->sum(function($account) { 
                                         // Transaction count from projections
-                                        return \App\Models\TransactionProjection::where('account_uuid', $account->uuid)->count();
+                                        return \App\Domain\Account\Models\TransactionProjection::where('account_uuid', $account->uuid)->count();
                                     }) : 0 }}
                                 </p>
                             </div>

@@ -19,21 +19,26 @@ final class ExternalOrderBook
         public readonly \DateTimeImmutable $timestamp,
         public readonly string $exchange,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
             baseCurrency: $data['base_currency'],
             quoteCurrency: $data['quote_currency'],
-            bids: collect($data['bids'])->map(fn($bid) => [
-                'price' => BigDecimal::of($bid['price']),
-                'amount' => BigDecimal::of($bid['amount'])
-            ]),
-            asks: collect($data['asks'])->map(fn($ask) => [
-                'price' => BigDecimal::of($ask['price']),
-                'amount' => BigDecimal::of($ask['amount'])
-            ]),
+            bids: collect($data['bids'])->map(
+                fn ($bid) => [
+                'price'  => BigDecimal::of($bid['price']),
+                'amount' => BigDecimal::of($bid['amount']),
+                ]
+            ),
+            asks: collect($data['asks'])->map(
+                fn ($ask) => [
+                'price'  => BigDecimal::of($ask['price']),
+                'amount' => BigDecimal::of($ask['amount']),
+                ]
+            ),
             timestamp: new \DateTimeImmutable($data['timestamp']),
             exchange: $data['exchange'],
             metadata: $data['metadata'] ?? []
@@ -43,19 +48,23 @@ final class ExternalOrderBook
     public function toArray(): array
     {
         return [
-            'base_currency' => $this->baseCurrency,
+            'base_currency'  => $this->baseCurrency,
             'quote_currency' => $this->quoteCurrency,
-            'bids' => $this->bids->map(fn($bid) => [
-                'price' => $bid['price']->__toString(),
-                'amount' => $bid['amount']->__toString()
-            ])->toArray(),
-            'asks' => $this->asks->map(fn($ask) => [
-                'price' => $ask['price']->__toString(),
-                'amount' => $ask['amount']->__toString()
-            ])->toArray(),
+            'bids'           => $this->bids->map(
+                fn ($bid) => [
+                'price'  => $bid['price']->__toString(),
+                'amount' => $bid['amount']->__toString(),
+                ]
+            )->toArray(),
+            'asks' => $this->asks->map(
+                fn ($ask) => [
+                'price'  => $ask['price']->__toString(),
+                'amount' => $ask['amount']->__toString(),
+                ]
+            )->toArray(),
             'timestamp' => $this->timestamp->format('c'),
-            'exchange' => $this->exchange,
-            'metadata' => $this->metadata,
+            'exchange'  => $this->exchange,
+            'metadata'  => $this->metadata,
         ];
     }
 
@@ -73,11 +82,11 @@ final class ExternalOrderBook
     {
         $bestBid = $this->getBestBid();
         $bestAsk = $this->getBestAsk();
-        
-        if (!$bestBid || !$bestAsk) {
+
+        if (! $bestBid || ! $bestAsk) {
             return null;
         }
-        
+
         return $bestAsk['price']->minus($bestBid['price']);
     }
 
@@ -85,18 +94,18 @@ final class ExternalOrderBook
     {
         $bestBid = $this->getBestBid();
         $bestAsk = $this->getBestAsk();
-        
-        if (!$bestBid || !$bestAsk) {
+
+        if (! $bestBid || ! $bestAsk) {
             return null;
         }
-        
+
         return $bestBid['price']->plus($bestAsk['price'])->dividedBy(2, 18);
     }
 
     public function getTotalBidVolume(): BigDecimal
     {
         return $this->bids->reduce(
-            fn(BigDecimal $carry, $bid) => $carry->plus($bid['amount']),
+            fn (BigDecimal $carry, $bid) => $carry->plus($bid['amount']),
             BigDecimal::zero()
         );
     }
@@ -104,7 +113,7 @@ final class ExternalOrderBook
     public function getTotalAskVolume(): BigDecimal
     {
         return $this->asks->reduce(
-            fn(BigDecimal $carry, $ask) => $carry->plus($ask['amount']),
+            fn (BigDecimal $carry, $ask) => $carry->plus($ask['amount']),
             BigDecimal::zero()
         );
     }

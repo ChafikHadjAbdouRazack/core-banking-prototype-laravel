@@ -12,7 +12,7 @@ use Workflow\Activity;
 class DepositAssetActivity extends Activity
 {
     /**
-     * Execute asset deposit activity
+     * Execute asset deposit activity.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -22,7 +22,7 @@ class DepositAssetActivity extends Activity
     ): string {
         // Generate unique transaction ID
         $transactionId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // Create and execute the asset transaction aggregate
         AssetTransactionAggregate::retrieve($transactionId)
             ->credit(
@@ -31,13 +31,13 @@ class DepositAssetActivity extends Activity
                 money: $money,
                 description: $description ?: "Asset deposit: {$assetCode}",
                 metadata: [
-                    'workflow' => 'AssetDepositWorkflow',
-                    'activity' => 'DepositAssetActivity',
+                    'workflow'  => 'AssetDepositWorkflow',
+                    'activity'  => 'DepositAssetActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )
             ->persist();
-        
+
         return $transactionId;
     }
 }

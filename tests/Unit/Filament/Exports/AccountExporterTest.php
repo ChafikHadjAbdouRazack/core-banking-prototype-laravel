@@ -1,8 +1,7 @@
 <?php
 
+use App\Domain\Account\Models\Account;
 use App\Filament\Exports\AccountExporter;
-use App\Models\Account;
-use App\Models\User;
 use Filament\Actions\Exports\Models\Export;
 use Tests\UnitTestCase;
 
@@ -10,7 +9,7 @@ uses(UnitTestCase::class);
 
 it('can define export columns for accounts', function () {
     $columns = AccountExporter::getColumns();
-    
+
     expect($columns)->toHaveCount(7)
         ->and($columns[0]->getName())->toBe('uuid')
         ->and($columns[0]->getLabel())->toBe('Account ID')
@@ -31,13 +30,13 @@ it('can define export columns for accounts', function () {
 it('formats balance correctly from cents to dollars', function () {
     $columns = AccountExporter::getColumns();
     $balanceColumn = $columns[3];
-    
+
     // Test the format state using method
     $reflection = new ReflectionClass($balanceColumn);
     $property = $reflection->getProperty('formatStateUsing');
     $property->setAccessible(true);
     $formatState = $property->getValue($balanceColumn);
-    
+
     expect($formatState(10050))->toBe('100.50')
         ->and($formatState(0))->toBe('0.00')
         ->and($formatState(999))->toBe('9.99')
@@ -47,13 +46,13 @@ it('formats balance correctly from cents to dollars', function () {
 it('formats frozen status to human readable text', function () {
     $columns = AccountExporter::getColumns();
     $statusColumn = $columns[4];
-    
+
     // Test the format state using method
     $reflection = new ReflectionClass($statusColumn);
     $property = $reflection->getProperty('formatStateUsing');
     $property->setAccessible(true);
     $formatState = $property->getValue($statusColumn);
-    
+
     expect($formatState(true))->toBe('Frozen')
         ->and($formatState(false))->toBe('Active');
 });
@@ -62,9 +61,9 @@ it('generates correct completion notification body', function () {
     $export = new Export();
     $export->successful_rows = 100;
     $export->total_rows = 100;
-    
+
     $body = AccountExporter::getCompletedNotificationBody($export);
-    
+
     expect($body)->toBe('Your account export has completed and 100 rows exported.');
 });
 
@@ -72,9 +71,9 @@ it('generates correct completion notification body with failed rows', function (
     $export = new Export();
     $export->successful_rows = 90;
     $export->total_rows = 100;
-    
+
     $body = AccountExporter::getCompletedNotificationBody($export);
-    
+
     expect($body)->toBe('Your account export has completed and 90 rows exported. 10 rows failed to export.');
 });
 

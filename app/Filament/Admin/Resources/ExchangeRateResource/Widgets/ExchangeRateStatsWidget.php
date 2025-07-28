@@ -16,7 +16,7 @@ class ExchangeRateStatsWidget extends BaseWidget
         $validRates = ExchangeRate::valid()->count();
         $staleRates = ExchangeRate::where('valid_at', '<=', now()->subDay())->count();
         $expiredRates = ExchangeRate::where('expires_at', '<=', now())->count();
-        
+
         $validPercentage = $totalRates > 0 ? round(($validRates / $totalRates) * 100, 1) : 0;
         $stalePercentage = $totalRates > 0 ? round(($staleRates / $totalRates) * 100, 1) : 0;
 

@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Domain\Stablecoin\Workflows\Activities;
 
 use App\Domain\Stablecoin\Aggregates\StablecoinAggregate;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
-use App\Models\StablecoinCollateralPosition;
 use Workflow\Activity;
 
 class UpdatePositionActivity extends Activity
 {
     /**
-     * Update position with recalculated values
+     * Update position with recalculated values.
      */
     public function execute(
         string $positionUuid
     ): bool {
         // Get current position
         $position = StablecoinCollateralPosition::where('uuid', $positionUuid)->firstOrFail();
-        
+
         // Calculate new collateral ratio
         $collateralService = app(CollateralService::class);
         $collateralValueInPegAsset = $collateralService->convertToPegAsset(
@@ -27,11 +27,11 @@ class UpdatePositionActivity extends Activity
             $position->collateral_amount,
             $position->stablecoin->peg_asset_code
         );
-        
-        $newRatio = $position->debt_amount > 0 
-            ? $collateralValueInPegAsset / $position->debt_amount 
+
+        $newRatio = $position->debt_amount > 0
+            ? $collateralValueInPegAsset / $position->debt_amount
             : 0;
-        
+
         // Update position in aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->updatePosition(
@@ -40,7 +40,7 @@ class UpdatePositionActivity extends Activity
             $newRatio
         );
         $aggregate->persist();
-        
+
         return true;
     }
 }

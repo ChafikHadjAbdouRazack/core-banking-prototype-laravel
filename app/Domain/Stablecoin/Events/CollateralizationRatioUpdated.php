@@ -13,5 +13,6 @@ class CollateralizationRatioUpdated extends ShouldBeStored
         public readonly string $oldMinimumRatio,
         public readonly string $newMinimumRatio,
         public readonly string $approvedBy
-    ) {}
+    ) {
+    }
 }

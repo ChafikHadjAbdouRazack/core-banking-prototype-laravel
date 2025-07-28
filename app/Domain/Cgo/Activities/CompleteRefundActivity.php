@@ -14,14 +14,14 @@ class CompleteRefundActivity extends Activity
                 completedAt: now()->toIso8601String(),
                 metadata: [
                     'processor_refund_id' => $input['processor_refund_id'],
-                    'amount_refunded' => $input['amount_refunded']
+                    'amount_refunded'     => $input['amount_refunded'],
                 ]
             )
             ->persist();
-        
+
         return [
             'refund_id' => $input['refund_id'],
-            'status' => 'completed'
+            'status'    => 'completed',
         ];
     }
 }

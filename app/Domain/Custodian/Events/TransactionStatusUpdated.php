@@ -10,7 +10,9 @@ use Illuminate\Queue\SerializesModels;
 
 class TransactionStatusUpdated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -20,7 +22,8 @@ class TransactionStatusUpdated
         public readonly string $transactionId,
         public readonly string $status,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     /**
      * Get the channels the event should broadcast on.

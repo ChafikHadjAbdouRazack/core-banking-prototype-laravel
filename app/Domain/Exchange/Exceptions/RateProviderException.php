@@ -11,7 +11,7 @@ class RateProviderException extends Exception
     protected array $context = [];
 
     public function __construct(
-        string $message = "Rate provider error",
+        string $message = 'Rate provider error',
         int $code = 500,
         ?Exception $previous = null,
         array $context = []

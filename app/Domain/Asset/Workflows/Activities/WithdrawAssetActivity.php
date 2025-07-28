@@ -6,14 +6,14 @@ namespace App\Domain\Asset\Workflows\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Aggregates\AssetTransactionAggregate;
-use App\Models\AccountBalance;
 use Workflow\Activity;
 
 class WithdrawAssetActivity extends Activity
 {
     /**
-     * Execute asset withdrawal activity
+     * Execute asset withdrawal activity.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -25,17 +25,17 @@ class WithdrawAssetActivity extends Activity
         $accountBalance = AccountBalance::where('account_uuid', $accountUuid->toString())
             ->where('asset_code', $assetCode)
             ->first();
-        
-        if (!$accountBalance || !$accountBalance->hasSufficientBalance($money->getAmount())) {
+
+        if (! $accountBalance || ! $accountBalance->hasSufficientBalance($money->getAmount())) {
             $currentBalance = $accountBalance ? $accountBalance->balance : 0;
             throw new \Exception(
                 "Insufficient balance for {$assetCode}. Required: {$money->getAmount()}, Available: {$currentBalance}"
             );
         }
-        
+
         // Generate unique transaction ID
         $transactionId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // Create and execute the asset transaction aggregate
         AssetTransactionAggregate::retrieve($transactionId)
             ->debit(
@@ -44,13 +44,13 @@ class WithdrawAssetActivity extends Activity
                 money: $money,
                 description: $description ?: "Asset withdrawal: {$assetCode}",
                 metadata: [
-                    'workflow' => 'AssetWithdrawWorkflow',
-                    'activity' => 'WithdrawAssetActivity',
+                    'workflow'  => 'AssetWithdrawWorkflow',
+                    'activity'  => 'WithdrawAssetActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )
             ->persist();
-        
+
         return $transactionId;
     }
 }

@@ -12,5 +12,6 @@ class ReserveRebalanced extends ShouldBeStored
         public readonly string $executedBy,
         public readonly array $swaps,
         public readonly array $previousAllocations
-    ) {}
+    ) {
+    }
 }

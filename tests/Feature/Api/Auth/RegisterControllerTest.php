@@ -4,20 +4,22 @@ namespace Tests\Feature\Api\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use Tests\ControllerTestCase;
 
-class RegisterControllerTest extends TestCase
+class RegisterControllerTest extends ControllerTestCase
 {
     use RefreshDatabase;
 
+    #[Test]
     public function test_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-            'is_business_customer' => false,
+            'name'                  => 'John Doe',
+            'email'                 => 'john@example.com',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
+            'is_business_customer'  => false,
         ]);
 
         $response->assertStatus(201)
@@ -34,37 +36,39 @@ class RegisterControllerTest extends TestCase
             ]);
 
         $this->assertDatabaseHas('users', [
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
         ]);
 
         // Verify user has the correct role
         $user = User::where('email', 'john@example.com')->first();
-        $this->assertTrue($user->hasRole('private'));
+        $this->assertTrue($user->hasRole('customer_private'));
     }
 
+    #[Test]
     public function test_business_user_can_register_via_api(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'Business User',
-            'email' => 'business@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
-            'is_business_customer' => true,
+            'name'                  => 'Business User',
+            'email'                 => 'business@example.com',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
+            'is_business_customer'  => true,
         ]);
 
         $response->assertStatus(201);
 
         $user = User::where('email', 'business@example.com')->first();
-        $this->assertTrue($user->hasRole('business'));
+        $this->assertTrue($user->hasRole('customer_business'));
     }
 
+    #[Test]
     public function test_registration_validates_input(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => '',
-            'email' => 'invalid-email',
-            'password' => 'short',
+            'name'                  => '',
+            'email'                 => 'invalid-email',
+            'password'              => 'short',
             'password_confirmation' => 'different',
         ]);
 
@@ -72,28 +76,30 @@ class RegisterControllerTest extends TestCase
             ->assertJsonValidationErrors(['name', 'email', 'password']);
     }
 
+    #[Test]
     public function test_registration_prevents_duplicate_emails(): void
     {
         User::factory()->create(['email' => 'existing@example.com']);
 
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'existing@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'name'                  => 'John Doe',
+            'email'                 => 'existing@example.com',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
     }
 
+    #[Test]
     public function test_registered_user_receives_access_token(): void
     {
         $response = $this->postJson('/api/auth/register', [
-            'name' => 'John Doe',
-            'email' => 'john@example.com',
-            'password' => 'password123',
-            'password_confirmation' => 'password123',
+            'name'                  => 'John Doe',
+            'email'                 => 'john@example.com',
+            'password'              => 'Test@Pass2024!Secure',
+            'password_confirmation' => 'Test@Pass2024!Secure',
         ]);
 
         $response->assertStatus(201);

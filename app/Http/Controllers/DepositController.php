@@ -2,87 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\PaymentGatewayService;
+use App\Domain\Payment\Services\PaymentGatewayService;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
 
 class DepositController extends Controller
 {
     protected PaymentGatewayService $paymentGateway;
-    
+
     public function __construct(PaymentGatewayService $paymentGateway)
     {
         $this->paymentGateway = $paymentGateway;
     }
-    
+
     /**
-     * Show the deposit form
+     * Show the deposit form.
      */
     public function create()
     {
         $user = Auth::user();
+        /** @var User $user */
         $account = $user->accounts()->first();
-        
-        if (!$account) {
+
+        if (! $account) {
             return redirect()->route('dashboard')
                 ->with('error', 'Please create an account first.');
         }
-        
+
         // Get saved payment methods
         $paymentMethods = $this->paymentGateway->getSavedPaymentMethods($user);
-        
-        return view('wallet.deposit-card', [
-            'account' => $account,
-            'paymentMethods' => $paymentMethods,
-            'stripeKey' => config('cashier.key'),
-        ]);
+
+        return view(
+            'wallet.deposit-card',
+            [
+                'account'        => $account,
+                'paymentMethods' => $paymentMethods,
+                'stripeKey'      => config('cashier.key'),
+            ]
+        );
     }
-    
+
     /**
-     * Create a payment intent for deposit
+     * Create a payment intent for deposit.
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'amount' => 'required|numeric|min:1|max:10000',
-            'currency' => 'required|in:USD,EUR,GBP',
-        ]);
-        
+        $request->validate(
+            [
+                'amount'   => 'required|numeric|min:1|max:10000',
+                'currency' => 'required|in:USD,EUR,GBP',
+            ]
+        );
+
         $user = Auth::user();
+        /** @var User $user */
         $amountInCents = (int) ($request->amount * 100);
-        
+
         try {
             $intent = $this->paymentGateway->createDepositIntent(
                 $user,
                 $amountInCents,
                 $request->currency
             );
-            
-            return response()->json([
-                'client_secret' => $intent->client_secret,
-                'amount' => $amountInCents,
-                'currency' => $request->currency,
-            ]);
+
+            return response()->json(
+                [
+                    'client_secret' => $intent->client_secret,
+                    'amount'        => $amountInCents,
+                    'currency'      => $request->currency,
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to create payment intent. Please try again.',
-            ], 500);
+            return response()->json(
+                [
+                    'error' => 'Failed to create payment intent. Please try again.',
+                ],
+                500
+            );
         }
     }
-    
+
     /**
-     * Confirm a successful deposit
+     * Confirm a successful deposit.
      */
     public function confirm(Request $request)
     {
-        $request->validate([
-            'payment_intent_id' => 'required|string',
-        ]);
-        
+        $request->validate(
+            [
+                'payment_intent_id' => 'required|string',
+            ]
+        );
+
         try {
             $result = $this->paymentGateway->processDeposit($request->payment_intent_id);
-            
+
             return redirect()->route('wallet.index')
                 ->with('success', 'Deposit successful! Your account has been credited.');
         } catch (\Exception $e) {
@@ -90,35 +104,42 @@ class DepositController extends Controller
                 ->with('error', 'Failed to process deposit. Please contact support.');
         }
     }
-    
+
     /**
-     * Add a new payment method
+     * Add a new payment method.
      */
     public function addPaymentMethod(Request $request)
     {
-        $request->validate([
-            'payment_method_id' => 'required|string',
-        ]);
-        
+        $request->validate(
+            [
+                'payment_method_id' => 'required|string',
+            ]
+        );
+
         try {
             $this->paymentGateway->addPaymentMethod(
                 Auth::user(),
                 $request->payment_method_id
             );
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Payment method added successfully.',
-            ]);
+
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Payment method added successfully.',
+                ]
+            );
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to add payment method.',
-            ], 500);
+            return response()->json(
+                [
+                    'error' => 'Failed to add payment method.',
+                ],
+                500
+            );
         }
     }
-    
+
     /**
-     * Remove a payment method
+     * Remove a payment method.
      */
     public function removePaymentMethod(Request $request, string $paymentMethodId)
     {
@@ -127,7 +148,7 @@ class DepositController extends Controller
                 Auth::user(),
                 $paymentMethodId
             );
-            
+
             return redirect()->back()
                 ->with('success', 'Payment method removed successfully.');
         } catch (\Exception $e) {

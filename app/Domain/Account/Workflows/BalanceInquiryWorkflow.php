@@ -8,12 +8,6 @@ use Workflow\Workflow;
 
 class BalanceInquiryWorkflow extends Workflow
 {
-    /**
-     * @param AccountUuid $uuid
-     * @param string|null $requestedBy
-     *
-     * @return \Generator
-     */
     public function execute(AccountUuid $uuid, ?string $requestedBy = null): \Generator
     {
         return yield ActivityStub::make(

@@ -2,11 +2,31 @@
 
 namespace App\Domain\Exchange\Projections;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
+ * @method static static|null find(mixed $id, array $columns = ['*'])
+ * @method static static|null first(array $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static int count(string $columns = '*')
+ * @method static mixed sum(string $column)
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ */
 class OrderBook extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'order_book_id',
         'base_currency',
@@ -23,9 +43,9 @@ class OrderBook extends Model
     ];
 
     protected $casts = [
-        'buy_orders' => 'array',
+        'buy_orders'  => 'array',
         'sell_orders' => 'array',
-        'metadata' => 'array',
+        'metadata'    => 'array',
     ];
 
     public function getPairAttribute(): string
@@ -49,6 +69,7 @@ class OrderBook extends Model
         }
 
         $spread = $this->spread;
+
         return (float) bcmul(bcdiv($spread, $this->best_bid, 18), '100', 4);
     }
 
@@ -64,7 +85,7 @@ class OrderBook extends Model
     public function getChange24hAttribute(): ?string
     {
         $openPrice = $this->metadata['open_24h'] ?? null;
-        
+
         if ($openPrice === null || $this->last_price === null) {
             return null;
         }
@@ -75,12 +96,13 @@ class OrderBook extends Model
     public function getChange24hPercentageAttribute(): ?float
     {
         $openPrice = $this->metadata['open_24h'] ?? null;
-        
+
         if ($openPrice === null || $this->last_price === null || bccomp($openPrice, '0', 18) === 0) {
             return null;
         }
 
         $change = $this->change_24h;
+
         return (float) bcmul(bcdiv($change, $openPrice, 18), '100', 2);
     }
 
@@ -102,22 +124,28 @@ class OrderBook extends Model
         ];
     }
 
-    public function getTotalBidVolume(int $levels = null): string
+    public function getTotalBidVolume(?int $levels = null): string
     {
         $orders = $levels ? $this->buy_orders_collection->take($levels) : $this->buy_orders_collection;
-        
-        return $orders->reduce(function ($carry, $order) {
-            return bcadd($carry, $order['amount'], 18);
-        }, '0');
+
+        return $orders->reduce(
+            function ($carry, $order) {
+                return bcadd($carry, $order['amount'], 18);
+            },
+            '0'
+        );
     }
 
-    public function getTotalAskVolume(int $levels = null): string
+    public function getTotalAskVolume(?int $levels = null): string
     {
         $orders = $levels ? $this->sell_orders_collection->take($levels) : $this->sell_orders_collection;
-        
-        return $orders->reduce(function ($carry, $order) {
-            return bcadd($carry, $order['amount'], 18);
-        }, '0');
+
+        return $orders->reduce(
+            function ($carry, $order) {
+                return bcadd($carry, $order['amount'], 18);
+            },
+            '0'
+        );
     }
 
     public function scopeForPair($query, string $baseCurrency, string $quoteCurrency)
@@ -130,14 +158,14 @@ class OrderBook extends Model
     {
         return static::firstOrCreate(
             [
-                'base_currency' => $baseCurrency,
+                'base_currency'  => $baseCurrency,
                 'quote_currency' => $quoteCurrency,
             ],
             [
                 'order_book_id' => \Illuminate\Support\Str::uuid()->toString(),
-                'buy_orders' => [],
-                'sell_orders' => [],
-                'metadata' => [],
+                'buy_orders'    => [],
+                'sell_orders'   => [],
+                'metadata'      => [],
             ]
         );
     }

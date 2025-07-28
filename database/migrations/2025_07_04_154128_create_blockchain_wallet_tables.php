@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -21,10 +20,10 @@ return new class extends Migration
             $table->json('settings')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_id', 'status']);
         });
-        
+
         // Wallet addresses table
         Schema::create('wallet_addresses', function (Blueprint $table) {
             $table->id();
@@ -36,12 +35,12 @@ return new class extends Migration
             $table->string('label')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->unique(['chain', 'address']);
             $table->index(['wallet_id', 'chain']);
             $table->index('address');
         });
-        
+
         // Blockchain transactions table
         Schema::create('blockchain_transactions', function (Blueprint $table) {
             $table->id();
@@ -60,13 +59,13 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamp('confirmed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['wallet_id', 'status']);
             $table->index(['chain', 'block_number']);
             $table->index('from_address');
             $table->index('to_address');
         });
-        
+
         // Wallet seeds (encrypted) table
         Schema::create('wallet_seeds', function (Blueprint $table) {
             $table->id();
@@ -75,7 +74,7 @@ return new class extends Migration
             $table->string('storage_type')->default('database'); // database, hsm, etc.
             $table->timestamps();
         });
-        
+
         // Token balances table
         Schema::create('token_balances', function (Blueprint $table) {
             $table->id();
@@ -89,11 +88,11 @@ return new class extends Migration
             $table->string('balance');
             $table->string('value_usd')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['address', 'chain', 'token_address']);
             $table->index(['wallet_id', 'chain']);
         });
-        
+
         // Wallet backups table
         Schema::create('wallet_backups', function (Blueprint $table) {
             $table->id();
@@ -104,7 +103,7 @@ return new class extends Migration
             $table->string('checksum');
             $table->string('created_by');
             $table->timestamps();
-            
+
             $table->index('wallet_id');
         });
     }

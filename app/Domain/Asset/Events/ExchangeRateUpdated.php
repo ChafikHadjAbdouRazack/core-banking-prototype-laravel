@@ -15,38 +15,39 @@ class ExchangeRateUpdated extends ShouldBeStored
         public readonly float $newRate,
         public readonly string $source,
         public readonly ?array $metadata = null
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Get the rate change percentage
+     * Get the rate change percentage.
      */
     public function getChangePercentage(): float
     {
         if ($this->oldRate == 0) {
             return 0;
         }
-        
+
         return (($this->newRate - $this->oldRate) / $this->oldRate) * 100;
     }
-    
+
     /**
-     * Check if the rate increased
+     * Check if the rate increased.
      */
     public function isIncrease(): bool
     {
         return $this->newRate > $this->oldRate;
     }
-    
+
     /**
-     * Check if the rate decreased
+     * Check if the rate decreased.
      */
     public function isDecrease(): bool
     {
         return $this->newRate < $this->oldRate;
     }
-    
+
     /**
-     * Check if this is a significant change (> 5%)
+     * Check if this is a significant change (> 5%).
      */
     public function isSignificantChange(): bool
     {

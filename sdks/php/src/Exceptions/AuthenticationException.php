@@ -2,6 +2,4 @@
 
 namespace FinAegis\Exceptions;
 
-class AuthenticationException extends FinAegisException
-{
-}
+class AuthenticationException extends FinAegisException {}

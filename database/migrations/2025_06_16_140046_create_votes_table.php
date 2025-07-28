@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -24,12 +23,12 @@ return new class extends Migration
 
             // Unique constraint to prevent double voting
             $table->unique(['poll_id', 'user_uuid'], 'unique_user_poll_vote');
-            
+
             // Indexes
             $table->index(['poll_id', 'voted_at']);
             $table->index(['user_uuid']);
             $table->index(['voting_power']);
-            
+
             // Foreign key constraint for user_uuid (references users.uuid)
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('cascade');
         });

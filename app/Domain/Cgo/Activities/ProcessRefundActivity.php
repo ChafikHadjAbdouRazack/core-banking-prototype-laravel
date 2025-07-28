@@ -3,9 +3,9 @@
 namespace App\Domain\Cgo\Activities;
 
 use App\Domain\Cgo\Aggregates\RefundAggregate;
-use App\Models\CgoRefund;
-use App\Services\Cgo\StripePaymentService;
-use App\Services\Cgo\CoinbaseCommerceService;
+use App\Domain\Cgo\Models\CgoRefund;
+use App\Domain\Cgo\Services\CoinbaseCommerceService;
+use App\Domain\Cgo\Services\StripePaymentService;
 use Workflow\Activity;
 
 class ProcessRefundActivity extends Activity
@@ -13,17 +13,19 @@ class ProcessRefundActivity extends Activity
     public function __construct(
         private StripePaymentService $stripeService,
         private CoinbaseCommerceService $coinbaseService
-    ) {}
-    
+    ) {
+    }
+
     public function execute(array $input): array
     {
+        /** @var CgoRefund $refund */
         $refund = CgoRefund::with('investment')->findOrFail($input['refund_id']);
         $investment = $refund->investment;
-        
+
         // Process refund based on original payment method
         $processorRefundId = null;
         $processorResponse = [];
-        
+
         if ($investment->payment_method === 'stripe') {
             // Process Stripe refund
             $result = $this->stripeService->refundPayment(
@@ -37,22 +39,22 @@ class ProcessRefundActivity extends Activity
             // This would typically require manual processing or a different flow
             $processorRefundId = 'manual_crypto_refund_' . uniqid();
             $processorResponse = [
-                'type' => 'manual_crypto_refund',
-                'address' => $refund->refund_address,
-                'amount' => $refund->amount,
-                'currency' => $refund->currency
+                'type'     => 'manual_crypto_refund',
+                'address'  => $refund->refund_address,
+                'amount'   => $refund->amount,
+                'currency' => $refund->currency,
             ];
         } elseif ($investment->payment_method === 'bank_transfer') {
             // For bank transfers, this would integrate with banking APIs
             $processorRefundId = 'bank_refund_' . uniqid();
             $processorResponse = [
-                'type' => 'bank_transfer_refund',
+                'type'         => 'bank_transfer_refund',
                 'bank_details' => $refund->bank_details,
-                'amount' => $refund->amount,
-                'currency' => $refund->currency
+                'amount'       => $refund->amount,
+                'currency'     => $refund->currency,
             ];
         }
-        
+
         // Update aggregate with processing details
         RefundAggregate::retrieve($input['refund_id'])
             ->process(
@@ -62,12 +64,12 @@ class ProcessRefundActivity extends Activity
                 processorResponse: $processorResponse
             )
             ->persist();
-        
+
         return [
-            'refund_id' => $input['refund_id'],
+            'refund_id'           => $input['refund_id'],
             'processor_refund_id' => $processorRefundId,
-            'amount_refunded' => $refund->amount,
-            'status' => 'processing'
+            'amount_refunded'     => $refund->amount,
+            'status'              => 'processing',
         ];
     }
 }

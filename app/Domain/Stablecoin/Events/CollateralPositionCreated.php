@@ -18,5 +18,6 @@ class CollateralPositionCreated extends ShouldBeStored
         public readonly float $collateral_ratio,
         public readonly string $status = 'active',
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

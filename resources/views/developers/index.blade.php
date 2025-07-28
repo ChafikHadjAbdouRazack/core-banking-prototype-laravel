@@ -1,43 +1,38 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="FinAegis Developer Documentation - Build on FinAegis platform. Open source, API-first, and designed for developers.">
-        <meta name="keywords" content="FinAegis, developer, API, documentation, SDK, integration">
-        
-        <title>Developer Documentation - FinAegis</title>
+@extends('layouts.public')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
-        <link href="https://fonts.bunny.net/css?family=fira-code:400,500&display=swap" rel="stylesheet" />
+@section('title', 'Developer Documentation - FinAegis')
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-            .dev-gradient {
-                background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
-            }
-            .hljs {
-                background: transparent !important;
-                padding: 0 !important;
-            }
-            .code-block {
-                font-family: 'Fira Code', monospace;
-                font-size: 0.875rem;
-                line-height: 1.5;
-                overflow-x: auto;
-                white-space: pre;
-            }
-            .code-container {
-                position: relative;
-                background: #0f1419;
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Developer Documentation - FinAegis',
+        'description' => 'FinAegis Developer Documentation - Build on FinAegis platform. Open source, API-first, and designed for developers.',
+        'keywords' => 'FinAegis, developer, API, documentation, SDK, integration',
+    ])
+@endsection
+
+@push('styles')
+<link href="https://fonts.bunny.net/css?family=fira-code:400,500&display=swap" rel="stylesheet" />
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .dev-gradient {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    }
+    .hljs {
+        background: transparent !important;
+        padding: 0 !important;
+    }
+    .code-block {
+        font-family: 'Fira Code', monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        overflow-x: auto;
+        white-space: pre;
+    }
+    .code-container {
+        position: relative;
+        background: #0f1419;
                 border-radius: 0.75rem;
                 overflow: hidden;
             }
@@ -122,13 +117,13 @@
                 }, 2000);
             }
         </script>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section with Animated Background -->
-        <section class="pt-16 dev-gradient text-white relative overflow-hidden">
+        <section class="dev-gradient text-white relative overflow-hidden">
             <!-- Animated Background Elements -->
             <div class="absolute inset-0">
                 <div class="floating-blob w-96 h-96 bg-indigo-500 rounded-full absolute top-0 left-0 animate-blob"></div>
@@ -350,7 +345,7 @@
                                         <div><span class="text-gray-400">};</span></div>
                                         <div class="mt-4"></div>
                                         <div><span class="text-gray-400">// Example API call</span></div>
-                                        <div><span class="text-purple-400">fetch</span><span class="text-gray-400">(</span><span class="text-yellow-400">'https://api.finaegis.org/v1/accounts'</span><span class="text-gray-400">,</span> <span class="text-gray-400">{</span></div>
+                                        <div><span class="text-purple-400">fetch</span><span class="text-gray-400">(</span><span class="text-yellow-400">'https://api.finaegis.org/v2/accounts'</span><span class="text-gray-400">,</span> <span class="text-gray-400">{</span></div>
                                         <div class="pl-4"><span class="text-green-400">method</span><span class="text-gray-400">:</span> <span class="text-yellow-400">'GET'</span><span class="text-gray-400">,</span></div>
                                         <div class="pl-4"><span class="text-green-400">headers</span><span class="text-gray-400">:</span> <span class="text-white">headers</span></div>
                                         <div><span class="text-gray-400">})</span></div>
@@ -604,7 +599,7 @@
                                 </button>
                             </div>
                             <pre class="p-4 code-block"><code id="code-create-account"><span class="text-purple-400">const</span> <span class="text-blue-400">createAccount</span> = <span class="text-purple-400">async</span> () <span class="text-blue-400">=></span> {
-    <span class="text-purple-400">const</span> <span class="text-white">response</span> = <span class="text-purple-400">await</span> <span class="text-green-400">fetch</span>(<span class="text-amber-400">'https://api.finaegis.org/v1/accounts'</span>, {
+    <span class="text-purple-400">const</span> <span class="text-white">response</span> = <span class="text-purple-400">await</span> <span class="text-green-400">fetch</span>(<span class="text-amber-400">'https://api.finaegis.org/v2/accounts'</span>, {
         <span class="text-cyan-400">method</span>: <span class="text-amber-400">'POST'</span>,
         <span class="text-cyan-400">headers</span>: {
             <span class="text-amber-400">'Authorization'</span>: <span class="text-amber-400">'Bearer YOUR_API_KEY'</span>,
@@ -648,7 +643,7 @@
                             <pre class="p-4 code-block"><code id="code-transfer"><span class="text-purple-400">import</span> <span class="text-amber-400">requests</span>
 
 <span class="text-purple-400">def</span> <span class="text-blue-400">transfer_funds</span>(<span class="text-white">from_account</span>, <span class="text-white">to_account</span>, <span class="text-white">amount</span>):
-    <span class="text-white">url</span> = <span class="text-amber-400">"https://api.finaegis.org/v1/transfers"</span>
+    <span class="text-white">url</span> = <span class="text-amber-400">"https://api.finaegis.org/v2/transfers"</span>
     <span class="text-white">headers</span> = {
         <span class="text-amber-400">"Authorization"</span>: <span class="text-amber-400">"Bearer YOUR_API_KEY"</span>,
         <span class="text-amber-400">"Content-Type"</span>: <span class="text-amber-400">"application/json"</span>
@@ -694,7 +689,7 @@
                             </div>
                             <pre class="p-4 code-block"><code id="code-gcu-exchange"><span class="text-purple-400">&lt;?php</span>
 <span class="text-blue-400">$api_key</span> = <span class="text-amber-400">'YOUR_API_KEY'</span>;
-<span class="text-blue-400">$endpoint</span> = <span class="text-amber-400">'https://api.finaegis.org/v1/gcu/exchange'</span>;
+<span class="text-blue-400">$endpoint</span> = <span class="text-amber-400">'https://api.finaegis.org/v2/gcu/exchange'</span>;
 
 <span class="text-blue-400">$data</span> = [
     <span class="text-amber-400">'from_currency'</span> => <span class="text-amber-400">'USD'</span>,
@@ -783,6 +778,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

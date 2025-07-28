@@ -18,5 +18,6 @@ class ProposalCreated extends ShouldBeStored
         public readonly Carbon $endTime,
         public readonly string $quorumRequired,
         public readonly string $approvalThreshold
-    ) {}
+    ) {
+    }
 }

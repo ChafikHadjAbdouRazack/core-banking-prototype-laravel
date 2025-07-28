@@ -19,7 +19,7 @@ it('can create transaction receipt', function () {
         completedAt: Carbon::now(),
         metadata: ['test' => true]
     );
-    
+
     expect($receipt->id)->toBe('tx-123');
     expect($receipt->status)->toBe('completed');
     expect($receipt->fromAccount)->toBe('acc-1');
@@ -36,7 +36,7 @@ it('can detect completed status', function () {
     $success = new TransactionReceipt('tx-2', 'success');
     $settled = new TransactionReceipt('tx-3', 'settled');
     $pending = new TransactionReceipt('tx-4', 'pending');
-    
+
     expect($completed->isCompleted())->toBeTrue();
     expect($success->isCompleted())->toBeTrue();
     expect($settled->isCompleted())->toBeTrue();
@@ -48,7 +48,7 @@ it('can detect pending status', function () {
     $processing = new TransactionReceipt('tx-2', 'processing');
     $initiated = new TransactionReceipt('tx-3', 'initiated');
     $completed = new TransactionReceipt('tx-4', 'completed');
-    
+
     expect($pending->isPending())->toBeTrue();
     expect($processing->isPending())->toBeTrue();
     expect($initiated->isPending())->toBeTrue();
@@ -60,7 +60,7 @@ it('can detect failed status', function () {
     $rejected = new TransactionReceipt('tx-2', 'rejected');
     $cancelled = new TransactionReceipt('tx-3', 'cancelled');
     $completed = new TransactionReceipt('tx-4', 'completed');
-    
+
     expect($failed->isFailed())->toBeTrue();
     expect($rejected->isFailed())->toBeTrue();
     expect($cancelled->isFailed())->toBeTrue();
@@ -70,7 +70,7 @@ it('can detect failed status', function () {
 it('can convert to array', function () {
     $createdAt = Carbon::now();
     $completedAt = Carbon::now()->addMinutes(1);
-    
+
     $receipt = new TransactionReceipt(
         id: 'tx-123',
         status: 'completed',
@@ -84,15 +84,15 @@ it('can convert to array', function () {
         completedAt: $completedAt,
         metadata: ['test' => true]
     );
-    
+
     $array = $receipt->toArray();
-    
+
     expect($array)->toHaveKeys([
-        'id', 'status', 'from_account', 'to_account', 
+        'id', 'status', 'from_account', 'to_account',
         'asset_code', 'amount', 'fee', 'reference',
-        'created_at', 'completed_at', 'metadata'
+        'created_at', 'completed_at', 'metadata',
     ]);
-    
+
     expect($array['id'])->toBe('tx-123');
     expect($array['status'])->toBe('completed');
     expect($array['from_account'])->toBe('acc-1');
@@ -111,9 +111,9 @@ it('handles null values in toArray', function () {
         id: 'tx-123',
         status: 'pending'
     );
-    
+
     $array = $receipt->toArray();
-    
+
     expect($array['id'])->toBe('tx-123');
     expect($array['status'])->toBe('pending');
     expect($array['from_account'])->toBeNull();

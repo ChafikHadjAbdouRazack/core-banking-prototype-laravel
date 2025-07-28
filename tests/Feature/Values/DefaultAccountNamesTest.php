@@ -1,6 +1,6 @@
 <?php
 
-use App\Values\DefaultAccountNames;
+use App\Domain\Account\Values\DefaultAccountNames;
 
 it('has correct enum values', function () {
     expect(DefaultAccountNames::MAIN->value)->toBe('Main');
@@ -20,7 +20,7 @@ it('generates labels for translation', function () {
 
 it('can get all cases', function () {
     $cases = DefaultAccountNames::cases();
-    
+
     expect($cases)->toHaveCount(3);
     expect($cases)->toContain(DefaultAccountNames::MAIN);
     expect($cases)->toContain(DefaultAccountNames::SAVINGS);

@@ -13,5 +13,6 @@ class ReserveDeposited extends ShouldBeStored
         public readonly string $custodianId,
         public readonly string $transactionHash,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -24,7 +23,7 @@ return new class extends Migration
             $table->string('user_agent')->nullable();
             $table->string('tags')->nullable()->comment('Comma-separated tags for filtering');
             $table->timestamp('created_at');
-            
+
             // Indexes for performance
             $table->index('user_uuid');
             $table->index('action');
@@ -32,7 +31,7 @@ return new class extends Migration
             $table->index('created_at');
             $table->index('ip_address');
             $table->index('tags');
-            
+
             // Foreign key
             $table->foreign('user_uuid')->references('uuid')->on('users')->onDelete('set null');
         });

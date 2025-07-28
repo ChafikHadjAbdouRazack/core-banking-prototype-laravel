@@ -11,7 +11,7 @@ class ExchangeRate extends BaseModel
     {
         return $this->from_asset;
     }
-    
+
     /**
      * Get to asset code.
      */
@@ -19,7 +19,7 @@ class ExchangeRate extends BaseModel
     {
         return $this->to_asset;
     }
-    
+
     /**
      * Get exchange rate.
      */
@@ -27,7 +27,7 @@ class ExchangeRate extends BaseModel
     {
         return $this->rate;
     }
-    
+
     /**
      * Get rate type.
      */
@@ -35,7 +35,7 @@ class ExchangeRate extends BaseModel
     {
         return $this->rate_type;
     }
-    
+
     /**
      * Get last updated timestamp.
      */

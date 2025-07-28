@@ -29,10 +29,12 @@ class InviteTeamMember implements InvitesTeamMembers
 
         InvitingTeamMember::dispatch($team, $email, $role);
 
-        $invitation = $team->teamInvitations()->create([
-            'email' => $email,
-            'role' => $role,
-        ]);
+        $invitation = $team->teamInvitations()->create(
+            [
+                'email' => $email,
+                'role'  => $role,
+            ]
+        );
 
         Mail::to($email)->send(new TeamInvitation($invitation));
     }
@@ -42,12 +44,16 @@ class InviteTeamMember implements InvitesTeamMembers
      */
     protected function validate(Team $team, string $email, ?string $role): void
     {
-        Validator::make([
-            'email' => $email,
-            'role' => $role,
-        ], $this->rules($team), [
-            'email.unique' => __('This user has already been invited to the team.'),
-        ])->after(
+        Validator::make(
+            [
+                'email' => $email,
+                'role'  => $role,
+            ],
+            $this->rules($team),
+            [
+                'email.unique' => __('This user has already been invited to the team.'),
+            ]
+        )->after(
             $this->ensureUserIsNotAlreadyOnTeam($team, $email)
         )->validateWithBag('addTeamMember');
     }
@@ -59,17 +65,21 @@ class InviteTeamMember implements InvitesTeamMembers
      */
     protected function rules(Team $team): array
     {
-        return array_filter([
-            'email' => [
-                'required', 'email',
-                Rule::unique(Jetstream::teamInvitationModel())->where(function (Builder $query) use ($team) {
-                    $query->where('team_id', $team->id);
-                }),
-            ],
-            'role' => Jetstream::hasRoles()
-                            ? ['required', 'string', new Role]
-                            : null,
-        ]);
+        return array_filter(
+            [
+                'email' => [
+                    'required', 'email',
+                    Rule::unique(Jetstream::teamInvitationModel())->where(
+                        function (Builder $query) use ($team) {
+                            $query->where('team_id', $team->id);
+                        }
+                    ),
+                ],
+                'role' => Jetstream::hasRoles()
+                                ? ['required', 'string', new Role()]
+                                : null,
+            ]
+        );
     }
 
     /**

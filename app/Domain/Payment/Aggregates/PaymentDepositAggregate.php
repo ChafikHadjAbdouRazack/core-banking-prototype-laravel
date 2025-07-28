@@ -3,19 +3,19 @@
 namespace App\Domain\Payment\Aggregates;
 
 use App\Domain\Payment\DataObjects\StripeDeposit;
-use App\Domain\Payment\Events\DepositInitiated;
 use App\Domain\Payment\Events\DepositCompleted;
 use App\Domain\Payment\Events\DepositFailed;
+use App\Domain\Payment\Events\DepositInitiated;
 use App\Domain\Payment\Repositories\PaymentDepositRepository;
 use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class PaymentDepositAggregate extends AggregateRoot
 {
     protected string $depositStatus = 'pending';
+
     protected ?string $transactionId = null;
-    
+
     /**
-     * @return PaymentDepositRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): PaymentDepositRepository
@@ -26,7 +26,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Initiate a new deposit
+     * Initiate a new deposit.
      */
     public function initiateDeposit(StripeDeposit $deposit): static
     {
@@ -47,7 +47,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Complete the deposit
+     * Complete the deposit.
      */
     public function completeDeposit(string $transactionId): static
     {
@@ -66,7 +66,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Fail the deposit
+     * Fail the deposit.
      */
     public function failDeposit(string $reason): static
     {
@@ -85,7 +85,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Apply deposit initiated event
+     * Apply deposit initiated event.
      */
     protected function applyDepositInitiated(DepositInitiated $event): void
     {
@@ -93,7 +93,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Apply deposit completed event
+     * Apply deposit completed event.
      */
     protected function applyDepositCompleted(DepositCompleted $event): void
     {
@@ -102,7 +102,7 @@ class PaymentDepositAggregate extends AggregateRoot
     }
 
     /**
-     * Apply deposit failed event
+     * Apply deposit failed event.
      */
     protected function applyDepositFailed(DepositFailed $event): void
     {

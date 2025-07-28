@@ -13,5 +13,6 @@ class ProposalFinalized extends ShouldBeStored
         public readonly array $votesSummary,
         public readonly bool $quorumReached,
         public readonly string $approvalRate
-    ) {}
+    ) {
+    }
 }

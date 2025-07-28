@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PasswordResetController extends Controller
 {
@@ -21,24 +21,32 @@ class PasswordResetController extends Controller
      *     tags={"Authentication"},
      *     summary="Request password reset link",
      *     description="Send a password reset link to the user's email address",
-     *     @OA\RequestBody(
+     *
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     *
+     * @OA\JsonContent(
      *             required={"email"},
-     *             @OA\Property(property="email", type="string", format="email", example="user@example.com")
+     *
+     * @OA\Property(property="email",                              type="string", format="email", example="user@example.com")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Password reset link sent",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="We have emailed your password reset link.")
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",                            type="string", example="We have emailed your password reset link.")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=422,
      *         description="Validation error",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     *
+     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
      *     )
      * )
      */
@@ -54,9 +62,11 @@ class PasswordResetController extends Controller
             return response()->json(['message' => __($status)]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => [__($status)],
-        ]);
+        throw ValidationException::withMessages(
+            [
+                'email' => [__($status)],
+            ]
+        );
     }
 
     /**
@@ -68,44 +78,56 @@ class PasswordResetController extends Controller
      *     tags={"Authentication"},
      *     summary="Reset password",
      *     description="Reset user password using token received via email",
-     *     @OA\RequestBody(
+     *
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     *
+     * @OA\JsonContent(
      *             required={"email", "password", "password_confirmation", "token"},
-     *             @OA\Property(property="email", type="string", format="email", example="user@example.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="newpassword123"),
-     *             @OA\Property(property="password_confirmation", type="string", format="password", example="newpassword123"),
-     *             @OA\Property(property="token", type="string", example="reset-token-here")
+     *
+     * @OA\Property(property="email",                              type="string", format="email", example="user@example.com"),
+     * @OA\Property(property="password",                           type="string", format="password", example="newpassword123"),
+     * @OA\Property(property="password_confirmation",              type="string", format="password", example="newpassword123"),
+     * @OA\Property(property="token",                              type="string", example="reset-token-here")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Password reset successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Your password has been reset.")
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",                            type="string", example="Your password has been reset.")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=422,
      *         description="Validation error or invalid token",
-     *         @OA\JsonContent(ref="#/components/schemas/ValidationError")
+     *
+     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
      *     )
      * )
      */
     public function resetPassword(Request $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
-        ]);
+        $request->validate(
+            [
+                'token'    => 'required',
+                'email'    => 'required|email',
+                'password' => 'required|min:8|confirmed',
+            ]
+        );
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password)
-                ])->setRememberToken(Str::random(60));
+                $user->forceFill(
+                    [
+                        'password' => Hash::make($password),
+                    ]
+                )->setRememberToken(Str::random(60));
 
                 $user->save();
 
@@ -117,8 +139,10 @@ class PasswordResetController extends Controller
             return response()->json(['message' => __($status)]);
         }
 
-        throw ValidationException::withMessages([
-            'email' => [__($status)],
-        ]);
+        throw ValidationException::withMessages(
+            [
+                'email' => [__($status)],
+            ]
+        );
     }
 }

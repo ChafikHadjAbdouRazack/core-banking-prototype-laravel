@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => 'default',
+    'default'        => 'default',
     'documentations' => [
         'default' => [
             'api' => [
@@ -13,6 +13,11 @@ return [
                  * Route for accessing api documentation interface
                  */
                 'api' => 'api/documentation',
+                
+                /*
+                 * Route for accessing parsed swagger annotations.
+                 */
+                'docs' => 'docs',
             ],
             'paths' => [
                 /*
@@ -29,6 +34,11 @@ return [
                  * File name of the generated json documentation file
                  */
                 'docs_json' => 'api-docs.json',
+                
+                /*
+                 * Absolute path to file containing the swagger annotations
+                 */
+                'docs_url' => '/docs/api-docs.json',
 
                 /*
                  * File name of the generated YAML documentation file
@@ -44,7 +54,7 @@ return [
                  * Absolute paths to directory containing the swagger annotations are stored.
                  */
                 'annotations' => [
-                    base_path('app'),
+                    base_path('app/Http/Controllers/Api/V2'),
                 ],
             ],
         ],
@@ -65,9 +75,9 @@ return [
              * Middleware allows to prevent unexpected access to API documentation
              */
             'middleware' => [
-                'api' => [],
-                'asset' => [],
-                'docs' => [],
+                'api'             => [],
+                'asset'           => [],
+                'docs'            => [],
                 'oauth2_callback' => [],
             ],
 
@@ -123,14 +133,14 @@ return [
             /**
              * analyser: defaults to \OpenApi\StaticAnalyser .
              *
-             * @see \OpenApi\scan
+             * @see OpenApi\scan
              */
             'analyser' => null,
 
             /**
              * analysis: defaults to a new \OpenApi\Analysis .
              *
-             * @see \OpenApi\scan
+             * @see OpenApi\scan
              */
             'analysis' => null,
 
@@ -138,7 +148,7 @@ return [
              * Custom query path processors classes.
              *
              * @link https://github.com/zircote/swagger-php/tree/master/Examples/processors/schema-query-parameter
-             * @see \OpenApi\scan
+             * @see OpenApi\scan
              */
             'processors' => [
                 // new \App\SwaggerProcessors\SchemaQueryParameter(),
@@ -147,7 +157,7 @@ return [
             /**
              * pattern: string       $pattern File pattern(s) to scan (default: *.php) .
              *
-             * @see \OpenApi\scan
+             * @see OpenApi\scan
              */
             'pattern' => null,
 
@@ -162,7 +172,7 @@ return [
              * Allows to generate specs either for OpenAPI 3.0.0 or OpenAPI 3.1.0.
              * By default the spec will be in version 3.0.0
              */
-            'open_api_spec_version' => env('L5_SWAGGER_OPEN_API_SPEC_VERSION', \L5Swagger\Generator::OPEN_API_DEFAULT_SPEC_VERSION),
+            'open_api_spec_version' => env('L5_SWAGGER_OPEN_API_SPEC_VERSION', L5Swagger\Generator::OPEN_API_DEFAULT_SPEC_VERSION),
         ],
 
         /*
@@ -312,7 +322,7 @@ return [
          * Constants which can be used in annotations
          */
         'constants' => [
-            'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
+            'L5_SWAGGER_CONST_HOST' => env('APP_URL', 'http://localhost') . '/api/v2',
         ],
     ],
 ];

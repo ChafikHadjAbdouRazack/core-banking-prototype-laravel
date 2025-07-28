@@ -20,22 +20,28 @@ class ExternalExchangeController extends Controller
     public function __construct(
         private readonly ExternalExchangeConnectorRegistry $connectorRegistry,
         private readonly ExternalLiquidityService $liquidityService
-    ) {}
+    ) {
+    }
 
     /**
      * @OA\Get(
      *     path="/api/external-exchange/connectors",
      *     tags={"External Exchange"},
      *     summary="Get available external exchange connectors",
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="List of available connectors",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="connectors", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="name", type="string", example="binance"),
-     *                     @OA\Property(property="display_name", type="string", example="Binance"),
-     *                     @OA\Property(property="available", type="boolean", example=true)
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="connectors",   type="array",
+     *
+     * @OA\Items(
+     *
+     * @OA\Property(property="name",         type="string", example="binance"),
+     * @OA\Property(property="display_name", type="string", example="Binance"),
+     * @OA\Property(property="available",    type="boolean", example=true)
      *                 )
      *             )
      *         )
@@ -44,17 +50,21 @@ class ExternalExchangeController extends Controller
      */
     public function connectors(): JsonResponse
     {
-        $connectors = $this->connectorRegistry->all()->map(function ($connector, $name) {
-            return [
-                'name' => $name,
-                'display_name' => $connector->getName(),
-                'available' => $connector->isAvailable()
-            ];
-        });
+        $connectors = $this->connectorRegistry->all()->map(
+            function ($connector, $name) {
+                return [
+                    'name'         => $name,
+                    'display_name' => $connector->getName(),
+                    'available'    => $connector->isAvailable(),
+                ];
+            }
+        );
 
-        return response()->json([
-            'connectors' => $connectors->values()
-        ]);
+        return response()->json(
+            [
+                'connectors' => $connectors->values(),
+            ]
+        );
     }
 
     /**
@@ -62,19 +72,24 @@ class ExternalExchangeController extends Controller
      *     path="/api/external-exchange/ticker/{base}/{quote}",
      *     tags={"External Exchange"},
      *     summary="Get aggregated ticker data from external exchanges",
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="base",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="BTC")
+     *
+     * @OA\Schema(type="string", example="BTC")
      *     ),
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="quote",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="EUR")
+     *
+     * @OA\Schema(type="string", example="EUR")
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Aggregated ticker data"
      *     )
@@ -83,7 +98,7 @@ class ExternalExchangeController extends Controller
     public function ticker(string $base, string $quote): JsonResponse
     {
         $tickers = [];
-        
+
         foreach ($this->connectorRegistry->available() as $name => $connector) {
             try {
                 $ticker = $connector->getTicker($base, $quote);
@@ -97,13 +112,15 @@ class ExternalExchangeController extends Controller
         $bestBid = $this->connectorRegistry->getBestBid($base, $quote);
         $bestAsk = $this->connectorRegistry->getBestAsk($base, $quote);
 
-        return response()->json([
-            'pair' => "{$base}/{$quote}",
-            'tickers' => $tickers,
-            'best_bid' => $bestBid,
-            'best_ask' => $bestAsk,
-            'timestamp' => now()->toIso8601String()
-        ]);
+        return response()->json(
+            [
+                'pair'      => "{$base}/{$quote}",
+                'tickers'   => $tickers,
+                'best_bid'  => $bestBid,
+                'best_ask'  => $bestAsk,
+                'timestamp' => now()->toIso8601String(),
+            ]
+        );
     }
 
     /**
@@ -111,25 +128,32 @@ class ExternalExchangeController extends Controller
      *     path="/api/external-exchange/orderbook/{base}/{quote}",
      *     tags={"External Exchange"},
      *     summary="Get aggregated order book from external exchanges",
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="base",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="BTC")
+     *
+     * @OA\Schema(type="string",  example="BTC")
      *     ),
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="quote",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="EUR")
+     *
+     * @OA\Schema(type="string",  example="EUR")
      *     ),
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="depth",
      *         in="query",
      *         required=false,
-     *         @OA\Schema(type="integer", default=20)
+     *
+     * @OA\Schema(type="integer", default=20)
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Aggregated order book"
      *     )
@@ -140,11 +164,13 @@ class ExternalExchangeController extends Controller
         $depth = (int) $request->get('depth', 20);
         $aggregatedBook = $this->connectorRegistry->getAggregatedOrderBook($base, $quote, $depth);
 
-        return response()->json([
-            'pair' => "{$base}/{$quote}",
-            'orderbook' => $aggregatedBook,
-            'timestamp' => now()->toIso8601String()
-        ]);
+        return response()->json(
+            [
+                'pair'      => "{$base}/{$quote}",
+                'orderbook' => $aggregatedBook,
+                'timestamp' => now()->toIso8601String(),
+            ]
+        );
     }
 
     /**
@@ -153,19 +179,24 @@ class ExternalExchangeController extends Controller
      *     tags={"External Exchange"},
      *     summary="Check arbitrage opportunities",
      *     security={{"bearerAuth":{}}},
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="base",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="BTC")
+     *
+     * @OA\Schema(type="string", example="BTC")
      *     ),
-     *     @OA\Parameter(
+     *
+     * @OA\Parameter(
      *         name="quote",
      *         in="path",
      *         required=true,
-     *         @OA\Schema(type="string", example="EUR")
+     *
+     * @OA\Schema(type="string", example="EUR")
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Arbitrage opportunities"
      *     )
@@ -174,13 +205,15 @@ class ExternalExchangeController extends Controller
     public function arbitrage(string $base, string $quote): JsonResponse
     {
         $this->middleware('auth:sanctum');
-        
+
         $opportunities = $this->liquidityService->findArbitrageOpportunities($base, $quote);
 
-        return response()->json([
-            'pair' => "{$base}/{$quote}",
-            'opportunities' => $opportunities,
-            'timestamp' => now()->toIso8601String()
-        ]);
+        return response()->json(
+            [
+                'pair'          => "{$base}/{$quote}",
+                'opportunities' => $opportunities,
+                'timestamp'     => now()->toIso8601String(),
+            ]
+        );
     }
 }

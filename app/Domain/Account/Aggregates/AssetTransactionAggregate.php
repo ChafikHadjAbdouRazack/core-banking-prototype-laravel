@@ -19,6 +19,7 @@ class AssetTransactionAggregate extends AggregateRoot
     use ValidatesHash;
 
     protected const int ACCOUNT_LIMIT = 0;
+
     public const int COUNT_THRESHOLD = 1000;
 
     /**
@@ -26,13 +27,9 @@ class AssetTransactionAggregate extends AggregateRoot
      */
     protected array $balances = [];
 
-    /**
-     * @var int
-     */
     public int $count = 0;
 
     /**
-     * @return TransactionRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransactionRepository
@@ -53,9 +50,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $assetCode
-     * @param int $amount
-     *
      * @return $this
      */
     public function credit(string $assetCode, int $amount): static
@@ -72,8 +66,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetBalanceAdded $event
-     *
      * @return AssetTransactionAggregate
      */
     public function applyAssetBalanceAdded(AssetBalanceAdded $event): static
@@ -84,7 +76,7 @@ class AssetTransactionAggregate extends AggregateRoot
             amount: $event->amount
         );
 
-        if (!isset($this->balances[$event->assetCode])) {
+        if (! isset($this->balances[$event->assetCode])) {
             $this->balances[$event->assetCode] = 0;
         }
 
@@ -103,14 +95,11 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param string $assetCode
-     * @param int $amount
-     *
      * @return AssetTransactionAggregate
      */
     public function debit(string $assetCode, int $amount): static
     {
-        if (!$this->hasSufficientFundsToSubtractAmount($assetCode, $amount)) {
+        if (! $this->hasSufficientFundsToSubtractAmount($assetCode, $amount)) {
             $this->recordThat(
                 new AccountLimitHit()
             );
@@ -132,8 +121,6 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * @param AssetBalanceSubtracted $event
-     *
      * @return AssetTransactionAggregate
      */
     public function applyAssetBalanceSubtracted(AssetBalanceSubtracted $event): static
@@ -144,7 +131,7 @@ class AssetTransactionAggregate extends AggregateRoot
             amount: $event->amount
         );
 
-        if (!isset($this->balances[$event->assetCode])) {
+        if (! isset($this->balances[$event->assetCode])) {
             $this->balances[$event->assetCode] = 0;
         }
 
@@ -155,22 +142,13 @@ class AssetTransactionAggregate extends AggregateRoot
         return $this;
     }
 
-    /**
-     * @param string $assetCode
-     * @param int $amount
-     *
-     * @return bool
-     */
     protected function hasSufficientFundsToSubtractAmount(string $assetCode, int $amount): bool
     {
         $balance = $this->balances[$assetCode] ?? 0;
+
         return $balance - $amount >= self::ACCOUNT_LIMIT;
     }
 
-    /**
-     * @param string $assetCode
-     * @return int
-     */
     public function getBalance(string $assetCode): int
     {
         return $this->balances[$assetCode] ?? 0;
@@ -185,32 +163,25 @@ class AssetTransactionAggregate extends AggregateRoot
     }
 
     /**
-     * Generate hash for asset transaction
-     *
-     * @param string $assetCode
-     * @param int $amount
-     * @return Hash
+     * Generate hash for asset transaction.
      */
     protected function generateHashForAsset(string $assetCode, int $amount): Hash
     {
         $data = sprintf('%s:%d:%d', $assetCode, $amount, time());
+
         return new Hash(hash('sha3-512', $data));
     }
 
     /**
-     * Validate hash for asset transaction
+     * Validate hash for asset transaction.
      *
-     * @param Hash $hash
-     * @param string $assetCode
-     * @param int $amount
-     * @return void
      * @throws InvalidHashException
      */
     protected function validateHashForAsset(Hash $hash, string $assetCode, int $amount): void
     {
         // For now, just validate that the hash exists and is in correct format
         // In production, you would implement proper hash validation logic
-        if (!$hash->getHash() || strlen($hash->getHash()) !== 128) {
+        if (! $hash->getHash() || strlen($hash->getHash()) !== 128) {
             throw new InvalidHashException('Invalid hash format');
         }
     }

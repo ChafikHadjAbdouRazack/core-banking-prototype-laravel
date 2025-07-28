@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\Log;
 
 class RefreshExchangeRatesJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * The number of times the job may be attempted.
@@ -32,22 +35,26 @@ class RefreshExchangeRatesJob implements ShouldQueue
     public function __construct(
         public readonly ?array $currencyPairs = null,
         public readonly bool $forceRefresh = false
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the job.
      */
     public function handle(EnhancedExchangeRateService $service): void
     {
-        Log::info('Starting exchange rate refresh job', [
+        Log::info(
+            'Starting exchange rate refresh job',
+            [
             'pairs' => $this->currencyPairs,
             'force' => $this->forceRefresh,
-        ]);
+            ]
+        );
 
         if ($this->currencyPairs) {
             // Refresh specific pairs
             $results = ['refreshed' => [], 'failed' => []];
-            
+
             foreach ($this->currencyPairs as $pair) {
                 if (str_contains($pair, '/')) {
                     [$from, $to] = explode('/', $pair);
@@ -56,7 +63,7 @@ class RefreshExchangeRatesJob implements ShouldQueue
                         $results['refreshed'][] = $pair;
                     } catch (\Exception $e) {
                         $results['failed'][] = [
-                            'pair' => $pair,
+                            'pair'  => $pair,
                             'error' => $e->getMessage(),
                         ];
                     }
@@ -76,18 +83,21 @@ class RefreshExchangeRatesJob implements ShouldQueue
     }
 
     /**
-     * Handle job failure
+     * Handle job failure.
      */
     public function failed(\Throwable $exception): void
     {
-        Log::error('Exchange rate refresh job failed', [
+        Log::error(
+            'Exchange rate refresh job failed',
+            [
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
-        ]);
+            ]
+        );
     }
 
     /**
-     * Dispatch webhook notifications
+     * Dispatch webhook notifications.
      */
     private function dispatchWebhooks(array $results): void
     {

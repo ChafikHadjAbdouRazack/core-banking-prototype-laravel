@@ -8,19 +8,11 @@ use Spatie\EventSourcing\EventHandlers\Reactors\Reactor;
 
 class SnapshotTransfersReactor extends Reactor
 {
-    /**
-     * @param \App\Domain\Account\Aggregates\TransferAggregate $transfers
-     */
     public function __construct(
         protected TransferAggregate $transfers,
     ) {
     }
 
-    /**
-     * @param \App\Domain\Account\Events\TransferThresholdReached $event
-     *
-     * @return void
-     */
     public function onTransferThresholdReached(
         TransferThresholdReached $event
     ): void {

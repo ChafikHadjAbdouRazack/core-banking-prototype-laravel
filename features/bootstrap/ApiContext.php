@@ -1,11 +1,15 @@
 <?php
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Tester\Exception\PendingException;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
+use Behat\Step\Given;
+use Behat\Step\Then;
 use Illuminate\Testing\TestResponse;
 use Laravel\Sanctum\Sanctum;
 use App\Models\User;
+use App\Models\ExchangeRate;
 
 /**
  * API Context for testing REST endpoints
@@ -267,6 +271,41 @@ class ApiContext implements Context
                     );
                 }
             }
+        }
+    }
+
+    /**
+     * @Given the following exchange rates exist:
+     */
+    public function theFollowingExchangeRatesExist(TableNode $table)
+    {
+        foreach ($table->getHash() as $row) {
+            ExchangeRate::create([
+                'from_currency' => $row['from_currency'],
+                'to_currency' => $row['to_currency'],
+                'rate' => $row['rate'],
+                'provider' => $row['provider'] ?? 'system',
+                'effective_date' => $row['effective_date'] ?? now(),
+            ]);
+        }
+    }
+
+    /**
+     * @Then the response data should contain :count exchange rates
+     */
+    public function theResponseDataShouldContainExchangeRates($count)
+    {
+        $data = $this->response->json();
+        
+        if (!isset($data['data'])) {
+            throw new \Exception("Response does not have 'data' field");
+        }
+        
+        $actualCount = count($data['data']);
+        if ($actualCount != $count) {
+            throw new \Exception(
+                "Expected $count exchange rates but got $actualCount"
+            );
         }
     }
 }

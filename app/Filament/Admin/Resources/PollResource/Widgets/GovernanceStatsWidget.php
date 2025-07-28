@@ -23,22 +23,22 @@ class GovernanceStatsWidget extends BaseWidget
         $pollsLastMonth = Poll::where('created_at', '>=', now()->subMonths(2))
             ->where('created_at', '<', now()->subMonth())
             ->count();
-        
-        $pollGrowth = $pollsLastMonth > 0 
-            ? (($pollsThisMonth - $pollsLastMonth) / $pollsLastMonth) * 100 
+
+        $pollGrowth = $pollsLastMonth > 0
+            ? (($pollsThisMonth - $pollsLastMonth) / $pollsLastMonth) * 100
             : ($pollsThisMonth > 0 ? 100 : 0);
 
         $votesThisWeek = Vote::where('voted_at', '>=', now()->subWeek())->count();
         $votesLastWeek = Vote::where('voted_at', '>=', now()->subWeeks(2))
             ->where('voted_at', '<', now()->subWeek())
             ->count();
-        
-        $voteGrowth = $votesLastWeek > 0 
-            ? (($votesThisWeek - $votesLastWeek) / $votesLastWeek) * 100 
+
+        $voteGrowth = $votesLastWeek > 0
+            ? (($votesThisWeek - $votesLastWeek) / $votesLastWeek) * 100
             : ($votesThisWeek > 0 ? 100 : 0);
 
-        $participationRate = $totalPolls > 0 
-            ? ($totalVotes / max($totalPolls, 1)) 
+        $participationRate = $totalPolls > 0
+            ? ($totalVotes / max($totalPolls, 1))
             : 0;
 
         return [
@@ -85,6 +85,7 @@ class GovernanceStatsWidget extends BaseWidget
             $count = Poll::whereDate('created_at', $date)->count();
             $data[] = $count;
         }
+
         return $data;
     }
 
@@ -97,6 +98,7 @@ class GovernanceStatsWidget extends BaseWidget
             $count = Vote::whereDate('voted_at', $date)->count();
             $data[] = $count;
         }
+
         return $data;
     }
 }

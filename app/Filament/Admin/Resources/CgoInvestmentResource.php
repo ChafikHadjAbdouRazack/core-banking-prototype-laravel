@@ -2,16 +2,12 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Domain\Cgo\Models\CgoInvestment;
 use App\Filament\Admin\Resources\CgoInvestmentResource\Pages;
-use App\Filament\Admin\Resources\CgoInvestmentResource\RelationManagers;
-use App\Models\CgoInvestment;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CgoInvestmentResource extends Resource
 {
@@ -22,28 +18,40 @@ class CgoInvestmentResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->schema([
-                //
-            ]);
+            ->schema(
+                [
+                    //
+                ]
+            );
     }
 
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                //
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->columns(
+                [
+                    //
+                ]
+            )
+            ->filters(
+                [
+                    //
+                ]
+            )
+            ->actions(
+                [
+                    Tables\Actions\EditAction::make(),
+                ]
+            )
+            ->bulkActions(
+                [
+                    Tables\Actions\BulkActionGroup::make(
+                        [
+                            Tables\Actions\DeleteBulkAction::make(),
+                        ]
+                    ),
+                ]
+            );
     }
 
     public static function getRelations(): array
@@ -56,9 +64,9 @@ class CgoInvestmentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCgoInvestments::route('/'),
+            'index'  => Pages\ListCgoInvestments::route('/'),
             'create' => Pages\CreateCgoInvestment::route('/create'),
-            'edit' => Pages\EditCgoInvestment::route('/{record}/edit'),
+            'edit'   => Pages\EditCgoInvestment::route('/{record}/edit'),
         ];
     }
 }

@@ -25,77 +25,78 @@ class BankCapabilities
         public readonly int $maxAccountsPerUser,
         public readonly array $requiredDocuments,
         public readonly array $availableCountries,
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Check if a specific feature is supported
+     * Check if a specific feature is supported.
      */
     public function hasFeature(string $feature): bool
     {
         return in_array($feature, $this->features);
     }
-    
+
     /**
-     * Check if a currency is supported
+     * Check if a currency is supported.
      */
     public function supportsCurrency(string $currency): bool
     {
         return in_array($currency, $this->supportedCurrencies);
     }
-    
+
     /**
-     * Check if a transfer type is supported
+     * Check if a transfer type is supported.
      */
     public function supportsTransferType(string $type): bool
     {
         return in_array($type, $this->supportedTransferTypes);
     }
-    
+
     /**
-     * Get transfer limit for a specific type and currency
+     * Get transfer limit for a specific type and currency.
      */
     public function getTransferLimit(string $type, string $currency): ?array
     {
         return $this->limits[$type][$currency] ?? null;
     }
-    
+
     /**
-     * Get fee structure for a specific operation
+     * Get fee structure for a specific operation.
      */
     public function getFee(string $operation, string $currency): ?array
     {
         return $this->fees[$operation][$currency] ?? null;
     }
-    
+
     /**
-     * Convert to array for storage
+     * Convert to array for storage.
      */
     public function toArray(): array
     {
         return [
-            'supported_currencies' => $this->supportedCurrencies,
-            'supported_transfer_types' => $this->supportedTransferTypes,
-            'features' => $this->features,
-            'limits' => $this->limits,
-            'fees' => $this->fees,
-            'supports_instant_transfers' => $this->supportsInstantTransfers,
+            'supported_currencies'         => $this->supportedCurrencies,
+            'supported_transfer_types'     => $this->supportedTransferTypes,
+            'features'                     => $this->features,
+            'limits'                       => $this->limits,
+            'fees'                         => $this->fees,
+            'supports_instant_transfers'   => $this->supportsInstantTransfers,
             'supports_scheduled_transfers' => $this->supportsScheduledTransfers,
-            'supports_bulk_transfers' => $this->supportsBulkTransfers,
-            'supports_direct_debits' => $this->supportsDirectDebits,
-            'supports_standing_orders' => $this->supportsStandingOrders,
-            'supports_virtual_accounts' => $this->supportsVirtualAccounts,
-            'supports_multi_currency' => $this->supportsMultiCurrency,
-            'supports_webhooks' => $this->supportsWebhooks,
-            'supports_statements' => $this->supportsStatements,
-            'supports_card_issuance' => $this->supportsCardIssuance,
-            'max_accounts_per_user' => $this->maxAccountsPerUser,
-            'required_documents' => $this->requiredDocuments,
-            'available_countries' => $this->availableCountries,
+            'supports_bulk_transfers'      => $this->supportsBulkTransfers,
+            'supports_direct_debits'       => $this->supportsDirectDebits,
+            'supports_standing_orders'     => $this->supportsStandingOrders,
+            'supports_virtual_accounts'    => $this->supportsVirtualAccounts,
+            'supports_multi_currency'      => $this->supportsMultiCurrency,
+            'supports_webhooks'            => $this->supportsWebhooks,
+            'supports_statements'          => $this->supportsStatements,
+            'supports_card_issuance'       => $this->supportsCardIssuance,
+            'max_accounts_per_user'        => $this->maxAccountsPerUser,
+            'required_documents'           => $this->requiredDocuments,
+            'available_countries'          => $this->availableCountries,
         ];
     }
-    
+
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {

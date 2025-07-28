@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\BasketAsset;
 use App\Domain\Asset\Models\Asset;
+use App\Domain\Basket\Models\BasketAsset;
 use Illuminate\Database\Seeder;
 
 class GCUBasketSeeder extends Seeder
@@ -25,18 +25,18 @@ class GCUBasketSeeder extends Seeder
         $basket = BasketAsset::updateOrCreate(
             ['code' => $basketCode],
             [
-                'name' => $basketName,
-                'type' => 'dynamic', // GCU uses dynamic rebalancing
+                'name'                => $basketName,
+                'type'                => 'dynamic', // GCU uses dynamic rebalancing
                 'rebalance_frequency' => 'monthly',
-                'is_active' => true,
-                'created_by' => 'system',
-                'metadata' => [
-                    'description' => $basketDescription,
+                'is_active'           => true,
+                'created_by'          => 'system',
+                'metadata'            => [
+                    'description'    => $basketDescription,
                     'voting_enabled' => true,
                     'next_rebalance' => now()->addMonth()->startOfMonth()->toDateString(),
                     'implementation' => 'GCU',
-                    'version' => '1.0',
-                ]
+                    'version'        => '1.0',
+                ],
             ]
         );
 
@@ -56,10 +56,10 @@ class GCUBasketSeeder extends Seeder
         foreach ($components as $component) {
             $basket->components()->create([
                 'asset_code' => $component['asset_code'],
-                'weight' => $component['weight'],
+                'weight'     => $component['weight'],
                 'min_weight' => $component['min_weight'],
                 'max_weight' => $component['max_weight'],
-                'is_active' => true,
+                'is_active'  => true,
             ]);
         }
 
@@ -67,21 +67,21 @@ class GCUBasketSeeder extends Seeder
         Asset::updateOrCreate(
             ['code' => $basketCode],
             [
-                'name' => $basketName,
-                'type' => 'custom',
+                'name'      => $basketName,
+                'type'      => 'custom',
                 'precision' => 2,
                 'is_active' => true,
                 'is_basket' => true,
-                'metadata' => [
-                    'symbol' => $basketSymbol,
-                    'basket_code' => $basketCode,
-                    'description' => $basketDescription,
+                'metadata'  => [
+                    'symbol'         => $basketSymbol,
+                    'basket_code'    => $basketCode,
+                    'description'    => $basketDescription,
                     'implementation' => 'GCU',
-                ]
+                ],
             ]
         );
 
-        $this->command->info("GCU basket created successfully with 6 currency components.");
+        $this->command->info('GCU basket created successfully with 6 currency components.');
         $this->command->info("Basket code: {$basketCode}");
         $this->command->info("Basket name: {$basketName}");
     }

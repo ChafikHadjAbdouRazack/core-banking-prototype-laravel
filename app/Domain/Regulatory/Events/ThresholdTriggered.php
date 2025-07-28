@@ -9,16 +9,21 @@ use Illuminate\Queue\SerializesModels;
 
 class ThresholdTriggered
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public RegulatoryThreshold $threshold;
+
     public array $context;
+
     public ?string $entityType;
+
     public ?string $entityId;
 
     public function __construct(
-        RegulatoryThreshold $threshold, 
-        array $context, 
+        RegulatoryThreshold $threshold,
+        array $context,
         ?string $entityType = null,
         ?string $entityId = null
     ) {
@@ -29,7 +34,7 @@ class ThresholdTriggered
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

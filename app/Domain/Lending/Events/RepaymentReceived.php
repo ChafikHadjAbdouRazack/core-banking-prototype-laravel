@@ -14,5 +14,6 @@ class RepaymentReceived extends ShouldBeStored
         public string $interestPortion,
         public array $metadata,
         public \DateTimeImmutable $receivedAt
-    ) {}
+    ) {
+    }
 }

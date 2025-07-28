@@ -1,16 +1,9 @@
 <?php
 
 use App\Actions\Jetstream\AddTeamMember;
-use Illuminate\Support\Facades\Event;
-use App\Models\Team;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Gate;
 
 uses(RefreshDatabase::class);
-use Illuminate\Validation\ValidationException;
-use Laravel\Jetstream\Events\AddingTeamMember;
-use Laravel\Jetstream\Events\TeamMemberAdded;
 
 uses(RefreshDatabase::class);
 

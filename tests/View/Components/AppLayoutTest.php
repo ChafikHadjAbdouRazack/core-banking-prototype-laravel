@@ -14,7 +14,7 @@ it('has render method', function () {
 it('render method returns View', function () {
     $reflection = new ReflectionClass(AppLayout::class);
     $method = $reflection->getMethod('render');
-    
+
     expect($method->getReturnType()->getName())->toBe('Illuminate\View\View');
 });
 

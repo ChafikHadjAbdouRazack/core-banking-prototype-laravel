@@ -8,13 +8,6 @@ use Workflow\Workflow;
 
 class FreezeAccountWorkflow extends Workflow
 {
-    /**
-     * @param AccountUuid $uuid
-     * @param string $reason
-     * @param string|null $authorizedBy
-     *
-     * @return \Generator
-     */
     public function execute(AccountUuid $uuid, string $reason, ?string $authorizedBy = null): \Generator
     {
         return yield ActivityStub::make(

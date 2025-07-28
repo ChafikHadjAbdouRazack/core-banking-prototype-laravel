@@ -2,7 +2,6 @@
 
 namespace App\Domain\Cgo\Events;
 
-use App\Values\EventQueues;
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class RefundProcessed extends ShouldBeStored
@@ -16,5 +15,6 @@ class RefundProcessed extends ShouldBeStored
         public readonly string $status,
         public readonly array $processorResponse,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

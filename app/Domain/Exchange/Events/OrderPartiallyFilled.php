@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderPartiallyFilled extends ShouldBeStored
@@ -12,5 +11,6 @@ class OrderPartiallyFilled extends ShouldBeStored
         public readonly string $filledAmount,
         public readonly string $remainingAmount,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

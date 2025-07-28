@@ -19,70 +19,79 @@ class UpdateConfigurationWorkflow
         // Extract configuration changes from poll
         $configChanges = $this->extractConfigChangesFromPoll($poll, $result);
 
-        if (empty($configChanges) || !$this->validateConfigChanges($configChanges)) {
+        if (empty($configChanges) || ! $this->validateConfigChanges($configChanges)) {
             return [
-                'success' => false,
-                'message' => 'Invalid configuration changes in poll',
+                'success'   => false,
+                'message'   => 'Invalid configuration changes in poll',
                 'poll_uuid' => $poll->uuid,
             ];
         }
 
         try {
             $appliedChanges = [];
-            
+
             foreach ($configChanges as $configKey => $newValue) {
                 if ($this->isConfigurationUpdateAllowed($configKey)) {
                     $oldValue = $this->getCurrentConfigValue($configKey);
-                    
+
                     $this->updateConfiguration($configKey, $newValue);
-                    
+
                     $appliedChanges[] = [
-                        'key' => $configKey,
+                        'key'       => $configKey,
                         'old_value' => $oldValue,
                         'new_value' => $newValue,
                     ];
                 } else {
-                    logger()->warning('Governance poll attempted to update restricted configuration', [
-                        'poll_uuid' => $poll->uuid,
-                        'config_key' => $configKey,
-                        'attempted_value' => $newValue,
-                    ]);
+                    logger()->warning(
+                        'Governance poll attempted to update restricted configuration',
+                        [
+                            'poll_uuid'       => $poll->uuid,
+                            'config_key'      => $configKey,
+                            'attempted_value' => $newValue,
+                        ]
+                    );
                 }
             }
 
             if (empty($appliedChanges)) {
                 return [
-                    'success' => false,
-                    'message' => 'No configuration changes were allowed',
+                    'success'   => false,
+                    'message'   => 'No configuration changes were allowed',
                     'poll_uuid' => $poll->uuid,
                 ];
             }
 
             // Log the governance action
-            logger()->info('Configuration updated via governance poll', [
-                'poll_uuid' => $poll->uuid,
-                'changes' => $appliedChanges,
-                'winning_option' => $result->winningOption,
-                'participation_rate' => $result->participationRate,
-            ]);
+            logger()->info(
+                'Configuration updated via governance poll',
+                [
+                    'poll_uuid'          => $poll->uuid,
+                    'changes'            => $appliedChanges,
+                    'winning_option'     => $result->winningOption,
+                    'participation_rate' => $result->participationRate,
+                ]
+            );
 
             return [
-                'success' => true,
-                'message' => 'Configuration successfully updated via governance',
-                'poll_uuid' => $poll->uuid,
+                'success'         => true,
+                'message'         => 'Configuration successfully updated via governance',
+                'poll_uuid'       => $poll->uuid,
                 'applied_changes' => $appliedChanges,
-                'changes_count' => count($appliedChanges),
+                'changes_count'   => count($appliedChanges),
             ];
         } catch (\Exception $e) {
-            logger()->error('Failed to update configuration via governance poll', [
-                'poll_uuid' => $poll->uuid,
-                'config_changes' => $configChanges,
-                'error' => $e->getMessage(),
-            ]);
+            logger()->error(
+                'Failed to update configuration via governance poll',
+                [
+                    'poll_uuid'      => $poll->uuid,
+                    'config_changes' => $configChanges,
+                    'error'          => $e->getMessage(),
+                ]
+            );
 
             return [
-                'success' => false,
-                'message' => 'Failed to update configuration: ' . $e->getMessage(),
+                'success'   => false,
+                'message'   => 'Failed to update configuration: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -116,7 +125,7 @@ class UpdateConfigurationWorkflow
     {
         $changes = [];
         $text = strtolower($poll->title . ' ' . ($poll->description ?? ''));
-        
+
         // Parse common configuration patterns
         if (preg_match('/transaction.*limit.*?(\d+)/i', $text, $matches)) {
             $changes['transaction_limit'] = (int) $matches[1];
@@ -141,15 +150,15 @@ class UpdateConfigurationWorkflow
         // For yes/no polls, toggle boolean configurations
         if ($poll->type->value === 'yes_no') {
             $enabled = $result->winningOption === 'yes';
-            
+
             if (str_contains($text, 'two factor') || str_contains($text, '2fa')) {
                 $changes['require_2fa'] = $enabled;
             }
-            
+
             if (str_contains($text, 'email notification')) {
                 $changes['email_notifications'] = $enabled;
             }
-            
+
             if (str_contains($text, 'audit log')) {
                 $changes['audit_logging'] = $enabled;
             }
@@ -162,7 +171,7 @@ class UpdateConfigurationWorkflow
     {
         foreach ($changes as $key => $value) {
             // Validate key format
-            if (!is_string($key) || empty($key)) {
+            if (! is_string($key) || empty($key)) {
                 return false;
             }
 
@@ -212,7 +221,7 @@ class UpdateConfigurationWorkflow
         // Try to get from cache first
         $cacheKey = "config.{$configKey}";
         $cachedValue = Cache::get($cacheKey);
-        
+
         if ($cachedValue !== null) {
             return $cachedValue;
         }
@@ -229,11 +238,14 @@ class UpdateConfigurationWorkflow
 
         // In a real implementation, this would also update the persistent configuration store
         // This could be database, configuration management system, or external service
-        
-        logger()->info('Configuration updated via governance', [
-            'config_key' => $configKey,
-            'new_value' => $newValue,
-            'timestamp' => now()->toISOString(),
-        ]);
+
+        logger()->info(
+            'Configuration updated via governance',
+            [
+                'config_key' => $configKey,
+                'new_value'  => $newValue,
+                'timestamp'  => now()->toISOString(),
+            ]
+        );
     }
 }

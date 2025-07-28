@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Values\UserRoles;
+use App\Domain\User\Values\UserRoles;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
@@ -14,11 +14,14 @@ class RolesSeeder extends Seeder
             UserRoles::BUSINESS->value,
             UserRoles::PRIVATE->value,
             UserRoles::ADMIN->value,
+            'super_admin', // Add super_admin role
         ];
 
         // Seed each role into the database
         foreach ($roles as $role) {
-            Role::firstOrCreate(['name' => $role]);
+            // Create for both web and sanctum guards
+            Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+            Role::firstOrCreate(['name' => $role, 'guard_name' => 'sanctum']);
         }
     }
 }

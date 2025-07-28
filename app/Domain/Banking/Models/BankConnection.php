@@ -20,53 +20,55 @@ class BankConnection
         public readonly Carbon $createdAt,
         public readonly Carbon $updatedAt,
         public readonly array $metadata = [],
-    ) {}
-    
+    ) {
+    }
+
     /**
-     * Check if connection is active
+     * Check if connection is active.
      */
     public function isActive(): bool
     {
-        return $this->status === 'active' && 
+        return $this->status === 'active' &&
                ($this->expiresAt === null || $this->expiresAt->isFuture());
     }
-    
+
     /**
-     * Check if connection needs renewal
+     * Check if connection needs renewal.
      */
     public function needsRenewal(): bool
     {
         if ($this->expiresAt === null) {
             return false;
         }
-        
+
         return $this->expiresAt->diffInDays(now()) <= 7;
     }
-    
+
     /**
-     * Check if connection has permission
+     * Check if connection has permission.
      */
     public function hasPermission(string $permission): bool
     {
-        return in_array($permission, $this->permissions) || 
+        return in_array($permission, $this->permissions) ||
                in_array('*', $this->permissions);
     }
-    
+
     /**
-     * Check if sync is needed
+     * Check if sync is needed.
      */
     public function needsSync(): bool
     {
         if ($this->lastSyncAt === null) {
             return true;
         }
-        
+
         $syncInterval = $this->metadata['sync_interval'] ?? 3600; // Default 1 hour
+
         return $this->lastSyncAt->diffInSeconds(now()) >= $syncInterval;
     }
-    
+
     /**
-     * Get masked credentials for display
+     * Get masked credentials for display.
      */
     public function getMaskedCredentials(): array
     {
@@ -78,31 +80,32 @@ class BankConnection
                 $masked[$key] = str_repeat('*', 8);
             }
         }
+
         return $masked;
     }
-    
+
     /**
-     * Convert to array
+     * Convert to array.
      */
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'user_id' => $this->userId,
-            'bank_code' => $this->bankCode,
-            'status' => $this->status,
-            'credentials' => $this->credentials,
-            'permissions' => $this->permissions,
+            'id'           => $this->id,
+            'user_id'      => $this->userId,
+            'bank_code'    => $this->bankCode,
+            'status'       => $this->status,
+            'credentials'  => $this->credentials,
+            'permissions'  => $this->permissions,
             'last_sync_at' => $this->lastSyncAt?->toIso8601String(),
-            'expires_at' => $this->expiresAt?->toIso8601String(),
-            'created_at' => $this->createdAt->toIso8601String(),
-            'updated_at' => $this->updatedAt->toIso8601String(),
-            'metadata' => $this->metadata,
+            'expires_at'   => $this->expiresAt?->toIso8601String(),
+            'created_at'   => $this->createdAt->toIso8601String(),
+            'updated_at'   => $this->updatedAt->toIso8601String(),
+            'metadata'     => $this->metadata,
         ];
     }
-    
+
     /**
-     * Create from array
+     * Create from array.
      */
     public static function fromArray(array $data): self
     {
@@ -119,5 +122,15 @@ class BankConnection
             updatedAt: Carbon::parse($data['updated_at']),
             metadata: $data['metadata'] ?? [],
         );
+    }
+
+    /**
+     * Scope a query to only include active records.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active')
+            ->orWhere('is_active', true)
+            ->orWhereNull('deleted_at');
     }
 }

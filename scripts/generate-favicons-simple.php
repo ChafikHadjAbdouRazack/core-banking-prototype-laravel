@@ -1,7 +1,7 @@
 <?php
 
 // Output directory
-$publicPath = __DIR__ . '/../public';
+$publicPath = __DIR__.'/../public';
 
 // SVG content for the favicon
 $svgContent = <<<'SVG'
@@ -26,56 +26,57 @@ $svgContent = <<<'SVG'
 SVG;
 
 // Save the SVG file
-file_put_contents($publicPath . '/favicon.svg', $svgContent);
+file_put_contents($publicPath.'/favicon.svg', $svgContent);
 echo "Created: favicon.svg\n";
 
 // Create a simple PNG favicon using GD library
-function createFavicon($size, $filename) {
+function createFavicon($size, $filename)
+{
     global $publicPath;
-    
+
     // Create image
     $image = imagecreatetruecolor($size, $size);
-    
+
     // Enable alpha blending
     imagesavealpha($image, true);
-    
+
     // Create gradient background (simplified to two-tone)
     $purple1 = imagecolorallocate($image, 99, 102, 241); // #6366F1
     $purple2 = imagecolorallocate($image, 147, 51, 234); // #9333EA
     $white = imagecolorallocate($image, 255, 255, 255);
-    
+
     // Fill with gradient effect (diagonal)
     for ($i = 0; $i < $size; $i++) {
         $color = imagecolorsforindex($image, imagecolorat($image, 0, 0));
-        $r = (int)(99 + ($i / $size) * (147 - 99));
-        $g = (int)(102 + ($i / $size) * (51 - 102));
-        $b = (int)(241 + ($i / $size) * (234 - 241));
+        $r = (int) (99 + ($i / $size) * (147 - 99));
+        $g = (int) (102 + ($i / $size) * (51 - 102));
+        $b = (int) (241 + ($i / $size) * (234 - 241));
         $lineColor = imagecolorallocate($image, $r, $g, $b);
         imageline($image, 0, $i, $size, $i, $lineColor);
     }
-    
+
     // Draw circular background
     $center = $size / 2;
     $radius = $size * 0.47;
     imagefilledellipse($image, $center, $center, $radius * 2, $radius * 2, $purple2);
-    
+
     // Scale factors for different sizes
     $scale = $size / 512;
-    
+
     // Draw "F" - simplified
     $fWidth = 140 * $scale;
     $fX = 140 * $scale;
     $fY = 120 * $scale;
-    
+
     // F vertical bar
     imagefilledrectangle($image, $fX, $fY, $fX + 60 * $scale, $fY + 272 * $scale, $white);
-    
+
     // F top horizontal
     imagefilledrectangle($image, $fX, $fY, $fX + 140 * $scale, $fY + 60 * $scale, $white);
-    
+
     // F middle horizontal
     imagefilledrectangle($image, $fX, $fY + 120 * $scale, $fX + 70 * $scale, $fY + 180 * $scale, $white);
-    
+
     // Draw "A" - simplified as triangle
     $aX = 372 * $scale;
     $aY = 240 * $scale;
@@ -88,11 +89,11 @@ function createFavicon($size, $filename) {
         $aX + 30 * $scale, 392 * $scale,  // Inner bottom left
     ];
     imagefilledpolygon($image, $aPoints, 6, $white);
-    
+
     // Save the image
-    imagepng($image, $publicPath . '/' . $filename);
+    imagepng($image, $publicPath.'/'.$filename);
     imagedestroy($image);
-    
+
     echo "Created: $filename\n";
 }
 
@@ -103,16 +104,16 @@ $sizes = [
     32 => 'favicon-32x32.png',
     48 => 'favicon-48x48.png',
     64 => 'favicon-64x64.png',
-    
+
     // Apple Touch Icons
     120 => 'apple-touch-icon-120x120.png',
     152 => 'apple-touch-icon-152x152.png',
     180 => 'apple-touch-icon-180x180.png',
-    
+
     // Android Chrome
     192 => 'android-chrome-192x192.png',
     512 => 'android-chrome-512x512.png',
-    
+
     // Microsoft Tiles
     144 => 'mstile-144x144.png',
     150 => 'mstile-150x150.png',
@@ -123,11 +124,11 @@ foreach ($sizes as $size => $filename) {
 }
 
 // Create default apple-touch-icon
-copy($publicPath . '/apple-touch-icon-180x180.png', $publicPath . '/apple-touch-icon.png');
+copy($publicPath.'/apple-touch-icon-180x180.png', $publicPath.'/apple-touch-icon.png');
 echo "Created: apple-touch-icon.png\n";
 
 // Create ICO file (simplified - just copy 32x32 as ico)
-copy($publicPath . '/favicon-32x32.png', $publicPath . '/favicon.ico');
+copy($publicPath.'/favicon-32x32.png', $publicPath.'/favicon.ico');
 echo "Created: favicon.ico\n";
 
 // Create manifest.json for PWA
@@ -144,22 +145,22 @@ $manifest = [
             'src' => '/android-chrome-192x192.png',
             'sizes' => '192x192',
             'type' => 'image/png',
-            'purpose' => 'any maskable'
+            'purpose' => 'any maskable',
         ],
         [
             'src' => '/android-chrome-512x512.png',
             'sizes' => '512x512',
             'type' => 'image/png',
-            'purpose' => 'any maskable'
-        ]
-    ]
+            'purpose' => 'any maskable',
+        ],
+    ],
 ];
 
-file_put_contents($publicPath . '/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+file_put_contents($publicPath.'/manifest.json', json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 echo "Created: manifest.json\n";
 
 // Create browserconfig.xml for Microsoft
-$browserConfig = <<<XML
+$browserConfig = <<<'XML'
 <?xml version="1.0" encoding="utf-8"?>
 <browserconfig>
     <msapplication>
@@ -171,7 +172,7 @@ $browserConfig = <<<XML
 </browserconfig>
 XML;
 
-file_put_contents($publicPath . '/browserconfig.xml', $browserConfig);
+file_put_contents($publicPath.'/browserconfig.xml', $browserConfig);
 echo "Created: browserconfig.xml\n";
 
 echo "\nFavicon generation complete!\n";

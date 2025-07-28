@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 it('can initiate a current account', function () {
     $this->markTestSkipped('Temporarily skipping due to route loading issues in parallel testing');
-    
+
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    
+
     $response = $this->postJson('/api/bian/current-account/initiate', [
         'customerReference' => $user->uuid,
-        'accountName' => 'My Current Account',
-        'accountType' => 'current',
-        'initialDeposit' => 1000,
-        'currency' => 'USD',
+        'accountName'       => 'My Current Account',
+        'accountType'       => 'current',
+        'initialDeposit'    => 1000,
+        'currency'          => 'USD',
     ]);
 
     $response->assertStatus(201)
@@ -46,7 +46,14 @@ it('can initiate a current account', function () {
 it('can retrieve current account details', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    $account = Account::factory()->withBalance(2000)->create();
+    $account = Account::factory()->create();
+
+    // Create account balance
+    App\Domain\Account\Models\AccountBalance::factory()->create([
+        'account_uuid' => $account->uuid,
+        'asset_code'   => 'USD',
+        'balance'      => 2000,
+    ]);
 
     $response = $this->getJson("/api/bian/current-account/{$account->uuid}/retrieve");
 
@@ -118,7 +125,7 @@ it('rejects payment with insufficient funds', function () {
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
         'paymentAmount' => 500,
-        'paymentType' => 'withdrawal',
+        'paymentType'   => 'withdrawal',
     ]);
 
     $response->assertStatus(422)
@@ -132,8 +139,8 @@ it('can execute deposit to current account', function () {
     $account = Account::factory()->withBalance(500)->create();
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/deposit/execute", [
-        'depositAmount' => 1000,
-        'depositType' => 'cash',
+        'depositAmount'      => 1000,
+        'depositType'        => 'cash',
         'depositDescription' => 'Cash deposit at branch',
     ]);
 
@@ -201,7 +208,7 @@ it('can retrieve transaction report', function () {
 it('validates required fields for initiation', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    
+
     $response = $this->postJson('/api/bian/current-account/initiate', []);
 
     $response->assertStatus(422)

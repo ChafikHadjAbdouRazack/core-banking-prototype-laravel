@@ -1,4 +1,79 @@
-<x-app-layout>
+@extends('layouts.public')
+
+@section('title', 'Code Examples - FinAegis')
+
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Code Examples - FinAegis',
+        'description' => 'Working examples and integration patterns for common use cases with the FinAegis API.',
+        'keywords' => 'FinAegis API examples, code samples, integration patterns, developer examples',
+    ])
+@endsection
+
+@push('styles')
+<style>
+    /* Tab styling */
+    .code-tabs {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 1.5rem;
+        background: #f3f4f6;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+    }
+    .code-tab {
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        color: #6b7280;
+        cursor: pointer;
+        border-radius: 0.375rem;
+        transition: all 0.2s;
+        font-size: 0.875rem;
+    }
+    .code-tab:hover {
+        color: #374151;
+        background: #e5e7eb;
+    }
+    .code-tab.active {
+        color: white;
+        background: #4f46e5;
+    }
+    .tab-content {
+        display: none;
+    }
+    .tab-content.active {
+        display: block;
+    }
+    /* Code example wrapper */
+    .code-example-wrapper {
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .code-example-header {
+        background: #f9fafb;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out;
+    }
+</style>
+@endpush
+
+@section('content')
     <!-- Hero Section -->
     <section class="relative overflow-hidden bg-gradient-to-br from-green-600 to-blue-600 text-white">
         <div class="absolute inset-0">
@@ -79,21 +154,36 @@
                 <div class="space-y-12">
                     <!-- Create Account Example -->
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="bg-gray-50 px-6 py-4 border-b">
-                            <h3 class="text-xl font-semibold text-gray-900">Create Account and Get Balance</h3>
-                            <p class="text-gray-600 mt-1">Set up a new account and check its balance</p>
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">Create Account and Get Balance</h3>
+                                    <p class="text-gray-600 mt-1">Initialize a new account and retrieve balance information</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">GET</span>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="p-6">
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">JavaScript/Node.js</h4>
-                                    <x-code-block language="javascript">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'create-js')" class="code-tab active">JavaScript</button>
+                                <button onclick="switchTab(event, 'create-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'create-php')" class="code-tab">PHP</button>
+                                <button onclick="switchTab(event, 'create-curl')" class="code-tab">cURL</button>
+                            </div>
+                            
+                            <!-- JavaScript -->
+                            <div id="create-js" class="tab-content active animate-fade-in">
+                                <x-code-block language="javascript">
 import { FinAegis } from '@finaegis/sdk';
 
 const client = new FinAegis({
   apiKey: process.env.FINAEGIS_API_KEY,
-  environment: 'sandbox'
+  baseURL: 'https://api.finaegis.org/v2'
 });
 
 async function createAccountAndCheckBalance() {
@@ -101,7 +191,11 @@ async function createAccountAndCheckBalance() {
     // Create a new account
     const account = await client.accounts.create({
       name: 'My Main Account',
-      type: 'personal'
+      type: 'personal',
+      metadata: {
+        customer_id: 'cust_123',
+        purpose: 'savings'
+      }
     });
     
     console.log('Account created:', account.uuid);
@@ -122,18 +216,18 @@ async function createAccountAndCheckBalance() {
 }
 
 createAccountAndCheckBalance();
-                                    </x-code-block>
-                                </div>
-                                
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Python</h4>
-                                    <x-code-block language="python">
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- Python -->
+                            <div id="create-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
 from finaegis import FinAegis
 import os
 
 client = FinAegis(
     api_key=os.environ['FINAEGIS_API_KEY'],
-    environment='sandbox'
+    base_url='https://api.finaegis.org/v2'
 )
 
 def create_account_and_check_balance():
@@ -141,7 +235,11 @@ def create_account_and_check_balance():
         # Create a new account
         account = client.accounts.create(
             name='My Main Account',
-            type='personal'
+            type='personal',
+            metadata={
+                'customer_id': 'cust_123',
+                'purpose': 'savings'
+            }
         )
         
         print(f'Account created: {account.uuid}')
@@ -159,24 +257,115 @@ def create_account_and_check_balance():
         raise
 
 create_account_and_check_balance()
-                                    </x-code-block>
-                                </div>
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- PHP -->
+                            <div id="create-php" class="tab-content animate-fade-in">
+                                <x-code-block language="php">
+require_once 'vendor/autoload.php';
+
+use FinAegis\Client;
+
+$client = new Client([
+    'apiKey' => $_ENV['FINAEGIS_API_KEY'],
+    'baseURL' => 'https://api.finaegis.org/v2'
+]);
+
+function createAccountAndCheckBalance($client) {
+    try {
+        // Create a new account
+        $account = $client->accounts->create([
+            'name' => 'My Main Account',
+            'type' => 'personal',
+            'metadata' => [
+                'customer_id' => 'cust_123',
+                'purpose' => 'savings'
+            ]
+        ]);
+        
+        echo "Account created: {$account->uuid}\n";
+        
+        // Get account balances
+        $balances = $client->accounts->getBalances($account->uuid);
+        
+        echo "Current balances:\n";
+        foreach ($balances->data->balances as $balance) {
+            echo "{$balance->asset_code}: {$balance->available_balance}\n";
+        }
+        
+        return $account;
+    } catch (Exception $e) {
+        echo "Error: {$e->getMessage()}\n";
+        throw $e;
+    }
+}
+
+createAccountAndCheckBalance($client);
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- cURL -->
+                            <div id="create-curl" class="tab-content animate-fade-in">
+                                <x-code-block language="bash">
+# Create a new account
+curl -X POST https://api.finaegis.org/v2/accounts \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Main Account",
+    "type": "personal",
+    "metadata": {
+      "customer_id": "cust_123",
+      "purpose": "savings"
+    }
+  }'
+
+# Response
+{
+  "data": {
+    "uuid": "acct_1234567890abcdef",
+    "name": "My Main Account",
+    "type": "personal",
+    "status": "active",
+    "created_at": "2025-01-01T12:00:00Z"
+  }
+}
+
+# Get account balances
+curl -X GET https://api.finaegis.org/v2/accounts/acct_1234567890abcdef/balances \
+  -H "Authorization: Bearer YOUR_API_KEY"
+                                </x-code-block>
                             </div>
                         </div>
                     </div>
 
                     <!-- Simple Transfer Example -->
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div class="bg-gray-50 px-6 py-4 border-b">
-                            <h3 class="text-xl font-semibold text-gray-900">Simple Transfer</h3>
-                            <p class="text-gray-600 mt-1">Transfer funds between accounts</p>
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">Simple Money Transfer</h3>
+                                    <p class="text-gray-600 mt-1">Transfer funds between accounts with automatic workflow processing</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">POST</span>
+                                    <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">Workflow</span>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="p-6">
-                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">JavaScript/Node.js</h4>
-                                    <x-code-block language="javascript">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'transfer-js')" class="code-tab active">JavaScript</button>
+                                <button onclick="switchTab(event, 'transfer-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'transfer-response')" class="code-tab">Response</button>
+                            </div>
+                            
+                            <!-- JavaScript -->
+                            <div id="transfer-js" class="tab-content active animate-fade-in">
+                                <x-code-block language="javascript">
 async function transferFunds(fromAccount, toAccount, amount) {
   try {
     const transfer = await client.transfers.create({
@@ -185,7 +374,11 @@ async function transferFunds(fromAccount, toAccount, amount) {
       amount: amount,
       asset_code: 'USD',
       reference: 'Payment for services',
-      workflow_enabled: true
+      workflow_enabled: true,
+      metadata: {
+        invoice_id: 'INV-2025-001',
+        payment_type: 'service'
+      }
     });
     
     console.log('Transfer initiated:', transfer.uuid);
@@ -212,12 +405,55 @@ transferFunds(
   'acct_0987654321', 
   '100.00'
 );
-                                    </x-code-block>
-                                </div>
-                                
-                                <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Response Example</h4>
-                                    <x-code-block language="json">
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- Python -->
+                            <div id="transfer-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+def transfer_funds(from_account, to_account, amount):
+    try:
+        transfer = client.transfers.create(
+            from_account=from_account,
+            to_account=to_account,
+            amount=amount,
+            asset_code='USD',
+            reference='Payment for services',
+            workflow_enabled=True,
+            metadata={
+                'invoice_id': 'INV-2025-001',
+                'payment_type': 'service'
+            }
+        )
+        
+        print(f'Transfer initiated: {transfer.uuid}')
+        print(f'Status: {transfer.status}')
+        print(f'Workflow ID: {transfer.workflow_id}')
+        
+        # Poll for completion
+        completed = client.transfers.wait_for_completion(
+            transfer.uuid,
+            timeout=30000
+        )
+        
+        print(f'Transfer completed: {completed.status}')
+        return completed
+    except Exception as error:
+        print(f'Transfer failed: {error}')
+        raise
+
+# Usage
+transfer_funds(
+    'acct_1234567890',
+    'acct_0987654321',
+    '100.00'
+)
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- Response -->
+                            <div id="transfer-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
 {
   "data": {
     "uuid": "txfr_abc123def456",
@@ -230,14 +466,150 @@ transferFunds(
     "workflow_id": "wf_789xyz012",
     "created_at": "2025-01-01T12:00:00Z",
     "estimated_completion": "2025-01-01T12:05:00Z",
+    "metadata": {
+      "invoice_id": "INV-2025-001",
+      "payment_type": "service"
+    },
     "fees": {
       "transfer_fee": "0.50",
       "currency": "USD"
     }
   }
 }
-                                    </x-code-block>
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- List Transactions Example -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">List Account Transactions</h3>
+                                    <p class="text-gray-600 mt-1">Retrieve transaction history with pagination and filtering</p>
                                 </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">GET</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Paginated</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'list-js')" class="code-tab active">JavaScript</button>
+                                <button onclick="switchTab(event, 'list-curl')" class="code-tab">cURL</button>
+                                <button onclick="switchTab(event, 'list-response')" class="code-tab">Response</button>
+                            </div>
+                            
+                            <!-- JavaScript -->
+                            <div id="list-js" class="tab-content active animate-fade-in">
+                                <x-code-block language="javascript">
+async function getAccountTransactions(accountId, options = {}) {
+  try {
+    const transactions = await client.accounts.getTransactions(accountId, {
+      limit: options.limit || 20,
+      page: options.page || 1,
+      type: options.type, // 'deposit', 'withdrawal', 'transfer'
+      status: options.status, // 'pending', 'completed', 'failed'
+      start_date: options.startDate,
+      end_date: options.endDate,
+      sort: options.sort || '-created_at' // - for descending
+    });
+    
+    console.log(`Found ${transactions.meta.total} transactions`);
+    console.log(`Showing page ${transactions.meta.current_page} of ${transactions.meta.last_page}`);
+    
+    transactions.data.forEach(tx => {
+      console.log(`${tx.created_at}: ${tx.type} ${tx.amount} ${tx.asset_code} - ${tx.status}`);
+    });
+    
+    return transactions;
+  } catch (error) {
+    console.error('Failed to fetch transactions:', error.message);
+    throw error;
+  }
+}
+
+// Usage examples
+// Get all transactions
+getAccountTransactions('acct_1234567890');
+
+// Get withdrawals from last 30 days
+getAccountTransactions('acct_1234567890', {
+  type: 'withdrawal',
+  startDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+});
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- cURL -->
+                            <div id="list-curl" class="tab-content animate-fade-in">
+                                <x-code-block language="bash">
+# Get all transactions for an account
+curl -X GET "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+
+# Get transactions with filters
+curl -X GET "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?\
+limit=20&\
+page=1&\
+type=withdrawal&\
+status=completed&\
+start_date=2025-01-01T00:00:00Z&\
+end_date=2025-01-31T23:59:59Z&\
+sort=-created_at" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+                                </x-code-block>
+                            </div>
+                            
+                            <!-- Response -->
+                            <div id="list-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+{
+  "data": [
+    {
+      "uuid": "tx_789xyz123abc",
+      "account_uuid": "acct_1234567890",
+      "type": "deposit",
+      "amount": "500.00",
+      "asset_code": "USD",
+      "status": "completed",
+      "reference": "Salary deposit",
+      "created_at": "2025-01-15T10:30:00Z",
+      "completed_at": "2025-01-15T10:30:05Z",
+      "balance_after": "1500.00"
+    },
+    {
+      "uuid": "tx_456def789ghi",
+      "account_uuid": "acct_1234567890",
+      "type": "withdrawal",
+      "amount": "100.00",
+      "asset_code": "USD",
+      "status": "completed",
+      "reference": "ATM withdrawal",
+      "created_at": "2025-01-14T15:45:00Z",
+      "completed_at": "2025-01-14T15:45:10Z",
+      "balance_after": "1000.00"
+    }
+  ],
+  "meta": {
+    "current_page": 1,
+    "last_page": 5,
+    "per_page": 20,
+    "total": 95,
+    "from": 1,
+    "to": 20
+  },
+  "links": {
+    "first": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=1",
+    "last": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=5",
+    "prev": null,
+    "next": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=2"
+  }
+}
+                                </x-code-block>
                             </div>
                         </div>
                     </div>
@@ -473,7 +845,7 @@ class FinAegisWrapper {
   constructor(apiKey, options = {}) {
     this.client = new FinAegis({
       apiKey,
-      environment: options.environment || 'sandbox'
+      baseURL: options.baseURL || 'https://api.finaegis.org/v2'
     });
     
     this.retryOptions = {
@@ -621,21 +993,49 @@ async function robustTransfer(fromAccount, toAccount, amount) {
         </div>
     </section>
 
-    @include('partials.footer')
+@endsection
 
-    <script>
-        function copyCode(button) {
-            const codeBlock = button.parentElement.querySelector('code');
-            const text = codeBlock.textContent;
+@push('scripts')
+<script>
+    function copyCode(button) {
+        const codeBlock = button.parentElement.querySelector('code');
+        const text = codeBlock.textContent;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
             
-            navigator.clipboard.writeText(text).then(() => {
-                const originalContent = button.innerHTML;
-                button.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
-                
-                setTimeout(() => {
-                    button.innerHTML = originalContent;
-                }, 2000);
-            });
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+            }, 2000);
+        });
+    }
+    
+    function switchTab(event, tabId) {
+        // Get the parent container
+        const container = event.target.closest('.p-6') || event.target.closest('.p-8');
+        
+        // Hide all tab contents in this container
+        const tabContents = container.querySelectorAll('.tab-content');
+        tabContents.forEach(content => {
+            content.classList.remove('active');
+            content.classList.add('animate-fade-in');
+        });
+        
+        // Remove active class from all tabs in this container
+        const tabs = container.querySelectorAll('.code-tab');
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show the selected tab content
+        const selectedContent = container.querySelector('#' + tabId);
+        if (selectedContent) {
+            selectedContent.classList.add('active');
         }
-    </script>
-</x-app-layout>
+        
+        // Add active class to clicked tab
+        event.target.classList.add('active');
+    }
+</script>
+@endpush

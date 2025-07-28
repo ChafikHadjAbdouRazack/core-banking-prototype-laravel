@@ -8,32 +8,17 @@ use App\Domain\Wallet\ValueObjects\WalletAddress;
 interface WalletConnectorInterface
 {
     /**
-     * Generate a new wallet address
-     *
-     * @param string $blockchain
-     * @param string $accountId
-     * @return WalletAddress
+     * Generate a new wallet address.
      */
     public function generateAddress(string $blockchain, string $accountId): WalletAddress;
 
     /**
-     * Get wallet balance from blockchain
-     *
-     * @param string $blockchain
-     * @param string $address
-     * @return array
+     * Get wallet balance from blockchain.
      */
     public function getBalance(string $blockchain, string $address): array;
 
     /**
-     * Send transaction to blockchain
-     *
-     * @param string $blockchain
-     * @param string $fromAddress
-     * @param string $toAddress
-     * @param string $amount
-     * @param array $options
-     * @return BlockchainTransaction
+     * Send transaction to blockchain.
      */
     public function sendTransaction(
         string $blockchain,
@@ -44,21 +29,12 @@ interface WalletConnectorInterface
     ): BlockchainTransaction;
 
     /**
-     * Get transaction status
-     *
-     * @param string $blockchain
-     * @param string $transactionHash
-     * @return array
+     * Get transaction status.
      */
     public function getTransactionStatus(string $blockchain, string $transactionHash): array;
 
     /**
-     * Monitor incoming transactions
-     *
-     * @param string $blockchain
-     * @param string $address
-     * @param int $fromBlock
-     * @return array
+     * Monitor incoming transactions.
      */
     public function monitorIncomingTransactions(
         string $blockchain,
@@ -67,27 +43,17 @@ interface WalletConnectorInterface
     ): array;
 
     /**
-     * Validate address format
-     *
-     * @param string $blockchain
-     * @param string $address
-     * @return bool
+     * Validate address format.
      */
     public function validateAddress(string $blockchain, string $address): bool;
 
     /**
-     * Get network fee estimate
-     *
-     * @param string $blockchain
-     * @param string $priority
-     * @return array
+     * Get network fee estimate.
      */
     public function estimateNetworkFee(string $blockchain, string $priority = 'medium'): array;
 
     /**
-     * Get supported blockchains
-     *
-     * @return array
+     * Get supported blockchains.
      */
     public function getSupportedBlockchains(): array;
 }

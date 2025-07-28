@@ -8,18 +8,15 @@ use Workflow\Workflow;
 class BatchProcessingWorkflow extends Workflow
 {
     /**
-     * Execute end-of-day batch processing operations with compensation
-     * 
-     * @param array $operations - array of batch operations to perform
-     * @param string|null $batchId
+     * Execute end-of-day batch processing operations with compensation.
      *
-     * @return \Generator
+     * @param  array  $operations  - array of batch operations to perform
      */
     public function execute(array $operations, ?string $batchId = null): \Generator
     {
         $batchId = $batchId ?? \Illuminate\Support\Str::uuid();
         $completedOperations = [];
-        
+
         try {
             // Process each operation individually to allow for granular compensation
             foreach ($operations as $operation) {
@@ -28,42 +25,46 @@ class BatchProcessingWorkflow extends Workflow
                     $operation,
                     $batchId
                 );
-                
+
                 $completedOperations[] = [
                     'operation' => $operation,
-                    'result' => $result,
+                    'result'    => $result,
                 ];
-                
+
                 // Add compensation for this specific operation
-                $this->addCompensation(fn() => ActivityStub::make(
-                    ReverseBatchOperationActivity::class,
-                    $operation,
-                    $batchId,
-                    $result
-                ));
+                $this->addCompensation(
+                    fn () => ActivityStub::make(
+                        ReverseBatchOperationActivity::class,
+                        $operation,
+                        $batchId,
+                        $result
+                    )
+                );
             }
-            
+
             // Create summary after all operations complete
             $summary = yield ActivityStub::make(
                 CreateBatchSummaryActivity::class,
                 $completedOperations,
                 $batchId
             );
-            
+
             return $summary;
-            
         } catch (\Throwable $th) {
             // Execute compensations in reverse order
             yield from $this->compensate();
-            
+
             // Log batch processing failure
-            logger()->error('Batch processing failed - compensations executed', [
-                'batch_id' => $batchId,
-                'operations' => $operations,
-                'completed_operations' => $completedOperations,
-                'error' => $th->getMessage(),
-            ]);
-            
+            logger()->error(
+                'Batch processing failed - compensations executed',
+                [
+                    'batch_id'             => $batchId,
+                    'operations'           => $operations,
+                    'completed_operations' => $completedOperations,
+                    'error'                => $th->getMessage(),
+                ]
+            );
+
             throw $th;
         }
     }

@@ -1,23 +1,16 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FinAegis Continuous Growth Offering (CGO) - Invest in the future of democratic banking. Get ownership certificates and support platform development.">
-    
-    <title>Continuous Growth Offering - FinAegis</title>
+@extends('layouts.public')
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'Continuous Growth Offering - FinAegis')
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-</head>
-<body class="antialiased">
-    <x-platform-banners />
-    <x-main-navigation />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Continuous Growth Offering - FinAegis',
+        'description' => 'FinAegis Continuous Growth Offering (CGO) - Invest in the future of democratic banking. Get ownership certificates and support platform development.',
+        'keywords' => 'FinAegis CGO, continuous growth offering, investment, democratic banking, ownership certificates',
+    ])
+@endsection
+
+@section('content')
 
     <!-- Hero Section -->
     <section class="pt-16 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
@@ -311,6 +304,57 @@
         </div>
     </section>
 
+    <!-- Exclusive Investment Section -->
+    <section class="py-20 bg-indigo-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-4xl font-bold text-white mb-6">Exclusive Investment Opportunities</h2>
+                <p class="text-xl text-indigo-200 mb-8 max-w-3xl mx-auto">
+                    Are you an accredited investor or institutional partner looking for exclusive investment opportunities? 
+                    We offer special terms for strategic investors who share our vision of democratizing global finance.
+                </p>
+                <div class="bg-white/10 backdrop-blur rounded-2xl p-8 max-w-2xl mx-auto">
+                    <h3 class="text-2xl font-semibold text-white mb-4">Strategic Investment Benefits</h3>
+                    <ul class="text-left space-y-3 mb-8 text-indigo-100">
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-400 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Direct equity participation opportunities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-400 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Board observer rights for qualifying investments</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-400 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Strategic partnership opportunities</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-5 h-5 text-green-400 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span>Customized investment structures</span>
+                        </li>
+                    </ul>
+                    <div class="text-center">
+                        <p class="text-lg text-white mb-4">Contact us for exclusive investment details:</p>
+                        <a href="mailto:info@finaegis.org" class="inline-flex items-center bg-white text-indigo-900 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                            </svg>
+                            info@finaegis.org
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Documentation Links -->
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -338,71 +382,69 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    @include('partials.footer')
+@endsection
+
+@push('scripts')
+<script>
+    // Set the date we're counting down to (September 1st, 2025)
+    const countDownDate = new Date("Sep 1, 2025 00:00:00").getTime();
+    let isLive = false;
     
-    <!-- Countdown Script -->
-    <script>
-        // Set the date we're counting down to (July 21st, 2025)
-        const countDownDate = new Date("Jul 21, 2025 00:00:00").getTime();
-        let isLive = false;
-        
-        function checkCountdown() {
-            if (!isLive) {
-                alert('The CGO will launch on July 21st, 2025. Please check back then!');
-                return false;
-            }
-            return true;
+    function checkCountdown() {
+        if (!isLive) {
+            alert('The CGO will launch on September 1st, 2025. Please check back then!');
+            return false;
         }
+        return true;
+    }
+    
+    function updateInvestButton(live) {
+        const investButton = document.getElementById('investButton');
+        const investButtonText = document.getElementById('investButtonText');
         
-        function updateInvestButton(live) {
-            const investButton = document.getElementById('investButton');
-            const investButtonText = document.getElementById('investButtonText');
-            
-            if (investButton) {
-                if (live) {
-                    investButton.classList.remove('bg-gray-400', 'text-gray-600', 'cursor-not-allowed');
-                    investButton.classList.add('bg-white', 'text-indigo-600', 'hover:bg-gray-100');
-                    investButtonText.textContent = 'Invest Now';
-                } else {
-                    investButton.classList.remove('bg-white', 'text-indigo-600', 'hover:bg-gray-100');
-                    investButton.classList.add('bg-gray-400', 'text-gray-600', 'cursor-not-allowed');
-                }
+        if (investButton) {
+            if (live) {
+                investButton.classList.remove('bg-gray-400', 'text-gray-600', 'cursor-not-allowed');
+                investButton.classList.add('bg-white', 'text-indigo-600', 'hover:bg-gray-100');
+                investButtonText.textContent = 'Invest Now';
+            } else {
+                investButton.classList.remove('bg-white', 'text-indigo-600', 'hover:bg-gray-100');
+                investButton.classList.add('bg-gray-400', 'text-gray-600', 'cursor-not-allowed');
             }
         }
-        
-        // Update the countdown every 1 second
-        const x = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countDownDate - now;
-            
-            // Calculate days, hours, minutes and seconds
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-            // Display the result
-            document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
-            document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
-            document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
-            document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
-            
-            // If the countdown is finished
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("countdown").innerHTML = "<div class='text-3xl font-bold text-green-300'>CGO IS LIVE!</div>";
-                isLive = true;
-                updateInvestButton(true);
-            }
-        }, 1000);
-        
-        // Initial check
+    }
+    
+    // Update the countdown every 1 second
+    const x = setInterval(function() {
         const now = new Date().getTime();
-        if (countDownDate - now < 0) {
+        const distance = countDownDate - now;
+        
+        // Calculate days, hours, minutes and seconds
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        // Display the result
+        document.getElementById("days").innerHTML = days.toString().padStart(2, '0');
+        document.getElementById("hours").innerHTML = hours.toString().padStart(2, '0');
+        document.getElementById("minutes").innerHTML = minutes.toString().padStart(2, '0');
+        document.getElementById("seconds").innerHTML = seconds.toString().padStart(2, '0');
+        
+        // If the countdown is finished
+        if (distance < 0) {
+            clearInterval(x);
+            document.getElementById("countdown").innerHTML = "<div class='text-3xl font-bold text-green-300'>CGO IS LIVE!</div>";
             isLive = true;
             updateInvestButton(true);
         }
-    </script>
-</body>
-</html>
+    }, 1000);
+    
+    // Initial check
+    const now = new Date().getTime();
+    if (countDownDate - now < 0) {
+        isLive = true;
+        updateInvestButton(true);
+    }
+</script>
+@endpush

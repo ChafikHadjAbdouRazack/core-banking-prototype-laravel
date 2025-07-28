@@ -12,7 +12,7 @@ use Workflow\Activity;
 class FailAssetTransferActivity extends Activity
 {
     /**
-     * Execute fail asset transfer activity
+     * Execute fail asset transfer activity.
      */
     public function execute(
         ?string $transferId,
@@ -30,15 +30,15 @@ class FailAssetTransferActivity extends Activity
                     reason: $reason,
                     transferId: $transferId,
                     metadata: [
-                        'workflow' => 'AssetTransferWorkflow',
-                        'activity' => 'FailAssetTransferActivity',
-                        'failed_at' => now()->toISOString(),
+                        'workflow'       => 'AssetTransferWorkflow',
+                        'activity'       => 'FailAssetTransferActivity',
+                        'failed_at'      => now()->toISOString(),
                         'failure_reason' => $reason,
                     ]
                 )
                 ->persist();
         }
-        
+
         return true;
     }
 }

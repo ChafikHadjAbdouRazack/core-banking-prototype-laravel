@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class OnboardingController extends Controller
 {
@@ -14,13 +14,15 @@ class OnboardingController extends Controller
     {
         $user = $request->user();
         $user->completeOnboarding();
-        
-        return response()->json([
-            'message' => 'Onboarding completed successfully',
-            'redirect' => route('dashboard')
-        ]);
+
+        return response()->json(
+            [
+                'message'  => 'Onboarding completed successfully',
+                'redirect' => route('dashboard'),
+            ]
+        );
     }
-    
+
     /**
      * Skip onboarding for now.
      */
@@ -28,10 +30,12 @@ class OnboardingController extends Controller
     {
         $user = $request->user();
         $user->completeOnboarding();
-        
-        return response()->json([
-            'message' => 'Onboarding skipped',
-            'redirect' => route('dashboard')
-        ]);
+
+        return response()->json(
+            [
+                'message'  => 'Onboarding skipped',
+                'redirect' => route('dashboard'),
+            ]
+        );
     }
 }

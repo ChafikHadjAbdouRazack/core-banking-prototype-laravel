@@ -14,7 +14,9 @@ use Illuminate\Support\Str;
 class MockBankConnector extends BaseCustodianConnector
 {
     private array $mockBalances = [];
+
     private array $mockTransactions = [];
+
     private array $mockAccounts = [];
 
     public function __construct(array $config)
@@ -28,17 +30,17 @@ class MockBankConnector extends BaseCustodianConnector
         // Initialize with some mock accounts
         $this->mockAccounts = [
             'mock-account-1' => [
-                'id' => 'mock-account-1',
-                'name' => 'Mock Business Account',
-                'status' => 'active',
-                'type' => 'business',
+                'id'         => 'mock-account-1',
+                'name'       => 'Mock Business Account',
+                'status'     => 'active',
+                'type'       => 'business',
                 'created_at' => Carbon::now()->subMonths(6),
             ],
             'mock-account-2' => [
-                'id' => 'mock-account-2',
-                'name' => 'Mock Personal Account',
-                'status' => 'active',
-                'type' => 'personal',
+                'id'         => 'mock-account-2',
+                'name'       => 'Mock Personal Account',
+                'status'     => 'active',
+                'type'       => 'personal',
                 'created_at' => Carbon::now()->subMonths(3),
             ],
         ];
@@ -73,7 +75,7 @@ class MockBankConnector extends BaseCustodianConnector
         $this->logRequest('GET', "/accounts/{$accountId}/balance/{$assetCode}");
 
         $balance = $this->mockBalances[$accountId][$assetCode] ?? 0;
-        
+
         return new Money($balance);
     }
 
@@ -81,7 +83,7 @@ class MockBankConnector extends BaseCustodianConnector
     {
         $this->logRequest('GET', "/accounts/{$accountId}");
 
-        if (!isset($this->mockAccounts[$accountId])) {
+        if (! isset($this->mockAccounts[$accountId])) {
             throw new \Exception("Account {$accountId} not found");
         }
 
@@ -97,7 +99,7 @@ class MockBankConnector extends BaseCustodianConnector
             type: $account['type'],
             createdAt: $account['created_at'],
             metadata: [
-                'mock' => true,
+                'mock'      => true,
                 'connector' => 'MockBankConnector',
             ]
         );
@@ -112,10 +114,10 @@ class MockBankConnector extends BaseCustodianConnector
 
         // Create mock transaction
         $transactionId = 'mock-tx-' . Str::uuid()->toString();
-        
+
         // Check if source account has sufficient balance
         $sourceBalance = $this->mockBalances[$request->fromAccount][$request->assetCode] ?? 0;
-        
+
         if ($sourceBalance < $request->amount->getAmount()) {
             $receipt = new TransactionReceipt(
                 id: $transactionId,
@@ -129,21 +131,21 @@ class MockBankConnector extends BaseCustodianConnector
                 completedAt: Carbon::now(),
                 metadata: [
                     'error' => 'Insufficient balance',
-                    'mock' => true,
+                    'mock'  => true,
                 ]
             );
         } else {
             // Update mock balances
             $this->mockBalances[$request->fromAccount][$request->assetCode] -= $request->amount->getAmount();
-            
-            if (!isset($this->mockBalances[$request->toAccount])) {
+
+            if (! isset($this->mockBalances[$request->toAccount])) {
                 $this->mockBalances[$request->toAccount] = [];
             }
-            
-            if (!isset($this->mockBalances[$request->toAccount][$request->assetCode])) {
+
+            if (! isset($this->mockBalances[$request->toAccount][$request->assetCode])) {
                 $this->mockBalances[$request->toAccount][$request->assetCode] = 0;
             }
-            
+
             $this->mockBalances[$request->toAccount][$request->assetCode] += $request->amount->getAmount();
 
             $receipt = new TransactionReceipt(
@@ -158,7 +160,7 @@ class MockBankConnector extends BaseCustodianConnector
                 createdAt: Carbon::now(),
                 completedAt: Carbon::now(),
                 metadata: [
-                    'mock' => true,
+                    'mock'        => true,
                     'description' => $request->description,
                 ]
             );
@@ -173,7 +175,7 @@ class MockBankConnector extends BaseCustodianConnector
     {
         $this->logRequest('GET', "/transactions/{$transactionId}");
 
-        if (!isset($this->mockTransactions[$transactionId])) {
+        if (! isset($this->mockTransactions[$transactionId])) {
             throw new \Exception("Transaction {$transactionId} not found");
         }
 
@@ -184,12 +186,12 @@ class MockBankConnector extends BaseCustodianConnector
     {
         $this->logRequest('DELETE', "/transactions/{$transactionId}");
 
-        if (!isset($this->mockTransactions[$transactionId])) {
+        if (! isset($this->mockTransactions[$transactionId])) {
             return false;
         }
 
         $transaction = $this->mockTransactions[$transactionId];
-        
+
         if ($transaction->isPending()) {
             // Update transaction status
             $this->mockTransactions[$transactionId] = new TransactionReceipt(
@@ -204,7 +206,7 @@ class MockBankConnector extends BaseCustodianConnector
                 completedAt: Carbon::now(),
                 metadata: array_merge($transaction->metadata, ['cancelled_at' => Carbon::now()->toISOString()])
             );
-            
+
             return true;
         }
 
@@ -218,20 +220,24 @@ class MockBankConnector extends BaseCustodianConnector
 
     public function validateAccount(string $accountId): bool
     {
-        return isset($this->mockAccounts[$accountId]) && 
+        return isset($this->mockAccounts[$accountId]) &&
                $this->mockAccounts[$accountId]['status'] === 'active';
     }
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $this->logRequest('GET', "/accounts/{$accountId}/transactions", [
-            'limit' => $limit,
-            'offset' => $offset,
-        ]);
+        $this->logRequest(
+            'GET',
+            "/accounts/{$accountId}/transactions",
+            [
+                'limit'  => $limit,
+                'offset' => $offset,
+            ]
+        );
 
         // Return mock transaction history
         $history = [];
-        
+
         foreach ($this->mockTransactions as $transaction) {
             if ($transaction->fromAccount === $accountId || $transaction->toAccount === $accountId) {
                 $history[] = $transaction->toArray();

@@ -2,46 +2,49 @@
 
 namespace App\Domain\Account\Services;
 
+use App\Domain\Banking\Models\UserBankPreference;
 use App\Models\User;
-use App\Models\UserBankPreference;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class BankAllocationService
 {
     use HandlesNestedTransactions;
+
     /**
-     * Set up default bank allocations for a new user
+     * Set up default bank allocations for a new user.
      */
     public function setupDefaultAllocations(User $user): Collection
     {
         $defaultAllocations = UserBankPreference::getDefaultAllocations();
         $preferences = collect();
 
-        $this->executeInTransaction(function () use ($user, $defaultAllocations, &$preferences) {
-            foreach ($defaultAllocations as $allocation) {
-                $preference = $user->bankPreferences()->create([
-                    'bank_code' => $allocation['bank_code'],
-                    'bank_name' => $allocation['bank_name'],
-                    'allocation_percentage' => $allocation['allocation_percentage'],
-                    'is_primary' => $allocation['is_primary'],
-                    'status' => $allocation['status'],
-                    'metadata' => $allocation['metadata'] ?? [],
-                ]);
-                $preferences->push($preference);
+        $this->executeInTransaction(
+            function () use ($user, $defaultAllocations, &$preferences) {
+                foreach ($defaultAllocations as $allocation) {
+                    $preference = $user->bankPreferences()->create(
+                        [
+                            'bank_code'             => $allocation['bank_code'],
+                            'bank_name'             => $allocation['bank_name'],
+                            'allocation_percentage' => $allocation['allocation_percentage'],
+                            'is_primary'            => $allocation['is_primary'],
+                            'status'                => $allocation['status'],
+                            'metadata'              => $allocation['metadata'] ?? [],
+                        ]
+                    );
+                    $preferences->push($preference);
+                }
             }
-        });
+        );
 
         return $preferences;
     }
 
     /**
-     * Update user's bank allocations
-     * 
-     * @param User $user
-     * @param array $allocations Array of ['bank_code' => percentage]
-     * @return Collection
+     * Update user's bank allocations.
+     *
+     * @param  array  $allocations  Array of ['bank_code' => percentage]
+     *
      * @throws \Exception
      */
     public function updateAllocations(User $user, array $allocations): Collection
@@ -54,7 +57,7 @@ class BankAllocationService
 
         // Validate all banks are available
         foreach ($allocations as $bankCode => $percentage) {
-            if (!isset(UserBankPreference::AVAILABLE_BANKS[$bankCode])) {
+            if (! isset(UserBankPreference::AVAILABLE_BANKS[$bankCode])) {
                 throw new \Exception("Invalid bank code: {$bankCode}");
             }
             if ($percentage < 0 || $percentage > 100) {
@@ -64,41 +67,45 @@ class BankAllocationService
 
         $preferences = collect();
 
-        $this->executeInTransaction(function () use ($user, $allocations, &$preferences) {
-            // Delete existing preferences (to avoid unique constraint violations)
-            $user->bankPreferences()->delete();
+        $this->executeInTransaction(
+            function () use ($user, $allocations, &$preferences) {
+                // Delete existing preferences (to avoid unique constraint violations)
+                $user->bankPreferences()->delete();
 
-            // Create new preferences
-            $isFirst = true;
-            foreach ($allocations as $bankCode => $percentage) {
-                if ($percentage == 0) {
-                    continue; // Skip banks with 0% allocation
+                // Create new preferences
+                $isFirst = true;
+                foreach ($allocations as $bankCode => $percentage) {
+                    if ($percentage == 0) {
+                        continue; // Skip banks with 0% allocation
+                    }
+
+                    $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
+                    $preference = $user->bankPreferences()->create(
+                        [
+                            'bank_code'             => $bankCode,
+                            'bank_name'             => $bankInfo['name'],
+                            'allocation_percentage' => $percentage,
+                            'is_primary'            => $isFirst,
+                            'status'                => 'active',
+                            'metadata'              => $bankInfo,
+                        ]
+                    );
+
+                    $preferences->push($preference);
+                    $isFirst = false;
                 }
-
-                $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
-                $preference = $user->bankPreferences()->create([
-                    'bank_code' => $bankCode,
-                    'bank_name' => $bankInfo['name'],
-                    'allocation_percentage' => $percentage,
-                    'is_primary' => $isFirst,
-                    'status' => 'active',
-                    'metadata' => $bankInfo,
-                ]);
-                
-                $preferences->push($preference);
-                $isFirst = false;
             }
-        });
+        );
 
         return $preferences;
     }
 
     /**
-     * Add a new bank to user's allocation
+     * Add a new bank to user's allocation.
      */
     public function addBank(User $user, string $bankCode, float $percentage): UserBankPreference
     {
-        if (!isset(UserBankPreference::AVAILABLE_BANKS[$bankCode])) {
+        if (! isset(UserBankPreference::AVAILABLE_BANKS[$bankCode])) {
             throw new \Exception("Invalid bank code: {$bankCode}");
         }
 
@@ -122,19 +129,21 @@ class BankAllocationService
         }
 
         $bankInfo = UserBankPreference::AVAILABLE_BANKS[$bankCode];
-        
-        return $user->bankPreferences()->create([
-            'bank_code' => $bankCode,
-            'bank_name' => $bankInfo['name'],
-            'allocation_percentage' => $percentage,
-            'is_primary' => false,
-            'status' => 'active',
-            'metadata' => $bankInfo,
-        ]);
+
+        return $user->bankPreferences()->create(
+            [
+                'bank_code'             => $bankCode,
+                'bank_name'             => $bankInfo['name'],
+                'allocation_percentage' => $percentage,
+                'is_primary'            => false,
+                'status'                => 'active',
+                'metadata'              => $bankInfo,
+            ]
+        );
     }
 
     /**
-     * Remove a bank from user's allocation
+     * Remove a bank from user's allocation.
      */
     public function removeBank(User $user, string $bankCode): bool
     {
@@ -143,29 +152,29 @@ class BankAllocationService
             ->where('status', 'active')
             ->first();
 
-        if (!$preference) {
+        if (! $preference) {
             throw new \Exception("Bank {$bankCode} not found in user's allocation");
         }
 
         if ($preference->is_primary) {
-            throw new \Exception("Cannot remove primary bank");
+            throw new \Exception('Cannot remove primary bank');
         }
 
         // Deactivate the bank preference
         $preference->update(['status' => 'suspended']);
 
         // Check if allocations still sum to 100%
-        if (!UserBankPreference::validateAllocations($user->uuid)) {
+        if (! UserBankPreference::validateAllocations($user->uuid)) {
             // Reactivate if removal breaks allocation
             $preference->update(['status' => 'active']);
-            throw new \Exception("Removing bank would break 100% allocation requirement");
+            throw new \Exception('Removing bank would break 100% allocation requirement');
         }
 
         return true;
     }
 
     /**
-     * Set a bank as primary
+     * Set a bank as primary.
      */
     public function setPrimaryBank(User $user, string $bankCode): UserBankPreference
     {
@@ -174,23 +183,25 @@ class BankAllocationService
             ->where('status', 'active')
             ->first();
 
-        if (!$preference) {
+        if (! $preference) {
             throw new \Exception("Bank {$bankCode} not found in user's active allocation");
         }
 
-        $this->executeInTransaction(function () use ($user, $preference) {
-            // Remove primary flag from all banks
-            $user->bankPreferences()->update(['is_primary' => false]);
-            
-            // Set new primary
-            $preference->update(['is_primary' => true]);
-        });
+        $this->executeInTransaction(
+            function () use ($user, $preference) {
+                // Remove primary flag from all banks
+                $user->bankPreferences()->update(['is_primary' => false]);
+
+                // Set new primary
+                $preference->update(['is_primary' => true]);
+            }
+        );
 
         return $preference->fresh();
     }
 
     /**
-     * Get distribution summary for display
+     * Get distribution summary for display.
      */
     public function getDistributionSummary(User $user, int $amountInCents): array
     {
@@ -200,20 +211,20 @@ class BankAllocationService
             $isDiversified = UserBankPreference::isDiversified($user->uuid);
 
             return [
-                'distribution' => $distribution,
-                'total_amount' => $amountInCents,
+                'distribution'             => $distribution,
+                'total_amount'             => $amountInCents,
                 'total_insurance_coverage' => $totalInsurance,
-                'is_diversified' => $isDiversified,
-                'bank_count' => count($distribution),
+                'is_diversified'           => $isDiversified,
+                'bank_count'               => count($distribution),
             ];
         } catch (\Exception $e) {
             return [
-                'error' => $e->getMessage(),
-                'distribution' => [],
-                'total_amount' => $amountInCents,
+                'error'                    => $e->getMessage(),
+                'distribution'             => [],
+                'total_amount'             => $amountInCents,
                 'total_insurance_coverage' => 0,
-                'is_diversified' => false,
-                'bank_count' => 0,
+                'is_diversified'           => false,
+                'bank_count'               => 0,
             ];
         }
     }

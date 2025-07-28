@@ -9,9 +9,11 @@ use Illuminate\Queue\SerializesModels;
 
 class ReconciliationDiscrepancyFound
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     public function __construct(
         public readonly array $discrepancy
-    ) {}
+    ) {
+    }
 }

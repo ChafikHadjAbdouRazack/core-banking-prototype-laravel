@@ -2,8 +2,8 @@
 
 namespace App\Domain\Asset\Events;
 
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 use Carbon\Carbon;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class BasketValueCalculated extends ShouldBeStored
 {
@@ -12,5 +12,6 @@ class BasketValueCalculated extends ShouldBeStored
         public array $exchangeRates,
         public float $totalValue,
         public Carbon $calculatedAt
-    ) {}
+    ) {
+    }
 }

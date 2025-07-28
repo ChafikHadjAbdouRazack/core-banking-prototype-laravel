@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -17,7 +16,7 @@ return new class extends Migration
             $table->enum('status', ['identified', 'in_progress', 'resolved']);
             $table->text('message');
             $table->timestamps();
-            
+
             $table->index('created_at');
         });
     }

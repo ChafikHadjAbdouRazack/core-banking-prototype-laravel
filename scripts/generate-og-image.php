@@ -1,10 +1,10 @@
 <?php
 
 // Output directory
-$publicPath = __DIR__ . '/../public/images';
+$publicPath = __DIR__.'/../public/images';
 
 // Create images directory if it doesn't exist
-if (!file_exists($publicPath)) {
+if (! file_exists($publicPath)) {
     mkdir($publicPath, 0755, true);
 }
 
@@ -24,9 +24,9 @@ $darkGray = imagecolorallocate($image, 31, 41, 55); // #1F2937
 // Create gradient background
 for ($i = 0; $i < $height; $i++) {
     $ratio = $i / $height;
-    $r = (int)(99 + $ratio * (147 - 99));
-    $g = (int)(102 + $ratio * (51 - 102));
-    $b = (int)(241 + $ratio * (234 - 241));
+    $r = (int) (99 + $ratio * (147 - 99));
+    $g = (int) (102 + $ratio * (51 - 102));
+    $b = (int) (241 + $ratio * (234 - 241));
     $lineColor = imagecolorallocate($image, $r, $g, $b);
     imageline($image, 0, $i, $width, $i, $lineColor);
 }
@@ -41,7 +41,7 @@ imagedestroy($overlay);
 // Add logo/brand text
 $fontSize = 72;
 $font = 5; // Built-in font
-$text = "FinAegis";
+$text = 'FinAegis';
 
 // Calculate text position for centering
 $textWidth = imagefontwidth($font) * strlen($text) * 8;
@@ -56,7 +56,7 @@ for ($i = 0; $i < 8; $i++) {
 }
 
 // Add tagline
-$tagline = "The Enterprise Financial Platform";
+$tagline = 'The Enterprise Financial Platform';
 $taglineSize = 3;
 $taglineWidth = imagefontwidth($taglineSize) * strlen($tagline);
 $taglineX = ($width - $taglineWidth) / 2;
@@ -65,8 +65,8 @@ $taglineY = 320;
 imagestring($image, $taglineSize, $taglineX, $taglineY, $tagline, $white);
 
 // Add feature text
-$feature1 = "Powering the Future of Banking";
-$feature2 = "Democratic Governance | Real Bank Integration";
+$feature1 = 'Powering the Future of Banking';
+$feature2 = 'Democratic Governance | Real Bank Integration';
 $featureSize = 2;
 
 $feature1Width = imagefontwidth($featureSize) * strlen($feature1);
@@ -78,7 +78,7 @@ $feature2X = ($width - $feature2Width) / 2;
 imagestring($image, $featureSize, $feature2X, 450, $feature2, $white);
 
 // Save the image
-imagepng($image, $publicPath . '/og-default.png');
+imagepng($image, $publicPath.'/og-default.png');
 imagedestroy($image);
 
 echo "Created: og-default.png\n";
@@ -92,9 +92,9 @@ $twitterImage = imagecreatetruecolor($twitterWidth, $twitterHeight);
 // Create gradient background for Twitter
 for ($i = 0; $i < $twitterHeight; $i++) {
     $ratio = $i / $twitterHeight;
-    $r = (int)(99 + $ratio * (147 - 99));
-    $g = (int)(102 + $ratio * (51 - 102));
-    $b = (int)(241 + $ratio * (234 - 241));
+    $r = (int) (99 + $ratio * (147 - 99));
+    $g = (int) (102 + $ratio * (51 - 102));
+    $b = (int) (241 + $ratio * (234 - 241));
     $lineColor = imagecolorallocate($twitterImage, $r, $g, $b);
     imageline($twitterImage, 0, $i, $twitterWidth, $i, $lineColor);
 }
@@ -121,7 +121,7 @@ $twitterFeature1X = ($twitterWidth - $feature1Width) / 2;
 imagestring($twitterImage, $featureSize, $twitterFeature1X, 350, $feature1, $white);
 
 // Save Twitter image
-imagepng($twitterImage, $publicPath . '/og-twitter.png');
+imagepng($twitterImage, $publicPath.'/og-twitter.png');
 imagedestroy($twitterImage);
 
 echo "Created: og-twitter.png\n";

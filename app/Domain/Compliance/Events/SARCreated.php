@@ -2,16 +2,19 @@
 
 namespace App\Domain\Compliance\Events;
 
-use App\Models\SuspiciousActivityReport;
+use App\Domain\Compliance\Models\SuspiciousActivityReport;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class SARCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
-    
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
+
     public function __construct(
         public readonly SuspiciousActivityReport $sar
-    ) {}
+    ) {
+    }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderRemovedFromBook extends ShouldBeStored
@@ -12,5 +11,6 @@ class OrderRemovedFromBook extends ShouldBeStored
         public readonly string $orderId,
         public readonly string $reason,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

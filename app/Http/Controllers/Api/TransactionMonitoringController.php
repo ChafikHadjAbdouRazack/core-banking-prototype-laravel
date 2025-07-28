@@ -10,114 +10,143 @@ class TransactionMonitoringController extends Controller
 {
     public function getMonitoredTransactions(): JsonResponse
     {
-        return response()->json([
-            'data' => [],
-            'meta' => ['total' => 0]
-        ]);
+        return response()->json(
+            [
+                'data' => [],
+                'meta' => ['total' => 0],
+            ]
+        );
     }
 
     public function getTransactionDetails($id): JsonResponse
     {
-        return response()->json([
-            'data' => ['id' => $id]
-        ]);
+        return response()->json(
+            [
+                'data' => ['id' => $id],
+            ]
+        );
     }
 
     public function flagTransaction($id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Transaction flagged',
-            'data' => ['id' => $id]
-        ]);
+        return response()->json(
+            [
+                'message' => 'Transaction flagged',
+                'data'    => ['id' => $id],
+            ]
+        );
     }
 
     public function clearTransaction($id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Transaction cleared',
-            'data' => ['id' => $id]
-        ]);
+        return response()->json(
+            [
+                'message' => 'Transaction cleared',
+                'data'    => ['id' => $id],
+            ]
+        );
     }
 
     public function getRules(): JsonResponse
     {
-        return response()->json([
-            'data' => []
-        ]);
+        return response()->json(
+            [
+                'data' => [],
+            ]
+        );
     }
 
     public function createRule(Request $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Rule created',
-            'data' => []
-        ], 201);
+        return response()->json(
+            [
+                'message' => 'Rule created',
+                'data'    => [],
+            ],
+            201
+        );
     }
 
     public function updateRule($id, Request $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Rule updated',
-            'data' => ['id' => $id]
-        ]);
+        return response()->json(
+            [
+                'message' => 'Rule updated',
+                'data'    => ['id' => $id],
+            ]
+        );
     }
 
     public function deleteRule($id): JsonResponse
     {
-        return response()->json([
-            'message' => 'Rule deleted'
-        ]);
+        return response()->json(
+            [
+                'message' => 'Rule deleted',
+            ]
+        );
     }
 
     public function getPatterns(): JsonResponse
     {
-        return response()->json([
-            'data' => []
-        ]);
+        return response()->json(
+            [
+                'data' => [],
+            ]
+        );
     }
 
     public function getThresholds(): JsonResponse
     {
-        return response()->json([
-            'data' => []
-        ]);
+        return response()->json(
+            [
+                'data' => [],
+            ]
+        );
     }
 
     public function updateThresholds(Request $request): JsonResponse
     {
-        return response()->json([
-            'message' => 'Thresholds updated',
-            'data' => []
-        ]);
+        return response()->json(
+            [
+                'message' => 'Thresholds updated',
+                'data'    => [],
+            ]
+        );
     }
 
     public function analyzeRealtime(Request $request): JsonResponse
     {
-        return response()->json([
-            'data' => [
-                'analysis_id' => uniqid(),
-                'status' => 'completed'
+        return response()->json(
+            [
+                'data' => [
+                    'analysis_id' => uniqid(),
+                    'status'      => 'completed',
+                ],
             ]
-        ]);
+        );
     }
 
     public function analyzeBatch(Request $request): JsonResponse
     {
-        return response()->json([
-            'data' => [
-                'batch_id' => uniqid(),
-                'status' => 'processing'
+        return response()->json(
+            [
+                'data' => [
+                    'batch_id' => uniqid(),
+                    'status'   => 'processing',
+                ],
             ]
-        ]);
+        );
     }
 
     public function getAnalysisStatus($analysisId): JsonResponse
     {
-        return response()->json([
-            'data' => [
-                'analysis_id' => $analysisId,
-                'status' => 'completed'
+        return response()->json(
+            [
+                'data' => [
+                    'analysis_id' => $analysisId,
+                    'status'      => 'completed',
+                ],
             ]
-        ]);
+        );
     }
 }

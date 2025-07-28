@@ -12,8 +12,8 @@ it('has correct resource', function () {
     $reflection = new ReflectionClass(EditAccount::class);
     $property = $reflection->getProperty('resource');
     $property->setAccessible(true);
-    
-    expect($property->getValue())->toBe(\App\Filament\Admin\Resources\AccountResource::class);
+
+    expect($property->getValue())->toBe(App\Filament\Admin\Resources\AccountResource::class);
 });
 
 it('can be instantiated', function () {

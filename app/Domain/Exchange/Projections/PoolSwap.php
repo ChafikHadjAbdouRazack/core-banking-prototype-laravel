@@ -39,13 +39,17 @@ class PoolSwap extends Model
 
     public function scopeForPair($query, string $baseCurrency, string $quoteCurrency)
     {
-        return $query->where(function ($q) use ($baseCurrency, $quoteCurrency) {
-            $q->where('input_currency', $baseCurrency)
-                ->where('output_currency', $quoteCurrency)
-                ->orWhere(function ($q2) use ($baseCurrency, $quoteCurrency) {
-                    $q2->where('input_currency', $quoteCurrency)
-                        ->where('output_currency', $baseCurrency);
-                });
-        });
+        return $query->where(
+            function ($q) use ($baseCurrency, $quoteCurrency) {
+                $q->where('input_currency', $baseCurrency)
+                    ->where('output_currency', $quoteCurrency)
+                    ->orWhere(
+                        function ($q2) use ($baseCurrency, $quoteCurrency) {
+                            $q2->where('input_currency', $quoteCurrency)
+                                ->where('output_currency', $baseCurrency);
+                        }
+                    );
+            }
+        );
     }
 }

@@ -4,65 +4,66 @@ declare(strict_types=1);
 
 namespace App\Domain\Stablecoin\Services;
 
-use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Wallet\Services\WalletService;
 use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\LiquidationServiceInterface;
-use App\Models\Account;
-use App\Models\Stablecoin;
-use App\Models\StablecoinCollateralPosition;
+use App\Domain\Stablecoin\Models\Stablecoin;
+use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
+use App\Domain\Wallet\Services\WalletService;
 use App\Traits\HandlesNestedTransactions;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class LiquidationService implements LiquidationServiceInterface
 {
     use HandlesNestedTransactions;
+
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService,
         private readonly CollateralService $collateralService,
         private readonly WalletService $walletService
-    ) {}
+    ) {
+    }
 
     /**
      * Liquidate a specific position.
      */
     public function liquidatePosition(StablecoinCollateralPosition $position, ?Account $liquidator = null): array
     {
-        if (!$position->shouldAutoLiquidate()) {
+        if (! $position->shouldAutoLiquidate()) {
             throw new \RuntimeException('Position is not eligible for liquidation');
         }
 
         $callback = function () use ($position, $liquidator) {
             $stablecoin = $position->stablecoin;
             $liquidationPenalty = $stablecoin->liquidation_penalty;
-            
+
             // Calculate liquidation amounts
             $debtAmount = $position->debt_amount;
             $collateralAmount = $position->collateral_amount;
             $penaltyAmount = (int) ($collateralAmount * $liquidationPenalty);
             $liquidatorReward = (int) ($penaltyAmount * 0.5); // 50% of penalty goes to liquidator
             $protocolFee = $penaltyAmount - $liquidatorReward;
-            
+
             // Amount returned to position owner after penalty
             $returnedCollateral = $collateralAmount - $penaltyAmount;
-            
+
             // If there's a liquidator, they get the reward
             if ($liquidator && $liquidatorReward > 0) {
                 $liquidatorUuid = AccountUuid::fromString($liquidator->uuid);
                 $this->walletService->deposit($liquidatorUuid, $position->collateral_asset_code, $liquidatorReward);
             }
-            
+
             // Return remaining collateral to position owner (if any)
             if ($returnedCollateral > 0) {
                 $positionAccountUuid = AccountUuid::fromString($position->account->uuid);
                 $this->walletService->deposit($positionAccountUuid, $position->collateral_asset_code, $returnedCollateral);
             }
-            
+
             // Burn the debt from total supply
             $stablecoin->decrement('total_supply', $debtAmount);
-            
+
             // Update global collateral value
             $collateralValueInPegAsset = $this->collateralService->convertToPegAsset(
                 $position->collateral_asset_code,
@@ -70,35 +71,43 @@ class LiquidationService implements LiquidationServiceInterface
                 $stablecoin->peg_asset_code
             );
             $stablecoin->decrement('total_collateral_value', $collateralValueInPegAsset);
-            
+
             // Mark position as liquidated
             $position->markAsLiquidated();
-            $position->update([
+            $position->update(
+                [
                 'collateral_amount' => 0,
-                'debt_amount' => 0,
-                'collateral_ratio' => 0,
-            ]);
-            
+                'debt_amount'       => 0,
+                'collateral_ratio'  => 0,
+                ]
+            );
+
             $result = [
-                'position_uuid' => $position->uuid,
-                'liquidated_debt' => $debtAmount,
+                'position_uuid'         => $position->uuid,
+                'liquidated_debt'       => $debtAmount,
                 'liquidated_collateral' => $collateralAmount,
-                'penalty_amount' => $penaltyAmount,
-                'liquidator_reward' => $liquidatorReward,
-                'protocol_fee' => $protocolFee,
-                'returned_to_owner' => $returnedCollateral,
-                'liquidator_uuid' => $liquidator?->uuid,
+                'penalty_amount'        => $penaltyAmount,
+                'liquidator_reward'     => $liquidatorReward,
+                'protocol_fee'          => $protocolFee,
+                'returned_to_owner'     => $returnedCollateral,
+                'liquidator_uuid'       => $liquidator?->uuid,
             ];
-            
-            Log::info('Position liquidated', array_merge($result, [
-                'account_uuid' => $position->account_uuid,
-                'stablecoin_code' => $stablecoin->code,
-                'collateral_asset' => $position->collateral_asset_code,
-            ]));
-            
+
+            Log::info(
+                'Position liquidated',
+                array_merge(
+                    $result,
+                    [
+                    'account_uuid'     => $position->account_uuid,
+                    'stablecoin_code'  => $stablecoin->code,
+                    'collateral_asset' => $position->collateral_asset_code,
+                    ]
+                )
+            );
+
             return $result;
         };
-        
+
         return $this->executeInTransaction($callback);
     }
 
@@ -110,7 +119,7 @@ class LiquidationService implements LiquidationServiceInterface
         $results = [];
         $totalReward = 0;
         $totalProtocolFees = 0;
-        
+
         foreach ($positions as $position) {
             try {
                 $result = $this->liquidatePosition($position, $liquidator);
@@ -118,25 +127,28 @@ class LiquidationService implements LiquidationServiceInterface
                 $totalReward += $result['liquidator_reward'];
                 $totalProtocolFees += $result['protocol_fee'];
             } catch (\Exception $e) {
-                Log::warning('Failed to liquidate position', [
+                Log::warning(
+                    'Failed to liquidate position',
+                    [
                     'position_uuid' => $position->uuid,
-                    'error' => $e->getMessage(),
-                ]);
-                
+                    'error'         => $e->getMessage(),
+                    ]
+                );
+
                 $results[] = [
                     'position_uuid' => $position->uuid,
-                    'error' => $e->getMessage(),
-                    'liquidated' => false,
+                    'error'         => $e->getMessage(),
+                    'liquidated'    => false,
                 ];
             }
         }
-        
+
         return [
-            'liquidated_count' => collect($results)->where('liquidated', '!==', false)->count(),
-            'failed_count' => collect($results)->where('liquidated', false)->count(),
+            'liquidated_count'        => collect($results)->where('liquidated', '!==', false)->count(),
+            'failed_count'            => collect($results)->where('liquidated', false)->count(),
             'total_liquidator_reward' => $totalReward,
-            'total_protocol_fees' => $totalProtocolFees,
-            'results' => $results,
+            'total_protocol_fees'     => $totalProtocolFees,
+            'results'                 => $results,
         ];
     }
 
@@ -146,22 +158,24 @@ class LiquidationService implements LiquidationServiceInterface
     public function liquidateEligiblePositions(?Account $liquidator = null): array
     {
         $eligiblePositions = $this->collateralService->getPositionsForLiquidation();
-        
+
         if ($eligiblePositions->isEmpty()) {
             return [
-                'liquidated_count' => 0,
-                'failed_count' => 0,
+                'liquidated_count'        => 0,
+                'failed_count'            => 0,
                 'total_liquidator_reward' => 0,
-                'total_protocol_fees' => 0,
-                'results' => [],
+                'total_protocol_fees'     => 0,
+                'results'                 => [],
             ];
         }
-        
+
         // Sort by liquidation priority (highest first)
-        $sortedPositions = $eligiblePositions->sortByDesc(function ($position) {
-            return $this->collateralService->calculateLiquidationPriority($position);
-        });
-        
+        $sortedPositions = $eligiblePositions->sortByDesc(
+            function ($position) {
+                return $this->collateralService->calculateLiquidationPriority($position);
+            }
+        );
+
         return $this->batchLiquidate($sortedPositions, $liquidator);
     }
 
@@ -170,28 +184,28 @@ class LiquidationService implements LiquidationServiceInterface
      */
     public function calculateLiquidationReward(StablecoinCollateralPosition $position): array
     {
-        if (!$position->shouldAutoLiquidate()) {
+        if (! $position->shouldAutoLiquidate()) {
             return [
-                'eligible' => false,
-                'reward' => 0,
-                'penalty' => 0,
+                'eligible'          => false,
+                'reward'            => 0,
+                'penalty'           => 0,
                 'collateral_seized' => 0,
             ];
         }
-        
+
         $liquidationPenalty = $position->stablecoin->liquidation_penalty;
         $penaltyAmount = (int) ($position->collateral_amount * $liquidationPenalty);
         $liquidatorReward = (int) ($penaltyAmount * 0.5);
-        
+
         return [
-            'eligible' => true,
-            'reward' => $liquidatorReward,
-            'penalty' => $penaltyAmount,
+            'eligible'          => true,
+            'reward'            => $liquidatorReward,
+            'penalty'           => $penaltyAmount,
             'collateral_seized' => $position->collateral_amount,
-            'debt_amount' => $position->debt_amount,
-            'collateral_asset' => $position->collateral_asset_code,
-            'current_ratio' => $position->collateral_ratio,
-            'min_ratio' => $position->stablecoin->min_collateral_ratio,
+            'debt_amount'       => $position->debt_amount,
+            'collateral_asset'  => $position->collateral_asset_code,
+            'current_ratio'     => $position->collateral_ratio,
+            'min_ratio'         => $position->stablecoin->min_collateral_ratio,
         ];
     }
 
@@ -201,19 +215,24 @@ class LiquidationService implements LiquidationServiceInterface
     public function getLiquidationOpportunities(int $limit = 50): Collection
     {
         $eligiblePositions = $this->collateralService->getPositionsForLiquidation();
-        
-        return $eligiblePositions->map(function ($position) {
-            $reward = $this->calculateLiquidationReward($position);
-            $priority = $this->collateralService->calculateLiquidationPriority($position);
-            
-            return array_merge($reward, [
-                'position_uuid' => $position->uuid,
-                'account_uuid' => $position->account_uuid,
-                'stablecoin_code' => $position->stablecoin_code,
-                'priority_score' => $priority,
-                'health_score' => $this->collateralService->calculatePositionHealthScore($position),
-            ]);
-        })
+
+        return $eligiblePositions->map(
+            function ($position) {
+                $reward = $this->calculateLiquidationReward($position);
+                $priority = $this->collateralService->calculateLiquidationPriority($position);
+
+                return array_merge(
+                    $reward,
+                    [
+                    'position_uuid'   => $position->uuid,
+                    'account_uuid'    => $position->account_uuid,
+                    'stablecoin_code' => $position->stablecoin_code,
+                    'priority_score'  => $priority,
+                    'health_score'    => $this->collateralService->calculatePositionHealthScore($position),
+                    ]
+                );
+            }
+        )
         ->sortByDesc('priority_score')
         ->take($limit)
         ->values();
@@ -226,56 +245,56 @@ class LiquidationService implements LiquidationServiceInterface
     {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
         $positions = $stablecoin->activePositions()->get();
-        
+
         $simulation = [];
         $totalLiquidations = 0;
         $totalCollateralSeized = 0;
         $totalDebtLiquidated = 0;
-        
+
         foreach ($positions as $position) {
             // Simulate price drop effect on collateral ratio
             $newRatio = $position->collateral_ratio * (1 - $priceDropPercentage);
-            
+
             if ($newRatio <= $stablecoin->min_collateral_ratio) {
                 $liquidationReward = $this->calculateLiquidationReward($position);
-                
+
                 $simulation[] = [
-                    'position_uuid' => $position->uuid,
-                    'current_ratio' => $position->collateral_ratio,
-                    'simulated_ratio' => $newRatio,
-                    'would_liquidate' => true,
+                    'position_uuid'     => $position->uuid,
+                    'current_ratio'     => $position->collateral_ratio,
+                    'simulated_ratio'   => $newRatio,
+                    'would_liquidate'   => true,
                     'collateral_seized' => $liquidationReward['collateral_seized'],
-                    'debt_amount' => $liquidationReward['debt_amount'],
+                    'debt_amount'       => $liquidationReward['debt_amount'],
                 ];
-                
+
                 $totalLiquidations++;
                 $totalCollateralSeized += $liquidationReward['collateral_seized'];
                 $totalDebtLiquidated += $liquidationReward['debt_amount'];
             } else {
                 $simulation[] = [
-                    'position_uuid' => $position->uuid,
-                    'current_ratio' => $position->collateral_ratio,
-                    'simulated_ratio' => $newRatio,
-                    'would_liquidate' => false,
+                    'position_uuid'     => $position->uuid,
+                    'current_ratio'     => $position->collateral_ratio,
+                    'simulated_ratio'   => $newRatio,
+                    'would_liquidate'   => false,
                     'collateral_seized' => 0,
-                    'debt_amount' => 0,
+                    'debt_amount'       => 0,
                 ];
             }
         }
-        
-        $impactPercentage = $positions->count() > 0 
-            ? ($totalLiquidations / $positions->count()) * 100 
+
+        $impactPercentage = $positions->count() > 0
+            ? ($totalLiquidations / $positions->count()) * 100
             : 0;
-        
+
         return [
-            'stablecoin_code' => $stablecoinCode,
-            'price_drop_percentage' => $priceDropPercentage * 100,
-            'total_positions' => $positions->count(),
-            'positions_liquidated' => $totalLiquidations,
+            'stablecoin_code'               => $stablecoinCode,
+            'price_drop_percentage'         => $priceDropPercentage * 100,
+            'total_positions'               => $positions->count(),
+            'positions_liquidated'          => $totalLiquidations,
             'liquidation_impact_percentage' => $impactPercentage,
-            'total_collateral_seized' => $totalCollateralSeized,
-            'total_debt_liquidated' => $totalDebtLiquidated,
-            'detailed_results' => $simulation,
+            'total_collateral_seized'       => $totalCollateralSeized,
+            'total_debt_liquidated'         => $totalDebtLiquidated,
+            'detailed_results'              => $simulation,
         ];
     }
 
@@ -285,38 +304,46 @@ class LiquidationService implements LiquidationServiceInterface
     public function emergencyLiquidation(string $stablecoinCode): array
     {
         $stablecoin = Stablecoin::findOrFail($stablecoinCode);
-        
+
         // Get all positions that are close to liquidation threshold
         $riskThreshold = $stablecoin->min_collateral_ratio + 0.1; // 10% buffer
         $atRiskPositions = $stablecoin->activePositions()
             ->where('collateral_ratio', '<=', $riskThreshold)
             ->get();
-        
+
         if ($atRiskPositions->isEmpty()) {
             return [
                 'emergency_triggered' => false,
-                'reason' => 'No positions at significant risk',
-                'liquidated_count' => 0,
+                'reason'              => 'No positions at significant risk',
+                'liquidated_count'    => 0,
             ];
         }
-        
-        Log::critical('Emergency liquidation triggered', [
-            'stablecoin_code' => $stablecoinCode,
+
+        Log::critical(
+            'Emergency liquidation triggered',
+            [
+            'stablecoin_code'   => $stablecoinCode,
             'at_risk_positions' => $atRiskPositions->count(),
-            'risk_threshold' => $riskThreshold,
-        ]);
-        
+            'risk_threshold'    => $riskThreshold,
+            ]
+        );
+
         // Force liquidate positions that are actually eligible
-        $eligibleForLiquidation = $atRiskPositions->filter(function ($position) {
-            return $position->shouldAutoLiquidate();
-        });
-        
+        $eligibleForLiquidation = $atRiskPositions->filter(
+            function ($position) {
+                return $position->shouldAutoLiquidate();
+            }
+        );
+
         $result = $this->batchLiquidate($eligibleForLiquidation);
-        
-        return array_merge($result, [
+
+        return array_merge(
+            $result,
+            [
             'emergency_triggered' => true,
-            'at_risk_positions' => $atRiskPositions->count(),
-            'risk_threshold' => $riskThreshold,
-        ]);
+            'at_risk_positions'   => $atRiskPositions->count(),
+            'risk_threshold'      => $riskThreshold,
+            ]
+        );
     }
 }

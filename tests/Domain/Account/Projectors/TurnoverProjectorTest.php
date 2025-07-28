@@ -2,14 +2,9 @@
 
 namespace Tests\Domain\Account\Projectors;
 
-use App\Domain\Account\Aggregates\TransactionAggregate;
-use App\Domain\Account\DataObjects\Money;
-use App\Domain\Account\Repositories\TurnoverRepository;
 use App\Domain\Account\Utils\ValidatesHash;
-use App\Models\Turnover;
-use Illuminate\Support\Carbon;
-use Tests\TestCase;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\TestCase;
 
 class TurnoverProjectorTest extends TestCase
 {
@@ -20,7 +15,7 @@ class TurnoverProjectorTest extends TestCase
     {
         $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions with unique constraints');
     }
-    
+
     public function skipped_test_calculate_today_turnover(): void
     {
         $this->resetHash();
@@ -28,7 +23,7 @@ class TurnoverProjectorTest extends TestCase
         Carbon::setTestNow($date);
 
         // Clear any existing turnovers for this account and date to avoid conflicts
-        \App\Models\Turnover::where('account_uuid', $this->account->uuid)
+        Turnover::where('account_uuid', $this->account->uuid)
             ->where('date', $date->toDateString())
             ->delete();
 
@@ -56,7 +51,7 @@ class TurnoverProjectorTest extends TestCase
     {
         $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions with unique constraints');
     }
-    
+
     public function skipped_test_calculate_tomorrow_turnover(): void
     {
         $this->resetHash();
@@ -64,7 +59,7 @@ class TurnoverProjectorTest extends TestCase
         Carbon::setTestNow($date1);
 
         // Clear any existing turnovers for this account and date to avoid conflicts
-        \App\Models\Turnover::where('account_uuid', $this->account->uuid)->delete();
+        Turnover::where('account_uuid', $this->account->uuid)->delete();
 
         // Simulate yesterday's event
         $this->performTransactions([
@@ -91,22 +86,12 @@ class TurnoverProjectorTest extends TestCase
         Carbon::setTestNow();
     }
 
-    /**
-     * @param \Illuminate\Support\Carbon $date
-     *
-     * @return \App\Models\Turnover|null
-     */
-    private function getTurnoverForDate( Carbon $date): ?Turnover
+    private function getTurnoverForDate(Carbon $date): ?Turnover
     {
         return app(TurnoverRepository::class)->findByAccountAndDate($this->account, $date);
     }
 
-    /**
-     * @param array $transactions
-     *
-     * @return void
-     */
-    private function performTransactions( array $transactions): void
+    private function performTransactions(array $transactions): void
     {
         $aggregate = TransactionAggregate::retrieve($this->account->uuid);
         foreach ($transactions as [$type, $amount]) {
@@ -115,12 +100,7 @@ class TurnoverProjectorTest extends TestCase
         $aggregate->persist();
     }
 
-    /**
-     * @param int $amount
-     *
-     * @return \App\Domain\Account\DataObjects\Money
-     */
-    private function money( int $amount): Money
+    private function money(int $amount): Money
     {
         return hydrate(Money::class, ['amount' => $amount]);
     }

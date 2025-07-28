@@ -1,7 +1,7 @@
 <?php
 
+use App\Domain\Account\Models\Transaction;
 use App\Filament\Exports\TransactionExporter;
-use App\Models\Transaction;
 use Filament\Actions\Exports\Models\Export;
 use Tests\UnitTestCase;
 
@@ -9,7 +9,7 @@ uses(UnitTestCase::class);
 
 it('can define export columns for transactions', function () {
     $columns = TransactionExporter::getColumns();
-    
+
     expect($columns)->toHaveCount(10)
         ->and($columns[0]->getName())->toBe('processed_at')
         ->and($columns[0]->getLabel())->toBe('Date')
@@ -36,15 +36,15 @@ it('can define export columns for transactions', function () {
 it('formats transaction type correctly', function () {
     $columns = TransactionExporter::getColumns();
     $typeColumn = $columns[2];
-    
+
     // Test the format state using method
     $reflection = new ReflectionClass($typeColumn);
     $property = $reflection->getProperty('formatStateUsing');
     $property->setAccessible(true);
     $formatState = $property->getValue($typeColumn);
-    
+
     expect($formatState('deposit'))->toBe('Deposit')
-        ->and($formatState('withdrawal'))->toBe('Withdrawal')  
+        ->and($formatState('withdrawal'))->toBe('Withdrawal')
         ->and($formatState('transfer_in'))->toBe('Transfer In')
         ->and($formatState('transfer_out'))->toBe('Transfer Out');
 });
@@ -52,21 +52,27 @@ it('formats transaction type correctly', function () {
 it('formats amount correctly with sign', function () {
     $columns = TransactionExporter::getColumns();
     $amountColumn = $columns[3];
-    
+
     // Test the format state using method
     $reflection = new ReflectionClass($amountColumn);
     $property = $reflection->getProperty('formatStateUsing');
     $property->setAccessible(true);
     $formatState = $property->getValue($amountColumn);
-    
+
     // Create mock records for testing
-    $creditRecord = new class {
-        public function getDirection() { return 'credit'; }
+    $creditRecord = new class () {
+        public function getDirection()
+        {
+            return 'credit';
+        }
     };
-    $debitRecord = new class {
-        public function getDirection() { return 'debit'; }
+    $debitRecord = new class () {
+        public function getDirection()
+        {
+            return 'debit';
+        }
     };
-    
+
     expect($formatState(10050, $creditRecord))->toBe('+100.50')
         ->and($formatState(10050, $debitRecord))->toBe('-100.50')
         ->and($formatState(0, $creditRecord))->toBe('+0.00');
@@ -75,13 +81,13 @@ it('formats amount correctly with sign', function () {
 it('formats status correctly', function () {
     $columns = TransactionExporter::getColumns();
     $statusColumn = $columns[6];
-    
+
     // Test the format state using method
     $reflection = new ReflectionClass($statusColumn);
     $property = $reflection->getProperty('formatStateUsing');
     $property->setAccessible(true);
     $formatState = $property->getValue($statusColumn);
-    
+
     expect($formatState('completed'))->toBe('Completed')
         ->and($formatState('pending'))->toBe('Pending')
         ->and($formatState('failed'))->toBe('Failed');
@@ -91,9 +97,9 @@ it('generates correct completion notification body', function () {
     $export = new Export();
     $export->successful_rows = 500;
     $export->total_rows = 500;
-    
+
     $body = TransactionExporter::getCompletedNotificationBody($export);
-    
+
     expect($body)->toBe('Your transaction export has completed and 500 rows exported.');
 });
 

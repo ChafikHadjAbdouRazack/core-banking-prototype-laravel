@@ -16,10 +16,10 @@ class ApproveRefundActivity extends Activity
                 metadata: $input['metadata'] ?? []
             )
             ->persist();
-        
+
         return [
             'refund_id' => $input['refund_id'],
-            'status' => 'approved'
+            'status'    => 'approved',
         ];
     }
 }

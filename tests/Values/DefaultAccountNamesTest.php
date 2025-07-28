@@ -1,6 +1,6 @@
 <?php
 
-use App\Values\DefaultAccountNames;
+use App\Domain\Account\Values\DefaultAccountNames;
 
 it('is an enum', function () {
     $reflection = new ReflectionClass(DefaultAccountNames::class);

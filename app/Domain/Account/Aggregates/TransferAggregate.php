@@ -17,16 +17,12 @@ class TransferAggregate extends AggregateRoot
 
     public const int    COUNT_THRESHOLD = 1000;
 
-    /**
-     * @param int $count
-     */
     public function __construct(
         public int $count = 0,
     ) {
     }
 
     /**
-     * @return TransferRepository
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function getStoredEventRepository(): TransferRepository
@@ -47,20 +43,16 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\DataObjects\AccountUuid $from
-     * @param \App\Domain\Account\DataObjects\AccountUuid $to
-     * @param \App\Domain\Account\DataObjects\Money $money
-     *
      * @return $this
      */
-    public function transfer( AccountUuid $from, AccountUuid $to, Money $money ): static
+    public function transfer(AccountUuid $from, AccountUuid $to, Money $money): static
     {
         $this->recordThat(
             domainEvent: new MoneyTransferred(
                 from: $from,
                 to: $to,
                 money: $money,
-                hash: $this->generateHash( $money )
+                hash: $this->generateHash($money)
             )
         );
 
@@ -68,27 +60,42 @@ class TransferAggregate extends AggregateRoot
     }
 
     /**
-     * @param \App\Domain\Account\Events\MoneyTransferred $event
-     *
-     * @return \App\Domain\Account\Aggregates\TransferAggregate
+     * @return TransferAggregate
      */
-    public function applyMoneyTransferred( MoneyTransferred $event ): static
+    public function applyMoneyTransferred(MoneyTransferred $event): static
     {
         $this->validateHash(
             hash: $event->hash,
             money: $event->money
         );
 
-        if ( ++$this->count >= self::COUNT_THRESHOLD )
-        {
+        if (++$this->count >= self::COUNT_THRESHOLD) {
             $this->recordThat(
                 domainEvent: new TransferThresholdReached()
             );
             $this->count = 0;
         }
 
-        $this->storeHash( $event->hash );
+        $this->storeHash($event->hash);
 
         return $this;
+    }
+
+    /**
+     * Get the aggregate state for snapshots.
+     */
+    protected function getState(): array
+    {
+        return [
+            'count' => $this->count,
+        ];
+    }
+
+    /**
+     * Restore the aggregate state from snapshot.
+     */
+    protected function useState(array $state): void
+    {
+        $this->count = $state['count'] ?? 0;
     }
 }

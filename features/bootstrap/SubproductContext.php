@@ -2,13 +2,13 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\MinkExtension\Context\MinkContext;
+use Behat\MinkExtension\Context\RawMinkContext;
 use PHPUnit\Framework\Assert;
 
 /**
  * Defines application features from the subproduct pages context.
  */
-class SubproductContext extends MinkContext implements Context
+class SubproductContext extends RawMinkContext implements Context
 {
     /**
      * @Given the application is configured properly
@@ -40,10 +40,12 @@ class SubproductContext extends MinkContext implements Context
      */
     public function iShouldSeeTheMainNavigation()
     {
-        $this->assertElementOnPage('nav');
+        $page = $this->getSession()->getPage();
+        $nav = $page->find('css', 'nav');
+        Assert::assertNotNull($nav, 'Navigation element not found');
         // Check for common navigation elements
-        $this->assertPageContainsText('Features');
-        $this->assertPageContainsText('Platform');
+        Assert::assertStringContainsString('Features', $page->getText());
+        Assert::assertStringContainsString('Platform', $page->getText());
     }
 
     /**
@@ -51,7 +53,9 @@ class SubproductContext extends MinkContext implements Context
      */
     public function iShouldSeeTheFooter()
     {
-        $this->assertElementOnPage('footer');
+        $page = $this->getSession()->getPage();
+        $footer = $page->find('css', 'footer');
+        Assert::assertNotNull($footer, 'Footer element not found');
     }
 
     /**
@@ -59,10 +63,11 @@ class SubproductContext extends MinkContext implements Context
      */
     public function iShouldSeeLinksToAllSubproducts()
     {
-        $this->assertPageContainsText('FinAegis Exchange');
-        $this->assertPageContainsText('FinAegis Lending');
-        $this->assertPageContainsText('FinAegis Stablecoins');
-        $this->assertPageContainsText('FinAegis Treasury');
+        $pageText = $this->getSession()->getPage()->getText();
+        Assert::assertStringContainsString('FinAegis Exchange', $pageText);
+        Assert::assertStringContainsString('FinAegis Lending', $pageText);
+        Assert::assertStringContainsString('FinAegis Stablecoins', $pageText);
+        Assert::assertStringContainsString('FinAegis Treasury', $pageText);
     }
 
     /**
@@ -103,10 +108,10 @@ class SubproductContext extends MinkContext implements Context
         );
 
         // Visit login page
-        $this->visit('/login');
-        $this->fillField('email', 'test@example.com');
-        $this->fillField('password', 'password');
-        $this->pressButton('Log in');
+        $this->getSession()->visit($this->locatePath('/login'));
+        $this->getSession()->getPage()->fillField('email', 'test@example.com');
+        $this->getSession()->getPage()->fillField('password', 'password');
+        $this->getSession()->getPage()->pressButton('Log in');
         
         // Wait for redirect
         $this->getSession()->wait(2000);
@@ -117,15 +122,7 @@ class SubproductContext extends MinkContext implements Context
      */
     public function iClickOn($text)
     {
-        $this->clickLink($text);
+        $this->getSession()->getPage()->clickLink($text);
     }
 
-    /**
-     * @Then I should be on :path
-     */
-    public function iShouldBeOn($path)
-    {
-        $currentPath = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH);
-        Assert::assertEquals($path, $currentPath, "Current path is $currentPath, expected $path");
-    }
 }

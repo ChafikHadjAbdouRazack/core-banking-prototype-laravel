@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Account;
-use App\Models\Turnover;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Turnover;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,14 +23,14 @@ class TurnoverFactory extends Factory
         $debit = fake()->randomFloat(2, 0, 5000);
         $credit = fake()->randomFloat(2, 0, 5000);
         $amount = $credit - $debit;
-        
+
         return [
             'account_uuid' => Account::factory(),
-            'date' => fake()->date(),
-            'count' => fake()->numberBetween(1, 100),
-            'amount' => $amount,
-            'debit' => $debit,
-            'credit' => $credit,
+            'date'         => fake()->date(),
+            'count'        => fake()->numberBetween(1, 100),
+            'amount'       => $amount,
+            'debit'        => $debit,
+            'credit'       => $credit,
         ];
     }
 }

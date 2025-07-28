@@ -3,8 +3,8 @@
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Custodian\Connectors\SantanderConnector;
 use App\Domain\Custodian\ValueObjects\TransferRequest;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -13,23 +13,23 @@ beforeEach(function () {
     Http::fake([
         'https://auth.santander.com/oauth/token' => Http::response([
             'access_token' => 'mock-santander-token',
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
         ], 200),
     ]);
 });
 
 it('throws exception when API credentials are missing', function () {
-    expect(fn() => new SantanderConnector([]))
-        ->toThrow(\InvalidArgumentException::class, 'Santander api_key and api_secret are required');
+    expect(fn () => new SantanderConnector([]))
+        ->toThrow(InvalidArgumentException::class, 'Santander api_key and api_secret are required');
 });
 
 it('can be instantiated with valid config', function () {
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     expect($connector)->toBeInstanceOf(SantanderConnector::class);
     expect($connector->getName())->toBe('Santander');
 });
@@ -38,12 +38,12 @@ it('checks availability via health endpoint', function () {
     Http::fake([
         'https://api.santander.com/open-banking/v3.1/health' => Http::response(['status' => 'UP'], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     expect($connector->isAvailable())->toBeTrue();
 });
 
@@ -51,12 +51,12 @@ it('returns false when health check fails', function () {
     Http::fake([
         'https://api.santander.com/open-banking/v3.1/health' => Http::response(['status' => 'DOWN'], 503),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     expect($connector->isAvailable())->toBeFalse();
 });
 
@@ -64,8 +64,8 @@ it('obtains access token with client credentials', function () {
     Http::fake([
         'https://auth.santander.com/oauth/token' => Http::response([
             'access_token' => 'test-santander-token-xyz',
-            'token_type' => 'Bearer',
-            'expires_in' => 3600,
+            'token_type'   => 'Bearer',
+            'expires_in'   => 3600,
         ], 200),
         'https://api.santander.com/open-banking/v3.1/aisp/accounts/ACC789/balances' => Http::response([
             'Data' => [
@@ -75,18 +75,18 @@ it('obtains access token with client credentials', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     // This should trigger token acquisition
     $balance = $connector->getBalance('ACC789', 'GBP');
-    
+
     expect($balance)->toBeInstanceOf(Money::class);
     expect($balance->getAmount())->toBe(250075); // £2500.75 in pence
-    
+
     // Verify OAuth request was made
     Http::assertSent(function ($request) {
         return $request->url() === 'https://auth.santander.com/oauth/token' &&
@@ -107,14 +107,14 @@ it('retrieves account balance', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $balance = $connector->getBalance('40404000123456', 'EUR');
-    
+
     expect($balance)->toBeInstanceOf(Money::class);
     expect($balance->getAmount())->toBe(7500000); // €75,000 in cents
 });
@@ -129,14 +129,14 @@ it('returns zero balance for non-existent currency', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $balance = $connector->getBalance('40404000123456', 'USD');
-    
+
     expect($balance->getAmount())->toBe(0);
 });
 
@@ -145,15 +145,15 @@ it('retrieves account information', function () {
         'https://api.santander.com/open-banking/v3.1/aisp/accounts/40404000123456' => Http::response([
             'Data' => [
                 'Account' => [[
-                    'AccountId' => '40404000123456',
-                    'Status' => 'Enabled',
-                    'Currency' => 'EUR',
-                    'AccountType' => 'Personal',
+                    'AccountId'      => '40404000123456',
+                    'Status'         => 'Enabled',
+                    'Currency'       => 'EUR',
+                    'AccountType'    => 'Personal',
                     'AccountSubType' => 'CurrentAccount',
-                    'Nickname' => 'Main EUR Account',
-                    'OpeningDate' => '2021-03-15',
+                    'Nickname'       => 'Main EUR Account',
+                    'OpeningDate'    => '2021-03-15',
                     'Identification' => '40404000123456',
-                    'SchemeName' => 'UK.OBIE.SortCodeAccountNumber',
+                    'SchemeName'     => 'UK.OBIE.SortCodeAccountNumber',
                 ]],
             ],
         ], 200),
@@ -166,14 +166,14 @@ it('retrieves account information', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $accountInfo = $connector->getAccountInfo('40404000123456');
-    
+
     expect($accountInfo->accountId)->toBe('40404000123456');
     expect($accountInfo->name)->toBe('Main EUR Account');
     expect($accountInfo->status)->toBe('active');
@@ -190,31 +190,31 @@ it('initiates a domestic payment', function () {
         'https://api.santander.com/open-banking/v3.1/pisp/domestic-payment-consents' => Http::response([
             'Data' => [
                 'ConsentId' => 'CONSENT-123',
-                'Status' => 'AwaitingAuthorisation',
+                'Status'    => 'AwaitingAuthorisation',
             ],
         ], 200),
         'https://api.santander.com/open-banking/v3.1/pisp/domestic-payments' => Http::response([
             'Data' => [
                 'DomesticPaymentId' => 'SAN-PAY-456789',
-                'ConsentId' => 'CONSENT-123',
-                'Status' => 'AcceptedSettlementInProcess',
-                'CreationDateTime' => '2023-06-17T10:00:00Z',
-                'Initiation' => [
+                'ConsentId'         => 'CONSENT-123',
+                'Status'            => 'AcceptedSettlementInProcess',
+                'CreationDateTime'  => '2023-06-17T10:00:00Z',
+                'Initiation'        => [
                     'EndToEndIdentification' => 'REF789',
-                    'InstructedAmount' => [
-                        'Amount' => '2000.00',
+                    'InstructedAmount'       => [
+                        'Amount'   => '2000.00',
                         'Currency' => 'EUR',
                     ],
                 ],
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $transferRequest = new TransferRequest(
         fromAccount: 'ES9121000418450200051332',
         toAccount: 'ES9121000418450200051333',
@@ -223,9 +223,9 @@ it('initiates a domestic payment', function () {
         reference: 'REF789',
         description: 'Test Santander payment'
     );
-    
+
     $receipt = $connector->initiateTransfer($transferRequest);
-    
+
     expect($receipt->id)->toBe('SAN-PAY-456789');
     expect($receipt->status)->toBe('pending');
     expect($receipt->amount)->toBe(200000);
@@ -237,14 +237,14 @@ it('retrieves transaction status', function () {
     Http::fake([
         'https://api.santander.com/open-banking/v3.1/pisp/domestic-payments/SAN-PAY-456789' => Http::response([
             'Data' => [
-                'DomesticPaymentId' => 'SAN-PAY-456789',
-                'Status' => 'AcceptedSettlementCompleted',
-                'CreationDateTime' => '2023-06-17T10:00:00Z',
+                'DomesticPaymentId'    => 'SAN-PAY-456789',
+                'Status'               => 'AcceptedSettlementCompleted',
+                'CreationDateTime'     => '2023-06-17T10:00:00Z',
                 'StatusUpdateDateTime' => '2023-06-17T10:05:00Z',
-                'Initiation' => [
+                'Initiation'           => [
                     'EndToEndIdentification' => 'REF789',
-                    'InstructedAmount' => [
-                        'Amount' => '2000.00',
+                    'InstructedAmount'       => [
+                        'Amount'   => '2000.00',
                         'Currency' => 'EUR',
                     ],
                     'DebtorAccount' => [
@@ -260,14 +260,14 @@ it('retrieves transaction status', function () {
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $receipt = $connector->getTransactionStatus('SAN-PAY-456789');
-    
+
     expect($receipt->status)->toBe('completed');
     expect($receipt->isCompleted())->toBeTrue();
     expect($receipt->completedAt)->not->toBeNull();
@@ -276,12 +276,12 @@ it('retrieves transaction status', function () {
 
 it('cannot cancel transactions (Open Banking limitation)', function () {
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $result = $connector->cancelTransaction('SAN-PAY-456789');
-    
+
     expect($result)->toBeFalse();
 });
 
@@ -291,17 +291,17 @@ it('validates account existence', function () {
             'Data' => [
                 'Account' => [[
                     'AccountId' => '40404000123456',
-                    'Status' => 'Enabled',
+                    'Status'    => 'Enabled',
                 ]],
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     expect($connector->validateAccount('40404000123456'))->toBeTrue();
 });
 
@@ -311,38 +311,38 @@ it('retrieves transaction history', function () {
             'Data' => [
                 'Transaction' => [
                     [
-                        'TransactionId' => 'TXN-SAN-001',
-                        'Status' => 'Booked',
-                        'BookingDateTime' => '2023-06-17T09:00:00Z',
-                        'ValueDateTime' => '2023-06-17T09:00:00Z',
-                        'Amount' => ['Amount' => '-1000.00', 'Currency' => 'EUR'],
+                        'TransactionId'        => 'TXN-SAN-001',
+                        'Status'               => 'Booked',
+                        'BookingDateTime'      => '2023-06-17T09:00:00Z',
+                        'ValueDateTime'        => '2023-06-17T09:00:00Z',
+                        'Amount'               => ['Amount' => '-1000.00', 'Currency' => 'EUR'],
                         'DebitCreditIndicator' => 'Debit',
                         'TransactionReference' => 'REF-001',
-                        'CreditorAccount' => ['Identification' => 'ES9121000418450200051999'],
+                        'CreditorAccount'      => ['Identification' => 'ES9121000418450200051999'],
                     ],
                     [
-                        'TransactionId' => 'TXN-SAN-002',
-                        'Status' => 'Booked',
-                        'BookingDateTime' => '2023-06-16T14:30:00Z',
-                        'ValueDateTime' => '2023-06-16T14:30:00Z',
-                        'Amount' => ['Amount' => '5000.00', 'Currency' => 'EUR'],
+                        'TransactionId'        => 'TXN-SAN-002',
+                        'Status'               => 'Booked',
+                        'BookingDateTime'      => '2023-06-16T14:30:00Z',
+                        'ValueDateTime'        => '2023-06-16T14:30:00Z',
+                        'Amount'               => ['Amount' => '5000.00', 'Currency' => 'EUR'],
                         'DebitCreditIndicator' => 'Credit',
                         'TransactionReference' => 'REF-002',
-                        'DebtorAccount' => ['Identification' => 'ES9121000418450200051888'],
-                        'ChargeAmount' => ['Amount' => '5.00', 'Currency' => 'EUR'],
+                        'DebtorAccount'        => ['Identification' => 'ES9121000418450200051888'],
+                        'ChargeAmount'         => ['Amount' => '5.00', 'Currency' => 'EUR'],
                     ],
                 ],
             ],
         ], 200),
     ]);
-    
+
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $history = $connector->getTransactionHistory('40404000123456', 10, 0);
-    
+
     expect($history)->toHaveCount(2);
     expect($history[0]['id'])->toBe('TXN-SAN-001');
     expect($history[0]['amount'])->toBe(100000); // €1,000 in cents
@@ -353,12 +353,12 @@ it('retrieves transaction history', function () {
 
 it('returns supported assets', function () {
     $connector = new SantanderConnector([
-        'api_key' => 'test-api-key',
+        'api_key'    => 'test-api-key',
         'api_secret' => 'test-api-secret',
     ]);
-    
+
     $assets = $connector->getSupportedAssets();
-    
+
     expect($assets)->toContain('EUR');
     expect($assets)->toContain('GBP');
     expect($assets)->toContain('USD');

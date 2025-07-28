@@ -12,5 +12,6 @@ class ProposalCancelled extends ShouldBeStored
         public readonly string $reason,
         public readonly string $cancelledBy,
         public readonly Carbon $timestamp
-    ) {}
+    ) {
+    }
 }

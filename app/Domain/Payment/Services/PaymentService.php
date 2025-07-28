@@ -2,16 +2,16 @@
 
 namespace App\Domain\Payment\Services;
 
-use App\Domain\Payment\DataObjects\StripeDeposit;
 use App\Domain\Payment\DataObjects\BankWithdrawal;
-use App\Domain\Payment\Workflows\ProcessStripeDepositWorkflow;
+use App\Domain\Payment\DataObjects\StripeDeposit;
 use App\Domain\Payment\Workflows\ProcessBankWithdrawalWorkflow;
+use App\Domain\Payment\Workflows\ProcessStripeDepositWorkflow;
 use Workflow\WorkflowStub;
 
 class PaymentService
 {
     /**
-     * Process a Stripe deposit
+     * Process a Stripe deposit.
      */
     public function processStripeDeposit(array $data): string
     {
@@ -27,11 +27,12 @@ class PaymentService
         );
 
         $workflow = WorkflowStub::make(ProcessStripeDepositWorkflow::class);
+
         return $workflow->start($deposit);
     }
 
     /**
-     * Process a bank withdrawal
+     * Process a bank withdrawal.
      */
     public function processBankWithdrawal(array $data): array
     {
@@ -50,6 +51,7 @@ class PaymentService
         );
 
         $workflow = WorkflowStub::make(ProcessBankWithdrawalWorkflow::class);
+
         return $workflow->start($withdrawal);
     }
 }

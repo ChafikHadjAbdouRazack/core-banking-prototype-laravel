@@ -19,11 +19,17 @@ use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 class StablecoinAggregate extends AggregateRoot
 {
     private string $position_uuid;
+
     private string $account_uuid;
+
     private string $stablecoin_code;
+
     private string $collateral_asset_code;
+
     private int $collateral_amount = 0;
+
     private int $debt_amount = 0;
+
     private string $status = 'active';
 
     /**
@@ -56,87 +62,101 @@ class StablecoinAggregate extends AggregateRoot
         int $debt_amount,
         float $collateral_ratio
     ): self {
-        $this->recordThat(new CollateralPositionCreated(
-            position_uuid: $this->uuid(),
-            account_uuid: $account_uuid,
-            stablecoin_code: $stablecoin_code,
-            collateral_asset_code: $collateral_asset_code,
-            collateral_amount: $collateral_amount,
-            debt_amount: $debt_amount,
-            collateral_ratio: $collateral_ratio,
-            status: 'active'
-        ));
+        $this->recordThat(
+            new CollateralPositionCreated(
+                position_uuid: $this->uuid(),
+                account_uuid: $account_uuid,
+                stablecoin_code: $stablecoin_code,
+                collateral_asset_code: $collateral_asset_code,
+                collateral_amount: $collateral_amount,
+                debt_amount: $debt_amount,
+                collateral_ratio: $collateral_ratio,
+                status: 'active'
+            )
+        );
 
         return $this;
     }
 
     public function lockCollateral(int $amount): self
     {
-        $this->recordThat(new CollateralLocked(
-            position_uuid: $this->uuid(),
-            account_uuid: $this->account_uuid,
-            collateral_asset_code: $this->collateral_asset_code,
-            amount: $amount
-        ));
+        $this->recordThat(
+            new CollateralLocked(
+                position_uuid: $this->uuid(),
+                account_uuid: $this->account_uuid,
+                collateral_asset_code: $this->collateral_asset_code,
+                amount: $amount
+            )
+        );
 
         return $this;
     }
 
     public function mintStablecoin(int $amount): self
     {
-        $this->recordThat(new StablecoinMinted(
-            position_uuid: $this->uuid(),
-            account_uuid: $this->account_uuid,
-            stablecoin_code: $this->stablecoin_code,
-            amount: $amount
-        ));
+        $this->recordThat(
+            new StablecoinMinted(
+                position_uuid: $this->uuid(),
+                account_uuid: $this->account_uuid,
+                stablecoin_code: $this->stablecoin_code,
+                amount: $amount
+            )
+        );
 
         return $this;
     }
 
     public function burnStablecoin(int $amount): self
     {
-        $this->recordThat(new StablecoinBurned(
-            position_uuid: $this->uuid(),
-            account_uuid: $this->account_uuid,
-            stablecoin_code: $this->stablecoin_code,
-            amount: $amount
-        ));
+        $this->recordThat(
+            new StablecoinBurned(
+                position_uuid: $this->uuid(),
+                account_uuid: $this->account_uuid,
+                stablecoin_code: $this->stablecoin_code,
+                amount: $amount
+            )
+        );
 
         return $this;
     }
 
     public function releaseCollateral(int $amount): self
     {
-        $this->recordThat(new CollateralReleased(
-            position_uuid: $this->uuid(),
-            account_uuid: $this->account_uuid,
-            collateral_asset_code: $this->collateral_asset_code,
-            amount: $amount
-        ));
+        $this->recordThat(
+            new CollateralReleased(
+                position_uuid: $this->uuid(),
+                account_uuid: $this->account_uuid,
+                collateral_asset_code: $this->collateral_asset_code,
+                amount: $amount
+            )
+        );
 
         return $this;
     }
 
     public function updatePosition(int $collateral_amount, int $debt_amount, float $collateral_ratio): self
     {
-        $this->recordThat(new CollateralPositionUpdated(
-            position_uuid: $this->uuid(),
-            collateral_amount: $collateral_amount,
-            debt_amount: $debt_amount,
-            collateral_ratio: $collateral_ratio,
-            status: $this->status
-        ));
+        $this->recordThat(
+            new CollateralPositionUpdated(
+                position_uuid: $this->uuid(),
+                collateral_amount: $collateral_amount,
+                debt_amount: $debt_amount,
+                collateral_ratio: $collateral_ratio,
+                status: $this->status
+            )
+        );
 
         return $this;
     }
 
     public function closePosition(string $reason = 'user_closed'): self
     {
-        $this->recordThat(new CollateralPositionClosed(
-            position_uuid: $this->uuid(),
-            reason: $reason
-        ));
+        $this->recordThat(
+            new CollateralPositionClosed(
+                position_uuid: $this->uuid(),
+                reason: $reason
+            )
+        );
 
         return $this;
     }
@@ -147,13 +167,15 @@ class StablecoinAggregate extends AggregateRoot
         int $debt_repaid,
         int $liquidation_penalty
     ): self {
-        $this->recordThat(new CollateralPositionLiquidated(
-            position_uuid: $this->uuid(),
-            liquidator_account_uuid: $liquidator_account_uuid,
-            collateral_seized: $collateral_seized,
-            debt_repaid: $debt_repaid,
-            liquidation_penalty: $liquidation_penalty
-        ));
+        $this->recordThat(
+            new CollateralPositionLiquidated(
+                position_uuid: $this->uuid(),
+                liquidator_account_uuid: $liquidator_account_uuid,
+                collateral_seized: $collateral_seized,
+                debt_repaid: $debt_repaid,
+                liquidation_penalty: $liquidation_penalty
+            )
+        );
 
         return $this;
     }

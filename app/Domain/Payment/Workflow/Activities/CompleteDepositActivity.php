@@ -12,11 +12,11 @@ class CompleteDepositActivity extends Activity
         PaymentDepositAggregate::retrieve($input['deposit_uuid'])
             ->completeDeposit($input['transaction_id'])
             ->persist();
-        
+
         return [
-            'deposit_uuid' => $input['deposit_uuid'],
-            'status' => 'completed',
-            'transaction_id' => $input['transaction_id']
+            'deposit_uuid'   => $input['deposit_uuid'],
+            'status'         => 'completed',
+            'transaction_id' => $input['transaction_id'],
         ];
     }
 }

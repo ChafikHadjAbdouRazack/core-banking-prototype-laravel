@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Transfer;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,18 +20,18 @@ class TransferFactory extends Factory
     public function definition(): array
     {
         return [
-            'aggregate_uuid' => fake()->uuid(),
+            'aggregate_uuid'    => fake()->uuid(),
             'aggregate_version' => fake()->numberBetween(1, 100),
-            'event_version' => 1,
-            'event_class' => 'App\\Domain\\Account\\Events\\MoneyTransferred',
-            'event_properties' => json_encode([
+            'event_version'     => 1,
+            'event_class'       => 'App\\Domain\\Account\\Events\\MoneyTransferred',
+            'event_properties'  => json_encode([
                 'fromAccount' => ['uuid' => fake()->uuid()],
-                'toAccount' => ['uuid' => fake()->uuid()],
-                'money' => ['amount' => fake()->numberBetween(100, 100000)],
-                'hash' => ['hash' => hash('sha3-512', fake()->text())]
+                'toAccount'   => ['uuid' => fake()->uuid()],
+                'money'       => ['amount' => fake()->numberBetween(100, 100000)],
+                'hash'        => ['hash' => hash('sha3-512', fake()->text())],
             ]),
             'meta_data' => json_encode([
-                'user_uuid' => fake()->uuid(),
+                'user_uuid'  => fake()->uuid(),
                 'ip_address' => fake()->ipv4(),
                 'user_agent' => fake()->userAgent(),
             ]),
@@ -40,14 +40,14 @@ class TransferFactory extends Factory
     }
 
     /**
-     * Create a transfer with specific amount
+     * Create a transfer with specific amount.
      */
     public function withAmount(int $amount): static
     {
         return $this->state(function (array $attributes) use ($amount) {
             $eventProperties = json_decode($attributes['event_properties'], true);
             $eventProperties['money']['amount'] = $amount;
-            
+
             return [
                 'event_properties' => json_encode($eventProperties),
             ];
@@ -55,7 +55,7 @@ class TransferFactory extends Factory
     }
 
     /**
-     * Create a transfer between specific accounts
+     * Create a transfer between specific accounts.
      */
     public function betweenAccounts(string $fromUuid, string $toUuid): static
     {
@@ -63,41 +63,41 @@ class TransferFactory extends Factory
             $eventProperties = json_decode($attributes['event_properties'], true);
             $eventProperties['fromAccount']['uuid'] = $fromUuid;
             $eventProperties['toAccount']['uuid'] = $toUuid;
-            
+
             return [
-                'aggregate_uuid' => $fromUuid, // Transfer aggregate is associated with source account
+                'aggregate_uuid'   => $fromUuid, // Transfer aggregate is associated with source account
                 'event_properties' => json_encode($eventProperties),
             ];
         });
     }
 
     /**
-     * Create a multi-asset transfer
+     * Create a multi-asset transfer.
      */
     public function multiAsset(string $fromAsset, string $toAsset, float $exchangeRate): static
     {
         return $this->state(function (array $attributes) use ($fromAsset, $toAsset, $exchangeRate) {
             $eventProperties = json_decode($attributes['event_properties'], true);
             $fromAmount = $eventProperties['money']['amount'];
-            
+
             return [
-                'event_class' => 'App\\Domain\\Account\\Events\\AssetTransferred',
+                'event_class'      => 'App\\Domain\\Account\\Events\\AssetTransferred',
                 'event_properties' => json_encode([
-                    'fromAccount' => $eventProperties['fromAccount'],
-                    'toAccount' => $eventProperties['toAccount'],
-                    'fromAsset' => $fromAsset,
-                    'fromAmount' => $fromAmount,
-                    'toAsset' => $toAsset,
-                    'toAmount' => (int) round($fromAmount * $exchangeRate),
+                    'fromAccount'  => $eventProperties['fromAccount'],
+                    'toAccount'    => $eventProperties['toAccount'],
+                    'fromAsset'    => $fromAsset,
+                    'fromAmount'   => $fromAmount,
+                    'toAsset'      => $toAsset,
+                    'toAmount'     => (int) round($fromAmount * $exchangeRate),
                     'exchangeRate' => $exchangeRate,
-                    'hash' => $eventProperties['hash'],
+                    'hash'         => $eventProperties['hash'],
                 ]),
             ];
         });
     }
 
     /**
-     * Create a large transfer (over $1000)
+     * Create a large transfer (over $1000).
      */
     public function large(): static
     {
@@ -105,7 +105,7 @@ class TransferFactory extends Factory
     }
 
     /**
-     * Create a small transfer (under $100)
+     * Create a small transfer (under $100).
      */
     public function small(): static
     {

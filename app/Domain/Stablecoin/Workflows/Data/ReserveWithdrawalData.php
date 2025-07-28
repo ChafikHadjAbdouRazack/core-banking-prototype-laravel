@@ -12,18 +12,19 @@ class ReserveWithdrawalData
         public readonly string $destinationAddress,
         public readonly string $reason,
         public readonly array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
-            'asset' => $this->asset,
-            'amount' => $this->amount,
-            'custodian_id' => $this->custodianId,
+            'pool_id'             => $this->poolId,
+            'asset'               => $this->asset,
+            'amount'              => $this->amount,
+            'custodian_id'        => $this->custodianId,
             'destination_address' => $this->destinationAddress,
-            'reason' => $this->reason,
-            'metadata' => $this->metadata,
+            'reason'              => $this->reason,
+            'metadata'            => $this->metadata,
         ];
     }
 }

@@ -15,27 +15,28 @@ class AggregatedPrice
         public readonly Carbon $timestamp,
         public readonly float $confidence = 1.0,
         public readonly ?array $metadata = []
-    ) {}
-    
+    ) {
+    }
+
     public function toArray(): array
     {
         return [
-            'base' => $this->base,
-            'quote' => $this->quote,
-            'price' => $this->price,
-            'sources' => $this->sources,
+            'base'               => $this->base,
+            'quote'              => $this->quote,
+            'price'              => $this->price,
+            'sources'            => $this->sources,
             'aggregation_method' => $this->aggregationMethod,
-            'timestamp' => $this->timestamp->toIso8601String(),
-            'confidence' => $this->confidence,
-            'metadata' => $this->metadata,
+            'timestamp'          => $this->timestamp->toIso8601String(),
+            'confidence'         => $this->confidence,
+            'metadata'           => $this->metadata,
         ];
     }
-    
+
     public function isHighConfidence(): bool
     {
         return $this->confidence >= 0.8;
     }
-    
+
     public function getSourceCount(): int
     {
         return count($this->sources);

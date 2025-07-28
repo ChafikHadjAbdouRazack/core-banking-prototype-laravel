@@ -2,9 +2,8 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Services\BasketPerformanceService;
-use App\Models\BasketAsset;
-use App\Models\BasketPerformance;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Cache;
@@ -12,22 +11,31 @@ use Illuminate\Support\Facades\Cache;
 class BasketPerformanceStats extends BaseWidget
 {
     protected static ?string $pollingInterval = '60s';
+
     protected static ?int $sort = 2;
 
     protected function getStats(): array
     {
-        $gcuBasket = Cache::remember('gcu_basket_stats', 300, function () {
-            return BasketAsset::where('code', 'GCU')->first();
-        });
+        $gcuBasket = Cache::remember(
+            'gcu_basket_stats',
+            300,
+            function () {
+                return BasketAsset::where('code', 'GCU')->first();
+            }
+        );
 
-        if (!$gcuBasket) {
+        if (! $gcuBasket) {
             return [];
         }
 
         $performanceService = app(BasketPerformanceService::class);
-        $summary = Cache::remember('gcu_performance_summary', 300, function () use ($gcuBasket, $performanceService) {
-            return $performanceService->getPerformanceSummary($gcuBasket);
-        });
+        $summary = Cache::remember(
+            'gcu_performance_summary',
+            300,
+            function () use ($gcuBasket, $performanceService) {
+                return $performanceService->getPerformanceSummary($gcuBasket);
+            }
+        );
 
         $dayPerf = $summary['performances']['day'] ?? null;
         $weekPerf = $summary['performances']['week'] ?? null;
@@ -77,9 +85,13 @@ class BasketPerformanceStats extends BaseWidget
         }
 
         // Top Performer
-        $topPerformer = Cache::remember('gcu_top_performer', 300, function () use ($gcuBasket, $performanceService) {
-            return $performanceService->getTopPerformers($gcuBasket, 'month', 1)->first();
-        });
+        $topPerformer = Cache::remember(
+            'gcu_top_performer',
+            300,
+            function () use ($gcuBasket, $performanceService) {
+                return $performanceService->getTopPerformers($gcuBasket, 'month', 1)->first();
+            }
+        );
 
         if ($topPerformer) {
             $stats[] = Stat::make('Top Performer', $topPerformer->asset_code)
@@ -94,8 +106,8 @@ class BasketPerformanceStats extends BaseWidget
     protected function getSparklineData(string $periodType, int $points): array
     {
         $gcuBasket = BasketAsset::where('code', 'GCU')->first();
-        
-        if (!$gcuBasket) {
+
+        if (! $gcuBasket) {
             return [];
         }
 

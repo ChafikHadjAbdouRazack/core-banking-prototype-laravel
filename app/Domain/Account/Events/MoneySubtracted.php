@@ -9,19 +9,13 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class MoneySubtracted extends ShouldBeStored implements HasHash, HasMoney
 {
-    /**
-     * @var string
-     */
-    public string $queue = EventQueues::TRANSACTIONS->value;
-
     use HashValidatorProvider;
 
-    /**
-     * @param Money $money
-     * @param Hash $hash
-     */
+    public string $queue = EventQueues::TRANSACTIONS->value;
+
     public function __construct(
         public readonly Money $money,
         public readonly Hash $hash
-    ) {}
+    ) {
+    }
 }

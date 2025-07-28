@@ -12,7 +12,7 @@ use Workflow\Activity;
 class LockCollateralActivity extends Activity
 {
     /**
-     * Lock collateral from account
+     * Lock collateral from account.
      */
     public function execute(
         AccountUuid $accountUuid,
@@ -23,12 +23,12 @@ class LockCollateralActivity extends Activity
         // Withdraw collateral from account using wallet service
         $walletService = app(WalletService::class);
         $walletService->withdraw($accountUuid, $collateralAssetCode, $amount);
-        
+
         // Record collateral lock in aggregate
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->lockCollateral($amount);
         $aggregate->persist();
-        
+
         return true;
     }
 }

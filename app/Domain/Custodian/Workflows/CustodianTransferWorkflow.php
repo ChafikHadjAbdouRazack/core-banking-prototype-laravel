@@ -17,7 +17,7 @@ use Workflow\Workflow;
 class CustodianTransferWorkflow extends Workflow
 {
     /**
-     * Transfer funds between internal account and custodian account
+     * Transfer funds between internal account and custodian account.
      */
     public function execute(
         AccountUuid $internalAccount,
@@ -31,7 +31,7 @@ class CustodianTransferWorkflow extends Workflow
         try {
             if ($direction === 'deposit') {
                 // Deposit from custodian to internal account
-                
+
                 // First, initiate transfer from custodian
                 $transactionId = yield ActivityStub::make(
                     InitiateCustodianTransferActivity::class,
@@ -43,50 +43,53 @@ class CustodianTransferWorkflow extends Workflow
                     'incoming',
                     $reference
                 );
-                
+
                 // Add compensation to reverse custodian transfer if needed
-                $this->addCompensation(fn() => ActivityStub::make(
-                    InitiateCustodianTransferActivity::class,
-                    $internalAccount->getUuid(),
-                    $custodianAccount,
-                    $assetCode,
-                    $amount,
-                    $custodianName,
-                    'outgoing',
-                    "Reversal of {$transactionId}"
-                ));
-                
+                $this->addCompensation(
+                    fn () => ActivityStub::make(
+                        InitiateCustodianTransferActivity::class,
+                        $internalAccount->getUuid(),
+                        $custodianAccount,
+                        $assetCode,
+                        $amount,
+                        $custodianName,
+                        'outgoing',
+                        "Reversal of {$transactionId}"
+                    )
+                );
+
                 // Verify transfer completed
                 yield ActivityStub::make(
                     VerifyCustodianTransferActivity::class,
                     $transactionId,
                     $custodianName
                 );
-                
+
                 // Credit internal account
                 yield ChildWorkflowStub::make(
                     DepositAccountWorkflow::class,
                     $internalAccount,
                     $amount
                 );
-                
             } else {
                 // Withdraw from internal account to custodian
-                
+
                 // First, debit internal account
                 yield ChildWorkflowStub::make(
                     WithdrawAccountWorkflow::class,
                     $internalAccount,
                     $amount
                 );
-                
+
                 // Add compensation to restore internal balance
-                $this->addCompensation(fn() => ChildWorkflowStub::make(
-                    DepositAccountWorkflow::class,
-                    $internalAccount,
-                    $amount
-                ));
-                
+                $this->addCompensation(
+                    fn () => ChildWorkflowStub::make(
+                        DepositAccountWorkflow::class,
+                        $internalAccount,
+                        $amount
+                    )
+                );
+
                 // Initiate transfer to custodian
                 $transactionId = yield ActivityStub::make(
                     InitiateCustodianTransferActivity::class,
@@ -98,7 +101,7 @@ class CustodianTransferWorkflow extends Workflow
                     'outgoing',
                     $reference
                 );
-                
+
                 // Verify transfer completed
                 yield ActivityStub::make(
                     VerifyCustodianTransferActivity::class,
@@ -106,19 +109,18 @@ class CustodianTransferWorkflow extends Workflow
                     $custodianName
                 );
             }
-            
+
             return [
-                'status' => 'completed',
+                'status'         => 'completed',
                 'transaction_id' => $transactionId,
-                'direction' => $direction,
-                'amount' => $amount->getAmount(),
-                'asset_code' => $assetCode,
+                'direction'      => $direction,
+                'amount'         => $amount->getAmount(),
+                'asset_code'     => $assetCode,
             ];
-            
         } catch (\Throwable $e) {
             // Execute compensations
             yield from $this->compensate();
-            
+
             throw $e;
         }
     }

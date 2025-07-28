@@ -6,8 +6,8 @@ namespace App\Domain\Governance\Workflows;
 
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\ValueObjects\PollResult;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Temporal\Workflow\WorkflowInterface;
 use Temporal\Workflow\WorkflowMethod;
 
@@ -20,10 +20,10 @@ class FeatureToggleWorkflow
         // Extract feature configuration from poll
         $featureConfig = $this->extractFeatureConfigFromPoll($poll, $result);
 
-        if (!$this->validateFeatureConfig($featureConfig)) {
+        if (! $this->validateFeatureConfig($featureConfig)) {
             return [
-                'success' => false,
-                'message' => 'Invalid feature configuration in poll',
+                'success'   => false,
+                'message'   => 'Invalid feature configuration in poll',
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -31,35 +31,41 @@ class FeatureToggleWorkflow
         try {
             // Apply feature toggle based on poll result
             $enabled = $this->shouldEnableFeature($poll, $result);
-            
+
             $this->updateFeatureFlag($featureConfig['feature_key'], $enabled);
 
             // Log the governance action
-            logger()->info('Feature toggled via governance poll', [
-                'poll_uuid' => $poll->uuid,
-                'feature_key' => $featureConfig['feature_key'],
-                'enabled' => $enabled,
-                'winning_option' => $result->winningOption,
-                'participation_rate' => $result->participationRate,
-            ]);
+            logger()->info(
+                'Feature toggled via governance poll',
+                [
+                    'poll_uuid'          => $poll->uuid,
+                    'feature_key'        => $featureConfig['feature_key'],
+                    'enabled'            => $enabled,
+                    'winning_option'     => $result->winningOption,
+                    'participation_rate' => $result->participationRate,
+                ]
+            );
 
             return [
-                'success' => true,
-                'message' => "Feature '{$featureConfig['feature_key']}' " . ($enabled ? 'enabled' : 'disabled') . ' via governance',
-                'poll_uuid' => $poll->uuid,
+                'success'     => true,
+                'message'     => "Feature '{$featureConfig['feature_key']}' " . ($enabled ? 'enabled' : 'disabled') . ' via governance',
+                'poll_uuid'   => $poll->uuid,
                 'feature_key' => $featureConfig['feature_key'],
-                'enabled' => $enabled,
+                'enabled'     => $enabled,
             ];
         } catch (\Exception $e) {
-            logger()->error('Failed to toggle feature via governance poll', [
-                'poll_uuid' => $poll->uuid,
-                'feature_config' => $featureConfig,
-                'error' => $e->getMessage(),
-            ]);
+            logger()->error(
+                'Failed to toggle feature via governance poll',
+                [
+                    'poll_uuid'      => $poll->uuid,
+                    'feature_config' => $featureConfig,
+                    'error'          => $e->getMessage(),
+                ]
+            );
 
             return [
-                'success' => false,
-                'message' => 'Failed to toggle feature: ' . $e->getMessage(),
+                'success'   => false,
+                'message'   => 'Failed to toggle feature: ' . $e->getMessage(),
                 'poll_uuid' => $poll->uuid,
             ];
         }
@@ -92,18 +98,18 @@ class FeatureToggleWorkflow
     private function parseFeatureConfigFromText(string $title, ?string $description): array
     {
         $text = strtolower($title . ' ' . ($description ?? ''));
-        
+
         // Common feature patterns
         $featurePatterns = [
-            'multi.?currency' => 'multi_currency_support',
-            'mobile.?app' => 'mobile_app_access',
-            'api.?rate.?limit' => 'api_rate_limiting',
-            'two.?factor|2fa' => 'two_factor_auth',
-            'webhook' => 'webhook_notifications',
-            'real.?time' => 'real_time_processing',
+            'multi.?currency'   => 'multi_currency_support',
+            'mobile.?app'       => 'mobile_app_access',
+            'api.?rate.?limit'  => 'api_rate_limiting',
+            'two.?factor|2fa'   => 'two_factor_auth',
+            'webhook'           => 'webhook_notifications',
+            'real.?time'        => 'real_time_processing',
             'batch.?processing' => 'batch_processing',
-            'audit.?log' => 'audit_logging',
-            'dark.?mode' => 'dark_mode_ui',
+            'audit.?log'        => 'audit_logging',
+            'dark.?mode'        => 'dark_mode_ui',
             'maintenance.?mode' => 'maintenance_mode',
         ];
 
@@ -119,9 +125,9 @@ class FeatureToggleWorkflow
 
     private function validateFeatureConfig(array $config): bool
     {
-        return isset($config['feature_key']) && 
-               is_string($config['feature_key']) && 
-               !empty($config['feature_key']) &&
+        return isset($config['feature_key']) &&
+               is_string($config['feature_key']) &&
+               ! empty($config['feature_key']) &&
                $config['feature_key'] !== 'unknown_feature';
     }
 
@@ -141,12 +147,12 @@ class FeatureToggleWorkflow
             }
         }
 
-        if (!$winningOption) {
+        if (! $winningOption) {
             return false;
         }
 
         $label = strtolower($winningOption['label']);
-        
+
         // Check for enabling keywords
         $enableKeywords = ['enable', 'activate', 'turn on', 'allow', 'permit', 'yes'];
         $disableKeywords = ['disable', 'deactivate', 'turn off', 'block', 'deny', 'no'];
@@ -182,17 +188,20 @@ class FeatureToggleWorkflow
     {
         // In a real implementation, this would persist to a configuration store
         // For now, we'll use Laravel's config with a runtime update
-        
+
         $currentFlags = config('features', []);
         $currentFlags[$featureKey] = $enabled;
-        
+
         Config::set('features', $currentFlags);
 
         // Log for audit purposes
-        logger()->info('Feature flag persisted', [
-            'feature_key' => $featureKey,
-            'enabled' => $enabled,
-            'timestamp' => now()->toISOString(),
-        ]);
+        logger()->info(
+            'Feature flag persisted',
+            [
+                'feature_key' => $featureKey,
+                'enabled'     => $enabled,
+                'timestamp'   => now()->toISOString(),
+            ]
+        );
     }
 }

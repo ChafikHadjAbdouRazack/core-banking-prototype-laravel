@@ -1,39 +1,34 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        
-        <title>Pricing - Flexible Plans for Every Scale | FinAegis</title>
+@extends('layouts.public')
 
-        @include('partials.favicon')
-        
-        @include('partials.seo', [
-            'title' => 'Pricing - Flexible Plans for Every Scale',
-            'description' => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',
-            'keywords' => 'FinAegis pricing, open source banking, enterprise support, core banking pricing, fintech platform cost, free banking software',
-        ])
+@section('title', 'Pricing - Flexible Plans for Every Scale | FinAegis')
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Pricing - Flexible Plans for Every Scale',
+        'description' => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',
+        'keywords' => 'FinAegis pricing, open source banking, enterprise support, core banking pricing, fintech platform cost, free banking software',
+    ])
 
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        
-        <!-- Custom Styles -->
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-        </style>
-    </head>
-    <body class="antialiased">
-        <x-platform-banners />
-        <x-main-navigation />
+    {{-- Schema.org Markup --}}
+    <x-schema type="software" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Pricing', 'url' => url('/pricing')]
+    ]" />
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+@endpush
+
+@section('content')
 
         <!-- Hero Section -->
-        <section class="pt-16 gradient-bg text-white">
+        <section class="gradient-bg text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
                 <div class="text-center">
                     <h1 class="text-5xl md:text-6xl font-bold mb-6">
@@ -279,6 +274,4 @@
             </div>
         </section>
 
-        @include('partials.footer')
-    </body>
-</html>
+@endsection

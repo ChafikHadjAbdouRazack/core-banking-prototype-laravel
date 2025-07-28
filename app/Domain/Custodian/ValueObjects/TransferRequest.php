@@ -16,18 +16,19 @@ final class TransferRequest
         public readonly ?string $reference = null,
         public readonly ?string $description = null,
         public readonly ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public function toArray(): array
     {
         return [
             'from_account' => $this->fromAccount,
-            'to_account' => $this->toAccount,
-            'asset_code' => $this->assetCode,
-            'amount' => $this->amount->getAmount(),
-            'reference' => $this->reference,
-            'description' => $this->description,
-            'metadata' => $this->metadata,
+            'to_account'   => $this->toAccount,
+            'asset_code'   => $this->assetCode,
+            'amount'       => $this->amount->getAmount(),
+            'reference'    => $this->reference,
+            'description'  => $this->description,
+            'metadata'     => $this->metadata,
         ];
     }
 

@@ -39,7 +39,7 @@ class ExchangeServiceProvider extends ServiceProvider
         $this->app->singleton(ExternalExchangeServiceInterface::class, ExternalExchangeService::class);
         $this->app->singleton(ArbitrageServiceInterface::class, ArbitrageService::class);
         $this->app->singleton(PriceAggregatorInterface::class, PriceAggregator::class);
-        
+
         // Register concrete services (for backward compatibility)
         $this->app->singleton(ExchangeService::class);
         $this->app->singleton(FeeCalculator::class);
@@ -47,7 +47,7 @@ class ExchangeServiceProvider extends ServiceProvider
         $this->app->singleton(ExternalLiquidityService::class);
         $this->app->singleton(LiquidityPoolService::class);
         $this->app->singleton(OrderService::class);
-        
+
         // Register exchange event repository
         $this->app->bind('exchange.event-repository', ExchangeEventRepository::class);
     }
@@ -58,9 +58,11 @@ class ExchangeServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Register projectors
-        Projectionist::addProjectors([
-            OrderProjector::class,
-            OrderBookProjector::class,
-        ]);
+        Projectionist::addProjectors(
+            [
+                OrderProjector::class,
+                OrderBookProjector::class,
+            ]
+        );
     }
 }

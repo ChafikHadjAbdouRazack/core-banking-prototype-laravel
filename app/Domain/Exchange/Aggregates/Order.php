@@ -5,26 +5,47 @@ namespace App\Domain\Exchange\Aggregates;
 use App\Domain\Exchange\Events\OrderCancelled;
 use App\Domain\Exchange\Events\OrderMatched;
 use App\Domain\Exchange\Events\OrderPlaced;
-use App\Domain\Exchange\Events\OrderPartiallyFilled;
-use App\Domain\Exchange\Events\OrderFilled;
 use App\Domain\Exchange\ValueObjects\OrderStatus;
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 use Brick\Math\BigDecimal;
-use Brick\Math\RoundingMode;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class Order extends AggregateRoot
 {
     protected string $orderId;
+
     protected string $accountId;
+
     protected string $type;
+
     protected string $orderType;
+
     protected string $baseCurrency;
+
     protected string $quoteCurrency;
+
     protected BigDecimal $amount;
+
     protected ?BigDecimal $price = null;
+
     protected BigDecimal $filledAmount;
+
     protected OrderStatus $status;
+
     protected array $trades = [];
+
+    public function __construct()
+    {
+        // Initialize properties to avoid uninitialized property errors
+        $this->orderId = '';
+        $this->accountId = '';
+        $this->type = '';
+        $this->orderType = '';
+        $this->baseCurrency = '';
+        $this->quoteCurrency = '';
+        $this->amount = BigDecimal::zero();
+        $this->filledAmount = BigDecimal::zero();
+        $this->status = OrderStatus::PENDING;
+    }
 
     public function placeOrder(
         string $orderId,
@@ -38,18 +59,20 @@ class Order extends AggregateRoot
         ?string $stopPrice = null,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderPlaced(
-            orderId: $orderId,
-            accountId: $accountId,
-            type: $type,
-            orderType: $orderType,
-            baseCurrency: $baseCurrency,
-            quoteCurrency: $quoteCurrency,
-            amount: $amount,
-            price: $price,
-            stopPrice: $stopPrice,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderPlaced(
+                orderId: $orderId,
+                accountId: $accountId,
+                type: $type,
+                orderType: $orderType,
+                baseCurrency: $baseCurrency,
+                quoteCurrency: $quoteCurrency,
+                amount: $amount,
+                price: $price,
+                stopPrice: $stopPrice,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -63,16 +86,18 @@ class Order extends AggregateRoot
         string $takerFee,
         array $metadata = []
     ): self {
-        $this->recordThat(new OrderMatched(
-            orderId: $this->orderId,
-            matchedOrderId: $matchedOrderId,
-            tradeId: $tradeId,
-            executedPrice: $executedPrice,
-            executedAmount: $executedAmount,
-            makerFee: $makerFee,
-            takerFee: $takerFee,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderMatched(
+                orderId: $this->orderId,
+                matchedOrderId: $matchedOrderId,
+                tradeId: $tradeId,
+                executedPrice: $executedPrice,
+                executedAmount: $executedAmount,
+                makerFee: $makerFee,
+                takerFee: $takerFee,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -83,11 +108,13 @@ class Order extends AggregateRoot
             throw new \DomainException('Cannot cancel order in final status: ' . $this->status->value);
         }
 
-        $this->recordThat(new OrderCancelled(
-            orderId: $this->orderId,
-            reason: $reason,
-            metadata: $metadata
-        ));
+        $this->recordThat(
+            new OrderCancelled(
+                orderId: $this->orderId,
+                reason: $reason,
+                metadata: $metadata
+            )
+        );
 
         return $this;
     }
@@ -109,12 +136,12 @@ class Order extends AggregateRoot
     protected function applyOrderMatched(OrderMatched $event): void
     {
         $this->trades[] = [
-            'tradeId' => $event->tradeId,
+            'tradeId'        => $event->tradeId,
             'matchedOrderId' => $event->matchedOrderId,
-            'executedPrice' => $event->executedPrice,
+            'executedPrice'  => $event->executedPrice,
             'executedAmount' => $event->executedAmount,
-            'makerFee' => $event->makerFee,
-            'takerFee' => $event->takerFee,
+            'makerFee'       => $event->makerFee,
+            'takerFee'       => $event->takerFee,
         ];
 
         $this->filledAmount = $this->filledAmount->plus($event->executedAmount);

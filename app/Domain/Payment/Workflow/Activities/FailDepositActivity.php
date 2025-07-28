@@ -12,11 +12,11 @@ class FailDepositActivity extends Activity
         PaymentDepositAggregate::retrieve($input['deposit_uuid'])
             ->failDeposit($input['reason'])
             ->persist();
-        
+
         return [
             'deposit_uuid' => $input['deposit_uuid'],
-            'status' => 'failed',
-            'reason' => $input['reason']
+            'status'       => 'failed',
+            'reason'       => $input['reason'],
         ];
     }
 }

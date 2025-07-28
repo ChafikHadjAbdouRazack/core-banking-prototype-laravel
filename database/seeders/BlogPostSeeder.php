@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\BlogPost;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class BlogPostSeeder extends Seeder
@@ -16,10 +15,10 @@ class BlogPostSeeder extends Seeder
         $posts = [
             // Featured Post
             [
-                'title' => 'Introducing Multi-Bank Distribution: Enhanced Security Through Diversification',
-                'slug' => 'multi-bank-distribution-security',
+                'title'   => 'Introducing Multi-Bank Distribution: Enhanced Security Through Diversification',
+                'slug'    => 'multi-bank-distribution-security',
                 'excerpt' => 'Our revolutionary multi-bank distribution system spreads your funds across multiple licensed financial institutions, maximizing deposit protection up to €500,000 while minimizing risk through strategic diversification.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Revolutionary Fund Distribution Technology
 
 FinAegis introduces a groundbreaking approach to deposit security through our multi-bank distribution system. Unlike traditional banking where your funds sit in a single institution, our platform intelligently distributes your deposits across multiple licensed European banks.
@@ -60,24 +59,24 @@ All fund distributions comply with:
 
 This feature is now available to all verified accounts and can be enabled through your account settings.
 EOT,
-                'category' => 'platform',
-                'author_name' => 'FinAegis Team',
-                'author_role' => 'Product & Engineering',
+                'category'        => 'platform',
+                'author_name'     => 'FinAegis Team',
+                'author_role'     => 'Product & Engineering',
                 'author_initials' => 'FA',
-                'reading_time' => 8,
-                'gradient_from' => 'blue-500',
-                'gradient_to' => 'purple-600',
-                'is_featured' => true,
-                'is_published' => true,
-                'published_at' => now()->subDays(3),
+                'reading_time'    => 8,
+                'gradient_from'   => 'blue-500',
+                'gradient_to'     => 'purple-600',
+                'is_featured'     => true,
+                'is_published'    => true,
+                'published_at'    => now()->subDays(3),
             ],
 
             // Platform Updates
             [
-                'title' => 'Event Sourcing Architecture: Building a Bulletproof Financial Platform',
-                'slug' => 'event-sourcing-architecture-financial-platform',
+                'title'   => 'Event Sourcing Architecture: Building a Bulletproof Financial Platform',
+                'slug'    => 'event-sourcing-architecture-financial-platform',
                 'excerpt' => 'Discover how our event-sourced architecture provides unparalleled audit trails, data integrity, and system reliability for critical financial operations.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## The Foundation of Trust: Event Sourcing in Finance
 
 At FinAegis, we've built our entire platform on event sourcing principles, creating an immutable audit trail for every financial operation. This architectural decision provides unprecedented transparency and reliability.
@@ -124,22 +123,22 @@ Despite the additional complexity, our event-sourced system handles:
 
 We're proud to contribute back to the community. Check out our event sourcing utilities package on GitHub, used by financial institutions across Europe.
 EOT,
-                'category' => 'platform',
-                'author_name' => 'Tech Team',
-                'author_role' => 'Engineering',
+                'category'        => 'platform',
+                'author_name'     => 'Tech Team',
+                'author_role'     => 'Engineering',
                 'author_initials' => 'TT',
-                'reading_time' => 12,
-                'gradient_from' => 'green-500',
-                'gradient_to' => 'blue-600',
-                'is_published' => true,
-                'published_at' => now()->subDays(7),
+                'reading_time'    => 12,
+                'gradient_from'   => 'green-500',
+                'gradient_to'     => 'blue-600',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(7),
             ],
 
             [
-                'title' => 'Batch Processing 2.0: Handling Millions of Transactions Efficiently',
-                'slug' => 'batch-processing-efficient-transactions',
+                'title'   => 'Batch Processing 2.0: Handling Millions of Transactions Efficiently',
+                'slug'    => 'batch-processing-efficient-transactions',
                 'excerpt' => 'Learn how our new batch processing system handles millions of transactions daily with built-in validation, reconciliation, and automatic retry mechanisms.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Next-Generation Batch Processing
 
 FinAegis Batch Processing 2.0 represents a quantum leap in transaction processing efficiency. Built from the ground up to handle enterprise-scale operations, our system processes millions of transactions daily with unmatched reliability.
@@ -215,23 +214,23 @@ Every batch is:
 
 Start using Batch Processing 2.0 today through our API or web interface.
 EOT,
-                'category' => 'platform',
-                'author_name' => 'Product Manager',
-                'author_role' => 'Product',
+                'category'        => 'platform',
+                'author_name'     => 'Product Manager',
+                'author_role'     => 'Product',
                 'author_initials' => 'PM',
-                'reading_time' => 10,
-                'gradient_from' => 'red-400',
-                'gradient_to' => 'pink-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(10),
+                'reading_time'    => 10,
+                'gradient_from'   => 'red-400',
+                'gradient_to'     => 'pink-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(10),
             ],
 
             // Security
             [
-                'title' => 'Quantum-Resistant Cryptography: Preparing for the Future',
-                'slug' => 'quantum-resistant-cryptography-implementation',
+                'title'   => 'Quantum-Resistant Cryptography: Preparing for the Future',
+                'slug'    => 'quantum-resistant-cryptography-implementation',
                 'excerpt' => 'FinAegis becomes the first European fintech to implement quantum-resistant cryptography, ensuring your financial data remains secure in the post-quantum era.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Leading the Quantum-Safe Revolution
 
 As quantum computing advances threaten traditional cryptography, FinAegis takes proactive steps to protect your financial future. We're proud to be the first European fintech platform to implement comprehensive quantum-resistant cryptography.
@@ -298,23 +297,23 @@ Our quantum-resistant library is available on GitHub, helping the entire financi
 
 Security isn't just about today—it's about ensuring your financial data remains protected for decades to come.
 EOT,
-                'category' => 'security',
-                'author_name' => 'Security Lead',
-                'author_role' => 'Security Team',
+                'category'        => 'security',
+                'author_name'     => 'Security Lead',
+                'author_role'     => 'Security Team',
                 'author_initials' => 'SL',
-                'reading_time' => 15,
-                'gradient_from' => 'green-400',
-                'gradient_to' => 'blue-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(5),
+                'reading_time'    => 15,
+                'gradient_from'   => 'green-400',
+                'gradient_to'     => 'blue-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(5),
             ],
 
             // Developer
             [
-                'title' => 'API v2.0: Powerful Tools for Modern Financial Applications',
-                'slug' => 'api-v2-launch-developer-tools',
+                'title'   => 'API v2.0: Powerful Tools for Modern Financial Applications',
+                'slug'    => 'api-v2-launch-developer-tools',
                 'excerpt' => 'Our completely redesigned API v2.0 brings GraphQL support, real-time webhooks, and comprehensive SDKs for building next-generation financial applications.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## FinAegis API v2.0: Built for Developers, Designed for Scale
 
 We're excited to announce the general availability of FinAegis API v2.0, a complete reimagining of our developer platform. Based on feedback from thousands of developers, we've built the most powerful and flexible financial API in Europe.
@@ -420,23 +419,23 @@ Join our thriving developer community:
 
 Start building the future of finance with FinAegis API v2.0 today!
 EOT,
-                'category' => 'developer',
-                'author_name' => 'DevRel Team',
-                'author_role' => 'Developer Relations',
+                'category'        => 'developer',
+                'author_name'     => 'DevRel Team',
+                'author_role'     => 'Developer Relations',
                 'author_initials' => 'DR',
-                'reading_time' => 12,
-                'gradient_from' => 'purple-400',
-                'gradient_to' => 'pink-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(8),
+                'reading_time'    => 12,
+                'gradient_from'   => 'purple-400',
+                'gradient_to'     => 'pink-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(8),
             ],
 
             // Industry
             [
-                'title' => 'The Future of European Banking: Open Finance and Beyond',
-                'slug' => 'future-european-banking-open-finance',
+                'title'   => 'The Future of European Banking: Open Finance and Beyond',
+                'slug'    => 'future-european-banking-open-finance',
                 'excerpt' => 'An in-depth analysis of how Open Finance regulations will reshape the European financial landscape and what it means for consumers and businesses.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Open Finance: The Next Evolution of European Banking
 
 As PSD2 transformed payments, Open Finance promises to revolutionize the entire financial services industry. FinAegis is at the forefront of this transformation, building infrastructure for the open financial ecosystem of tomorrow.
@@ -536,23 +535,23 @@ For fintechs:
 
 The future of finance is open, and FinAegis is building the infrastructure to make it accessible to everyone.
 EOT,
-                'category' => 'industry',
-                'author_name' => 'Research Team',
-                'author_role' => 'Market Analysis',
+                'category'        => 'industry',
+                'author_name'     => 'Research Team',
+                'author_role'     => 'Market Analysis',
                 'author_initials' => 'RT',
-                'reading_time' => 18,
-                'gradient_from' => 'yellow-400',
-                'gradient_to' => 'orange-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(12),
+                'reading_time'    => 18,
+                'gradient_from'   => 'yellow-400',
+                'gradient_to'     => 'orange-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(12),
             ],
 
             // Compliance
             [
-                'title' => 'MiCA Compliance: Your Gateway to Crypto-Asset Services',
-                'slug' => 'mica-compliance-crypto-asset-services',
+                'title'   => 'MiCA Compliance: Your Gateway to Crypto-Asset Services',
+                'slug'    => 'mica-compliance-crypto-asset-services',
                 'excerpt' => 'How FinAegis helps financial institutions navigate the Markets in Crypto-Assets (MiCA) regulation and launch compliant digital asset services.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Navigating MiCA: A Comprehensive Compliance Framework
 
 The Markets in Crypto-Assets (MiCA) regulation represents the most comprehensive crypto framework globally. FinAegis provides the infrastructure and compliance tools needed to launch MiCA-compliant services quickly and confidently.
@@ -676,23 +675,23 @@ Infrastructure:
 
 Don't let MiCA complexity slow your crypto ambitions. Launch compliant services with confidence using FinAegis infrastructure.
 EOT,
-                'category' => 'compliance',
-                'author_name' => 'Compliance Team',
-                'author_role' => 'Legal & Compliance',
+                'category'        => 'compliance',
+                'author_name'     => 'Compliance Team',
+                'author_role'     => 'Legal & Compliance',
                 'author_initials' => 'CT',
-                'reading_time' => 20,
-                'gradient_from' => 'red-500',
-                'gradient_to' => 'yellow-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(15),
+                'reading_time'    => 20,
+                'gradient_from'   => 'red-500',
+                'gradient_to'     => 'yellow-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(15),
             ],
 
             // Additional Platform Features
             [
-                'title' => 'Introducing FinAegis Workflows: Automate Complex Financial Operations',
-                'slug' => 'finaegis-workflows-automation',
+                'title'   => 'Introducing FinAegis Workflows: Automate Complex Financial Operations',
+                'slug'    => 'finaegis-workflows-automation',
                 'excerpt' => 'Our new workflow engine enables automation of complex multi-step financial operations with built-in compliance checks and automatic rollback capabilities.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Workflow Automation for Financial Operations
 
 FinAegis Workflows brings enterprise-grade automation to financial operations. Built on proven workflow orchestration patterns, our system handles complex multi-step processes with ease.
@@ -779,23 +778,23 @@ const paymentWorkflow = defineWorkflow({
 
 Start automating your financial operations today with FinAegis Workflows.
 EOT,
-                'category' => 'platform',
-                'author_name' => 'Engineering Team',
-                'author_role' => 'Platform Engineering',
+                'category'        => 'platform',
+                'author_name'     => 'Engineering Team',
+                'author_role'     => 'Platform Engineering',
                 'author_initials' => 'ET',
-                'reading_time' => 11,
-                'gradient_from' => 'indigo-400',
-                'gradient_to' => 'purple-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(18),
+                'reading_time'    => 11,
+                'gradient_from'   => 'indigo-400',
+                'gradient_to'     => 'purple-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(18),
             ],
 
             // Security Update
             [
-                'title' => 'Zero-Trust Architecture: Security Without Compromise',
-                'slug' => 'zero-trust-architecture-implementation',
+                'title'   => 'Zero-Trust Architecture: Security Without Compromise',
+                'slug'    => 'zero-trust-architecture-implementation',
                 'excerpt' => 'Learn how our zero-trust security model protects against modern threats while maintaining the performance required for financial operations.',
-                'content' => <<<EOT
+                'content' => <<<'EOT'
 ## Implementing Zero-Trust in Financial Services
 
 FinAegis has completely reimagined security with our zero-trust architecture. In today's threat landscape, perimeter-based security is insufficient. Our approach assumes no trust and verifies everything.
@@ -866,15 +865,15 @@ Despite comprehensive security:
 
 Your security is our top priority. Zero-trust ensures it stays that way.
 EOT,
-                'category' => 'security',
-                'author_name' => 'Security Team',
-                'author_role' => 'Information Security',
+                'category'        => 'security',
+                'author_name'     => 'Security Team',
+                'author_role'     => 'Information Security',
                 'author_initials' => 'ST',
-                'reading_time' => 14,
-                'gradient_from' => 'green-500',
-                'gradient_to' => 'teal-500',
-                'is_published' => true,
-                'published_at' => now()->subDays(22),
+                'reading_time'    => 14,
+                'gradient_from'   => 'green-500',
+                'gradient_to'     => 'teal-500',
+                'is_published'    => true,
+                'published_at'    => now()->subDays(22),
             ],
         ];
 

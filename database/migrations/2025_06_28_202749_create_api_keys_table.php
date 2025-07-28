@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     public function up()
     {
         Schema::create('api_keys', function (Blueprint $table) {
@@ -25,7 +24,7 @@ return new class extends Migration
             $table->unsignedBigInteger('request_count')->default(0);
             $table->dateTime('expires_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['user_uuid', 'is_active']);
             $table->index('key_prefix');
             $table->index('expires_at');

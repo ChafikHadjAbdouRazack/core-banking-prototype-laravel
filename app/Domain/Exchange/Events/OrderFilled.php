@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderFilled extends ShouldBeStored
@@ -12,5 +11,6 @@ class OrderFilled extends ShouldBeStored
         public readonly string $totalExecutedAmount,
         public readonly string $averagePrice,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

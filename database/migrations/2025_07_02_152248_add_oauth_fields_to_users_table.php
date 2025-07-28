@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,7 +14,7 @@ return new class extends Migration
             $table->string('oauth_provider')->nullable()->after('password');
             $table->string('oauth_id')->nullable()->after('oauth_provider');
             $table->string('avatar')->nullable()->after('oauth_id');
-            
+
             // Add index for faster lookups
             $table->index(['oauth_provider', 'oauth_id']);
         });

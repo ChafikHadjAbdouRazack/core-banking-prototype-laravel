@@ -9,7 +9,7 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewOrder extends ViewRecord
 {
     protected static string $resource = OrderResource::class;
-    
+
     protected function getHeaderActions(): array
     {
         return [
@@ -19,10 +19,12 @@ class ViewOrder extends ViewRecord
                 ->color('danger')
                 ->requiresConfirmation()
                 ->visible(fn () => $this->record->canBeCancelled())
-                ->action(function () {
-                    app(\App\Domain\Exchange\Services\ExchangeService::class)->cancelOrder($this->record->order_id);
-                    $this->redirect($this->getResource()::getUrl('index'));
-                }),
+                ->action(
+                    function () {
+                        app(\App\Domain\Exchange\Services\ExchangeService::class)->cancelOrder($this->record->order_id);
+                        $this->redirect($this->getResource()::getUrl('index'));
+                    }
+                ),
         ];
     }
 }

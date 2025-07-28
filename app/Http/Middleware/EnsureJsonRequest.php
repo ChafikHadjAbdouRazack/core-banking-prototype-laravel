@@ -11,7 +11,7 @@ class EnsureJsonRequest
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -22,12 +22,15 @@ class EnsureJsonRequest
 
         // Check if the content type is application/json
         $contentType = $request->header('Content-Type');
-        
-        if (!$contentType || !str_contains($contentType, 'application/json')) {
-            return response()->json([
-                'error' => 'Unsupported Media Type',
-                'message' => 'This API endpoint requires Content-Type: application/json'
-            ], 415);
+
+        if (! $contentType || ! str_contains($contentType, 'application/json')) {
+            return response()->json(
+                [
+                    'error'   => 'Unsupported Media Type',
+                    'message' => 'This API endpoint requires Content-Type: application/json',
+                ],
+                415
+            );
         }
 
         return $next($request);

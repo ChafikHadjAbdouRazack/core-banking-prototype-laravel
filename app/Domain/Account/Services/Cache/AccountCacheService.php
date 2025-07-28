@@ -4,36 +4,37 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Services\Cache;
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use Illuminate\Support\Facades\Cache;
 
 class AccountCacheService
 {
     /**
-     * Cache key prefix for accounts
+     * Cache key prefix for accounts.
      */
     private const CACHE_PREFIX = 'account:';
 
     /**
-     * Cache duration in seconds (1 hour)
+     * Cache duration in seconds (1 hour).
      */
     private const CACHE_TTL = 3600;
 
     /**
-     * Get account from cache or database
+     * Get account from cache or database.
      */
     public function get(string $uuid): ?Account
     {
         $uuid = (string) $uuid;
+
         return Cache::remember(
             $this->getCacheKey($uuid),
             self::CACHE_TTL,
-            fn() => Account::where('uuid', $uuid)->first()
+            fn () => Account::where('uuid', $uuid)->first()
         );
     }
 
     /**
-     * Update account in cache
+     * Update account in cache.
      */
     public function put(Account $account): void
     {
@@ -46,7 +47,7 @@ class AccountCacheService
     }
 
     /**
-     * Remove account from cache
+     * Remove account from cache.
      */
     public function forget(string $uuid): void
     {
@@ -56,7 +57,7 @@ class AccountCacheService
     }
 
     /**
-     * Clear all account cache entries
+     * Clear all account cache entries.
      */
     public function flush(): void
     {
@@ -66,49 +67,54 @@ class AccountCacheService
     }
 
     /**
-     * Get balance from cache with shorter TTL for more frequent updates
+     * Get balance from cache with shorter TTL for more frequent updates.
      */
     public function getBalance(string $uuid): ?int
     {
+        /** @var Account|null $account */
+        $account = null;
+        /** @var Account|null $account */
+        $account = null;
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';
-        
+
         $balance = Cache::remember(
             $key,
             300, // 5 minutes for balance
             function () use ($uuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $account */
                 $account = Account::where('uuid', $uuid)->first();
-                if (!$account) {
+                if (! $account) {
                     return null;
                 }
-                
+
                 // For backward compatibility, return USD balance
                 $usdBalance = $account->balances()
                     ->where('asset_code', 'USD')
                     ->first();
-                
+
                 return $usdBalance ? $usdBalance->balance : 0;
             }
         );
-        
+
         return $balance === null ? null : (int) $balance;
     }
 
     /**
-     * Update balance in cache
+     * Update balance in cache.
      */
     public function updateBalance(string $uuid, int $balance): void
     {
         $uuid = (string) $uuid;
         $key = $this->getCacheKey($uuid) . ':balance';
         Cache::put($key, $balance, 300);
-        
+
         // Only invalidate the main account cache, not the balance
         Cache::forget($this->getCacheKey($uuid));
     }
 
     /**
-     * Generate cache key for account
+     * Generate cache key for account.
      */
     private function getCacheKey(string $uuid): string
     {

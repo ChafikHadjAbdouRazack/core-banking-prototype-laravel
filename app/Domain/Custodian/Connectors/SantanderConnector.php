@@ -15,12 +15,17 @@ use Illuminate\Support\Facades\Log;
 class SantanderConnector extends BaseCustodianConnector
 {
     private const API_BASE_URL = 'https://api.santander.com/open-banking/v3.1';
+
     private const AUTH_URL = 'https://auth.santander.com/oauth/token';
-    
+
     private string $apiKey;
+
     private string $apiSecret;
+
     private string $certificate;
+
     private ?string $accessToken = null;
+
     private ?Carbon $tokenExpiry = null;
 
     public function __construct(array $config)
@@ -29,13 +34,13 @@ class SantanderConnector extends BaseCustodianConnector
         $config['name'] = $config['name'] ?? 'Santander';
         // Set base URL for parent class
         $config['base_url'] = self::API_BASE_URL;
-        
+
         parent::__construct($config);
-        
+
         $this->apiKey = $config['api_key'] ?? '';
         $this->apiSecret = $config['api_secret'] ?? '';
         $this->certificate = $config['certificate'] ?? '';
-        
+
         // Only validate credentials in production
         if (app()->environment('production') && (empty($this->apiKey) || empty($this->apiSecret))) {
             throw new \InvalidArgumentException('Santander api_key and api_secret are required');
@@ -54,19 +59,19 @@ class SantanderConnector extends BaseCustodianConnector
     }
 
     /**
-     * Get common headers for API requests
+     * Get common headers for API requests.
      */
     private function getCommonHeaders(): array
     {
         return [
             'X-Santander-Client-Id' => $this->apiKey,
-            'X-Request-ID' => uniqid('san-'),
-            'Accept' => 'application/json',
+            'X-Request-ID'          => uniqid('san-'),
+            'Accept'                => 'application/json',
         ];
     }
 
     /**
-     * Get or refresh OAuth access token
+     * Get or refresh OAuth access token.
      */
     private function getAccessToken(): string
     {
@@ -78,14 +83,17 @@ class SantanderConnector extends BaseCustodianConnector
 
         $response = Http::asForm()
             ->withHeaders($this->getCommonHeaders())
-            ->post(self::AUTH_URL, [
-                'grant_type' => 'client_credentials',
-                'client_id' => $this->apiKey,
-                'client_secret' => $this->apiSecret,
-                'scope' => 'accounts payments fundsconfirmations',
-            ]);
+            ->post(
+                self::AUTH_URL,
+                [
+                    'grant_type'    => 'client_credentials',
+                    'client_id'     => $this->apiKey,
+                    'client_secret' => $this->apiSecret,
+                    'scope'         => 'accounts payments fundsconfirmations',
+                ]
+            );
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             throw new \Exception('Failed to obtain access token: ' . $response->body());
         }
 
@@ -97,17 +105,20 @@ class SantanderConnector extends BaseCustodianConnector
     }
 
     /**
-     * Make authenticated API request
+     * Make authenticated API request.
      */
     private function apiRequest(string $method, string $endpoint, array $data = []): \Illuminate\Http\Client\Response
     {
         $token = $this->getAccessToken();
-        
+
         $this->logRequest($method, $endpoint, $data);
 
-        $headers = array_merge($this->getCommonHeaders(), [
-            'Authorization' => "Bearer {$token}",
-        ]);
+        $headers = array_merge(
+            $this->getCommonHeaders(),
+            [
+                'Authorization' => "Bearer {$token}",
+            ]
+        );
 
         $request = Http::withHeaders($headers)
             ->acceptJson()
@@ -115,17 +126,19 @@ class SantanderConnector extends BaseCustodianConnector
 
         // Add certificate if provided
         if ($this->certificate) {
-            $request = $request->withOptions([
-                'cert' => $this->certificate,
-            ]);
+            $request = $request->withOptions(
+                [
+                    'cert' => $this->certificate,
+                ]
+            );
         }
 
         return match (strtoupper($method)) {
-            'GET' => $request->get(self::API_BASE_URL . $endpoint, $data),
-            'POST' => $request->post(self::API_BASE_URL . $endpoint, $data),
-            'PUT' => $request->put(self::API_BASE_URL . $endpoint, $data),
+            'GET'    => $request->get(self::API_BASE_URL . $endpoint, $data),
+            'POST'   => $request->post(self::API_BASE_URL . $endpoint, $data),
+            'PUT'    => $request->put(self::API_BASE_URL . $endpoint, $data),
             'DELETE' => $request->delete(self::API_BASE_URL . $endpoint),
-            default => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
+            default  => throw new \InvalidArgumentException("Unsupported HTTP method: {$method}"),
         };
     }
 
@@ -133,17 +146,18 @@ class SantanderConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}/balances");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get balance: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get balance: ' . $response->body());
         }
 
         $data = $response->json();
-        
+
         // Santander follows Open Banking UK standard
         foreach ($data['Data']['Balance'] ?? [] as $balance) {
             if ($balance['Currency'] === $assetCode && $balance['Type'] === 'InterimAvailable') {
                 // Convert from decimal to cents
                 $amountInCents = (int) round((float) $balance['Amount']['Amount'] * 100);
+
                 return new Money($amountInCents);
             }
         }
@@ -156,17 +170,17 @@ class SantanderConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get account info: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get account info: ' . $response->body());
         }
 
         $data = $response->json();
         $accountData = $data['Data']['Account'][0] ?? [];
-        
+
         // Get balance information
         $balancesResponse = $this->apiRequest('GET', "/aisp/accounts/{$accountId}/balances");
         $balancesData = $balancesResponse->json();
-        
+
         $balances = [];
         foreach ($balancesData['Data']['Balance'] ?? [] as $balance) {
             if ($balance['Type'] === 'InterimAvailable') {
@@ -184,10 +198,10 @@ class SantanderConnector extends BaseCustodianConnector
             type: $accountData['AccountSubType'] ?? 'CurrentAccount',
             createdAt: isset($accountData['OpeningDate']) ? Carbon::parse($accountData['OpeningDate']) : Carbon::now(),
             metadata: [
-                'account_number' => $accountData['Identification'] ?? null,
-                'scheme_name' => $accountData['SchemeName'] ?? null,
+                'account_number'           => $accountData['Identification'] ?? null,
+                'scheme_name'              => $accountData['SchemeName'] ?? null,
                 'secondary_identification' => $accountData['SecondaryIdentification'] ?? null,
-                'connector' => 'SantanderConnector',
+                'connector'                => 'SantanderConnector',
             ]
         );
     }
@@ -196,24 +210,24 @@ class SantanderConnector extends BaseCustodianConnector
     {
         $consentResponse = $this->createPaymentConsent($request);
         $consentId = $consentResponse['Data']['ConsentId'];
-        
+
         $paymentData = [
             'Data' => [
-                'ConsentId' => $consentId,
+                'ConsentId'  => $consentId,
                 'Initiation' => [
                     'InstructionIdentification' => uniqid('SAN-'),
-                    'EndToEndIdentification' => $request->reference,
-                    'InstructedAmount' => [
-                        'Amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                    'EndToEndIdentification'    => $request->reference,
+                    'InstructedAmount'          => [
+                        'Amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
                         'Currency' => $request->assetCode,
                     ],
                     'CreditorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->toAccount,
-                        'Name' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+                        'Name'           => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
                     ],
                     'DebtorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->fromAccount,
                     ],
                     'RemittanceInformation' => [
@@ -228,8 +242,8 @@ class SantanderConnector extends BaseCustodianConnector
 
         $response = $this->apiRequest('POST', '/pisp/domestic-payments', $paymentData);
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to initiate transfer: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to initiate transfer: ' . $response->body());
         }
 
         $data = $response->json();
@@ -245,13 +259,13 @@ class SantanderConnector extends BaseCustodianConnector
             fee: $this->extractFee($paymentData),
             reference: $paymentData['Initiation']['EndToEndIdentification'],
             createdAt: Carbon::parse($paymentData['CreationDateTime']),
-            completedAt: isset($paymentData['StatusUpdateDateTime']) && $paymentData['Status'] === 'AcceptedSettlementCompleted' 
-                ? Carbon::parse($paymentData['StatusUpdateDateTime']) 
+            completedAt: isset($paymentData['StatusUpdateDateTime']) && $paymentData['Status'] === 'AcceptedSettlementCompleted'
+                ? Carbon::parse($paymentData['StatusUpdateDateTime'])
                 : null,
             metadata: [
                 'santander_payment_id' => $paymentData['DomesticPaymentId'],
-                'santander_status' => $paymentData['Status'],
-                'consent_id' => $consentId,
+                'santander_status'     => $paymentData['Status'],
+                'consent_id'           => $consentId,
             ]
         );
     }
@@ -260,8 +274,8 @@ class SantanderConnector extends BaseCustodianConnector
     {
         $response = $this->apiRequest('GET', "/pisp/domestic-payments/{$transactionId}");
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get transaction status: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get transaction status: ' . $response->body());
         }
 
         $data = $response->json();
@@ -282,7 +296,7 @@ class SantanderConnector extends BaseCustodianConnector
                 : null,
             metadata: [
                 'santander_payment_id' => $paymentData['DomesticPaymentId'],
-                'santander_status' => $paymentData['Status'],
+                'santander_status'     => $paymentData['Status'],
             ]
         );
     }
@@ -291,10 +305,13 @@ class SantanderConnector extends BaseCustodianConnector
     {
         // Santander doesn't support direct payment cancellation in Open Banking
         // Payments can only be rejected during authorization
-        Log::warning('Santander does not support payment cancellation', [
-            'transaction_id' => $transactionId,
-        ]);
-        
+        Log::warning(
+            'Santander does not support payment cancellation',
+            [
+                'transaction_id' => $transactionId,
+            ]
+        );
+
         return false;
     }
 
@@ -308,17 +325,21 @@ class SantanderConnector extends BaseCustodianConnector
     {
         try {
             $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}");
-            
+
             if ($response->successful()) {
                 $data = $response->json();
                 $status = $data['Data']['Account'][0]['Status'] ?? '';
+
                 return in_array($status, ['Enabled', 'Active']);
             }
         } catch (\Exception $e) {
-            Log::warning('Account validation failed', [
-                'account_id' => $accountId,
-                'error' => $e->getMessage(),
-            ]);
+            Log::warning(
+                'Account validation failed',
+                [
+                    'account_id' => $accountId,
+                    'error'      => $e->getMessage(),
+                ]
+            );
         }
 
         return false;
@@ -326,13 +347,17 @@ class SantanderConnector extends BaseCustodianConnector
 
     public function getTransactionHistory(string $accountId, ?int $limit = 100, ?int $offset = 0): array
     {
-        $response = $this->apiRequest('GET', "/aisp/accounts/{$accountId}/transactions", [
-            'fromBookingDateTime' => Carbon::now()->subDays(90)->toIso8601String(),
-            'toBookingDateTime' => Carbon::now()->toIso8601String(),
-        ]);
+        $response = $this->apiRequest(
+            'GET',
+            "/aisp/accounts/{$accountId}/transactions",
+            [
+                'fromBookingDateTime' => Carbon::now()->subDays(90)->toIso8601String(),
+                'toBookingDateTime'   => Carbon::now()->toIso8601String(),
+            ]
+        );
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to get transaction history: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get transaction history: ' . $response->body());
         }
 
         $data = $response->json();
@@ -340,17 +365,17 @@ class SantanderConnector extends BaseCustodianConnector
 
         foreach ($data['Data']['Transaction'] ?? [] as $transaction) {
             $transactions[] = [
-                'id' => $transaction['TransactionId'],
-                'status' => $transaction['Status'] === 'Booked' ? 'completed' : 'pending',
+                'id'           => $transaction['TransactionId'],
+                'status'       => $transaction['Status'] === 'Booked' ? 'completed' : 'pending',
                 'from_account' => $transaction['DebtorAccount']['Identification'] ?? $accountId,
-                'to_account' => $transaction['CreditorAccount']['Identification'] ?? $accountId,
-                'asset_code' => $transaction['Amount']['Currency'],
-                'amount' => (int) round(abs((float) $transaction['Amount']['Amount']) * 100),
-                'fee' => isset($transaction['ChargeAmount']) 
-                    ? (int) round((float) $transaction['ChargeAmount']['Amount'] * 100) 
+                'to_account'   => $transaction['CreditorAccount']['Identification'] ?? $accountId,
+                'asset_code'   => $transaction['Amount']['Currency'],
+                'amount'       => (int) round(abs((float) $transaction['Amount']['Amount']) * 100),
+                'fee'          => isset($transaction['ChargeAmount'])
+                    ? (int) round((float) $transaction['ChargeAmount']['Amount'] * 100)
                     : null,
-                'reference' => $transaction['TransactionReference'] ?? null,
-                'created_at' => $transaction['BookingDateTime'],
+                'reference'    => $transaction['TransactionReference'] ?? null,
+                'created_at'   => $transaction['BookingDateTime'],
                 'completed_at' => $transaction['ValueDateTime'] ?? $transaction['BookingDateTime'],
             ];
 
@@ -365,7 +390,7 @@ class SantanderConnector extends BaseCustodianConnector
     }
 
     /**
-     * Create payment consent before initiating payment
+     * Create payment consent before initiating payment.
      */
     private function createPaymentConsent(TransferRequest $request): array
     {
@@ -373,15 +398,15 @@ class SantanderConnector extends BaseCustodianConnector
             'Data' => [
                 'Initiation' => [
                     'InstructionIdentification' => uniqid('SANC-'),
-                    'EndToEndIdentification' => $request->reference,
-                    'InstructedAmount' => [
-                        'Amount' => number_format($request->amount->getAmount() / 100, 2, '.', ''),
+                    'EndToEndIdentification'    => $request->reference,
+                    'InstructedAmount'          => [
+                        'Amount'   => number_format($request->amount->getAmount() / 100, 2, '.', ''),
                         'Currency' => $request->assetCode,
                     ],
                     'CreditorAccount' => [
-                        'SchemeName' => 'IBAN',
+                        'SchemeName'     => 'IBAN',
                         'Identification' => $request->toAccount,
-                        'Name' => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
+                        'Name'           => $request->metadata['beneficiary_name'] ?? 'Beneficiary',
                     ],
                     'RemittanceInformation' => [
                         'Unstructured' => $request->description ?? $request->reference,
@@ -395,15 +420,15 @@ class SantanderConnector extends BaseCustodianConnector
 
         $response = $this->apiRequest('POST', '/pisp/domestic-payment-consents', $consentData);
 
-        if (!$response->successful()) {
-            throw new \Exception("Failed to create payment consent: " . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to create payment consent: ' . $response->body());
         }
 
         return $response->json();
     }
 
     /**
-     * Extract fee from payment data
+     * Extract fee from payment data.
      */
     private function extractFee(array $paymentData): ?int
     {
@@ -412,6 +437,7 @@ class SantanderConnector extends BaseCustodianConnector
             foreach ($paymentData['Charges'] as $charge) {
                 $totalFee += (int) round((float) $charge['Amount']['Amount'] * 100);
             }
+
             return $totalFee > 0 ? $totalFee : null;
         }
 
@@ -419,7 +445,7 @@ class SantanderConnector extends BaseCustodianConnector
     }
 
     /**
-     * Map Santander account status to internal status
+     * Map Santander account status to internal status.
      */
     private function mapAccountStatus(string $santanderStatus): string
     {
@@ -433,7 +459,7 @@ class SantanderConnector extends BaseCustodianConnector
     }
 
     /**
-     * Map Santander transaction status to internal status
+     * Map Santander transaction status to internal status.
      */
     private function mapTransactionStatus(string $santanderStatus): string
     {
@@ -441,8 +467,8 @@ class SantanderConnector extends BaseCustodianConnector
             'AcceptedTechnicalValidation', 'AcceptedCustomerProfile', 'AcceptedSettlementInProcess' => 'pending',
             'AcceptedSettlementCompleted', 'AcceptedWithoutPosting' => 'completed',
             'Rejected' => 'failed',
-            'Pending' => 'pending',
-            default => 'unknown',
+            'Pending'  => 'pending',
+            default    => 'unknown',
         };
     }
 }

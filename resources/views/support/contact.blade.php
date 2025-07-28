@@ -1,35 +1,26 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Contact FinAegis support team. Get help with alpha testing feedback and report issues for our open source banking platform.">
-    
-    <title>Contact Us - FinAegis Support</title>
+@extends('layouts.public')
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'Contact Us - FinAegis Support')
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-    </style>
-</head>
-<body class="antialiased bg-gray-50">
-    <x-platform-banners />
-    
-    <!-- Spacer for fixed banner -->
-    <div class="h-12"></div>
-    
-    <x-main-navigation />
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Contact Us - FinAegis Support',
+        'description' => 'Contact FinAegis support team. Get help with alpha testing feedback and report issues for our open source banking platform.',
+    ])
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+@endpush
+
+@section('content')
 
     <!-- Hero Section -->
-    <section class="pt-16 pb-20 gradient-bg text-white">
+    <section class="pb-20 gradient-bg text-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <h1 class="text-5xl font-bold mb-6">Contact Us</h1>
@@ -293,5 +284,4 @@
             </div>
         </div>
     </footer>
-</body>
-</html>
+@endsection

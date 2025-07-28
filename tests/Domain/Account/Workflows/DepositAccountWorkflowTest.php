@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\DepositAccountWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for deposit', function () {
     expect(class_exists(DepositAccountWorkflow::class))->toBeTrue();
-    
+
     $workflow = WorkflowStub::make(DepositAccountWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);
 });
@@ -17,7 +15,7 @@ it('can create workflow stub for deposit', function () {
 it('has execute method with correct signature', function () {
     $reflection = new ReflectionClass(DepositAccountWorkflow::class);
     $method = $reflection->getMethod('execute');
-    
+
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(2);
     expect($method->getReturnType()->getName())->toBe('Generator');
@@ -32,10 +30,10 @@ it('has correct parameter types', function () {
     $reflection = new ReflectionClass(DepositAccountWorkflow::class);
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
-    
+
     expect($parameters[0]->getName())->toBe('uuid');
     expect($parameters[1]->getName())->toBe('money');
-    
+
     // Check parameter types
     expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
     expect($parameters[1]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');

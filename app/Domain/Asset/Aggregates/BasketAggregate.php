@@ -2,20 +2,25 @@
 
 namespace App\Domain\Asset\Aggregates;
 
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use App\Domain\Asset\Events\BasketCreated;
 use App\Domain\Asset\Events\BasketComposed;
+use App\Domain\Asset\Events\BasketCreated;
 use App\Domain\Asset\Events\BasketDecomposed;
 use App\Domain\Asset\Events\BasketRebalanced;
 use App\Domain\Asset\Events\BasketValueCalculated;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class BasketAggregate extends AggregateRoot
 {
     private string $basketCode;
+
     private string $name;
+
     private string $type;
+
     private array $components = [];
+
     private bool $isActive = true;
+
     private ?string $rebalanceFrequency = null;
 
     public function createBasket(
@@ -25,13 +30,15 @@ class BasketAggregate extends AggregateRoot
         array $components,
         ?string $rebalanceFrequency = null
     ): self {
-        $this->recordThat(new BasketCreated(
-            $basketCode,
-            $name,
-            $type,
-            $components,
-            $rebalanceFrequency
-        ));
+        $this->recordThat(
+            new BasketCreated(
+                $basketCode,
+                $name,
+                $type,
+                $components,
+                $rebalanceFrequency
+            )
+        );
 
         return $this;
     }
@@ -42,13 +49,15 @@ class BasketAggregate extends AggregateRoot
         int $amount,
         array $exchangeRates
     ): self {
-        $this->recordThat(new BasketComposed(
-            $accountUuid,
-            $basketCode,
-            $amount,
-            $exchangeRates,
-            $this->components
-        ));
+        $this->recordThat(
+            new BasketComposed(
+                $accountUuid,
+                $basketCode,
+                $amount,
+                $exchangeRates,
+                $this->components
+            )
+        );
 
         return $this;
     }
@@ -59,13 +68,15 @@ class BasketAggregate extends AggregateRoot
         int $amount,
         array $exchangeRates
     ): self {
-        $this->recordThat(new BasketDecomposed(
-            $accountUuid,
-            $basketCode,
-            $amount,
-            $exchangeRates,
-            $this->components
-        ));
+        $this->recordThat(
+            new BasketDecomposed(
+                $accountUuid,
+                $basketCode,
+                $amount,
+                $exchangeRates,
+                $this->components
+            )
+        );
 
         return $this;
     }
@@ -75,11 +86,13 @@ class BasketAggregate extends AggregateRoot
         array $newComponents,
         array $oldComponents
     ): self {
-        $this->recordThat(new BasketRebalanced(
-            $basketCode,
-            $newComponents,
-            $oldComponents
-        ));
+        $this->recordThat(
+            new BasketRebalanced(
+                $basketCode,
+                $newComponents,
+                $oldComponents
+            )
+        );
 
         return $this;
     }
@@ -89,12 +102,14 @@ class BasketAggregate extends AggregateRoot
         array $exchangeRates,
         float $totalValue
     ): self {
-        $this->recordThat(new BasketValueCalculated(
-            $basketCode,
-            $exchangeRates,
-            $totalValue,
-            now()
-        ));
+        $this->recordThat(
+            new BasketValueCalculated(
+                $basketCode,
+                $exchangeRates,
+                $totalValue,
+                now()
+            )
+        );
 
         return $this;
     }

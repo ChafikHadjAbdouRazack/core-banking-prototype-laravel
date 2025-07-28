@@ -2,6 +2,4 @@
 
 namespace FinAegis\Exceptions;
 
-class NotFoundException extends FinAegisException
-{
-}
+class NotFoundException extends FinAegisException {}

@@ -9,6 +9,7 @@ use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 class WithdrawalFailed extends ShouldBeStored
 {
     public string $queue = EventQueues::TRANSACTIONS->value;
+
     public function __construct(
         public string $reason,
         public Carbon $failedAt

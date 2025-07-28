@@ -10,13 +10,13 @@ use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 
 class TurnoverProjector extends Projector implements ShouldQueue
 {
-    public function onMoneyAdded( MoneyAdded $event ): void
+    public function onMoneyAdded(MoneyAdded $event): void
     {
-        app( UpdateTurnover::class )( $event );
+        app(UpdateTurnover::class)($event);
     }
 
-    public function onMoneySubtracted( MoneySubtracted $event ): void
+    public function onMoneySubtracted(MoneySubtracted $event): void
     {
-        app( UpdateTurnover::class )( $event );
+        app(UpdateTurnover::class)($event);
     }
 }

@@ -10,7 +10,7 @@ use Workflow\Activity;
 class ClosePositionActivity extends Activity
 {
     /**
-     * Close a collateral position
+     * Close a collateral position.
      */
     public function execute(
         string $positionUuid,
@@ -20,7 +20,7 @@ class ClosePositionActivity extends Activity
         $aggregate = StablecoinAggregate::retrieve($positionUuid);
         $aggregate->closePosition($reason);
         $aggregate->persist();
-        
+
         return true;
     }
 }

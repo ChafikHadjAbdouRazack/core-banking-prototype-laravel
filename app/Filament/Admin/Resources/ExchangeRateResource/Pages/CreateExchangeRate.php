@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\ExchangeRateResource\Pages;
 
 use App\Filament\Admin\Resources\ExchangeRateResource;
-use Filament\Resources\Pages\CreateRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateExchangeRate extends CreateRecord
 {
@@ -30,15 +30,15 @@ class CreateExchangeRate extends CreateRecord
         // Ensure asset codes are uppercase
         $data['from_asset_code'] = strtoupper($data['from_asset_code']);
         $data['to_asset_code'] = strtoupper($data['to_asset_code']);
-        
+
         // Add creation metadata
         if (empty($data['metadata'])) {
             $data['metadata'] = [];
         }
-        
+
         $data['metadata']['created_by'] = 'admin';
         $data['metadata']['created_at'] = now()->toISOString();
-        
+
         return $data;
     }
 }

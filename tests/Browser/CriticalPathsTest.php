@@ -2,34 +2,32 @@
 
 namespace Tests\Browser;
 
-use Tests\DuskTestCase;
-use Laravel\Dusk\Browser;
-use App\Models\User;
-use App\Models\Team;
+use PHPUnit\Framework\Attributes\Test;
 
 class CriticalPathsTest extends DuskTestCase
 {
     /**
-     * Test all public pages are accessible
+     * Test all public pages are accessible.
      */
+    #[Test]
     public function test_public_pages_are_accessible(): void
     {
         $this->browse(function (Browser $browser) {
             $publicRoutes = [
-                '/' => 'FinAegis',
-                '/about' => 'About FinAegis',
-                '/platform' => 'Platform',
-                '/gcu' => 'Global Currency Unit',
-                '/features' => 'Features',
-                '/pricing' => 'Pricing',
-                '/security' => 'Security',
+                '/'           => 'FinAegis',
+                '/about'      => 'About FinAegis',
+                '/platform'   => 'Platform',
+                '/gcu'        => 'Global Currency Unit',
+                '/features'   => 'Features',
+                '/pricing'    => 'Pricing',
+                '/security'   => 'Security',
                 '/compliance' => 'Compliance',
                 '/developers' => 'Developers',
-                '/support' => 'Support',
-                '/blog' => 'Blog',
-                '/partners' => 'Partners',
-                '/cgo' => 'CGO',
-                '/status' => 'Status',
+                '/support'    => 'Support',
+                '/blog'       => 'Blog',
+                '/partners'   => 'Partners',
+                '/cgo'        => 'CGO',
+                '/status'     => 'Status',
             ];
 
             foreach ($publicRoutes as $route => $expectedText) {
@@ -44,8 +42,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test registration process
+     * Test registration process.
      */
+    #[Test]
     public function test_user_can_register(): void
     {
         $this->browse(function (Browser $browser) {
@@ -63,8 +62,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test login process
+     * Test login process.
      */
+    #[Test]
     public function test_user_can_login(): void
     {
         $user = User::factory()->create();
@@ -81,8 +81,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test authenticated navigation menu
+     * Test authenticated navigation menu.
      */
+    #[Test]
     public function test_authenticated_navigation_menu(): void
     {
         $user = User::factory()->create();
@@ -111,8 +112,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test wallet operations
+     * Test wallet operations.
      */
+    #[Test]
     public function test_wallet_operations(): void
     {
         $user = User::factory()->create();
@@ -150,8 +152,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test quick actions from dashboard
+     * Test quick actions from dashboard.
      */
+    #[Test]
     public function test_dashboard_quick_actions(): void
     {
         $user = User::factory()->create();
@@ -179,8 +182,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test responsive navigation menu
+     * Test responsive navigation menu.
      */
+    #[Test]
     public function test_responsive_navigation_menu(): void
     {
         $user = User::factory()->create();
@@ -200,8 +204,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test critical API endpoints are accessible
+     * Test critical API endpoints are accessible.
      */
+    #[Test]
     public function test_critical_api_endpoints(): void
     {
         $user = User::factory()->create();
@@ -216,7 +221,7 @@ class CriticalPathsTest extends DuskTestCase
         foreach ($endpoints as $endpoint) {
             $response = $this->withHeaders([
                 'Authorization' => 'Bearer ' . $token,
-                'Accept' => 'application/json',
+                'Accept'        => 'application/json',
             ])->get($endpoint);
 
             $this->assertNotEquals(404, $response->status());
@@ -225,8 +230,9 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Test error pages are properly shown
+     * Test error pages are properly shown.
      */
+    #[Test]
     public function test_error_pages(): void
     {
         $this->browse(function (Browser $browser) {
@@ -239,13 +245,13 @@ class CriticalPathsTest extends DuskTestCase
     }
 
     /**
-     * Clean up after tests
+     * Clean up after tests.
      */
     protected function tearDown(): void
     {
         // Clean up test users
         User::where('email', 'like', 'test%@example.com')->delete();
-        
+
         parent::tearDown();
     }
 }

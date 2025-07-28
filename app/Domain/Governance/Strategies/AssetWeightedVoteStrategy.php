@@ -4,42 +4,44 @@ declare(strict_types=1);
 
 namespace App\Domain\Governance\Strategies;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Governance\Contracts\IVotingPowerStrategy;
 use App\Domain\Governance\Models\Poll;
 use App\Models\User;
-use App\Models\Account;
 
 class AssetWeightedVoteStrategy implements IVotingPowerStrategy
 {
     private const DEFAULT_ASSET_CODE = 'USD';
+
     private const MIN_BALANCE_FOR_VOTE = 100; // $1.00 in cents
+
     private const POWER_DIVISOR = 10000; // $100.00 = 1 voting power
 
     public function calculatePower(User $user, Poll $poll): int
     {
         $accounts = Account::where('user_uuid', $user->uuid)->get();
-        
+
         if ($accounts->isEmpty()) {
             return 0;
         }
 
         $totalBalance = 0;
-        
+
         // Sum up balances across all user accounts
         foreach ($accounts as $account) {
             $balance = $account->getBalance(self::DEFAULT_ASSET_CODE);
             $totalBalance += $balance;
         }
-        
+
         // Minimum balance requirement
         if ($totalBalance < self::MIN_BALANCE_FOR_VOTE) {
             return 0;
         }
-        
+
         // Convert balance to voting power
         // $100.00 (10000 cents) = 1 voting power
         $votingPower = intval($totalBalance / self::POWER_DIVISOR);
-        
+
         // Ensure at least 1 voting power if minimum balance is met
         return max(1, $votingPower);
     }
@@ -60,7 +62,7 @@ class AssetWeightedVoteStrategy implements IVotingPowerStrategy
 
     public function canVote(User $user, Poll $poll): bool
     {
-        if (!$user->exists()) {
+        if (! $user->exists()) {
             return false;
         }
 

@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domain\Basket\Services;
 
-use App\Models\BasketAsset;
-use App\Models\BasketValue;
 use App\Domain\Asset\Services\ExchangeRateService;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketValue;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 class BasketValueCalculationService
 {
     public function __construct(
         private readonly ExchangeRateService $exchangeRateService
-    ) {}
+    ) {
+    }
 
     /**
      * Calculate the current value of a basket based on its components.
@@ -23,16 +24,16 @@ class BasketValueCalculationService
     public function calculateValue(BasketAsset $basket, bool $useCache = true): BasketValue
     {
         $cacheKey = "basket_value:{$basket->code}";
-        
+
         if ($useCache && $cachedValue = Cache::get($cacheKey)) {
             return $cachedValue;
         }
 
         $value = $this->performCalculation($basket);
-        
+
         // Cache for 5 minutes
         Cache::put($cacheKey, $value, 300);
-        
+
         return $value;
     }
 
@@ -42,9 +43,10 @@ class BasketValueCalculationService
     private function performCalculation(BasketAsset $basket): BasketValue
     {
         $components = $basket->activeComponents()->with('asset')->get();
-        
+
         if ($components->isEmpty()) {
             Log::warning("Basket {$basket->code} has no active components");
+
             return $this->createEmptyValue($basket);
         }
 
@@ -58,12 +60,15 @@ class BasketValueCalculationService
                 $totalValue += $componentData['weighted_value'];
                 $componentValues[$component->asset_code] = $componentData;
             } catch (\Exception $e) {
-                Log::error("Error calculating component value", [
-                    'basket' => $basket->code,
-                    'component' => $component->asset_code,
-                    'error' => $e->getMessage(),
-                ]);
-                
+                Log::error(
+                    'Error calculating component value',
+                    [
+                        'basket'    => $basket->code,
+                        'component' => $component->asset_code,
+                        'error'     => $e->getMessage(),
+                    ]
+                );
+
                 $errors[] = [
                     'asset' => $component->asset_code,
                     'error' => $e->getMessage(),
@@ -72,25 +77,32 @@ class BasketValueCalculationService
         }
 
         // Store the calculated value
-        return DB::transaction(function () use ($basket, $totalValue, $componentValues, $errors) {
-            // Ensure the basket exists as an asset
-            $basket->toAsset();
-            
-            $basketValue = BasketValue::create([
-                'basket_asset_code' => $basket->code,
-                'value' => $totalValue,
-                'calculated_at' => now(),
-                'component_values' => array_merge($componentValues, [
-                    '_metadata' => [
-                        'calculation_errors' => $errors,
-                        'total_components' => count($componentValues),
-                        'base_currency' => 'USD',
-                    ],
-                ]),
-            ]);
+        return DB::transaction(
+            function () use ($basket, $totalValue, $componentValues, $errors) {
+                // Ensure the basket exists as an asset
+                $basket->toAsset();
 
-            return $basketValue;
-        });
+                $basketValue = BasketValue::create(
+                    [
+                        'basket_asset_code' => $basket->code,
+                        'value'             => $totalValue,
+                        'calculated_at'     => now(),
+                        'component_values'  => array_merge(
+                            $componentValues,
+                            [
+                                '_metadata' => [
+                                    'calculation_errors' => $errors,
+                                    'total_components'   => count($componentValues),
+                                    'base_currency'      => 'USD',
+                                ],
+                            ]
+                        ),
+                    ]
+                );
+
+                return $basketValue;
+            }
+        );
     }
 
     /**
@@ -99,24 +111,24 @@ class BasketValueCalculationService
     private function calculateComponentValue($component): array
     {
         $asset = $component->asset;
-        
-        if (!$asset) {
+
+        if (! $asset) {
             throw new \Exception("Asset {$component->asset_code} not found");
         }
 
         // Get the value in USD
         $assetValueInUsd = $this->getAssetValueInUsd($component->asset_code);
-        
+
         // Calculate weighted value
         $weightedValue = $assetValueInUsd * ($component->weight / 100);
 
         return [
-            'asset_code' => $component->asset_code,
-            'asset_name' => $asset->name,
-            'value' => $assetValueInUsd,
-            'weight' => $component->weight,
+            'asset_code'     => $component->asset_code,
+            'asset_name'     => $asset->name,
+            'value'          => $assetValueInUsd,
+            'weight'         => $component->weight,
             'weighted_value' => $weightedValue,
-            'currency' => 'USD',
+            'currency'       => 'USD',
         ];
     }
 
@@ -130,8 +142,8 @@ class BasketValueCalculationService
         }
 
         $rate = $this->exchangeRateService->getRate($assetCode, 'USD');
-        
-        if (!$rate) {
+
+        if (! $rate) {
             throw new \Exception("No exchange rate available for {$assetCode} to USD");
         }
 
@@ -143,18 +155,20 @@ class BasketValueCalculationService
      */
     private function createEmptyValue(BasketAsset $basket): BasketValue
     {
-        return BasketValue::create([
-            'basket_asset_code' => $basket->code,
-            'value' => 0.0,
-            'calculated_at' => now(),
-            'component_values' => [
-                '_metadata' => [
-                    'calculation_errors' => ['No active components'],
-                    'total_components' => 0,
-                    'base_currency' => 'USD',
+        return BasketValue::create(
+            [
+                'basket_asset_code' => $basket->code,
+                'value'             => 0.0,
+                'calculated_at'     => now(),
+                'component_values'  => [
+                    '_metadata' => [
+                        'calculation_errors' => ['No active components'],
+                        'total_components'   => 0,
+                        'base_currency'      => 'USD',
+                    ],
                 ],
-            ],
-        ]);
+            ]
+        );
     }
 
     /**
@@ -165,21 +179,21 @@ class BasketValueCalculationService
         $baskets = BasketAsset::active()->get();
         $results = [
             'successful' => [],
-            'failed' => [],
+            'failed'     => [],
         ];
 
         foreach ($baskets as $basket) {
             try {
                 $value = $this->calculateValue($basket, false); // Don't use cache
                 $results['successful'][] = [
-                    'basket' => $basket->code,
-                    'value' => $value->value,
+                    'basket'        => $basket->code,
+                    'value'         => $value->value,
                     'calculated_at' => $value->calculated_at,
                 ];
             } catch (\Exception $e) {
                 $results['failed'][] = [
                     'basket' => $basket->code,
-                    'error' => $e->getMessage(),
+                    'error'  => $e->getMessage(),
                 ];
             }
         }
@@ -199,13 +213,15 @@ class BasketValueCalculationService
             ->betweenDates($startDate, $endDate)
             ->orderBy('calculated_at', 'asc')
             ->get()
-            ->map(function ($value) {
-                return [
-                    'value' => $value->value,
-                    'calculated_at' => $value->calculated_at->toISOString(),
-                    'components' => $value->component_values,
-                ];
-            })
+            ->map(
+                function ($value) {
+                    return [
+                        'value'         => $value->value,
+                        'calculated_at' => $value->calculated_at->toISOString(),
+                        'components'    => $value->component_values,
+                    ];
+                }
+            )
             ->toArray();
     }
 
@@ -227,29 +243,29 @@ class BasketValueCalculationService
             ->orderBy('calculated_at', 'desc')
             ->first();
 
-        if (!$startValue || !$endValue) {
+        if (! $startValue || ! $endValue) {
             return [
-                'start_value' => null,
-                'end_value' => null,
-                'absolute_change' => 0,
+                'start_value'       => null,
+                'end_value'         => null,
+                'absolute_change'   => 0,
                 'percentage_change' => 0,
-                'error' => 'Insufficient data for performance calculation',
+                'error'             => 'Insufficient data for performance calculation',
             ];
         }
 
         $change = $endValue->value - $startValue->value;
-        $percentageChange = $startValue->value > 0 
-            ? ($change / $startValue->value) * 100 
+        $percentageChange = $startValue->value > 0
+            ? ($change / $startValue->value) * 100
             : 0;
 
         return [
-            'start_date' => $startValue->calculated_at->toISOString(),
-            'end_date' => $endValue->calculated_at->toISOString(),
-            'start_value' => $startValue->value,
-            'end_value' => $endValue->value,
-            'absolute_change' => $change,
+            'start_date'        => $startValue->calculated_at->toISOString(),
+            'end_date'          => $endValue->calculated_at->toISOString(),
+            'start_value'       => $startValue->value,
+            'end_value'         => $endValue->value,
+            'absolute_change'   => $change,
             'percentage_change' => round($percentageChange, 2),
-            'days' => $startValue->calculated_at->diffInDays($endValue->calculated_at),
+            'days'              => $startValue->calculated_at->diffInDays($endValue->calculated_at),
         ];
     }
 

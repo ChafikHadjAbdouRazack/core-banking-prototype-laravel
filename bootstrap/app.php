@@ -12,9 +12,30 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api-bian.php'));
+            // Check if we're on the api subdomain
+            $isApiSubdomain = str_starts_with(request()->getHost(), 'api.');
+            
+            if ($isApiSubdomain) {
+                // For api.finaegis.org, load API routes without /api prefix
+                Route::middleware('api')
+                    ->group(base_path('routes/api.php'));
+                    
+                Route::middleware('api')
+                    ->group(base_path('routes/api-bian.php'));
+
+                Route::middleware('api')
+                    ->prefix('v2')
+                    ->group(base_path('routes/api-v2.php'));
+            } else {
+                // For main domain, keep the /api prefix
+                Route::middleware('api')
+                    ->prefix('api')
+                    ->group(base_path('routes/api-bian.php'));
+
+                Route::middleware('api')
+                    ->prefix('api/v2')
+                    ->group(base_path('routes/api-v2.php'));
+            }
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -27,11 +48,26 @@ return Application::configure(basePath: dirname(__DIR__))
             'sub_product' => \App\Http\Middleware\EnsureSubProductEnabled::class,
             'auth.apikey' => \App\Http\Middleware\AuthenticateApiKey::class,
             'auth.api_or_sanctum' => \App\Http\Middleware\AuthenticateApiOrSanctum::class,
+            'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
         ]);
-        
+
+        // Prepend CORS middleware to handle it before other middleware
+        $middleware->prepend(\Illuminate\Http\Middleware\HandleCors::class);
+
         // Apply middleware to API routes (no global throttling - use custom rate limiting)
         $middleware->group('api', [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
+
+        // Apply security headers to web routes
+        $middleware->group('web', [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \App\Http\Middleware\SecurityHeaders::class,
         ]);
@@ -42,10 +78,10 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 return true;
             }
-            
+
             return $request->expectsJson();
         });
-        
+
         // Don't report certain exceptions in demo environment
         $exceptions->dontReport([
             \Illuminate\Auth\AuthenticationException::class,

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderMatched extends ShouldBeStored
@@ -16,5 +15,6 @@ class OrderMatched extends ShouldBeStored
         public readonly string $makerFee,
         public readonly string $takerFee,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

@@ -28,7 +28,7 @@ class FixerIoProvider extends BaseExchangeRateProvider
         'SLL', 'SOS', 'SRD', 'STD', 'SVC', 'SYP', 'SZL', 'THB', 'TJS', 'TMT',
         'TND', 'TOP', 'TRY', 'TTD', 'TWD', 'TZS', 'UAH', 'UGX', 'USD', 'UYU',
         'UZS', 'VEF', 'VND', 'VUV', 'WST', 'XAF', 'XAG', 'XAU', 'XCD', 'XDR',
-        'XOF', 'XPF', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL'
+        'XOF', 'XPF', 'YER', 'ZAR', 'ZMK', 'ZMW', 'ZWL',
     ];
 
     public function getName(): string
@@ -41,72 +41,75 @@ class FixerIoProvider extends BaseExchangeRateProvider
         $this->checkRateLimit();
 
         $cacheKey = "rate:{$fromCurrency}:{$toCurrency}";
-        
-        return $this->remember($cacheKey, function () use ($fromCurrency, $toCurrency) {
-            $endpoint = '/latest';
-            $params = [
-                'access_key' => $this->config['api_key'],
-                'base' => $fromCurrency,
-                'symbols' => $toCurrency,
-            ];
 
-            $this->logRequest('GET', $endpoint, $params);
-            
-            $response = $this->client->get($endpoint, $params);
-            
-            $this->logResponse('GET', $endpoint, $response);
+        return $this->remember(
+            $cacheKey,
+            function () use ($fromCurrency, $toCurrency) {
+                $endpoint = '/latest';
+                $params = [
+                    'access_key' => $this->config['api_key'],
+                    'base'       => $fromCurrency,
+                    'symbols'    => $toCurrency,
+                ];
 
-            if (!$response->successful()) {
-                $this->handleApiError($response, 'getRate');
-            }
+                $this->logRequest('GET', $endpoint, $params);
 
-            $data = $response->json();
+                $response = $this->client->get($endpoint, $params);
 
-            if (!$data['success'] ?? false) {
-                throw new RateProviderException(
-                    "Fixer.io API error: " . ($data['error']['info'] ?? 'Unknown error')
+                $this->logResponse('GET', $endpoint, $response);
+
+                if (! $response->successful()) {
+                    $this->handleApiError($response, 'getRate');
+                }
+
+                $data = $response->json();
+
+                if (! $data['success'] ?? false) {
+                    throw new RateProviderException(
+                        'Fixer.io API error: ' . ($data['error']['info'] ?? 'Unknown error')
+                    );
+                }
+
+                if (! isset($data['rates'][$toCurrency])) {
+                    throw new RateProviderException(
+                        "Rate for {$fromCurrency}/{$toCurrency} not found in response"
+                    );
+                }
+
+                $rate = (float) $data['rates'][$toCurrency];
+
+                // Fixer.io doesn't provide bid/ask, so we'll simulate a small spread
+                $spread = $rate * 0.002; // 0.2% spread
+                $bid = $rate - ($spread / 2);
+                $ask = $rate + ($spread / 2);
+
+                return new ExchangeRateQuote(
+                    fromCurrency: $fromCurrency,
+                    toCurrency: $toCurrency,
+                    rate: $rate,
+                    bid: $bid,
+                    ask: $ask,
+                    provider: $this->getName(),
+                    timestamp: Carbon::parse($data['timestamp']),
+                    metadata: [
+                        'base' => $data['base'],
+                        'date' => $data['date'],
+                    ]
                 );
             }
-
-            if (!isset($data['rates'][$toCurrency])) {
-                throw new RateProviderException(
-                    "Rate for {$fromCurrency}/{$toCurrency} not found in response"
-                );
-            }
-
-            $rate = (float) $data['rates'][$toCurrency];
-            
-            // Fixer.io doesn't provide bid/ask, so we'll simulate a small spread
-            $spread = $rate * 0.002; // 0.2% spread
-            $bid = $rate - ($spread / 2);
-            $ask = $rate + ($spread / 2);
-
-            return new ExchangeRateQuote(
-                fromCurrency: $fromCurrency,
-                toCurrency: $toCurrency,
-                rate: $rate,
-                bid: $bid,
-                ask: $ask,
-                provider: $this->getName(),
-                timestamp: Carbon::parse($data['timestamp']),
-                metadata: [
-                    'base' => $data['base'],
-                    'date' => $data['date'],
-                ]
-            );
-        });
+        );
     }
 
     public function getRates(array $pairs): array
     {
         $rates = [];
-        
+
         // Group by base currency for efficiency
         $grouped = [];
         foreach ($pairs as $pair) {
             if (str_contains($pair, '/')) {
                 [$from, $to] = explode('/', $pair);
-                if (!isset($grouped[$from])) {
+                if (! isset($grouped[$from])) {
                     $grouped[$from] = [];
                 }
                 $grouped[$from][] = $to;
@@ -134,60 +137,63 @@ class FixerIoProvider extends BaseExchangeRateProvider
         $this->checkRateLimit();
 
         $cacheKey = "rates:{$baseCurrency}:" . md5(implode(',', $symbols));
-        
-        return $this->remember($cacheKey, function () use ($baseCurrency, $symbols) {
-            $endpoint = '/latest';
-            $params = [
-                'access_key' => $this->config['api_key'],
-                'base' => $baseCurrency,
-            ];
 
-            if (!empty($symbols)) {
-                $params['symbols'] = implode(',', $symbols);
+        return $this->remember(
+            $cacheKey,
+            function () use ($baseCurrency, $symbols) {
+                $endpoint = '/latest';
+                $params = [
+                    'access_key' => $this->config['api_key'],
+                    'base'       => $baseCurrency,
+                ];
+
+                if (! empty($symbols)) {
+                    $params['symbols'] = implode(',', $symbols);
+                }
+
+                $this->logRequest('GET', $endpoint, $params);
+
+                $response = $this->client->get($endpoint, $params);
+
+                $this->logResponse('GET', $endpoint, $response);
+
+                if (! $response->successful()) {
+                    $this->handleApiError($response, 'getRatesForBase');
+                }
+
+                $data = $response->json();
+
+                if (! $data['success'] ?? false) {
+                    throw new RateProviderException(
+                        'Fixer.io API error: ' . ($data['error']['info'] ?? 'Unknown error')
+                    );
+                }
+
+                $quotes = [];
+                $timestamp = Carbon::parse($data['timestamp']);
+
+                foreach ($data['rates'] as $currency => $rate) {
+                    $rateFloat = (float) $rate;
+                    $spread = $rateFloat * 0.002; // 0.2% spread
+
+                    $quotes[$currency] = new ExchangeRateQuote(
+                        fromCurrency: $baseCurrency,
+                        toCurrency: $currency,
+                        rate: $rateFloat,
+                        bid: $rateFloat - ($spread / 2),
+                        ask: $rateFloat + ($spread / 2),
+                        provider: $this->getName(),
+                        timestamp: $timestamp,
+                        metadata: [
+                            'base' => $data['base'],
+                            'date' => $data['date'],
+                        ]
+                    );
+                }
+
+                return $quotes;
             }
-
-            $this->logRequest('GET', $endpoint, $params);
-            
-            $response = $this->client->get($endpoint, $params);
-            
-            $this->logResponse('GET', $endpoint, $response);
-
-            if (!$response->successful()) {
-                $this->handleApiError($response, 'getRatesForBase');
-            }
-
-            $data = $response->json();
-
-            if (!$data['success'] ?? false) {
-                throw new RateProviderException(
-                    "Fixer.io API error: " . ($data['error']['info'] ?? 'Unknown error')
-                );
-            }
-
-            $quotes = [];
-            $timestamp = Carbon::parse($data['timestamp']);
-
-            foreach ($data['rates'] as $currency => $rate) {
-                $rateFloat = (float) $rate;
-                $spread = $rateFloat * 0.002; // 0.2% spread
-                
-                $quotes[$currency] = new ExchangeRateQuote(
-                    fromCurrency: $baseCurrency,
-                    toCurrency: $currency,
-                    rate: $rateFloat,
-                    bid: $rateFloat - ($spread / 2),
-                    ask: $rateFloat + ($spread / 2),
-                    provider: $this->getName(),
-                    timestamp: $timestamp,
-                    metadata: [
-                        'base' => $data['base'],
-                        'date' => $data['date'],
-                    ]
-                );
-            }
-
-            return $quotes;
-        });
+        );
     }
 
     public function getCapabilities(): RateProviderCapabilities

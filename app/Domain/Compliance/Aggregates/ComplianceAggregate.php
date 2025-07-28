@@ -2,28 +2,32 @@
 
 namespace App\Domain\Compliance\Aggregates;
 
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-use App\Domain\Compliance\Events\KycSubmissionReceived;
+use App\Domain\Compliance\Events\GdprDataDeleted;
+use App\Domain\Compliance\Events\GdprDataExported;
+use App\Domain\Compliance\Events\GdprRequestReceived;
 use App\Domain\Compliance\Events\KycDocumentUploaded;
+use App\Domain\Compliance\Events\KycSubmissionReceived;
 use App\Domain\Compliance\Events\KycVerificationCompleted;
 use App\Domain\Compliance\Events\KycVerificationRejected;
-use App\Domain\Compliance\Events\GdprRequestReceived;
-use App\Domain\Compliance\Events\GdprDataExported;
-use App\Domain\Compliance\Events\GdprDataDeleted;
 use App\Domain\Compliance\Events\RegulatoryReportGenerated;
+use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
 
 class ComplianceAggregate extends AggregateRoot
 {
     private string $userUuid;
+
     private string $kycStatus = 'pending';
+
     private array $kycDocuments = [];
+
     private ?string $kycLevel = null;
+
     private array $gdprConsents = [];
 
     public function submitKyc(string $userUuid, array $documents): self
     {
         $this->recordThat(new KycSubmissionReceived($userUuid, $documents));
-        
+
         foreach ($documents as $document) {
             $this->recordThat(new KycDocumentUploaded($userUuid, $document));
         }
@@ -34,42 +38,49 @@ class ComplianceAggregate extends AggregateRoot
     public function approveKyc(string $userUuid, string $level): self
     {
         $this->recordThat(new KycVerificationCompleted($userUuid, $level));
+
         return $this;
     }
 
     public function rejectKyc(string $userUuid, string $reason): self
     {
         $this->recordThat(new KycVerificationRejected($userUuid, $reason));
+
         return $this;
     }
 
     public function requestGdprExport(string $userUuid, array $options): self
     {
         $this->recordThat(new GdprRequestReceived($userUuid, 'export', $options));
+
         return $this;
     }
 
     public function completeGdprExport(string $userUuid, string $filePath): self
     {
         $this->recordThat(new GdprDataExported($userUuid, $filePath));
+
         return $this;
     }
 
     public function requestGdprDeletion(string $userUuid, string $reason): self
     {
         $this->recordThat(new GdprRequestReceived($userUuid, 'deletion', ['reason' => $reason]));
+
         return $this;
     }
 
     public function completeGdprDeletion(string $userUuid): self
     {
         $this->recordThat(new GdprDataDeleted($userUuid));
+
         return $this;
     }
 
     public function generateRegulatoryReport(string $reportType, array $data): self
     {
         $this->recordThat(new RegulatoryReportGenerated($reportType, $data));
+
         return $this;
     }
 

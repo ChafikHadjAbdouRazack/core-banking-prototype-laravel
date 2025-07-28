@@ -6,15 +6,15 @@ namespace App\Domain\Asset\Workflows\Activities;
 
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Aggregates\AssetTransferAggregate;
-use App\Models\Account;
-use App\Models\AccountBalance;
 use Workflow\Activity;
 
 class InitiateAssetTransferActivity extends Activity
 {
     /**
-     * Execute initiate asset transfer activity
+     * Execute initiate asset transfer activity.
      */
     public function execute(
         AccountUuid $fromAccountUuid,
@@ -25,35 +25,37 @@ class InitiateAssetTransferActivity extends Activity
         ?string $description = null
     ): string {
         // Validate accounts exist
-        $fromAccount = Account::where('uuid', $fromAccountUuid->toString())->first();
-        $toAccount = Account::where('uuid', $toAccountUuid->toString())->first();
-        
-        if (!$fromAccount) {
+        /** @var \Illuminate\Database\Eloquent\Model|null $$fromAccount */
+        $$fromAccount = Account::where('uuid', $fromAccountUuid->toString())->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $$toAccount */
+        $$toAccount = Account::where('uuid', $toAccountUuid->toString())->first();
+
+        if (! $fromAccount) {
             throw new \Exception("Source account not found: {$fromAccountUuid->toString()}");
         }
-        
-        if (!$toAccount) {
+
+        if (! $toAccount) {
             throw new \Exception("Destination account not found: {$toAccountUuid->toString()}");
         }
-        
+
         // Check if source account has sufficient balance
         $fromBalance = AccountBalance::where('account_uuid', $fromAccountUuid->toString())
             ->where('asset_code', $fromAssetCode)
             ->first();
-        
-        if (!$fromBalance || !$fromBalance->hasSufficientBalance($fromAmount->getAmount())) {
+
+        if (! $fromBalance || ! $fromBalance->hasSufficientBalance($fromAmount->getAmount())) {
             $currentBalance = $fromBalance ? $fromBalance->balance : 0;
             throw new \Exception(
                 "Insufficient {$fromAssetCode} balance. Required: {$fromAmount->getAmount()}, Available: {$currentBalance}"
             );
         }
-        
+
         // Generate unique transfer ID
         $transferId = (string) \Illuminate\Support\Str::uuid();
-        
+
         // For same-asset transfers, use the same amount
         $toAmount = $fromAmount;
-        
+
         // Create and execute the asset transfer aggregate
         AssetTransferAggregate::retrieve($transferId)
             ->initiate(
@@ -66,13 +68,13 @@ class InitiateAssetTransferActivity extends Activity
                 exchangeRate: $fromAssetCode === $toAssetCode ? 1.0 : null,
                 description: $description ?: "Asset transfer: {$fromAssetCode} to {$toAssetCode}",
                 metadata: [
-                    'workflow' => 'AssetTransferWorkflow',
-                    'activity' => 'InitiateAssetTransferActivity',
+                    'workflow'  => 'AssetTransferWorkflow',
+                    'activity'  => 'InitiateAssetTransferActivity',
                     'timestamp' => now()->toISOString(),
                 ]
             )
             ->persist();
-        
+
         return $transferId;
     }
 }

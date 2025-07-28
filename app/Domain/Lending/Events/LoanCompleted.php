@@ -11,5 +11,6 @@ class LoanCompleted extends ShouldBeStored
         public string $totalPrincipalPaid,
         public string $totalInterestPaid,
         public \DateTimeImmutable $completedAt
-    ) {}
+    ) {
+    }
 }

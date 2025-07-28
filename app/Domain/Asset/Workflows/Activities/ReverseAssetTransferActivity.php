@@ -12,7 +12,7 @@ use Workflow\Activity;
 class ReverseAssetTransferActivity extends Activity
 {
     /**
-     * Reverse an initiated asset transfer as part of compensation logic
+     * Reverse an initiated asset transfer as part of compensation logic.
      */
     public function execute(
         string $transferId,
@@ -24,24 +24,27 @@ class ReverseAssetTransferActivity extends Activity
     ): void {
         // Retrieve the transfer aggregate
         $aggregate = AssetTransferAggregate::retrieve($transferId);
-        
+
         // Mark the transfer as reversed/cancelled
         $aggregate->reverse(
             reason: 'Workflow compensation: Transfer reversed due to subsequent step failure'
         );
-        
+
         // Persist the aggregate state
         $aggregate->persist();
-        
+
         // Log the reversal for audit purposes
-        logger()->info('Asset transfer reversed', [
-            'transfer_id' => $transferId,
-            'from_account' => $fromAccountUuid->toString(),
-            'to_account' => $toAccountUuid->toString(),
-            'from_asset' => $fromAssetCode,
-            'to_asset' => $toAssetCode,
-            'amount' => $fromAmount->getAmount(),
-            'reason' => 'Workflow compensation',
-        ]);
+        logger()->info(
+            'Asset transfer reversed',
+            [
+                'transfer_id'  => $transferId,
+                'from_account' => $fromAccountUuid->toString(),
+                'to_account'   => $toAccountUuid->toString(),
+                'from_asset'   => $fromAssetCode,
+                'to_asset'     => $toAssetCode,
+                'amount'       => $fromAmount->getAmount(),
+                'reason'       => 'Workflow compensation',
+            ]
+        );
     }
 }

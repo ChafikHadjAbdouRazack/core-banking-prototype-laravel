@@ -13,6 +13,13 @@
             'description' => 'Global Currency Unit (GCU) - The world\'s first democratically governed basket currency. Real bank backing, government insurance, community control.',
             'keywords' => 'GCU, global currency unit, democratic banking, basket currency, FinAegis, stable currency, digital currency, community governance',
         ])
+        
+        {{-- Schema.org Markup --}}
+        <x-schema type="gcu" />
+        <x-schema type="breadcrumb" :data="[
+            ['name' => 'Home', 'url' => url('/')],
+            ['name' => 'Global Currency Unit', 'url' => url('/gcu')]
+        ]" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -775,51 +782,51 @@
             </div>
         </section>
 
-        @include('partials.footer')
+@endsection
 
-        <!-- Additional Animation Styles -->
-        <style>
-            @keyframes blob {
-                0% {
-                    transform: translate(0px, 0px) scale(1);
-                }
-                33% {
-                    transform: translate(30px, -50px) scale(1.1);
-                }
-                66% {
-                    transform: translate(-20px, 20px) scale(0.9);
-                }
-                100% {
-                    transform: translate(0px, 0px) scale(1);
-                }
-            }
-            .animate-blob {
-                animation: blob 7s infinite;
-            }
-            .animation-delay-2000 {
-                animation-delay: 2s;
-            }
-            .animation-delay-4000 {
-                animation-delay: 4s;
-            }
-        </style>
+@push('styles')
+<style>
+    @keyframes blob {
+        0% {
+            transform: translate(0px, 0px) scale(1);
+        }
+        33% {
+            transform: translate(30px, -50px) scale(1.1);
+        }
+        66% {
+            transform: translate(-20px, 20px) scale(0.9);
+        }
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+    }
+    .animate-blob {
+        animation: blob 7s infinite;
+    }
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+</style>
+@endpush
 
-        <!-- Initialize animations on scroll -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Animate composition bars on scroll
-                const observer = new IntersectionObserver((entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.style.width = entry.target.getAttribute('style').match(/width: ([\d.]+%)/)[1];
-                        }
-                    });
-                });
-                
-                document.querySelectorAll('.composition-bar').forEach(bar => {
-                    observer.observe(bar);
-                });
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate composition bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.width = entry.target.getAttribute('style').match(/width: ([\d.]+%)/)[1];
+                }
             });
-        </script>
-    </body>
-</html>
+        });
+        
+        document.querySelectorAll('.composition-bar').forEach(bar => {
+            observer.observe(bar);
+        });
+    });
+</script>
+@endpush

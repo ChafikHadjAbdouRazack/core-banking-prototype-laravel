@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Models\Account;
+use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
@@ -18,15 +18,15 @@ it('skipped_can_initiate_a_payment_transaction', function () {
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    
+
     $payerAccount = Account::factory()->withBalance(100)->create();
     $payeeAccount = Account::factory()->create();
 
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $payerAccount->uuid,
         'payeeReference' => $payeeAccount->uuid,
-        'paymentAmount' => 500,
-        'paymentType' => 'internal',
+        'paymentAmount'  => 500,
+        'paymentType'    => 'internal',
     ]);
 
     $response->assertStatus(422)
@@ -37,16 +37,16 @@ it('rejects payment with insufficient funds', function () {
 it('can schedule a future payment', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    
+
     $payerAccount = Account::factory()->withBalance(1000)->create();
     $payeeAccount = Account::factory()->create();
 
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $payerAccount->uuid,
         'payeeReference' => $payeeAccount->uuid,
-        'paymentAmount' => 300,
-        'paymentType' => 'scheduled',
-        'valueDate' => now()->addDays(7)->toDateString(),
+        'paymentAmount'  => 300,
+        'paymentType'    => 'scheduled',
+        'valueDate'      => now()->addDays(7)->toDateString(),
     ]);
 
     $response->assertStatus(201)
@@ -61,7 +61,7 @@ it('can update a payment transaction', function () {
 
     $response = $this->putJson("/api/bian/payment-initiation/{$crReferenceId}/update", [
         'paymentStatus' => 'cancelled',
-        'statusReason' => 'Customer requested cancellation',
+        'statusReason'  => 'Customer requested cancellation',
     ]);
 
     $response->assertStatus(200)
@@ -140,7 +140,7 @@ it('can retrieve payment history', function () {
 it('validates required fields for payment initiation', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
-    
+
     $response = $this->postJson('/api/bian/payment-initiation/initiate', []);
 
     $response->assertStatus(422)
@@ -155,8 +155,8 @@ it('prevents payment to same account', function () {
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [
         'payerReference' => $account->uuid,
         'payeeReference' => $account->uuid,
-        'paymentAmount' => 100,
-        'paymentType' => 'internal',
+        'paymentAmount'  => 100,
+        'paymentType'    => 'internal',
     ]);
 
     $response->assertStatus(422)

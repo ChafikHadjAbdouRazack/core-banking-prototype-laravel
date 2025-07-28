@@ -10,12 +10,7 @@ use Workflow\Workflow;
 class WalletDepositWorkflow extends Workflow
 {
     /**
-     * Execute wallet deposit for a specific asset
-     *
-     * @param AccountUuid $accountUuid
-     * @param string $assetCode
-     * @param int $amount
-     * @return \Generator
+     * Execute wallet deposit for a specific asset.
      */
     public function execute(AccountUuid $accountUuid, string $assetCode, int $amount): \Generator
     {

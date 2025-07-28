@@ -2,14 +2,16 @@
 
 namespace App\Domain\Fraud\Events;
 
-use App\Models\FraudCase;
+use App\Domain\Fraud\Models\FraudCase;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class FraudCaseCreated
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public FraudCase $fraudCase;
 
@@ -19,7 +21,7 @@ class FraudCaseCreated
     }
 
     /**
-     * Get the tags that should be assigned to the event
+     * Get the tags that should be assigned to the event.
      */
     public function tags(): array
     {

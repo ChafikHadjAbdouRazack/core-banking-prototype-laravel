@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -24,12 +23,12 @@ return new class extends Migration
             $table->char('created_by', 36)->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index('code');
             $table->index('is_active');
             $table->index('type');
         });
-        
+
         // Create basket_components table
         Schema::create('basket_components', function (Blueprint $table) {
             $table->id();
@@ -40,12 +39,12 @@ return new class extends Migration
             $table->decimal('max_weight', 5, 2)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             $table->foreign('asset_code')->references('code')->on('assets');
             $table->unique(['basket_asset_id', 'asset_code']);
             $table->index('basket_asset_id');
         });
-        
+
         // Create basket_values table
         Schema::create('basket_values', function (Blueprint $table) {
             $table->id();
@@ -54,11 +53,11 @@ return new class extends Migration
             $table->timestamp('calculated_at');
             $table->json('component_values')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('basket_asset_code')->references('code')->on('basket_assets')->onDelete('cascade');
             $table->index(['basket_asset_code', 'calculated_at']);
         });
-        
+
         // Add basket_assets to the assets table as a new type
         // This allows basket assets to be treated as regular assets
         Schema::table('assets', function (Blueprint $table) {
@@ -76,7 +75,7 @@ return new class extends Migration
             $table->dropIndex(['is_basket']);
             $table->dropColumn('is_basket');
         });
-        
+
         Schema::dropIfExists('basket_values');
         Schema::dropIfExists('basket_components');
         Schema::dropIfExists('basket_assets');

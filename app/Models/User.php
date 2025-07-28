@@ -3,21 +3,27 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Banking\Models\BankAccountModel;
+use App\Domain\Cgo\Models\CgoInvestment;
+use App\Domain\Compliance\Models\KycDocument;
+use App\Domain\User\Values\UserRoles;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Jetstream\HasTeams;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Laravel\Cashier\Billable;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
-use App\Values\UserRoles;
-use App\Models\Account;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\ApiKey;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -57,6 +63,7 @@ class User extends Authenticatable implements FilamentUser
         'kyc_status',
         'kyc_submitted_at',
         'kyc_approved_at',
+        'kyc_rejected_at',
         'kyc_expires_at',
         'kyc_level',
         'pep_status',
@@ -100,22 +107,21 @@ class User extends Authenticatable implements FilamentUser
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'kyc_submitted_at' => 'datetime',
-            'kyc_approved_at' => 'datetime',
-            'kyc_expires_at' => 'datetime',
-            'pep_status' => 'boolean',
-            'kyc_data' => 'encrypted:array',
+            'email_verified_at'          => 'datetime',
+            'password'                   => 'hashed',
+            'kyc_submitted_at'           => 'datetime',
+            'kyc_approved_at'            => 'datetime',
+            'kyc_expires_at'             => 'datetime',
+            'pep_status'                 => 'boolean',
+            'kyc_data'                   => 'encrypted:array',
             'privacy_policy_accepted_at' => 'datetime',
-            'terms_accepted_at' => 'datetime',
-            'marketing_consent_at' => 'datetime',
-            'data_retention_consent' => 'boolean',
-            'has_completed_onboarding' => 'boolean',
-            'onboarding_completed_at' => 'datetime',
+            'terms_accepted_at'          => 'datetime',
+            'marketing_consent_at'       => 'datetime',
+            'data_retention_consent'     => 'boolean',
+            'has_completed_onboarding'   => 'boolean',
+            'onboarding_completed_at'    => 'datetime',
         ];
     }
-
 
     /**
      * @return string
@@ -136,6 +142,9 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the accounts for the user.
      */
+    /**
+     * @return HasMany
+     */
     public function accounts()
     {
         return $this->hasMany(Account::class, 'user_uuid', 'uuid');
@@ -145,25 +154,43 @@ class User extends Authenticatable implements FilamentUser
      * Get the primary account for the user.
      * This returns the first account which is typically the default one created on registration.
      */
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function account()
     {
-        return $this->hasOne(Account::class, 'user_uuid', 'uuid')->orderBy('created_at', 'asc');
+        return $this->hasOne(Account::class, 'user_uuid', 'uuid');
+    }
+
+    /**
+     * Get the primary account for the user.
+     * Alias for account() to maintain backward compatibility.
+     */
+    public function primaryAccount()
+    {
+        return $this->account()->first();
     }
 
     /**
      * Get the bank preferences for the user.
      */
+    /**
+     * @return HasMany
+     */
     public function bankPreferences()
     {
-        return $this->hasMany(UserBankPreference::class, 'user_uuid', 'uuid');
+        return $this->hasMany(UserPreference::class, 'user_uuid', 'uuid');
     }
-    
+
     /**
      * Get the bank accounts for the user.
      */
+    /**
+     * @return HasMany
+     */
     public function bankAccounts()
     {
-        return $this->hasMany(BankAccount::class, 'user_uuid', 'uuid');
+        return $this->hasMany(BankAccountModel::class, 'user_uuid', 'uuid');
     }
 
     /**
@@ -171,11 +198,14 @@ class User extends Authenticatable implements FilamentUser
      */
     public function activeBankPreferences()
     {
-        return $this->bankPreferences()->active();
+        return $this->bankPreferences()->getQuery()->where('is_active', true);
     }
 
     /**
      * Get the KYC documents for the user.
+     */
+    /**
+     * @return HasMany
      */
     public function kycDocuments()
     {
@@ -183,16 +213,16 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if user has completed KYC
+     * Check if user has completed KYC.
      */
     public function hasCompletedKyc(): bool
     {
-        return $this->kyc_status === 'approved' && 
+        return $this->kyc_status === 'approved' &&
                ($this->kyc_expires_at === null || $this->kyc_expires_at->isFuture());
     }
 
     /**
-     * Check if user needs KYC
+     * Check if user needs KYC.
      */
     public function needsKyc(): bool
     {
@@ -201,7 +231,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Check if user has completed onboarding
+     * Check if user has completed onboarding.
      */
     public function hasCompletedOnboarding(): bool
     {
@@ -209,16 +239,18 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Mark onboarding as completed
+     * Mark onboarding as completed.
      */
     public function completeOnboarding(): void
     {
-        $this->update([
+        $this->update(
+            [
             'has_completed_onboarding' => true,
-            'onboarding_completed_at' => now(),
-        ]);
+            'onboarding_completed_at'  => now(),
+            ]
+        );
     }
-    
+
     /**
      * Get the CGO investments for the user.
      */
@@ -226,12 +258,27 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(CgoInvestment::class);
     }
-    
+
     /**
      * Get the API keys for the user.
      */
     public function apiKeys(): HasMany
     {
         return $this->hasMany(ApiKey::class, 'user_uuid', 'uuid');
+    }
+
+    /**
+     * Get all transactions for the user through their accounts.
+     */
+    public function transactions(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Transaction::class,
+            Account::class,
+            'user_uuid', // Foreign key on accounts table
+            'aggregate_uuid', // Foreign key on transactions table
+            'uuid', // Local key on users table
+            'uuid' // Local key on accounts table
+        );
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\BasketAsset;
-use App\Models\BasketComponent;
+use App\Domain\Basket\Models\BasketAsset;
+use App\Domain\Basket\Models\BasketComponent;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,9 +22,9 @@ class BasketComponentFactory extends Factory
     {
         return [
             'basket_asset_id' => BasketAsset::factory(),
-            'asset_code' => fake()->randomElement(['USD', 'EUR', 'GBP', 'CHF', 'JPY', 'BTC', 'ETH', 'XAU']),
-            'weight' => fake()->randomFloat(2, 5, 30),
-            'min_weight' => function (array $attributes) {
+            'asset_code'      => fake()->randomElement(['USD', 'EUR', 'GBP', 'CHF', 'JPY', 'BTC', 'ETH', 'XAU']),
+            'weight'          => fake()->randomFloat(2, 5, 30),
+            'min_weight'      => function (array $attributes) {
                 return $attributes['weight'] - fake()->randomFloat(2, 1, 5);
             },
             'max_weight' => function (array $attributes) {
@@ -66,7 +66,7 @@ class BasketComponentFactory extends Factory
     {
         return $this->state(function (array $attributes) use ($weight) {
             return [
-                'weight' => $weight,
+                'weight'     => $weight,
                 'min_weight' => null,
                 'max_weight' => null,
             ];

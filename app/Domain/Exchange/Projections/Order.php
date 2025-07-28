@@ -2,12 +2,32 @@
 
 namespace App\Domain\Exchange\Projections;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @method static \Illuminate\Database\Eloquent\Builder where(string $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder whereDate(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereMonth(string $column, mixed $operator, string|\DateTimeInterface|null $value = null)
+ * @method static \Illuminate\Database\Eloquent\Builder whereYear(string $column, mixed $value)
+ * @method static \Illuminate\Database\Eloquent\Builder whereIn(string $column, mixed $values)
+ * @method static static updateOrCreate(array $attributes, array $values = [])
+ * @method static static firstOrCreate(array $attributes, array $values = [])
+ * @method static static|null find(mixed $id, array $columns = ['*'])
+ * @method static static|null first(array $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Collection get(array $columns = ['*'])
+ * @method static \Illuminate\Support\Collection pluck(string $column, string|null $key = null)
+ * @method static int count(string $columns = '*')
+ * @method static mixed sum(string $column)
+ * @method static \Illuminate\Database\Eloquent\Builder orderBy(string $column, string $direction = 'asc')
+ * @method static \Illuminate\Database\Eloquent\Builder latest(string $column = null)
+ */
 class Order extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'order_id',
         'account_id',
@@ -28,15 +48,15 @@ class Order extends Model
     ];
 
     protected $casts = [
-        'trades' => 'array',
-        'metadata' => 'array',
+        'trades'       => 'array',
+        'metadata'     => 'array',
         'cancelled_at' => 'datetime',
-        'filled_at' => 'datetime',
+        'filled_at'    => 'datetime',
     ];
 
     public function account(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Account::class, 'account_id', 'id');
+        return $this->belongsTo(\App\Domain\Account\Models\Account::class, 'account_id', 'id');
     }
 
     public function relatedTrades(): HasMany
@@ -60,7 +80,7 @@ class Order extends Model
         if (bccomp($this->amount, '0', 18) === 0) {
             return 0;
         }
-        
+
         return (float) bcmul(bcdiv($this->filled_amount, $this->amount, 18), '100', 2);
     }
 

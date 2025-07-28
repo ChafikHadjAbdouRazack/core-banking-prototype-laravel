@@ -2,16 +2,13 @@
 
 namespace App\Domain\Governance\Activities;
 
-use Workflow\Activity;
 use Illuminate\Support\Facades\Log;
+use Workflow\Activity;
 
 class RecordGovernanceEventActivity extends Activity
 {
     /**
      * Execute record governance event activity.
-     * 
-     * @param array $eventData
-     * @return void
      */
     public function execute(array $eventData): void
     {

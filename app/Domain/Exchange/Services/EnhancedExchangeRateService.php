@@ -7,6 +7,7 @@ namespace App\Domain\Exchange\Services;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Exchange\ValueObjects\ExchangeRateQuote;
+use Brick\Math\RoundingMode;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -19,20 +20,20 @@ class EnhancedExchangeRateService extends ExchangeRateService
     }
 
     /**
-     * Get rate with fallback to external providers
+     * Get rate with fallback to external providers.
      */
     public function getRateWithFallback(string $from, string $to): float
     {
         // First, try to get from database
         try {
             $rate = $this->getRate($from, $to);
-            
+
             // Check if rate is stale (older than 5 minutes)
             $exchangeRate = ExchangeRate::where('from_asset_code', $from)
                 ->where('to_asset_code', $to)
                 ->where('is_active', true)
                 ->first();
-                
+
             if ($exchangeRate && $exchangeRate->created_at->diffInMinutes(now()) <= 5) {
                 return $rate;
             }
@@ -42,77 +43,120 @@ class EnhancedExchangeRateService extends ExchangeRateService
 
         // Fallback to external providers
         $exchangeRate = $this->fetchAndStoreRate($from, $to);
-        return $exchangeRate ? $exchangeRate->rate : throw new \Exception("Failed to fetch exchange rate");
+
+        return $exchangeRate ? $exchangeRate->rate : throw new \Exception('Failed to fetch exchange rate');
     }
 
     /**
-     * Fetch rate from external providers and store it
+     * Fetch rate from external providers and store it.
      */
     public function fetchAndStoreRate(string $fromAsset, string $toAsset): ?ExchangeRate
     {
         try {
-            $quote = $this->providerRegistry->getRate($fromAsset, $toAsset);
-            
+            $rate = $this->providerRegistry->getRate($fromAsset, $toAsset);
+
+            if ($rate === null) {
+                return null;
+            }
+
+            // Create a quote object from the rate
+            $rateValue = (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString();
+            $quote = new ExchangeRateQuote(
+                fromCurrency: $fromAsset,
+                toCurrency: $toAsset,
+                rate: $rateValue,
+                bid: $rateValue * 0.999, // 0.1% spread
+                ask: $rateValue * 1.001, // 0.1% spread
+                provider: 'registry',
+                timestamp: now()
+            );
+
             // Store in database
             return $this->storeQuote($quote);
         } catch (\Exception $e) {
-            Log::error("Failed to fetch exchange rate", [
-                'from' => $fromAsset,
-                'to' => $toAsset,
+            Log::error(
+                'Failed to fetch exchange rate',
+                [
+                'from'  => $fromAsset,
+                'to'    => $toAsset,
                 'error' => $e->getMessage(),
-            ]);
-            
+                ]
+            );
+
             return null;
         }
     }
 
     /**
-     * Fetch rate as float (convenience method)
+     * Fetch rate as float (convenience method).
      */
     public function fetchRateAsFloat(string $from, string $to): float
     {
-        $quote = $this->providerRegistry->getRate($from, $to);
-        
+        $rate = $this->providerRegistry->getRate($from, $to);
+
+        if ($rate === null) {
+            throw new \Exception("Failed to fetch exchange rate for {$from}/{$to}");
+        }
+
+        // Create a quote object from the rate
+        $rateValue = (float) $rate->toScale(8, RoundingMode::HALF_UP)->__toString();
+        $quote = new ExchangeRateQuote(
+            fromCurrency: $from,
+            toCurrency: $to,
+            rate: $rateValue,
+            bid: $rateValue * 0.999, // 0.1% spread
+            ask: $rateValue * 1.001, // 0.1% spread
+            provider: 'registry',
+            timestamp: now()
+        );
+
         // Store in database
         $this->storeQuote($quote);
-        
+
         return $quote->rate;
     }
 
     /**
-     * Store a quote in the database
+     * Store a quote in the database.
      */
     public function storeQuote(ExchangeRateQuote $quote): ExchangeRate
     {
-        return DB::transaction(function () use ($quote) {
-            // Deactivate old rates
-            ExchangeRate::where('from_asset_code', $quote->fromCurrency)
+        return DB::transaction(
+            function () use ($quote) {
+                // Deactivate old rates
+                ExchangeRate::where('from_asset_code', $quote->fromCurrency)
                 ->where('to_asset_code', $quote->toCurrency)
                 ->where('is_active', true)
                 ->update(['is_active' => false]);
 
-            // Create new rate
-            return ExchangeRate::create([
-                'from_asset_code' => $quote->fromCurrency,
-                'to_asset_code' => $quote->toCurrency,
-                'rate' => $quote->rate,
-                'bid' => $quote->bid,
-                'ask' => $quote->ask,
-                'source' => $quote->provider,
-                'is_active' => true,
-                'valid_at' => now(),
-                'expires_at' => now()->addMinutes(30),
-                'metadata' => array_merge($quote->metadata, [
-                    'volume_24h' => $quote->volume24h,
-                    'change_24h' => $quote->change24h,
-                    'fetched_at' => $quote->timestamp->toISOString(),
-                ]),
-            ]);
-        });
+                // Create new rate
+                return ExchangeRate::create(
+                    [
+                    'from_asset_code' => $quote->fromCurrency,
+                    'to_asset_code'   => $quote->toCurrency,
+                    'rate'            => $quote->rate,
+                    'bid'             => $quote->bid,
+                    'ask'             => $quote->ask,
+                    'source'          => $quote->provider,
+                    'is_active'       => true,
+                    'valid_at'        => now(),
+                    'expires_at'      => now()->addMinutes(30),
+                    'metadata'        => array_merge(
+                        $quote->metadata,
+                        [
+                        'volume_24h' => $quote->volume24h,
+                        'change_24h' => $quote->change24h,
+                        'fetched_at' => $quote->timestamp->toISOString(),
+                        ]
+                    ),
+                    ]
+                );
+            }
+        );
     }
 
     /**
-     * Refresh all active exchange rates
+     * Refresh all active exchange rates.
      */
     public function refreshAllRates(): array
     {
@@ -132,13 +176,13 @@ class EnhancedExchangeRateService extends ExchangeRateService
                     $refreshed[] = "{$pair->from_asset_code}/{$pair->to_asset_code}";
                 } else {
                     $failed[] = [
-                        'pair' => "{$pair->from_asset_code}/{$pair->to_asset_code}",
+                        'pair'  => "{$pair->from_asset_code}/{$pair->to_asset_code}",
                         'error' => 'Failed to fetch rate',
                     ];
                 }
             } catch (\Exception $e) {
                 $failed[] = [
-                    'pair' => "{$pair->from_asset_code}/{$pair->to_asset_code}",
+                    'pair'  => "{$pair->from_asset_code}/{$pair->to_asset_code}",
                     'error' => $e->getMessage(),
                 ];
             }
@@ -146,28 +190,28 @@ class EnhancedExchangeRateService extends ExchangeRateService
 
         return [
             'refreshed' => $refreshed,
-            'failed' => $failed,
-            'total' => count($pairs),
+            'failed'    => $failed,
+            'total'     => count($pairs),
         ];
     }
 
     /**
-     * Get rates from all providers for comparison
+     * Get rates from all providers for comparison.
      */
     public function compareRates(string $from, string $to): array
     {
         $quotes = $this->providerRegistry->getRatesFromAll($from, $to);
-        
+
         $comparison = [];
         foreach ($quotes as $provider => $quote) {
             $comparison[$provider] = [
-                'rate' => $quote->rate,
-                'bid' => $quote->bid,
-                'ask' => $quote->ask,
-                'spread' => $quote->getSpread(),
+                'rate'              => $quote->rate,
+                'bid'               => $quote->bid,
+                'ask'               => $quote->ask,
+                'spread'            => $quote->getSpread(),
                 'spread_percentage' => $quote->getSpreadPercentage(),
-                'timestamp' => $quote->timestamp->toISOString(),
-                'age_seconds' => $quote->getAgeInSeconds(),
+                'timestamp'         => $quote->timestamp->toISOString(),
+                'age_seconds'       => $quote->getAgeInSeconds(),
             ];
         }
 
@@ -175,22 +219,22 @@ class EnhancedExchangeRateService extends ExchangeRateService
         try {
             $aggregated = $this->providerRegistry->getAggregatedRate($from, $to);
             $comparison['aggregated'] = [
-                'rate' => $aggregated->rate,
-                'bid' => $aggregated->bid,
-                'ask' => $aggregated->ask,
-                'spread' => $aggregated->getSpread(),
+                'rate'              => $aggregated->rate,
+                'bid'               => $aggregated->bid,
+                'ask'               => $aggregated->ask,
+                'spread'            => $aggregated->getSpread(),
                 'spread_percentage' => $aggregated->getSpreadPercentage(),
-                'providers_used' => $aggregated->metadata['providers'],
+                'providers_used'    => $aggregated->metadata['providers'],
             ];
         } catch (\Exception $e) {
-            Log::debug("Failed to calculate aggregated rate", ['error' => $e->getMessage()]);
+            Log::debug('Failed to calculate aggregated rate', ['error' => $e->getMessage()]);
         }
 
         return $comparison;
     }
 
     /**
-     * Get historical rates from database
+     * Get historical rates from database.
      */
     public function getHistoricalRates(
         string $from,
@@ -203,18 +247,20 @@ class EnhancedExchangeRateService extends ExchangeRateService
             ->whereBetween('created_at', [$startDate, $endDate])
             ->orderBy('created_at', 'asc')
             ->get()
-            ->map(fn($rate) => [
-                'rate' => $rate->rate,
-                'bid' => $rate->bid,
-                'ask' => $rate->ask,
-                'source' => $rate->source,
+            ->map(
+                fn ($rate) => [
+                'rate'      => $rate->rate,
+                'bid'       => $rate->bid,
+                'ask'       => $rate->ask,
+                'source'    => $rate->source,
                 'timestamp' => $rate->created_at->toISOString(),
-            ])
+                ]
+            )
             ->toArray();
     }
 
     /**
-     * Validate a quote against configured thresholds
+     * Validate a quote against configured thresholds.
      */
     public function validateQuote(ExchangeRateQuote $quote): array
     {
@@ -226,7 +272,7 @@ class EnhancedExchangeRateService extends ExchangeRateService
         }
 
         // Check age
-        if (!$quote->isFresh(60)) {
+        if (! $quote->isFresh(60)) {
             $warnings[] = "Stale quote: {$quote->getAgeInSeconds()} seconds old";
         }
 
@@ -244,7 +290,7 @@ class EnhancedExchangeRateService extends ExchangeRateService
         }
 
         return [
-            'valid' => empty($warnings),
+            'valid'    => empty($warnings),
             'warnings' => $warnings,
         ];
     }

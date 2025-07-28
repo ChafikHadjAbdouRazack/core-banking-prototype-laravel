@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -33,7 +32,7 @@ return new class extends Migration
             $table->timestamp('failed_at')->nullable();
             $table->text('failed_reason')->nullable();
             $table->timestamps();
-            
+
             $table->index(['type', 'status']);
             $table->index(['account_uuid', 'created_at']);
         });

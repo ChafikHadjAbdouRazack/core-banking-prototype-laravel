@@ -17,10 +17,11 @@ class TransferActivity extends Activity
 {
     public function __construct(
         private readonly TransferService $transferService
-    ) {}
+    ) {
+    }
 
     /**
-     * Execute a transfer between two accounts
+     * Execute a transfer between two accounts.
      *
      * @throws NotEnoughFunds
      * @throws \Exception

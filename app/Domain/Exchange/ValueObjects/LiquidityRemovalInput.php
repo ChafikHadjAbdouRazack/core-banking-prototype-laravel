@@ -20,12 +20,12 @@ final class LiquidityRemovalInput
     public function toArray(): array
     {
         return [
-            'pool_id' => $this->poolId,
-            'provider_id' => $this->providerId,
-            'shares' => $this->shares,
-            'min_base_amount' => $this->minBaseAmount,
+            'pool_id'          => $this->poolId,
+            'provider_id'      => $this->providerId,
+            'shares'           => $this->shares,
+            'min_base_amount'  => $this->minBaseAmount,
             'min_quote_amount' => $this->minQuoteAmount,
-            'metadata' => $this->metadata,
+            'metadata'         => $this->metadata,
         ];
     }
 }

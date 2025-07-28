@@ -16,7 +16,8 @@ final class ExternalTrade
         public readonly \DateTimeImmutable $timestamp,
         public readonly string $exchange,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {
@@ -36,15 +37,15 @@ final class ExternalTrade
     public function toArray(): array
     {
         return [
-            'trade_id' => $this->tradeId,
-            'base_currency' => $this->baseCurrency,
+            'trade_id'       => $this->tradeId,
+            'base_currency'  => $this->baseCurrency,
             'quote_currency' => $this->quoteCurrency,
-            'price' => $this->price->__toString(),
-            'amount' => $this->amount->__toString(),
-            'side' => $this->side,
-            'timestamp' => $this->timestamp->format('c'),
-            'exchange' => $this->exchange,
-            'metadata' => $this->metadata,
+            'price'          => $this->price->__toString(),
+            'amount'         => $this->amount->__toString(),
+            'side'           => $this->side,
+            'timestamp'      => $this->timestamp->format('c'),
+            'exchange'       => $this->exchange,
+            'metadata'       => $this->metadata,
         ];
     }
 

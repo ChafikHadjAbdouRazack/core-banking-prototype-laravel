@@ -9,7 +9,7 @@ uses(UnitTestCase::class);
 
 it('can define export columns for users', function () {
     $columns = UserExporter::getColumns();
-    
+
     expect($columns)->toHaveCount(7)
         ->and($columns[0]->getName())->toBe('uuid')
         ->and($columns[0]->getLabel())->toBe('User ID')
@@ -30,7 +30,7 @@ it('can define export columns for users', function () {
 it('includes accounts count column', function () {
     $columns = UserExporter::getColumns();
     $accountsColumn = $columns[4];
-    
+
     // Check that it includes accounts count column
     expect($accountsColumn->getName())->toBe('accounts_count')
         ->and($accountsColumn->getLabel())->toBe('Number of Accounts');
@@ -40,9 +40,9 @@ it('generates correct completion notification body', function () {
     $export = new Export();
     $export->successful_rows = 50;
     $export->total_rows = 50;
-    
+
     $body = UserExporter::getCompletedNotificationBody($export);
-    
+
     expect($body)->toBe('Your user export has completed and 50 rows exported.');
 });
 
@@ -50,9 +50,9 @@ it('generates correct completion notification body with failed rows', function (
     $export = new Export();
     $export->successful_rows = 45;
     $export->total_rows = 50;
-    
+
     $body = UserExporter::getCompletedNotificationBody($export);
-    
+
     expect($body)->toBe('Your user export has completed and 45 rows exported. 5 rows failed to export.');
 });
 

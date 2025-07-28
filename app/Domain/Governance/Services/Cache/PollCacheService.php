@@ -12,9 +12,13 @@ use Illuminate\Support\Facades\Cache;
 class PollCacheService
 {
     private const CACHE_PREFIX = 'poll';
+
     private const POLL_TTL = 1800; // 30 minutes
+
     private const RESULTS_TTL = 3600; // 1 hour
+
     private const ACTIVE_POLLS_TTL = 300; // 5 minutes
+
     private const USER_VOTES_TTL = 1800; // 30 minutes
 
     public function getPoll(string $uuid): ?Poll
@@ -42,7 +46,9 @@ class PollCacheService
             $this->getResultsKey($pollUuid),
             self::RESULTS_TTL,
             function () use ($pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->with('votes')->first();
+
                 return $poll ? $poll->calculateResults() : null;
             }
         );
@@ -78,17 +84,20 @@ class PollCacheService
             $this->getUserVotingPowerKey($userUuid, $pollUuid),
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->first();
-                if (!$poll) {
+                if (! $poll) {
                     return null;
                 }
 
+                /** @var \Illuminate\Database\Eloquent\Model|null $user */
                 $user = \App\Models\User::where('uuid', $userUuid)->first();
-                if (!$user) {
+                if (! $user) {
                     return null;
                 }
 
                 $service = app(\App\Domain\Governance\Services\GovernanceService::class);
+
                 return $service->getUserVotingPower($user, $poll);
             }
         );
@@ -114,7 +123,9 @@ class PollCacheService
             $this->getUserVoteStatusKey($userUuid, $pollUuid),
             self::USER_VOTES_TTL,
             function () use ($userUuid, $pollUuid) {
+                /** @var \Illuminate\Database\Eloquent\Model|null $poll */
                 $poll = Poll::where('uuid', $pollUuid)->first();
+
                 return $poll ? $poll->hasUserVoted($userUuid) : false;
             }
         );
@@ -139,7 +150,7 @@ class PollCacheService
         $this->forgetPoll($pollUuid);
         $this->forgetPollResults($pollUuid);
         $this->forgetActivePolls();
-        
+
         // Note: We don't invalidate user-specific caches here as they might be expensive to recalculate
         // They have their own TTL and will expire naturally
     }
@@ -154,22 +165,22 @@ class PollCacheService
     {
         // Warm up the active polls cache
         $polls = $this->getActivePolls();
-        
+
         // Optionally warm up results for active polls
         foreach ($polls as $poll) {
             $this->getPollResults($poll->uuid);
         }
-        
+
         return $polls;
     }
 
     public function getStats(): array
     {
         $keys = [
-            'polls' => $this->getPollKey('*'),
-            'results' => $this->getResultsKey('*'),
+            'polls'             => $this->getPollKey('*'),
+            'results'           => $this->getResultsKey('*'),
             'user_voting_power' => $this->getUserVotingPowerKey('*', '*'),
-            'user_vote_status' => $this->getUserVoteStatusKey('*', '*'),
+            'user_vote_status'  => $this->getUserVoteStatusKey('*', '*'),
         ];
 
         $stats = [];
@@ -179,7 +190,7 @@ class PollCacheService
         }
 
         $stats['active_polls_cached'] = Cache::has($this->getActivePollsKey());
-        
+
         return $stats;
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Exchange\Events;
 
-
 use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
 class OrderBookSnapshotTaken extends ShouldBeStored
@@ -15,5 +14,6 @@ class OrderBookSnapshotTaken extends ShouldBeStored
         public readonly ?string $bestAsk,
         public readonly ?string $lastPrice,
         public readonly array $metadata = []
-    ) {}
+    ) {
+    }
 }

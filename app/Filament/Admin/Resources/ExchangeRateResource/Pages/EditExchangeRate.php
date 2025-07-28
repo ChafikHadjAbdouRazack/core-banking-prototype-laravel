@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\ExchangeRateResource\Pages;
 
 use App\Filament\Admin\Resources\ExchangeRateResource;
 use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 
 class EditExchangeRate extends EditRecord
 {
@@ -19,7 +19,7 @@ class EditExchangeRate extends EditRecord
             Actions\ViewAction::make()
                 ->label('View Rate')
                 ->icon('heroicon-m-eye'),
-            
+
             Actions\DeleteAction::make()
                 ->label('Delete Rate')
                 ->icon('heroicon-m-trash')
@@ -45,15 +45,15 @@ class EditExchangeRate extends EditRecord
         // Ensure asset codes are uppercase
         $data['from_asset_code'] = strtoupper($data['from_asset_code']);
         $data['to_asset_code'] = strtoupper($data['to_asset_code']);
-        
+
         // Add update metadata
-        if (!isset($data['metadata'])) {
+        if (! isset($data['metadata'])) {
             $data['metadata'] = [];
         }
-        
+
         $data['metadata']['updated_by'] = 'admin';
         $data['metadata']['updated_at'] = now()->toISOString();
-        
+
         return $data;
     }
 }

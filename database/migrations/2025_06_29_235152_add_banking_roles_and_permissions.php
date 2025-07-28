@@ -1,13 +1,10 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,17 +12,17 @@ return new class extends Migration
     {
         // Create banking-specific roles
         $roles = [
-            'super_admin' => 'Super Administrator - full system access',
-            'bank_admin' => 'Bank Administrator - manage bank operations',
+            'super_admin'        => 'Super Administrator - full system access',
+            'bank_admin'         => 'Bank Administrator - manage bank operations',
             'compliance_officer' => 'Compliance Officer - regulatory and AML/KYC',
-            'risk_manager' => 'Risk Manager - fraud detection and risk analysis',
+            'risk_manager'       => 'Risk Manager - fraud detection and risk analysis',
             'operations_manager' => 'Operations Manager - daily operations',
-            'customer_service' => 'Customer Service - assist customers',
-            'accountant' => 'Accountant - financial reporting',
-            'auditor' => 'Auditor - audit trail access',
-            'developer' => 'Developer - API and technical access',
-            'customer_business' => 'Business Customer',
-            'customer_private' => 'Private Customer',
+            'customer_service'   => 'Customer Service - assist customers',
+            'accountant'         => 'Accountant - financial reporting',
+            'auditor'            => 'Auditor - audit trail access',
+            'developer'          => 'Developer - API and technical access',
+            'customer_business'  => 'Business Customer',
+            'customer_private'   => 'Private Customer',
         ];
 
         foreach ($roles as $name => $description) {
@@ -36,60 +33,60 @@ return new class extends Migration
         $permissions = [
             // Dashboard & Analytics
             'view_analytics_dashboard' => 'View analytics and metrics',
-            'view_financial_reports' => 'View financial reports',
-            
+            'view_financial_reports'   => 'View financial reports',
+
             // Customer Management
-            'view_all_customers' => 'View all customer accounts',
+            'view_all_customers'     => 'View all customer accounts',
             'edit_customer_accounts' => 'Edit customer account details',
-            'freeze_accounts' => 'Freeze/unfreeze accounts',
-            'close_accounts' => 'Close customer accounts',
-            
+            'freeze_accounts'        => 'Freeze/unfreeze accounts',
+            'close_accounts'         => 'Close customer accounts',
+
             // Transaction Management
-            'view_all_transactions' => 'View all system transactions',
-            'reverse_transactions' => 'Reverse transactions',
+            'view_all_transactions'      => 'View all system transactions',
+            'reverse_transactions'       => 'Reverse transactions',
             'approve_large_transactions' => 'Approve large value transactions',
-            
+
             // Compliance & Regulatory
-            'manage_kyc' => 'Manage KYC verifications',
+            'manage_kyc'                  => 'Manage KYC verifications',
             'generate_regulatory_reports' => 'Generate CTR/SAR reports',
-            'view_compliance_dashboard' => 'View compliance metrics',
-            'manage_aml_rules' => 'Manage AML monitoring rules',
-            
+            'view_compliance_dashboard'   => 'View compliance metrics',
+            'manage_aml_rules'            => 'Manage AML monitoring rules',
+
             // Risk & Fraud
-            'view_fraud_alerts' => 'View fraud detection alerts',
-            'manage_fraud_cases' => 'Manage fraud investigation cases',
+            'view_fraud_alerts'    => 'View fraud detection alerts',
+            'manage_fraud_cases'   => 'Manage fraud investigation cases',
             'configure_risk_rules' => 'Configure risk assessment rules',
-            'view_risk_dashboard' => 'View risk analytics dashboard',
-            'export_fraud_data' => 'Export fraud case data',
-            
+            'view_risk_dashboard'  => 'View risk analytics dashboard',
+            'export_fraud_data'    => 'Export fraud case data',
+
             // Banking Operations
-            'manage_bank_integrations' => 'Manage bank connections',
+            'manage_bank_integrations'    => 'Manage bank connections',
             'view_reconciliation_reports' => 'View daily reconciliation',
-            'manage_bank_allocations' => 'Manage bank fund allocations',
-            'view_bank_health' => 'View bank health monitoring',
-            
+            'manage_bank_allocations'     => 'Manage bank fund allocations',
+            'view_bank_health'            => 'View bank health monitoring',
+
             // Financial Operations
             'manage_exchange_rates' => 'Manage exchange rate settings',
-            'manage_fees' => 'Configure platform fees',
-            'manage_limits' => 'Set transaction limits',
-            'process_withdrawals' => 'Process withdrawal requests',
-            
+            'manage_fees'           => 'Configure platform fees',
+            'manage_limits'         => 'Set transaction limits',
+            'process_withdrawals'   => 'Process withdrawal requests',
+
             // System Administration
-            'manage_users' => 'Create and manage user accounts',
-            'manage_roles' => 'Manage roles and permissions',
-            'view_audit_logs' => 'View system audit logs',
+            'manage_users'           => 'Create and manage user accounts',
+            'manage_roles'           => 'Manage roles and permissions',
+            'view_audit_logs'        => 'View system audit logs',
             'manage_system_settings' => 'Configure system settings',
-            
+
             // Developer Access
             'manage_api_keys' => 'Manage API keys',
-            'view_api_logs' => 'View API access logs',
+            'view_api_logs'   => 'View API access logs',
             'manage_webhooks' => 'Configure webhooks',
-            
+
             // Customer Permissions
-            'view_own_account' => 'View own account details',
+            'view_own_account'        => 'View own account details',
             'manage_own_transactions' => 'Create own transactions',
-            'view_own_statements' => 'View own account statements',
-            'manage_own_settings' => 'Manage own account settings',
+            'view_own_statements'     => 'View own account statements',
+            'manage_own_settings'     => 'Manage own account settings',
         ];
 
         foreach ($permissions as $name => $description) {
@@ -101,7 +98,7 @@ return new class extends Migration
     }
 
     /**
-     * Assign permissions to roles
+     * Assign permissions to roles.
      */
     private function assignPermissions(): void
     {
@@ -252,7 +249,7 @@ return new class extends Migration
         $rolesToRemove = [
             'super_admin', 'bank_admin', 'compliance_officer', 'risk_manager',
             'operations_manager', 'customer_service', 'accountant', 'auditor',
-            'developer', 'customer_business', 'customer_private'
+            'developer', 'customer_business', 'customer_private',
         ];
 
         foreach ($rolesToRemove as $role) {

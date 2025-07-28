@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\CgoPricingRoundResource\Pages;
 
+use App\Domain\Cgo\Models\CgoPricingRound;
 use App\Filament\Resources\CgoPricingRoundResource;
-use App\Models\CgoPricingRound;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateCgoPricingRound extends CreateRecord

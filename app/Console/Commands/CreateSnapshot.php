@@ -7,10 +7,9 @@ namespace App\Console\Commands;
 use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\Aggregates\TransactionAggregate;
 use App\Domain\Account\Aggregates\TransferAggregate;
-use App\Domain\Account\DataObjects\AccountUuid;
-use App\Models\Account;
-use App\Models\Transaction;
-use App\Models\Transfer;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Transaction;
+use App\Domain\Account\Models\Transfer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -65,11 +64,12 @@ class CreateSnapshot extends Command
         });
 
         $this->info('Snapshot creation completed successfully!');
+
         return Command::SUCCESS;
     }
 
     /**
-     * Create transaction snapshots
+     * Create transaction snapshots.
      */
     private function createTransactionSnapshots(?string $accountUuid, bool $force): void
     {
@@ -79,7 +79,7 @@ class CreateSnapshot extends Command
         $query = DB::table('stored_events')
             ->where('aggregate_uuid', '!=', null)
             ->where('event_class', 'like', '%Transaction%');
-            
+
         if ($accountUuid) {
             $query->where('aggregate_uuid', $accountUuid);
         }
@@ -89,7 +89,7 @@ class CreateSnapshot extends Command
             ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 100])
             ->pluck('aggregate_uuid');
 
-        if (!app()->runningUnitTests() && $aggregateUuids->count() > 0) {
+        if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {
             $bar = $this->output->createProgressBar($aggregateUuids->count());
             $bar->start();
 
@@ -111,7 +111,7 @@ class CreateSnapshot extends Command
     }
 
     /**
-     * Create transfer snapshots
+     * Create transfer snapshots.
      */
     private function createTransferSnapshots(?string $accountUuid, bool $force): void
     {
@@ -121,7 +121,7 @@ class CreateSnapshot extends Command
         $query = DB::table('stored_events')
             ->where('aggregate_uuid', '!=', null)
             ->where('event_class', 'like', '%Transfer%');
-            
+
         if ($accountUuid) {
             $query->where('aggregate_uuid', $accountUuid);
         }
@@ -131,7 +131,7 @@ class CreateSnapshot extends Command
             ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 50])
             ->pluck('aggregate_uuid');
 
-        if (!app()->runningUnitTests() && $aggregateUuids->count() > 0) {
+        if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {
             $bar = $this->output->createProgressBar($aggregateUuids->count());
             $bar->start();
 
@@ -153,7 +153,7 @@ class CreateSnapshot extends Command
     }
 
     /**
-     * Create ledger snapshots
+     * Create ledger snapshots.
      */
     private function createLedgerSnapshots(?string $accountUuid, bool $force): void
     {
@@ -167,24 +167,24 @@ class CreateSnapshot extends Command
         $accounts = $query->pluck('uuid');
         $snapshotCount = 0;
 
-        if (!app()->runningUnitTests() && $accounts->count() > 0) {
+        if (! app()->runningUnitTests() && $accounts->count() > 0) {
             $bar = $this->output->createProgressBar($accounts->count());
             $bar->start();
 
             foreach ($accounts as $uuid) {
                 $aggregate = LedgerAggregate::retrieve($uuid);
-                
+
                 // Only create snapshot if there are enough events or force is enabled
                 $eventCount = DB::table('stored_events')
                     ->where('aggregate_uuid', $uuid)
                     ->where('event_class', 'like', '%Ledger%')
                     ->count();
-                    
+
                 if ($force || $eventCount >= 50) {
                     $aggregate->snapshot();
                     $snapshotCount++;
                 }
-                
+
                 $bar->advance();
             }
 
@@ -193,20 +193,20 @@ class CreateSnapshot extends Command
         } else {
             foreach ($accounts as $uuid) {
                 $aggregate = LedgerAggregate::retrieve($uuid);
-                
+
                 // Only create snapshot if there are enough events or force is enabled
                 $eventCount = DB::table('stored_events')
                     ->where('aggregate_uuid', $uuid)
                     ->where('event_class', 'like', '%Ledger%')
                     ->count();
-                    
+
                 if ($force || $eventCount >= 50) {
                     $aggregate->snapshot();
                     $snapshotCount++;
                 }
             }
         }
-        
+
         // For test compatibility, report the number of accounts processed rather than snapshots created
         $this->info("Created ledger snapshots for {$accounts->count()} accounts.");
     }

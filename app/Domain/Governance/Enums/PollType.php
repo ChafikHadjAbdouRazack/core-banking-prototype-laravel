@@ -14,29 +14,29 @@ enum PollType: string
 
     public function getLabel(): string
     {
-        return match($this) {
-            self::SINGLE_CHOICE => 'Single Choice',
+        return match ($this) {
+            self::SINGLE_CHOICE   => 'Single Choice',
             self::MULTIPLE_CHOICE => 'Multiple Choice',
             self::WEIGHTED_CHOICE => 'Weighted Choice',
-            self::YES_NO => 'Yes/No',
-            self::RANKED_CHOICE => 'Ranked Choice',
+            self::YES_NO          => 'Yes/No',
+            self::RANKED_CHOICE   => 'Ranked Choice',
         };
     }
 
     public function getDescription(): string
     {
-        return match($this) {
-            self::SINGLE_CHOICE => 'Voters can select only one option',
+        return match ($this) {
+            self::SINGLE_CHOICE   => 'Voters can select only one option',
             self::MULTIPLE_CHOICE => 'Voters can select multiple options',
             self::WEIGHTED_CHOICE => 'Voters can allocate weight/percentage to options',
-            self::YES_NO => 'Simple yes or no question',
-            self::RANKED_CHOICE => 'Voters rank options in order of preference',
+            self::YES_NO          => 'Simple yes or no question',
+            self::RANKED_CHOICE   => 'Voters rank options in order of preference',
         };
     }
 
     public function allowsMultipleSelections(): bool
     {
-        return match($this) {
+        return match ($this) {
             self::MULTIPLE_CHOICE, self::WEIGHTED_CHOICE, self::RANKED_CHOICE => true,
             self::SINGLE_CHOICE, self::YES_NO => false,
         };

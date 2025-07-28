@@ -2,16 +2,14 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\Dashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use App\Filament\Admin\Pages\Dashboard;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -28,42 +26,52 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName($this->getBrandName())
-            ->colors([
-                'primary' => Color::Blue,
-                'danger' => Color::Red,
-                'success' => Color::Emerald,
-                'warning' => Color::Amber,
-            ])
+            ->colors(
+                [
+                    'primary' => Color::Blue,
+                    'danger'  => Color::Red,
+                    'success' => Color::Emerald,
+                    'warning' => Color::Amber,
+                ]
+            )
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
-            ->pages([
-                Dashboard::class,
-            ])
+            ->pages(
+                [
+                    Dashboard::class,
+                ]
+            )
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([])
-            ->navigationGroups([
-                'Banking',
-                'System',
-            ])
+            ->navigationGroups(
+                [
+                    'Banking',
+                    'System',
+                ]
+            )
             ->sidebarCollapsibleOnDesktop()
-            ->middleware([
-                EncryptCookies::class,
-                AddQueuedCookiesToResponse::class,
-                StartSession::class,
-                AuthenticateSession::class,
-                ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
-                SubstituteBindings::class,
-                DisableBladeIconComponents::class,
-                DispatchServingFilamentEvent::class,
-            ])
-            ->authMiddleware([
-                Authenticate::class,
-            ]);
+            ->middleware(
+                [
+                    EncryptCookies::class,
+                    AddQueuedCookiesToResponse::class,
+                    StartSession::class,
+                    AuthenticateSession::class,
+                    ShareErrorsFromSession::class,
+                    VerifyCsrfToken::class,
+                    SubstituteBindings::class,
+                    DisableBladeIconComponents::class,
+                    DispatchServingFilamentEvent::class,
+                ]
+            )
+            ->authMiddleware(
+                [
+                    Authenticate::class,
+                ]
+            );
     }
-    
+
     /**
-     * Get the brand name for the admin panel
+     * Get the brand name for the admin panel.
      */
     protected function getBrandName(): string
     {
@@ -71,7 +79,7 @@ class AdminPanelProvider extends PanelProvider
         if (config('app.gcu_enabled', false)) {
             return config('app.gcu_basket_name', 'Global Currency Unit');
         }
-        
+
         return 'FinAegis Admin';
     }
 }

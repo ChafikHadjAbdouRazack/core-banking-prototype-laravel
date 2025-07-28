@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -26,7 +25,7 @@ return new class extends Migration
             $table->timestamp('delivered_at')->nullable();
             $table->timestamp('next_retry_at')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('webhook_uuid')->references('uuid')->on('webhooks')->onDelete('cascade');
             $table->index(['webhook_uuid', 'status']);
             $table->index('event_type');

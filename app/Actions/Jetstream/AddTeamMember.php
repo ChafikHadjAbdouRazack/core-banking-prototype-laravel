@@ -29,7 +29,8 @@ class AddTeamMember implements AddsTeamMembers
         AddingTeamMember::dispatch($team, $newTeamMember);
 
         $team->users()->attach(
-            $newTeamMember, ['role' => $role]
+            $newTeamMember,
+            ['role' => $role]
         );
 
         TeamMemberAdded::dispatch($team, $newTeamMember);
@@ -40,12 +41,16 @@ class AddTeamMember implements AddsTeamMembers
      */
     protected function validate(Team $team, string $email, ?string $role): void
     {
-        Validator::make([
-            'email' => $email,
-            'role' => $role,
-        ], $this->rules(), [
-            'email.exists' => __('We were unable to find a registered user with this email address.'),
-        ])->after(
+        Validator::make(
+            [
+                'email' => $email,
+                'role'  => $role,
+            ],
+            $this->rules(),
+            [
+                'email.exists' => __('We were unable to find a registered user with this email address.'),
+            ]
+        )->after(
             $this->ensureUserIsNotAlreadyOnTeam($team, $email)
         )->validateWithBag('addTeamMember');
     }
@@ -57,12 +62,14 @@ class AddTeamMember implements AddsTeamMembers
      */
     protected function rules(): array
     {
-        return array_filter([
-            'email' => ['required', 'email', 'exists:users'],
-            'role' => Jetstream::hasRoles()
-                            ? ['required', 'string', new Role]
-                            : null,
-        ]);
+        return array_filter(
+            [
+                'email' => ['required', 'email', 'exists:users'],
+                'role'  => Jetstream::hasRoles()
+                                ? ['required', 'string', new Role()]
+                                : null,
+            ]
+        );
     }
 
     /**

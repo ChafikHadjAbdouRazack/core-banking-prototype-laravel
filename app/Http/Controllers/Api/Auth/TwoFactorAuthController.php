@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
+use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 use Laravel\Fortify\RecoveryCode;
 
@@ -21,17 +21,21 @@ class TwoFactorAuthController extends Controller
      *     summary="Enable two-factor authentication",
      *     description="Enable 2FA for the authenticated user",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="2FA enabled successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Two-factor authentication enabled successfully."),
-     *             @OA\Property(property="secret", type="string", example="JBSWY3DPEHPK3PXP"),
-     *             @OA\Property(property="qr_code", type="string", example="data:image/png;base64,..."),
-     *             @OA\Property(property="recovery_codes", type="array", @OA\Items(type="string"))
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",        type="string", example="Two-factor authentication enabled successfully."),
+     * @OA\Property(property="secret",         type="string", example="JBSWY3DPEHPK3PXP"),
+     * @OA\Property(property="qr_code",        type="string", example="data:image/png;base64,..."),
+     * @OA\Property(property="recovery_codes", type="array", @OA\Items(type="string"))
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=401,
      *         description="Unauthenticated"
      *     )
@@ -40,15 +44,17 @@ class TwoFactorAuthController extends Controller
     public function enable(Request $request, EnableTwoFactorAuthentication $enable)
     {
         $enable($request->user());
-        
+
         $user = $request->user()->fresh();
-        
-        return response()->json([
-            'message' => 'Two-factor authentication enabled successfully.',
-            'secret' => decrypt($user->two_factor_secret),
-            'qr_code' => $user->twoFactorQrCodeSvg(),
-            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true)
-        ]);
+
+        return response()->json(
+            [
+                'message'        => 'Two-factor authentication enabled successfully.',
+                'secret'         => decrypt($user->two_factor_secret),
+                'qr_code'        => $user->twoFactorQrCodeSvg(),
+                'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
+            ]
+        );
     }
 
     /**
@@ -61,21 +67,28 @@ class TwoFactorAuthController extends Controller
      *     summary="Confirm two-factor authentication",
      *     description="Confirm 2FA setup with verification code",
      *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
+     *
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     *
+     * @OA\JsonContent(
      *             required={"code"},
-     *             @OA\Property(property="code", type="string", example="123456")
+     *
+     * @OA\Property(property="code",    type="string", example="123456")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="2FA confirmed successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Two-factor authentication confirmed successfully.")
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message", type="string", example="Two-factor authentication confirmed successfully.")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=422,
      *         description="Invalid verification code"
      *     )
@@ -84,23 +97,32 @@ class TwoFactorAuthController extends Controller
     public function confirm(Request $request, TwoFactorAuthenticationProvider $provider)
     {
         $request->validate(['code' => 'required|string']);
-        
+
         $user = $request->user();
-        
-        if (!$user->two_factor_secret ||
-            !$provider->verify(decrypt($user->two_factor_secret), $request->code)) {
-            return response()->json([
-                'message' => 'The provided two factor authentication code was invalid.'
-            ], 422);
+
+        if (
+            ! $user->two_factor_secret
+            || ! $provider->verify(decrypt($user->two_factor_secret), $request->code)
+        ) {
+            return response()->json(
+                [
+                    'message' => 'The provided two factor authentication code was invalid.',
+                ],
+                422
+            );
         }
-        
-        $user->forceFill([
-            'two_factor_confirmed_at' => now(),
-        ])->save();
-        
-        return response()->json([
-            'message' => 'Two-factor authentication confirmed successfully.'
-        ]);
+
+        $user->forceFill(
+            [
+                'two_factor_confirmed_at' => now(),
+            ]
+        )->save();
+
+        return response()->json(
+            [
+                'message' => 'Two-factor authentication confirmed successfully.',
+            ]
+        );
     }
 
     /**
@@ -113,21 +135,28 @@ class TwoFactorAuthController extends Controller
      *     summary="Disable two-factor authentication",
      *     description="Disable 2FA for the authenticated user",
      *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
+     *
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     *
+     * @OA\JsonContent(
      *             required={"password"},
-     *             @OA\Property(property="password", type="string", format="password", example="current-password")
+     *
+     * @OA\Property(property="password", type="string", format="password", example="current-password")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="2FA disabled successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Two-factor authentication disabled successfully.")
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",  type="string", example="Two-factor authentication disabled successfully.")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=422,
      *         description="Invalid password"
      *     )
@@ -135,15 +164,19 @@ class TwoFactorAuthController extends Controller
      */
     public function disable(Request $request, DisableTwoFactorAuthentication $disable)
     {
-        $request->validate([
-            'password' => 'required|string|current_password:sanctum'
-        ]);
-        
+        $request->validate(
+            [
+                'password' => 'required|string|current_password:sanctum',
+            ]
+        );
+
         $disable($request->user());
-        
-        return response()->json([
-            'message' => 'Two-factor authentication disabled successfully.'
-        ]);
+
+        return response()->json(
+            [
+                'message' => 'Two-factor authentication disabled successfully.',
+            ]
+        );
     }
 
     /**
@@ -155,23 +188,30 @@ class TwoFactorAuthController extends Controller
      *     tags={"Authentication"},
      *     summary="Verify two-factor authentication code",
      *     description="Verify 2FA code during login",
-     *     @OA\RequestBody(
+     *
+     * @OA\RequestBody(
      *         required=true,
-     *         @OA\JsonContent(
+     *
+     * @OA\JsonContent(
      *             required={"code"},
-     *             @OA\Property(property="code", type="string", example="123456"),
-     *             @OA\Property(property="recovery_code", type="string", example="recovery-code", description="Use recovery code instead of 2FA code")
+     *
+     * @OA\Property(property="code",          type="string", example="123456"),
+     * @OA\Property(property="recovery_code", type="string", example="recovery-code", description="Use recovery code instead of 2FA code")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="2FA verified successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Two-factor authentication verified successfully."),
-     *             @OA\Property(property="token", type="string", example="1|laravel_sanctum_token...")
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",       type="string", example="Two-factor authentication verified successfully."),
+     * @OA\Property(property="token",         type="string", example="1|laravel_sanctum_token...")
      *         )
      *     ),
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=422,
      *         description="Invalid code"
      *     )
@@ -179,38 +219,48 @@ class TwoFactorAuthController extends Controller
      */
     public function verify(Request $request, TwoFactorAuthenticationProvider $provider)
     {
-        $request->validate([
-            'code' => 'required_without:recovery_code|string',
-            'recovery_code' => 'required_without:code|string'
-        ]);
-        
+        $request->validate(
+            [
+                'code'          => 'required_without:recovery_code|string',
+                'recovery_code' => 'required_without:code|string',
+            ]
+        );
+
         $user = $request->user();
-        
+
         if ($request->has('recovery_code')) {
             $codes = $user->recoveryCodes();
-            
-            if (!in_array($request->recovery_code, $codes)) {
-                return response()->json([
-                    'message' => 'The provided recovery code was invalid.'
-                ], 422);
+
+            if (! in_array($request->recovery_code, $codes)) {
+                return response()->json(
+                    [
+                        'message' => 'The provided recovery code was invalid.',
+                    ],
+                    422
+                );
             }
-            
+
             $user->replaceRecoveryCode($request->recovery_code);
         } else {
-            if (!$provider->verify(decrypt($user->two_factor_secret), $request->code)) {
-                return response()->json([
-                    'message' => 'The provided two factor authentication code was invalid.'
-                ], 422);
+            if (! $provider->verify(decrypt($user->two_factor_secret), $request->code)) {
+                return response()->json(
+                    [
+                        'message' => 'The provided two factor authentication code was invalid.',
+                    ],
+                    422
+                );
             }
         }
-        
+
         // Generate new token after successful 2FA
         $token = $user->createToken('api-token')->plainTextToken;
-        
-        return response()->json([
-            'message' => 'Two-factor authentication verified successfully.',
-            'token' => $token
-        ]);
+
+        return response()->json(
+            [
+                'message' => 'Two-factor authentication verified successfully.',
+                'token'   => $token,
+            ]
+        );
     }
 
     /**
@@ -223,12 +273,15 @@ class TwoFactorAuthController extends Controller
      *     summary="Regenerate recovery codes",
      *     description="Generate new set of recovery codes",
      *     security={{"sanctum": {}}},
-     *     @OA\Response(
+     *
+     * @OA\Response(
      *         response=200,
      *         description="Recovery codes regenerated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Recovery codes regenerated successfully."),
-     *             @OA\Property(property="recovery_codes", type="array", @OA\Items(type="string"))
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="message",        type="string", example="Recovery codes regenerated successfully."),
+     * @OA\Property(property="recovery_codes", type="array", @OA\Items(type="string"))
      *         )
      *     )
      * )
@@ -236,14 +289,18 @@ class TwoFactorAuthController extends Controller
     public function regenerateRecoveryCodes(Request $request)
     {
         $user = $request->user();
-        
-        $user->forceFill([
-            'two_factor_recovery_codes' => encrypt(json_encode(RecoveryCode::generate())),
-        ])->save();
-        
-        return response()->json([
-            'message' => 'Recovery codes regenerated successfully.',
-            'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true)
-        ]);
+
+        $user->forceFill(
+            [
+                'two_factor_recovery_codes' => encrypt(json_encode(collect()->times(8, fn () => RecoveryCode::generate())->toArray())),
+            ]
+        )->save();
+
+        return response()->json(
+            [
+                'message'        => 'Recovery codes regenerated successfully.',
+                'recovery_codes' => json_decode(decrypt($user->two_factor_recovery_codes), true),
+            ]
+        );
     }
 }

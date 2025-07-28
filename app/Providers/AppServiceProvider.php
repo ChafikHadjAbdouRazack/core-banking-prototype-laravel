@@ -12,14 +12,14 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         if ($this->app->environment() !== 'testing') {
-            $this->app->register( WaterlineServiceProvider::class);
+            $this->app->register(WaterlineServiceProvider::class);
         }
-        
+
         // Register voting power strategies
         $this->app->bind('asset_weighted_vote', \App\Domain\Governance\Strategies\AssetWeightedVoteStrategy::class);
         $this->app->bind('one_user_one_vote', \App\Domain\Governance\Strategies\OneUserOneVoteStrategy::class);
         $this->app->bind(\App\Domain\Governance\Strategies\AssetWeightedVotingStrategy::class, \App\Domain\Governance\Strategies\AssetWeightedVotingStrategy::class);
-        
+
         // Register blockchain service provider
         $this->app->register(BlockchainServiceProvider::class);
     }
@@ -34,12 +34,13 @@ class AppServiceProvider extends ServiceProvider
             // Force production-like settings
             config(['app.debug' => config('demo.debug', false)]);
             config(['app.debug_blacklist' => config('demo.debug_blacklist')]);
-            
-            // Force HTTPS in demo environment
-            if (request()->getHost() !== 'localhost' && request()->getHost() !== '127.0.0.1') {
+
+            // Force HTTPS in demo environment (but not for local development)
+            $localHosts = explode(',', config('app.local_hostnames', 'localhost,127.0.0.1'));
+            if (! in_array(request()->getHost(), $localHosts)) {
                 \URL::forceScheme('https');
             }
-            
+
             // Apply demo-specific rate limits
             config(['app.rate_limits.api' => config('demo.rate_limits.api', 60)]);
             config(['app.rate_limits.transactions' => config('demo.rate_limits.transactions', 10)]);

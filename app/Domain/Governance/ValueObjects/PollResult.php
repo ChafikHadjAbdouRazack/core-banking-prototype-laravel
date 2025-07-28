@@ -14,7 +14,8 @@ final readonly class PollResult
         public float $participationRate,
         public ?string $winningOption = null,
         public ?array $metadata = []
-    ) {}
+    ) {
+    }
 
     public static function calculate(
         string $pollUuid,
@@ -24,22 +25,22 @@ final readonly class PollResult
     ): self {
         $totalVotes = count($votes);
         $totalVotingPower = (int) array_sum(array_column($votes, 'voting_power'));
-        
+
         // Initialize results for all options
         $optionResults = [];
         foreach ($options as $option) {
             $optionResults[$option['id']] = [
-                'votes' => 0,
-                'power' => 0,
+                'votes'      => 0,
+                'power'      => 0,
                 'percentage' => 0.0,
             ];
         }
-        
+
         // Calculate votes and power for each option
         foreach ($votes as $vote) {
             $selectedOptions = $vote['selected_options'];
             $votingPower = $vote['voting_power'];
-            
+
             foreach ($selectedOptions as $optionId) {
                 if (isset($optionResults[$optionId])) {
                     $optionResults[$optionId]['votes']++;
@@ -47,26 +48,26 @@ final readonly class PollResult
                 }
             }
         }
-        
+
         // Calculate percentages and find winner
         $winningOption = null;
         $maxPower = 0;
-        
+
         foreach ($optionResults as $optionId => &$result) {
             if ($totalVotingPower > 0) {
                 $result['percentage'] = ($result['power'] / $totalVotingPower) * 100;
             }
-            
+
             if ($result['power'] > $maxPower) {
                 $maxPower = $result['power'];
                 $winningOption = $optionId;
             }
         }
-        
-        $participationRate = $totalEligibleVotingPower > 0 
-            ? ($totalVotingPower / $totalEligibleVotingPower) * 100 
+
+        $participationRate = $totalEligibleVotingPower > 0
+            ? ($totalVotingPower / $totalEligibleVotingPower) * 100
             : 0;
-        
+
         return new self(
             pollUuid: $pollUuid,
             totalVotes: $totalVotes,
@@ -80,13 +81,13 @@ final readonly class PollResult
     public function toArray(): array
     {
         return [
-            'poll_uuid' => $this->pollUuid,
-            'total_votes' => $this->totalVotes,
+            'poll_uuid'          => $this->pollUuid,
+            'total_votes'        => $this->totalVotes,
             'total_voting_power' => $this->totalVotingPower,
-            'option_results' => $this->optionResults,
+            'option_results'     => $this->optionResults,
             'participation_rate' => $this->participationRate,
-            'winning_option' => $this->winningOption,
-            'metadata' => $this->metadata,
+            'winning_option'     => $this->winningOption,
+            'metadata'           => $this->metadata,
         ];
     }
 

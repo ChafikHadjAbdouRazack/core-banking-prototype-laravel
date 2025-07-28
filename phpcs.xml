@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<ruleset name="FinAegis">
+    <description>The coding standard for FinAegis Core Banking Platform</description>
+    
+    <!-- Use PSR-12 as base standard -->
+    <rule ref="PSR12">
+        <!-- Allow snake_case test method names -->
+        <exclude name="PSR1.Methods.CamelCapsMethodName.NotCamelCaps"/>
+        <!-- Exclude line length check -->
+        <exclude name="Generic.Files.LineLength"/>
+    </rule>
+    
+    <!-- Apply the snake_case exclusion only to test files -->
+    <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    
+    <!-- Allow side effects in test files -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>*/tests/*</exclude-pattern>
+    </rule>
+    
+    <!-- Include these directories -->
+    <file>app</file>
+    <file>tests</file>
+    
+    <!-- Exclude these directories -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/bootstrap/cache/*</exclude-pattern>
+    <exclude-pattern>*/database/migrations/*</exclude-pattern>
+    
+    <!-- Set additional arguments -->
+    <arg name="colors"/>
+    <arg value="p"/>
+    <arg name="parallel" value="75"/>
+</ruleset>

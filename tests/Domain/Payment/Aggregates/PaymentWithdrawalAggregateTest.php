@@ -2,15 +2,15 @@
 
 use App\Domain\Payment\Aggregates\PaymentWithdrawalAggregate;
 use App\Domain\Payment\DataObjects\BankWithdrawal;
-use App\Domain\Payment\Events\WithdrawalInitiated;
 use App\Domain\Payment\Events\WithdrawalCompleted;
 use App\Domain\Payment\Events\WithdrawalFailed;
+use App\Domain\Payment\Events\WithdrawalInitiated;
 use Illuminate\Support\Str;
 
 it('can initiate a withdrawal', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     $withdrawal = new BankWithdrawal(
         accountUuid: $accountUuid,
         amount: 5000,
@@ -22,7 +22,7 @@ it('can initiate a withdrawal', function () {
         routingNumber: '123456789',
         metadata: ['test' => true]
     );
-    
+
     $aggregate = PaymentWithdrawalAggregate::fake($withdrawalUuid)
         ->given([])
         ->when(function (PaymentWithdrawalAggregate $aggregate) use ($withdrawal) {
@@ -38,7 +38,7 @@ it('can initiate a withdrawal', function () {
                 bankRoutingNumber: '123456789',
                 bankAccountName: 'John Doe',
                 metadata: ['test' => true]
-            )
+            ),
         ]);
 });
 
@@ -46,7 +46,7 @@ it('can complete a withdrawal', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
     $transactionId = 'wtxn_' . uniqid();
-    
+
     $aggregate = PaymentWithdrawalAggregate::fake($withdrawalUuid)
         ->given([
             new WithdrawalInitiated(
@@ -58,7 +58,7 @@ it('can complete a withdrawal', function () {
                 bankRoutingNumber: '123456789',
                 bankAccountName: 'John Doe',
                 metadata: []
-            )
+            ),
         ])
         ->when(function (PaymentWithdrawalAggregate $aggregate) use ($transactionId) {
             $aggregate->completeWithdrawal($transactionId);
@@ -73,7 +73,7 @@ it('can fail a withdrawal', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
     $reason = 'Bank account verification failed';
-    
+
     $aggregate = PaymentWithdrawalAggregate::fake($withdrawalUuid)
         ->given([
             new WithdrawalInitiated(
@@ -85,7 +85,7 @@ it('can fail a withdrawal', function () {
                 bankRoutingNumber: '123456789',
                 bankAccountName: 'John Doe',
                 metadata: []
-            )
+            ),
         ])
         ->when(function (PaymentWithdrawalAggregate $aggregate) use ($reason) {
             $aggregate->failWithdrawal($reason);
@@ -99,7 +99,7 @@ it('can fail a withdrawal', function () {
 it('cannot complete a withdrawal that is not pending', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     expect(function () use ($withdrawalUuid, $accountUuid) {
         PaymentWithdrawalAggregate::fake($withdrawalUuid)
             ->given([
@@ -116,7 +116,7 @@ it('cannot complete a withdrawal that is not pending', function () {
                 new WithdrawalCompleted(
                     transactionId: 'wtxn_123',
                     completedAt: now()
-                )
+                ),
             ])
             ->when(function (PaymentWithdrawalAggregate $aggregate) {
                 $aggregate->completeWithdrawal('wtxn_456');
@@ -127,7 +127,7 @@ it('cannot complete a withdrawal that is not pending', function () {
 it('cannot fail a withdrawal that is not pending', function () {
     $withdrawalUuid = Str::uuid()->toString();
     $accountUuid = Str::uuid()->toString();
-    
+
     expect(function () use ($withdrawalUuid, $accountUuid) {
         PaymentWithdrawalAggregate::fake($withdrawalUuid)
             ->given([
@@ -144,7 +144,7 @@ it('cannot fail a withdrawal that is not pending', function () {
                 new WithdrawalFailed(
                     reason: 'Invalid bank account',
                     failedAt: now()
-                )
+                ),
             ])
             ->when(function (PaymentWithdrawalAggregate $aggregate) {
                 $aggregate->failWithdrawal('Another reason');
