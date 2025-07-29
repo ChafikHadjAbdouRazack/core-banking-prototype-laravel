@@ -8,8 +8,6 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketComponent;
 use App\Domain\Basket\Models\BasketValue;
-use App\Domain\Governance\Enums\PollStatus;
-use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Models\User;
@@ -50,9 +48,9 @@ class N1QueryOptimizationTest extends TestCase
         $assets = [];
         for ($i = 1; $i <= 5; $i++) {
             $assets[] = Asset::create([
-                'code' => 'TST' . $i,
-                'name' => 'Test Asset ' . $i,
-                'type' => 'crypto',
+                'code'      => 'TST' . $i,
+                'name'      => 'Test Asset ' . $i,
+                'type'      => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ]);
@@ -204,32 +202,32 @@ class N1QueryOptimizationTest extends TestCase
         // Create polls
         for ($i = 1; $i <= 10; $i++) {
             $poll = Poll::create([
-                'uuid' => Str::uuid()->toString(),
-                'title' => 'Test Poll ' . $i,
-                'description' => 'Test poll description',
-                'type' => 'single_choice',
-                'status' => 'active',
-                'options' => [
+                'uuid'                   => Str::uuid()->toString(),
+                'title'                  => 'Test Poll ' . $i,
+                'description'            => 'Test poll description',
+                'type'                   => 'single_choice',
+                'status'                 => 'active',
+                'options'                => [
                     ['value' => 'option1', 'label' => 'Option 1'],
                     ['value' => 'option2', 'label' => 'Option 2'],
                 ],
-                'start_date' => now()->subDay(),
-                'end_date' => now()->addDays(7),
-                'created_by' => $user->uuid,
+                'start_date'             => now()->subDay(),
+                'end_date'               => now()->addDays(7),
+                'created_by'             => $user->uuid,
                 'required_participation' => 0,
-                'allow_multiple_votes' => false,
-                'voting_power_strategy' => null,
-                'execution_strategy' => null,
-                'metadata' => [],
+                'allow_multiple_votes'   => false,
+                'voting_power_strategy'  => null,
+                'execution_strategy'     => null,
+                'metadata'               => [],
             ]);
 
             // Create votes for first 5 polls
             if ($i <= 5) {
                 Vote::create([
-                    'poll_uuid' => $poll->uuid,
-                    'user_uuid' => $user->uuid,
+                    'poll_uuid'        => $poll->uuid,
+                    'user_uuid'        => $user->uuid,
                     'selected_options' => ['option1'],
-                    'voting_power' => rand(100, 1000),
+                    'voting_power'     => rand(100, 1000),
                 ]);
             }
         }
@@ -274,9 +272,9 @@ class N1QueryOptimizationTest extends TestCase
 
         foreach ($queries as $index => $query) {
             dump([
-                'query' => $query['query'],
+                'query'    => $query['query'],
                 'bindings' => $query['bindings'],
-                'time' => $query['time'] ?? null,
+                'time'     => $query['time'] ?? null,
             ]);
         }
     }
