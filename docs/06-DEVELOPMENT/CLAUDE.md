@@ -166,6 +166,22 @@ php artisan filament:clear-cached-components
 php artisan view:clear
 ```
 
+### Email Configuration
+For email setup and testing, see the comprehensive [Email Setup Guide](../EMAIL-SETUP.md).
+
+Quick setup with Resend (recommended):
+```bash
+# 1. Get API key from https://resend.com/api-keys
+# 2. Update .env:
+MAIL_MAILER=resend
+RESEND_KEY=re_your_api_key_here
+MAIL_FROM_ADDRESS=noreply@yourdomain.com
+
+# 3. Test email sending:
+php artisan tinker
+>>> Mail::raw('Test email', fn($m) => $m->to('test@example.com')->subject('Test'));
+```
+
 ### Phase 8 Features Management
 
 #### Exchange & Trading
