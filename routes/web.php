@@ -467,7 +467,7 @@ Route::middleware([
             ]);
 
             // Verify account was created
-            $createdAccount = \App\Domain\Account\Models\Account::where('user_uuid', $user->uuid)
+            $createdAccount = App\Domain\Account\Models\Account::where('user_uuid', $user->uuid)
                 ->where('name', $request->name)
                 ->first();
 
