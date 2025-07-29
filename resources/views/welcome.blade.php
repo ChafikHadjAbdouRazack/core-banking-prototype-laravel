@@ -81,7 +81,7 @@
                         Powering Democratic Banking
                     </h1>
                     <p class="text-xl md:text-2xl mb-8 text-purple-100 max-w-4xl mx-auto">
-                        Experience the Global Currency Unit - where your money stays in real banks while you control the currency composition through democratic voting
+                        Experience the <a href="{{ route('features.show', 'gcu') }}" class="text-white underline hover:text-purple-100">Global Currency Unit</a> - where your money stays in real banks while you control the currency composition through democratic voting
                     </p>
                     <p class="mb-8">
                         <a href="{{ route('about') }}" class="text-purple-200 hover:text-white underline">Learn more about FinAegis →</a>
@@ -540,6 +540,16 @@
                             </li>
                         </ul>
                     </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="text-center mt-12">
+                    <a href="{{ route('features.show', 'gcu') }}" class="inline-flex items-center justify-center bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl">
+                        Learn More About GCU
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </section>
