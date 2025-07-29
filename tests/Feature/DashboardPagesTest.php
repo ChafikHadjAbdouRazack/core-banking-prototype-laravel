@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -38,20 +39,20 @@ class DashboardPagesTest extends DomainTestCase
         ]);
 
         // Create some basic assets for exchange
-        \App\Models\Asset::firstOrCreate(['code' => 'EUR'], [
-            'name'           => 'Euro',
-            'type'           => 'fiat',
-            'is_enabled'     => true,
-            'is_tradeable'   => true,
-            'decimal_places' => 2,
+        Asset::firstOrCreate(['code' => 'EUR'], [
+            'name'         => 'Euro',
+            'type'         => 'fiat',
+            'is_active'    => true,
+            'is_tradeable' => true,
+            'precision'    => 2,
         ]);
 
-        \App\Models\Asset::firstOrCreate(['code' => 'BTC'], [
-            'name'           => 'Bitcoin',
-            'type'           => 'crypto',
-            'is_enabled'     => true,
-            'is_tradeable'   => true,
-            'decimal_places' => 8,
+        Asset::firstOrCreate(['code' => 'BTC'], [
+            'name'         => 'Bitcoin',
+            'type'         => 'crypto',
+            'is_active'    => true,
+            'is_tradeable' => true,
+            'precision'    => 8,
         ]);
     }
 
