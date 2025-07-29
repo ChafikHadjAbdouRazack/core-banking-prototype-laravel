@@ -7,7 +7,6 @@ use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Str;
 
-
 trait MocksWorkflows
 {
     protected function mockWorkflows(): void

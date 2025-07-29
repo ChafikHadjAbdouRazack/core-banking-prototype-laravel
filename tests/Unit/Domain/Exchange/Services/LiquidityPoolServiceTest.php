@@ -7,7 +7,6 @@ use App\Domain\Exchange\Projections\LiquidityProvider;
 use App\Domain\Exchange\Services\ExchangeService;
 use App\Domain\Exchange\Services\LiquidityPoolService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

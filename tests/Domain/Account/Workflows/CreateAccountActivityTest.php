@@ -7,7 +7,6 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use App\Models\User;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 use Workflow\Models\StoredWorkflow;

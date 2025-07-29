@@ -7,7 +7,6 @@ namespace Tests\Unit\Services;
 use App\Domain\Product\Services\SubProductService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Pennant\Feature;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

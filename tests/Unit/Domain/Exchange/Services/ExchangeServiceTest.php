@@ -13,7 +13,6 @@ use App\Domain\Exchange\Services\FeeCalculator;
 use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;

@@ -7,7 +7,6 @@ namespace Tests\Feature\Domain\Basket\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Activities\DecomposeBasketActivity;
 use App\Domain\Basket\Activities\DecomposeBasketBusinessActivity;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Workflow\Activity;

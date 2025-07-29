@@ -10,7 +10,6 @@ use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\LiquidationService;
 use App\Domain\Wallet\Services\WalletService;
 use Illuminate\Support\Facades\DB;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

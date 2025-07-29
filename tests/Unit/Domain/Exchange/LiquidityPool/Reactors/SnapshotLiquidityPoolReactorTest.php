@@ -8,7 +8,6 @@ use App\Domain\Exchange\LiquidityPool\Events\LiquidityRemoved;
 use App\Domain\Exchange\LiquidityPool\Events\LiquidityRewardsDistributed;
 use App\Domain\Exchange\LiquidityPool\Reactors\SnapshotLiquidityPoolReactor;
 use Illuminate\Support\Str;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

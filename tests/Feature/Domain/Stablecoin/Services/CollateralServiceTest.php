@@ -11,7 +11,6 @@ use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

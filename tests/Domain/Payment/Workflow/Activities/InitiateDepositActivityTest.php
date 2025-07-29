@@ -3,7 +3,6 @@
 use App\Domain\Payment\Workflow\Activities\InitiateDepositActivity;
 use Illuminate\Support\Str;
 
-
 it('can initiate a deposit through activity', function () {
     $accountUuid = Str::uuid()->toString();
 
@@ -19,7 +18,7 @@ it('can initiate a deposit through activity', function () {
     ];
 
     // Use the ActivityStub pattern instead of direct instantiation
-    $activity = \Mockery::mock(InitiateDepositActivity::class);
+    $activity = Mockery::mock(InitiateDepositActivity::class);
     $activity->shouldReceive('execute')
         ->with($input)
         ->andReturnUsing(function ($input) {

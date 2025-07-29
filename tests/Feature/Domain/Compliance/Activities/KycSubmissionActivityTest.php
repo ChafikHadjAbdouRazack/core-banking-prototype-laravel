@@ -6,7 +6,6 @@ namespace Tests\Feature\Domain\Compliance\Activities;
 
 use App\Domain\Compliance\Activities\KycSubmissionActivity;
 use App\Domain\Compliance\Services\KycService;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Workflow\Activity;

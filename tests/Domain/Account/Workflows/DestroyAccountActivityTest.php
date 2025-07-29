@@ -10,7 +10,7 @@ use Workflow\WorkflowStub;
 it('can handle destroy account activity', function () {
     $uuid = new AccountUuid((string) Illuminate\Support\Str::uuid());
 
-    $ledgerAggregate = \Mockery::mock(LedgerAggregate::class);
+    $ledgerAggregate = Mockery::mock(LedgerAggregate::class);
     $ledgerAggregate->shouldReceive('retrieve')
         ->with($uuid->getUuid())
         ->andReturnSelf();

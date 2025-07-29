@@ -6,7 +6,6 @@ namespace Tests\Feature\Models;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Crypt;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

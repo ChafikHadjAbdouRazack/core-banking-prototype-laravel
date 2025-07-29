@@ -10,7 +10,6 @@ use App\Domain\Banking\Services\BankIntegrationService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Session;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

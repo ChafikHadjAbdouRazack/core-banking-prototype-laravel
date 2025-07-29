@@ -12,7 +12,6 @@ use App\Domain\Compliance\Services\TransactionMonitoringService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

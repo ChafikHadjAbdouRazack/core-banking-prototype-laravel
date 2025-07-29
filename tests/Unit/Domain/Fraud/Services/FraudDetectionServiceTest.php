@@ -16,7 +16,6 @@ use App\Domain\Fraud\Services\MachineLearningService;
 use App\Domain\Fraud\Services\RuleEngineService;
 use App\Models\User;
 use Illuminate\Support\Facades\Event;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

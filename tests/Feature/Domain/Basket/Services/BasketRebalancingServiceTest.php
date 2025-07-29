@@ -13,7 +13,6 @@ use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

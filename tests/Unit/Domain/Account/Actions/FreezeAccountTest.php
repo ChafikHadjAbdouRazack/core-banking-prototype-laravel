@@ -6,7 +6,6 @@ use App\Domain\Account\Actions\FreezeAccount;
 use App\Domain\Account\Events\AccountFrozen;
 use App\Domain\Account\Models\Account;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 

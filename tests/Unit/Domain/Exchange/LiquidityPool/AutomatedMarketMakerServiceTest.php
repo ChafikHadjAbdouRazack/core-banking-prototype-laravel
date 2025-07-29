@@ -6,7 +6,6 @@ use App\Domain\Exchange\Contracts\PriceAggregatorInterface;
 use App\Domain\Exchange\LiquidityPool\Services\AutomatedMarketMakerService;
 use App\Domain\Exchange\Projections\LiquidityPool;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

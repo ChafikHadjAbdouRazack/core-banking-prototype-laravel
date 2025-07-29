@@ -13,7 +13,6 @@ use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\StabilityMechanismService;
 use Illuminate\Support\Facades\Event;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

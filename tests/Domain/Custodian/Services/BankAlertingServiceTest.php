@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 beforeEach(function () {
-    $this->healthMonitor = \Mockery::mock(CustodianHealthMonitor::class);
+    $this->healthMonitor = Mockery::mock(CustodianHealthMonitor::class);
     $this->alertingService = new BankAlertingService($this->healthMonitor);
     Cache::flush(); // Clear cache before each test
 });
@@ -156,7 +156,7 @@ it('performs system-wide health check and alerts on multiple failures', function
         ->once()
         ->with(
             'System-wide bank health alert',
-            \Mockery::on(function ($context) {
+            Mockery::on(function ($context) {
                 return $context['severity'] === 'critical' &&
                        str_contains($context['message'], 'Multiple bank connectors');
             })

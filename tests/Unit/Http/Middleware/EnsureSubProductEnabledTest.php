@@ -8,7 +8,6 @@ use App\Domain\Product\Services\SubProductService;
 use App\Http\Middleware\EnsureSubProductEnabled;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 

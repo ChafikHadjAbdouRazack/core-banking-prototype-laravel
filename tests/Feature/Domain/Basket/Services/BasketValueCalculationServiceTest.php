@@ -12,7 +12,6 @@ use App\Domain\Basket\Models\BasketComponent;
 use App\Domain\Basket\Models\BasketValue;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Support\Facades\Cache;
-
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
