@@ -49,6 +49,11 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
         

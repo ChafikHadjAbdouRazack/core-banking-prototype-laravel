@@ -90,6 +90,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deps-
             
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install PHP Dependencies
         run: |
           composer install --prefer-dist --no-progress --optimize-autoloader
@@ -102,8 +107,6 @@ jobs:
           
       - name: Prepare Laravel Application
         run: |
-          cp .env.testing .env
-          php artisan key:generate
           php artisan config:cache
           php artisan route:cache
           php artisan migrate --force
@@ -174,6 +177,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: |
           composer install --prefer-dist --no-progress --optimize-autoloader
@@ -182,8 +190,6 @@ jobs:
           
       - name: Prepare Laravel Application
         run: |
-          cp .env.testing .env
-          php artisan key:generate
           php artisan config:cache
           php artisan route:cache
           php artisan migrate --force
@@ -231,6 +237,11 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
           tools: composer:v2
           coverage: xdebug
+          
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
@@ -291,6 +302,11 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: |
           composer install --prefer-dist --no-progress --optimize-autoloader
@@ -299,8 +315,6 @@ jobs:
           
       - name: Prepare Laravel Application
         run: |
-          cp .env.testing .env
-          
           # Add MySQL connection details
           echo "DB_CONNECTION=mysql" >> .env
           echo "DB_HOST=127.0.0.1" >> .env
@@ -308,8 +322,6 @@ jobs:
           echo "DB_DATABASE=testing" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=root" >> .env
-          
-          php artisan key:generate
           
           # Clear and rebuild all caches to ensure configs are loaded
           php artisan config:clear

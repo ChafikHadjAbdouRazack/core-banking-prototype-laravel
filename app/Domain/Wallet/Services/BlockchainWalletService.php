@@ -20,11 +20,16 @@ class BlockchainWalletService implements WalletConnectorInterface
 {
     protected KeyManagementService $keyManager;
 
+    protected SecureKeyStorageService $secureStorage;
+
     protected array $connectors = [];
 
-    public function __construct(KeyManagementService $keyManager)
-    {
+    public function __construct(
+        KeyManagementService $keyManager,
+        SecureKeyStorageService $secureStorage
+    ) {
         $this->keyManager = $keyManager;
+        $this->secureStorage = $secureStorage;
         $this->initializeConnectors();
     }
 
@@ -81,7 +86,12 @@ class BlockchainWalletService implements WalletConnectorInterface
                 $masterPublicKey = $hdWallet['master_public_key'];
 
                 // Store encrypted seed securely
-                $this->storeEncryptedSeed($walletId, $hdWallet['encrypted_seed']);
+                $this->secureStorage->storeEncryptedSeed(
+                    $walletId,
+                    $hdWallet['encrypted_seed'],
+                    $userId,
+                    ['wallet_type' => 'non-custodial']
+                );
             } elseif ($type === 'custodial') {
                 // Generate new mnemonic for custodial wallet
                 $mnemonic = $this->keyManager->generateMnemonic();
@@ -89,7 +99,7 @@ class BlockchainWalletService implements WalletConnectorInterface
                 $masterPublicKey = $hdWallet['master_public_key'];
 
                 // Store in HSM or secure key storage
-                $this->storeInHSM($walletId, $hdWallet['encrypted_seed']);
+                $this->secureStorage->storeInHSM($walletId, $hdWallet['encrypted_seed']);
             }
 
             $wallet = BlockchainWallet::create(
@@ -148,8 +158,13 @@ class BlockchainWalletService implements WalletConnectorInterface
         $addresses = $wallet->getAddresses($chain);
         $index = count($addresses);
 
-        // Retrieve encrypted seed
-        $encryptedSeed = $this->retrieveEncryptedSeed($walletId);
+        // Retrieve encrypted seed with audit logging
+        $userId = auth()->id() ?? 'system';
+        $encryptedSeed = $this->secureStorage->retrieveEncryptedSeed(
+            $walletId,
+            (string) $userId,
+            'generate_address'
+        );
 
         // Derive key pair
         $keyPair = $this->keyManager->deriveKeyPairForChain($encryptedSeed, $chain, $index);

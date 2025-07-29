@@ -7,12 +7,20 @@ use App\Domain\Wallet\Connectors\PolygonConnector;
 use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
 use App\Domain\Wallet\Services\BlockchainWalletService;
 use App\Domain\Wallet\Services\KeyManagementService;
+use App\Domain\Wallet\Services\SecureKeyStorageService;
 use App\Workflows\BlockchainDepositActivities;
 use App\Workflows\BlockchainWithdrawalActivities;
 use Illuminate\Support\ServiceProvider;
 
 class BlockchainServiceProvider extends ServiceProvider
 {
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
     /**
      * Register services.
      */
@@ -60,12 +68,21 @@ class BlockchainServiceProvider extends ServiceProvider
             }
         );
 
+        // Register secure key storage service as singleton
+        $this->app->singleton(SecureKeyStorageService::class, function ($app) {
+            return new SecureKeyStorageService(
+                $app->make('encrypter'),
+                $app->make(KeyManagementService::class)
+            );
+        });
+
         // Register blockchain wallet service
         $this->app->singleton(
             BlockchainWalletService::class,
             function ($app) {
                 return new BlockchainWalletService(
-                    $app->make(KeyManagementService::class)
+                    $app->make(KeyManagementService::class),
+                    $app->make(SecureKeyStorageService::class)
                 );
             }
         );
@@ -105,5 +122,18 @@ class BlockchainServiceProvider extends ServiceProvider
             ],
             'blockchain-config'
         );
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides(): array
+    {
+        return [
+            BlockchainWalletService::class,
+            SecureKeyStorageService::class,
+        ];
     }
 }

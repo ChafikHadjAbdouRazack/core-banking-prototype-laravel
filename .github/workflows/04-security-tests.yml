@@ -54,14 +54,17 @@ jobs:
           tools: composer:v2
           coverage: none
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
           
       - name: Prepare Security Testing Environment
         run: |
-          cp .env.testing .env
           sed -i 's/APP_ENV=testing/APP_ENV=security-testing/' .env
-          php artisan key:generate
           php artisan migrate --force
           
       - name: Run Penetration Tests
@@ -108,14 +111,17 @@ jobs:
           tools: composer:v2
           coverage: none
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
           
       - name: Prepare Security Testing Environment
         run: |
-          cp .env.testing .env
           sed -i 's/APP_ENV=testing/APP_ENV=security-testing/' .env
-          php artisan key:generate
           php artisan migrate --force
           
       - name: Run Authentication Security Tests
@@ -162,14 +168,17 @@ jobs:
           tools: composer:v2
           coverage: none
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
           
       - name: Prepare Security Testing Environment
         run: |
-          cp .env.testing .env
           sed -i 's/APP_ENV=testing/APP_ENV=security-testing/' .env
-          php artisan key:generate
           php artisan migrate --force
           
       - name: Run API Security Tests
@@ -215,6 +224,11 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, bcmath, intl, zip, gmp
           tools: composer:v2
           coverage: none
+          
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
