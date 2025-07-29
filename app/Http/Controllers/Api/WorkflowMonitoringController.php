@@ -759,18 +759,22 @@ class WorkflowMonitoringController extends Controller
         $dbDriver = config('database.default');
 
         if ($dbDriver === 'sqlite') {
-            $durationSql = 'AVG((julianday(updated_at) - julianday(created_at)) * 86400)';
+            return StoredWorkflow::selectRaw('class, COUNT(*) as executions, AVG((julianday(updated_at) - julianday(created_at)) * 86400) as avg_duration_seconds')
+                ->whereNotNull('updated_at')
+                ->groupBy('class')
+                ->orderBy('executions', 'desc')
+                ->limit(15)
+                ->get()
+                ->toArray();
         } else {
-            $durationSql = 'AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))';
+            return StoredWorkflow::selectRaw('class, COUNT(*) as executions, AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_duration_seconds')
+                ->whereNotNull('updated_at')
+                ->groupBy('class')
+                ->orderBy('executions', 'desc')
+                ->limit(15)
+                ->get()
+                ->toArray();
         }
-
-        return StoredWorkflow::selectRaw("class, COUNT(*) as executions, {$durationSql} as avg_duration_seconds")
-            ->whereNotNull('updated_at')
-            ->groupBy('class')
-            ->orderBy('executions', 'desc')
-            ->limit(15)
-            ->get()
-            ->toArray();
     }
 
     private function getPerformanceMetrics(): array
@@ -778,27 +782,38 @@ class WorkflowMonitoringController extends Controller
         $dbDriver = config('database.default');
 
         if ($dbDriver === 'sqlite') {
-            $durationSql = '(julianday(updated_at) - julianday(created_at)) * 86400';
-            $avgDurationSql = 'AVG((julianday(updated_at) - julianday(created_at)) * 86400)';
-        } else {
-            $durationSql = 'TIMESTAMPDIFF(SECOND, created_at, updated_at)';
-            $avgDurationSql = 'AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at))';
-        }
+            $slowWorkflows = StoredWorkflow::selectRaw('id, class, (julianday(updated_at) - julianday(created_at)) * 86400 as duration_seconds')
+                ->whereNotNull('updated_at')
+                ->whereRaw('((julianday(updated_at) - julianday(created_at)) * 86400) > ?', [30])
+                ->orderByRaw('(julianday(updated_at) - julianday(created_at)) * 86400 desc')
+                ->limit(10)
+                ->get();
 
-        $slowWorkflows = StoredWorkflow::selectRaw("id, class, {$durationSql} as duration_seconds")
-            ->whereNotNull('updated_at')
-            ->whereRaw("({$durationSql}) > 30")
-            ->orderByRaw("{$durationSql} desc")
-            ->limit(10)
-            ->get();
+            $avgDurationByStatus = StoredWorkflow::selectRaw('status, AVG((julianday(updated_at) - julianday(created_at)) * 86400) as avg_duration')
+                ->whereNotNull('updated_at')
+                ->groupBy('status')
+                ->get()
+                ->pluck('avg_duration', 'status')
+                ->toArray();
+        } else {
+            $slowWorkflows = StoredWorkflow::selectRaw('id, class, TIMESTAMPDIFF(SECOND, created_at, updated_at) as duration_seconds')
+                ->whereNotNull('updated_at')
+                ->whereRaw('TIMESTAMPDIFF(SECOND, created_at, updated_at) > ?', [30])
+                ->orderByRaw('TIMESTAMPDIFF(SECOND, created_at, updated_at) desc')
+                ->limit(10)
+                ->get();
+
+            $avgDurationByStatus = StoredWorkflow::selectRaw('status, AVG(TIMESTAMPDIFF(SECOND, created_at, updated_at)) as avg_duration')
+                ->whereNotNull('updated_at')
+                ->groupBy('status')
+                ->get()
+                ->pluck('avg_duration', 'status')
+                ->toArray();
+        }
 
         return [
             'slow_workflows'             => $slowWorkflows->toArray(),
-            'average_duration_by_status' => StoredWorkflow::selectRaw("status, {$avgDurationSql} as avg_duration")
-                ->whereNotNull('updated_at')
-                ->groupBy('status')
-                ->pluck('avg_duration', 'status')
-                ->toArray(),
+            'average_duration_by_status' => $avgDurationByStatus,
         ];
     }
 

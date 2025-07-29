@@ -95,7 +95,7 @@ class MatchOrderActivity extends Activity
                             ->orWhere(
                                 function ($q2) use ($order) {
                                     $q2->where('order_type', 'limit')
-                                        ->whereRaw('CAST(price AS DECIMAL(36,18)) <= ?', [$order->price]);
+                                        ->where('price', '<=', $order->price);
                                 }
                             );
                     }
@@ -108,7 +108,7 @@ class MatchOrderActivity extends Activity
                             ->orWhere(
                                 function ($q2) use ($order) {
                                     $q2->where('order_type', 'limit')
-                                        ->whereRaw('CAST(price AS DECIMAL(36,18)) >= ?', [$order->price]);
+                                        ->where('price', '>=', $order->price);
                                 }
                             );
                     }
@@ -119,10 +119,10 @@ class MatchOrderActivity extends Activity
         // Order by best price first, then by time (FIFO)
         if ($order->type === 'buy') {
             // For buy orders, match with lowest sell prices first
-            $query->orderByRaw('CASE WHEN order_type = \'market\' THEN 0 ELSE CAST(price AS DECIMAL(36,18)) END ASC');
+            $query->orderByRaw('CASE WHEN order_type = ? THEN 0 ELSE CAST(price AS DECIMAL(36,18)) END ASC', ['market']);
         } else {
             // For sell orders, match with highest buy prices first
-            $query->orderByRaw('CASE WHEN order_type = \'market\' THEN 999999999 ELSE CAST(price AS DECIMAL(36,18)) END DESC');
+            $query->orderByRaw('CASE WHEN order_type = ? THEN 999999999 ELSE CAST(price AS DECIMAL(36,18)) END DESC', ['market']);
         }
 
         $query->orderBy('created_at', 'asc'); // FIFO

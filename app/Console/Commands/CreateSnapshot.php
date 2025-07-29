@@ -86,7 +86,7 @@ class CreateSnapshot extends Command
 
         $aggregateUuids = $query->select('aggregate_uuid')
             ->groupBy('aggregate_uuid')
-            ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 100])
+            ->having(DB::raw('COUNT(*)'), '>=', $force ? 1 : 100)
             ->pluck('aggregate_uuid');
 
         if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {
@@ -128,7 +128,7 @@ class CreateSnapshot extends Command
 
         $aggregateUuids = $query->select('aggregate_uuid')
             ->groupBy('aggregate_uuid')
-            ->havingRaw('COUNT(*) >= ?', [$force ? 1 : 50])
+            ->having(DB::raw('COUNT(*)'), '>=', $force ? 1 : 50)
             ->pluck('aggregate_uuid');
 
         if (! app()->runningUnitTests() && $aggregateUuids->count() > 0) {

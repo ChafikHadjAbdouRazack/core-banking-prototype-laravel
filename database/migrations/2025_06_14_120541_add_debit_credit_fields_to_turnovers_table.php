@@ -17,8 +17,8 @@ return new class () extends Migration {
         });
 
         // Migrate existing data: positive amounts go to credit, negative to debit
-        DB::statement('UPDATE turnovers SET credit = amount WHERE amount > 0');
-        DB::statement('UPDATE turnovers SET debit = ABS(amount) WHERE amount < 0');
+        DB::table('turnovers')->where('amount', '>', 0)->update(['credit' => DB::raw('amount')]);
+        DB::table('turnovers')->where('amount', '<', 0)->update(['debit' => DB::raw('ABS(amount)')]);
     }
 
     /**

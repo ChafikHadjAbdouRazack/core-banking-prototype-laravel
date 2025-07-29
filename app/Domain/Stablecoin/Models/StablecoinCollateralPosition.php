@@ -256,7 +256,12 @@ class StablecoinCollateralPosition extends Model
      */
     public function scopeAtRisk($query)
     {
-        return $query->whereRaw('collateral_ratio <= (SELECT min_collateral_ratio FROM stablecoins WHERE code = stablecoin_code)');
+        return $query->whereIn('uuid', function ($subquery) {
+            $subquery->select('scp.uuid')
+                ->from('stablecoin_collateral_positions as scp')
+                ->join('stablecoins as s', 'scp.stablecoin_code', '=', 's.code')
+                ->whereColumn('scp.collateral_ratio', '<=', 's.min_collateral_ratio');
+        });
     }
 
     /**
@@ -268,8 +273,16 @@ class StablecoinCollateralPosition extends Model
             ->where('status', 'active')
             ->where(
                 function ($q) {
-                    $q->whereRaw('collateral_ratio <= (SELECT min_collateral_ratio FROM stablecoins WHERE code = stablecoin_code)')
-                        ->orWhereRaw('stop_loss_ratio IS NOT NULL AND collateral_ratio <= stop_loss_ratio');
+                    $q->whereIn('uuid', function ($subquery) {
+                        $subquery->select('scp.uuid')
+                            ->from('stablecoin_collateral_positions as scp')
+                            ->join('stablecoins as s', 'scp.stablecoin_code', '=', 's.code')
+                            ->whereColumn('scp.collateral_ratio', '<=', 's.min_collateral_ratio');
+                    })
+                    ->orWhere(function ($q2) {
+                        $q2->whereNotNull('stop_loss_ratio')
+                            ->whereColumn('collateral_ratio', '<=', 'stop_loss_ratio');
+                    });
                 }
             );
     }
