@@ -101,7 +101,7 @@ class SecureKeyStorageService
             ->where('wallet_id', $walletId)
             ->first();
 
-        if (!$storage) {
+        if (! $storage) {
             throw new KeyManagementException("Seed not found for wallet: {$walletId}");
         }
 
