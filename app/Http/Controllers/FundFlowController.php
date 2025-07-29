@@ -179,7 +179,7 @@ class FundFlowController extends Controller
                 'id'          => $transaction->id,
                 'type'        => $transaction->type,
                 'amount'      => $transaction->amount,
-                'currency'    => $transaction->currency,
+                'currency'    => $transaction->asset_code ?? 'USD',
                 'from'        => $this->getFlowSource($transaction),
                 'to'          => $this->getFlowDestination($transaction),
                 'timestamp'   => $transaction->created_at,
