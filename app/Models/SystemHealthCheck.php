@@ -115,7 +115,7 @@ class SystemHealthCheck extends Model
             ->whereIn(
                 'id',
                 function ($query) {
-                    $query->select(\DB::raw('MAX(id)'))
+                    $query->selectRaw('MAX(id)')
                         ->from('system_health_checks')
                         ->groupBy('service');
                 }
