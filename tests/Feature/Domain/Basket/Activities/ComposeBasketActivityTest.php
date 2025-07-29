@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Basket\Activities;
 
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Basket\Activities\ComposeBasketActivity;
+use App\Domain\Basket\Activities\ComposeBasketBusinessActivity;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Workflow\Activity;
 
 class ComposeBasketActivityTest extends TestCase
 {
@@ -15,7 +20,7 @@ class ComposeBasketActivityTest extends TestCase
         $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
         $activity = new ComposeBasketActivity($basketService);
 
-        $this->assertInstanceOf(\Workflow\Activity::class, $activity);
+        $this->assertInstanceOf(Activity::class, $activity);
     }
 
     #[Test]
