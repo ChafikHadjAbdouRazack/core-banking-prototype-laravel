@@ -59,12 +59,12 @@ class N1QueryOptimizationTest extends TestCase
         // Create baskets with components and values
         for ($i = 1; $i <= 10; $i++) {
             $basket = BasketAsset::create([
-                'code' => 'BSKT' . $i,
-                'name' => 'Test Basket ' . $i,
-                'type' => 'fixed',
+                'code'                => 'BSKT' . $i,
+                'name'                => 'Test Basket ' . $i,
+                'type'                => 'fixed',
                 'rebalance_frequency' => 'never',
-                'is_active' => true,
-                'created_by' => $user->uuid,
+                'is_active'           => true,
+                'created_by'          => $user->uuid,
             ]);
 
             // Create components
@@ -75,9 +75,9 @@ class N1QueryOptimizationTest extends TestCase
 
                 BasketComponent::create([
                     'basket_asset_id' => $basket->id,
-                    'asset_code' => $asset->code,
-                    'weight' => $weight,
-                    'is_active' => true,
+                    'asset_code'      => $asset->code,
+                    'weight'          => $weight,
+                    'is_active'       => true,
                 ]);
             }
 
@@ -85,8 +85,8 @@ class N1QueryOptimizationTest extends TestCase
             for ($j = 1; $j <= 5; $j++) {
                 BasketValue::create([
                     'basket_asset_code' => $basket->code,
-                    'value' => rand(1000, 5000) / 100,
-                    'calculated_at' => now()->subDays($j),
+                    'value'             => rand(1000, 5000) / 100,
+                    'calculated_at'     => now()->subDays($j),
                 ]);
             }
         }
@@ -202,12 +202,12 @@ class N1QueryOptimizationTest extends TestCase
         // Create polls
         for ($i = 1; $i <= 10; $i++) {
             $poll = Poll::create([
-                'uuid'                   => Str::uuid()->toString(),
-                'title'                  => 'Test Poll ' . $i,
-                'description'            => 'Test poll description',
-                'type'                   => 'single_choice',
-                'status'                 => 'active',
-                'options'                => [
+                'uuid'        => Str::uuid()->toString(),
+                'title'       => 'Test Poll ' . $i,
+                'description' => 'Test poll description',
+                'type'        => 'single_choice',
+                'status'      => 'active',
+                'options'     => [
                     ['value' => 'option1', 'label' => 'Option 1'],
                     ['value' => 'option2', 'label' => 'Option 2'],
                 ],
