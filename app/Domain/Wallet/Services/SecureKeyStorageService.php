@@ -114,7 +114,7 @@ class SecureKeyStorageService
         // For now, just return the encrypted seed as is
         // In production, this would properly decrypt
         $encryptedData = base64_decode($storage->encrypted_seed);
-        
+
         // Split the combined data
         $parts = explode('|', $encryptedData);
         if (count($parts) !== 3) {
