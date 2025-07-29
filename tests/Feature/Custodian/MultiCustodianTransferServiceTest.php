@@ -31,11 +31,11 @@ beforeEach(function () {
     ]);
 
     // Create default mock registry with paysera connector
-    $this->mockConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $this->mockConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $this->mockConnector->shouldReceive('isAvailable')->andReturn(true);
     $this->mockConnector->shouldReceive('getName')->andReturn('paysera');
 
-    $this->mockRegistry = Mockery::mock(CustodianRegistry::class)->makePartial();
+    $this->mockRegistry = \Mockery::mock(CustodianRegistry::class)->makePartial();
     $this->mockRegistry->shouldReceive('get')->with('paysera')->andReturn($this->mockConnector);
     $this->mockRegistry->shouldReceive('getConnector')->with('paysera')->andReturn($this->mockConnector);
 
@@ -93,7 +93,7 @@ it('can route transfers between different custodians', function () {
     $this->custodianAccount2->delete();
 
     // Mock connector with external transfer capability
-    $mockPayseraConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockPayseraConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockPayseraConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockPayseraConnector->shouldReceive('getName')->andReturn('paysera');
     $mockPayseraConnector->shouldReceive('getInfo')
@@ -113,11 +113,11 @@ it('can route transfers between different custodians', function () {
             createdAt: now()
         ));
 
-    $mockDeutscheBankConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockDeutscheBankConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockDeutscheBankConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockDeutscheBankConnector->shouldReceive('getName')->andReturn('deutsche_bank');
 
-    $mockRegistry = Mockery::mock(CustodianRegistry::class);
+    $mockRegistry = \Mockery::mock(CustodianRegistry::class);
     $mockRegistry->shouldReceive('get')->with('paysera')->andReturn($mockPayseraConnector);
     $mockRegistry->shouldReceive('get')->with('deutsche_bank')->andReturn($mockDeutscheBankConnector);
     $mockRegistry->shouldReceive('getConnector')->with('paysera')->andReturn($mockPayseraConnector);
@@ -168,7 +168,7 @@ it('can perform bridge transfers through intermediate custodian', function () {
     $this->custodianAccount2->delete();
 
     // Mock connectors with bridge capability
-    $mockPayseraConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockPayseraConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockPayseraConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockPayseraConnector->shouldReceive('getName')->andReturn('paysera');
     $mockPayseraConnector->shouldReceive('getInfo')
@@ -199,7 +199,7 @@ it('can perform bridge transfers through intermediate custodian', function () {
             completedAt: now()
         ));
 
-    $mockDeutscheBankConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockDeutscheBankConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockDeutscheBankConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockDeutscheBankConnector->shouldReceive('getName')->andReturn('deutsche_bank');
     $mockDeutscheBankConnector->shouldReceive('getInfo')
@@ -220,11 +220,11 @@ it('can perform bridge transfers through intermediate custodian', function () {
         ));
 
     // Need to add santander connector too
-    $mockSantanderConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockSantanderConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockSantanderConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockSantanderConnector->shouldReceive('getName')->andReturn('santander');
 
-    $mockRegistry = Mockery::mock(CustodianRegistry::class);
+    $mockRegistry = \Mockery::mock(CustodianRegistry::class);
     $mockRegistry->shouldReceive('get')->with('paysera')->andReturn($mockPayseraConnector);
     $mockRegistry->shouldReceive('get')->with('deutsche_bank')->andReturn($mockDeutscheBankConnector);
     $mockRegistry->shouldReceive('get')->with('santander')->andReturn($mockSantanderConnector);

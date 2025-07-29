@@ -113,7 +113,7 @@ it('generates correct completion notification for successful export', function (
 
 it('generates correct completion notification with failed rows', function () {
     // Create a mock export with proper setup
-    $export = Mockery::mock(Export::class)->makePartial();
+    $export = \Mockery::mock(Export::class)->makePartial();
     $export->successful_rows = 90;
     $export->shouldReceive('getFailedRowsCount')->andReturn(10);
 

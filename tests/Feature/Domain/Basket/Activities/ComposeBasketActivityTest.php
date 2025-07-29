@@ -7,7 +7,7 @@ namespace Tests\Feature\Domain\Basket\Activities;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Basket\Activities\ComposeBasketActivity;
 use App\Domain\Basket\Activities\ComposeBasketBusinessActivity;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Workflow\Activity;
@@ -17,7 +17,7 @@ class ComposeBasketActivityTest extends TestCase
     #[Test]
     public function test_activity_extends_workflow_activity()
     {
-        $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(ComposeBasketBusinessActivity::class);
         $activity = new ComposeBasketActivity($basketService);
 
         $this->assertInstanceOf(Activity::class, $activity);
@@ -26,7 +26,7 @@ class ComposeBasketActivityTest extends TestCase
     #[Test]
     public function test_execute_method_calls_business_activity()
     {
-        $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(ComposeBasketBusinessActivity::class);
         $activity = new ComposeBasketActivity($basketService);
 
         $accountUuid = new AccountUuid('test-uuid');
@@ -47,7 +47,7 @@ class ComposeBasketActivityTest extends TestCase
     #[Test]
     public function test_execute_method_has_correct_signature()
     {
-        $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(ComposeBasketBusinessActivity::class);
         $activity = new ComposeBasketActivity($basketService);
 
         $reflection = new \ReflectionClass($activity);
@@ -72,7 +72,7 @@ class ComposeBasketActivityTest extends TestCase
     #[Test]
     public function test_execute_method_returns_business_activity_result()
     {
-        $basketService = Mockery::mock(ComposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(ComposeBasketBusinessActivity::class);
         $activity = new ComposeBasketActivity($basketService);
 
         $accountUuid = new AccountUuid('test-uuid');

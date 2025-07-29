@@ -13,7 +13,7 @@ it('can warm up cache for all accounts', function () {
     Account::factory()->create(['frozen' => true]); // Frozen account should be skipped
 
     // Mock the CacheManager to expect calls with any string - let's be more flexible
-    $cacheManager = Mockery::mock(CacheManager::class);
+    $cacheManager = \Mockery::mock(CacheManager::class);
     $cacheManager->shouldReceive('warmUp')
         ->withArgs(function ($uuid) {
             return is_string($uuid) || (is_object($uuid) && method_exists($uuid, '__toString'));
@@ -34,7 +34,7 @@ it('can warm up cache for specific accounts', function () {
     $account2 = Account::factory()->create();
 
     // Mock the CacheManager to accept string UUIDs
-    $cacheManager = Mockery::mock(CacheManager::class);
+    $cacheManager = \Mockery::mock(CacheManager::class);
     $cacheManager->shouldReceive('warmUp')
         ->with((string) $account1->uuid)
         ->once()

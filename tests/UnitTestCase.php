@@ -3,7 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Mockery;
+
 
 abstract class UnitTestCase extends BaseTestCase
 {
@@ -14,7 +14,7 @@ abstract class UnitTestCase extends BaseTestCase
         parent::tearDown();
 
         // Close any Mockery mocks
-        Mockery::close();
+        \Mockery::close();
     }
 
     /**

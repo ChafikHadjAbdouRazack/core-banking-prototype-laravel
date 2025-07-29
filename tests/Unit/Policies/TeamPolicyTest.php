@@ -9,8 +9,8 @@ uses(UnitTestCase::class);
 
 beforeEach(function () {
     $this->policy = new TeamPolicy();
-    $this->user = Mockery::mock(User::class);
-    $this->team = Mockery::mock(Team::class);
+    $this->user = \Mockery::mock(User::class);
+    $this->team = \Mockery::mock(Team::class);
 });
 
 it('can instantiate team policy', function () {
@@ -25,7 +25,7 @@ it('allows any user to view any teams', function () {
 
 it('allows user to view team if they belong to it', function () {
     // Mock the belongsToTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('belongsToTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->view($user, $this->team);
@@ -35,7 +35,7 @@ it('allows user to view team if they belong to it', function () {
 
 it('denies user to view team if they do not belong to it', function () {
     // Mock the belongsToTeam method to return false
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('belongsToTeam')->with($this->team)->andReturn(false);
 
     $result = $this->policy->view($user, $this->team);
@@ -51,7 +51,7 @@ it('allows any user to create teams', function () {
 
 it('allows team owner to update team', function () {
     // Mock the ownsTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->update($user, $this->team);
@@ -61,7 +61,7 @@ it('allows team owner to update team', function () {
 
 it('denies non-owner to update team', function () {
     // Mock the ownsTeam method to return false
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(false);
 
     $result = $this->policy->update($user, $this->team);
@@ -71,7 +71,7 @@ it('denies non-owner to update team', function () {
 
 it('allows team owner to add team members', function () {
     // Mock the ownsTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->addTeamMember($user, $this->team);
@@ -81,7 +81,7 @@ it('allows team owner to add team members', function () {
 
 it('allows team owner to update team member permissions', function () {
     // Mock the ownsTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->updateTeamMember($user, $this->team);
@@ -91,7 +91,7 @@ it('allows team owner to update team member permissions', function () {
 
 it('allows team owner to remove team members', function () {
     // Mock the ownsTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->removeTeamMember($user, $this->team);
@@ -101,7 +101,7 @@ it('allows team owner to remove team members', function () {
 
 it('allows team owner to delete team', function () {
     // Mock the ownsTeam method to return true
-    $user = Mockery::mock(User::class);
+    $user = \Mockery::mock(User::class);
     $user->shouldReceive('ownsTeam')->with($this->team)->andReturn(true);
 
     $result = $this->policy->delete($user, $this->team);

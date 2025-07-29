@@ -6,7 +6,7 @@ namespace Tests\Feature\Domain\Compliance\Activities;
 
 use App\Domain\Compliance\Activities\KycSubmissionActivity;
 use App\Domain\Compliance\Services\KycService;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 use Workflow\Activity;
@@ -16,7 +16,7 @@ class KycSubmissionActivityTest extends TestCase
     #[Test]
     public function test_activity_extends_workflow_activity()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycSubmissionActivity($kycService);
 
         $this->assertInstanceOf(Activity::class, $activity);
@@ -25,7 +25,7 @@ class KycSubmissionActivityTest extends TestCase
     #[Test]
     public function test_execute_method_validates_required_parameters()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycSubmissionActivity($kycService);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -37,7 +37,7 @@ class KycSubmissionActivityTest extends TestCase
     #[Test]
     public function test_execute_method_validates_missing_user_uuid()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycSubmissionActivity($kycService);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -50,7 +50,7 @@ class KycSubmissionActivityTest extends TestCase
     #[Test]
     public function test_execute_method_validates_empty_documents()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycSubmissionActivity($kycService);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -64,7 +64,7 @@ class KycSubmissionActivityTest extends TestCase
     #[Test]
     public function test_execute_method_has_correct_signature()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycSubmissionActivity($kycService);
 
         $reflection = new \ReflectionClass($activity);

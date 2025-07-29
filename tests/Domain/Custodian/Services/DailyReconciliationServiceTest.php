@@ -12,8 +12,8 @@ use App\Domain\Custodian\Services\DailyReconciliationService;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
-    $this->syncService = Mockery::mock(BalanceSynchronizationService::class);
-    $this->custodianRegistry = Mockery::mock(CustodianRegistry::class);
+    $this->syncService = \Mockery::mock(BalanceSynchronizationService::class);
+    $this->custodianRegistry = \Mockery::mock(CustodianRegistry::class);
     $this->reconciliationService = new DailyReconciliationService($this->syncService, $this->custodianRegistry);
 });
 
@@ -45,7 +45,7 @@ it('performs daily reconciliation successfully', function () {
     ]);
 
     // Mock custodian connector with proper interface
-    $mockConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockConnector->shouldReceive('getAccountInfo')->andReturn(
         new App\Domain\Custodian\ValueObjects\AccountInfo(
@@ -100,7 +100,7 @@ it('detects balance discrepancies', function () {
     ]);
 
     // Mock custodian with different balance
-    $mockConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $mockConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $mockConnector->shouldReceive('isAvailable')->andReturn(true);
     $mockConnector->shouldReceive('getAccountInfo')->andReturn(
         new App\Domain\Custodian\ValueObjects\AccountInfo(

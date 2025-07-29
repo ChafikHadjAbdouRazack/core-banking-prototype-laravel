@@ -12,7 +12,7 @@ use App\Domain\Compliance\Services\TransactionMonitoringService;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
@@ -30,8 +30,8 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     {
         parent::setUp();
 
-        $this->sarService = Mockery::mock(SuspiciousActivityReportService::class);
-        $this->riskService = Mockery::mock(CustomerRiskService::class);
+        $this->sarService = \Mockery::mock(SuspiciousActivityReportService::class);
+        $this->riskService = \Mockery::mock(CustomerRiskService::class);
 
         $this->service = new TransactionMonitoringService(
             $this->sarService,
@@ -100,7 +100,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $riskProfile->risk_level = 'medium';
 
         // Create mock rule
-        $rule = Mockery::mock(TransactionMonitoringRule::class);
+        $rule = \Mockery::mock(TransactionMonitoringRule::class);
         $rule->shouldReceive('getActions')->andReturn([TransactionMonitoringRule::ACTION_REVIEW]);
         $rule->shouldReceive('recordTrigger')->once();
         $rule->shouldReceive('getAttribute')->with('name')->andReturn('Large Transaction Rule');
@@ -129,7 +129,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $riskProfile = new CustomerRiskProfile();
         $riskProfile->risk_level = 'high';
 
-        $rule = Mockery::mock(TransactionMonitoringRule::class);
+        $rule = \Mockery::mock(TransactionMonitoringRule::class);
         $rule->shouldReceive('getActions')->andReturn([TransactionMonitoringRule::ACTION_BLOCK]);
         $rule->shouldReceive('recordTrigger')->once();
         $rule->shouldReceive('getAttribute')->with('name')->andReturn('High Risk Block Rule');
@@ -174,7 +174,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         // Mock the SAR service since ACTION_REPORT will trigger createSAR
         $this->sarService->shouldReceive('createFromTransaction')
             ->once()
-            ->with($transaction, Mockery::type('array'));
+            ->with($transaction, \Mockery::type('array'));
 
         $result = $this->service->monitorTransaction($transaction);
         $this->assertCount(2, $result['alerts']);
@@ -188,7 +188,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $transaction = $this->createTransaction();
 
         // Mock exception during risk profile fetch
-        $this->service = Mockery::mock(TransactionMonitoringService::class)
+        $this->service = \Mockery::mock(TransactionMonitoringService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -218,7 +218,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         $this->mockEvaluateRule($rule, $transaction, $riskProfile, true);
 
         // Expect behavioral risk update
-        $this->service = Mockery::mock(TransactionMonitoringService::class)
+        $this->service = \Mockery::mock(TransactionMonitoringService::class)
             ->makePartial()
             ->shouldAllowMockingProtectedMethods();
 
@@ -252,7 +252,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
         // Mock the SAR service since ACTION_REPORT will trigger createSAR
         $this->sarService->shouldReceive('createFromTransaction')
             ->once()
-            ->with($transaction, Mockery::type('array'));
+            ->with($transaction, \Mockery::type('array'));
 
         $result = $this->service->monitorTransaction($transaction);
 
@@ -266,7 +266,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
     private function mockGetCustomerRiskProfile($transaction, $riskProfile): void
     {
         if (! ($this->service instanceof Mockery\MockInterface)) {
-            $this->service = Mockery::mock(TransactionMonitoringService::class, [
+            $this->service = \Mockery::mock(TransactionMonitoringService::class, [
                 $this->sarService,
                 $this->riskService,
             ])
@@ -311,7 +311,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
 
     private function createMockRule($id, $name, $actions): TransactionMonitoringRule
     {
-        $rule = Mockery::mock(TransactionMonitoringRule::class);
+        $rule = \Mockery::mock(TransactionMonitoringRule::class);
         $rule->shouldReceive('getAttribute')->with('id')->andReturn($id);
         $rule->shouldReceive('getAttribute')->with('name')->andReturn($name);
         $rule->shouldReceive('__get')->with('id')->andReturn($id);
@@ -324,7 +324,7 @@ class TransactionMonitoringServiceTest extends ServiceTestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 }

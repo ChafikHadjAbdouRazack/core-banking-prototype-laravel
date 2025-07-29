@@ -7,7 +7,7 @@ use Tests\UnitTestCase;
 uses(UnitTestCase::class);
 
 beforeEach(function () {
-    $this->app = Mockery::mock(Application::class);
+    $this->app = \Mockery::mock(Application::class);
     $this->provider = new FortifyServiceProvider($this->app);
 
     // Add flush method expectation for tearDown

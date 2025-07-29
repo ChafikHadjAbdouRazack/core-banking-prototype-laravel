@@ -15,7 +15,7 @@ class HandleCustodianHealthChangeTest extends TestCase
     {
         parent::setUp();
 
-        $this->alertingService = Mockery::mock(BankAlertingService::class);
+        $this->alertingService = \Mockery::mock(BankAlertingService::class);
         $this->listener = new HandleCustodianHealthChange($this->alertingService);
     }
 
@@ -105,7 +105,7 @@ class HandleCustodianHealthChangeTest extends TestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 }

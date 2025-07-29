@@ -13,7 +13,7 @@ use App\Domain\Exchange\Services\FeeCalculator;
 use Brick\Math\BigDecimal;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 use Workflow\WorkflowStub;
@@ -31,7 +31,7 @@ class ExchangeServiceTest extends ServiceTestCase
         parent::setUp();
 
         $this->service = new ExchangeService();
-        $this->feeCalculator = Mockery::mock(FeeCalculator::class);
+        $this->feeCalculator = \Mockery::mock(FeeCalculator::class);
 
         // Inject mocked fee calculator
         $reflection = new \ReflectionClass($this->service);
@@ -182,7 +182,7 @@ class ExchangeServiceTest extends ServiceTestCase
             ->andReturn(BigDecimal::of('0.0001'));
 
         // Mock request
-        $request = Mockery::mock(Request::class);
+        $request = \Mockery::mock(Request::class);
         $request->shouldReceive('ip')->andReturn('127.0.0.1');
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
         $request->shouldReceive('setUserResolver')->andReturnSelf();
@@ -352,7 +352,7 @@ class ExchangeServiceTest extends ServiceTestCase
     private function mockOrderCreation(): void
     {
         // Mock request
-        $request = Mockery::mock(Request::class);
+        $request = \Mockery::mock(Request::class);
         $request->shouldReceive('ip')->andReturn('127.0.0.1');
         $request->shouldReceive('userAgent')->andReturn('Test Browser');
         $request->shouldReceive('setUserResolver')->andReturnSelf();
@@ -369,7 +369,7 @@ class ExchangeServiceTest extends ServiceTestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 }

@@ -41,15 +41,15 @@ beforeEach(function () {
     ]);
 
     // Create default mock registry
-    $this->mockPayseraConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $this->mockPayseraConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $this->mockPayseraConnector->shouldReceive('isAvailable')->andReturn(true);
     $this->mockPayseraConnector->shouldReceive('getName')->andReturn('paysera');
 
-    $this->mockDeutscheBankConnector = Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
+    $this->mockDeutscheBankConnector = \Mockery::mock(App\Domain\Custodian\Contracts\ICustodianConnector::class);
     $this->mockDeutscheBankConnector->shouldReceive('isAvailable')->andReturn(true);
     $this->mockDeutscheBankConnector->shouldReceive('getName')->andReturn('deutsche_bank');
 
-    $this->mockRegistry = Mockery::mock(CustodianRegistry::class)->makePartial();
+    $this->mockRegistry = \Mockery::mock(CustodianRegistry::class)->makePartial();
     $this->mockRegistry->shouldReceive('get')->with('paysera')->andReturn($this->mockPayseraConnector);
     $this->mockRegistry->shouldReceive('get')->with('deutsche_bank')->andReturn($this->mockDeutscheBankConnector);
     $this->mockRegistry->shouldReceive('getConnector')->with('paysera')->andReturn($this->mockPayseraConnector);

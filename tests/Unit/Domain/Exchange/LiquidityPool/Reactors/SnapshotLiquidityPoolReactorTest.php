@@ -8,7 +8,7 @@ use App\Domain\Exchange\LiquidityPool\Events\LiquidityRemoved;
 use App\Domain\Exchange\LiquidityPool\Events\LiquidityRewardsDistributed;
 use App\Domain\Exchange\LiquidityPool\Reactors\SnapshotLiquidityPoolReactor;
 use Illuminate\Support\Str;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -43,7 +43,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         );
 
         // Create a partial mock of the reactor to spy on takeSnapshot
-        $reactor = Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
+        $reactor = \Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
             ->shouldAllowMockingProtectedMethods();
         $reactor->shouldReceive('takeSnapshot')
             ->once()
@@ -67,7 +67,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         );
 
         // Create a partial mock of the reactor to spy on takeSnapshot
-        $reactor = Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
+        $reactor = \Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
             ->shouldAllowMockingProtectedMethods();
         $reactor->shouldReceive('takeSnapshot')
             ->once()
@@ -80,7 +80,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
     public function test_takes_snapshot_after_multiple_rebalances(): void
     {
         // Create a partial mock of the reactor to spy on takeSnapshot
-        $reactor = Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
+        $reactor = \Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
             ->shouldAllowMockingProtectedMethods();
         $reactor->shouldReceive('takeSnapshot')
             ->once()
@@ -111,7 +111,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         );
 
         // Create a partial mock of the reactor to spy on takeSnapshot
-        $reactor = Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
+        $reactor = \Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
             ->shouldAllowMockingProtectedMethods();
         $reactor->shouldReceive('takeSnapshot')
             ->once()
@@ -135,7 +135,7 @@ class SnapshotLiquidityPoolReactorTest extends TestCase
         );
 
         // Create a partial mock of the reactor to spy on takeSnapshot
-        $reactor = Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
+        $reactor = \Mockery::mock(SnapshotLiquidityPoolReactor::class . '[takeSnapshot]')
             ->shouldAllowMockingProtectedMethods();
         $reactor->shouldNotReceive('takeSnapshot');
 

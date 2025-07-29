@@ -7,17 +7,17 @@ use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Exceptions\NotEnoughFunds;
 use App\Domain\Payment\Services\TransferService;
 use App\Domain\Payment\Workflows\TransferActivity;
-use Mockery;
+
 use Workflow\ActivityStub;
 
 beforeEach(function () {
     // ActivityStub doesn't have a fake method, we'll just mock the service
-    $this->transferService = Mockery::mock(TransferService::class);
+    $this->transferService = \Mockery::mock(TransferService::class);
     $this->activity = new TransferActivity($this->transferService);
 });
 
 afterEach(function () {
-    Mockery::close();
+    \Mockery::close();
 });
 
 it('executes a successful transfer', function () {

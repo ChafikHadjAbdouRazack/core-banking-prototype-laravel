@@ -3,6 +3,7 @@
 namespace App\Domain\Stablecoin\Models;
 
 use App\Domain\Asset\Models\Asset;
+use Database\Factories\Domain\Stablecoin\Models\StablecoinFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,6 +49,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Stablecoin extends Model
 {
     use HasFactory;
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory()
+    {
+        return StablecoinFactory::new();
+    }
 
     /**
      * The primary key for the model.

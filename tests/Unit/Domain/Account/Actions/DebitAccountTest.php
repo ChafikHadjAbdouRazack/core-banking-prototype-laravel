@@ -8,7 +8,7 @@ use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Repositories\AccountRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
+
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -30,7 +30,7 @@ class DebitAccountTest extends DomainTestCase
 
     private function createAssetBalanceSubtractedMock(string $aggregateRootUuid, string $assetCode, int $amount)
     {
-        $event = Mockery::mock(AssetBalanceSubtracted::class)->makePartial();
+        $event = \Mockery::mock(AssetBalanceSubtracted::class)->makePartial();
         $event->shouldReceive('aggregateRootUuid')->andReturn($aggregateRootUuid);
 
         // Use reflection to set readonly properties
@@ -202,7 +202,7 @@ class DebitAccountTest extends DomainTestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 }

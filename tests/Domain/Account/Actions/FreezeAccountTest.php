@@ -7,7 +7,7 @@ use App\Domain\Account\Models\Account;
 it('can freeze an account', function () {
     $account = Account::factory()->create(['frozen' => false]);
 
-    $event = Mockery::mock(AccountFrozen::class);
+    $event = \Mockery::mock(AccountFrozen::class);
     $event->shouldReceive('aggregateRootUuid')
         ->andReturn($account->uuid);
 
@@ -19,7 +19,7 @@ it('can freeze an account', function () {
 });
 
 it('throws exception when account not found', function () {
-    $event = Mockery::mock(AccountFrozen::class);
+    $event = \Mockery::mock(AccountFrozen::class);
     $event->shouldReceive('aggregateRootUuid')
         ->andReturn('non-existent-uuid');
 

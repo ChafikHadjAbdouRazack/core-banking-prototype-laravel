@@ -17,7 +17,7 @@ class EnsureSubProductEnabledTest extends TestCase
         parent::setUp();
 
         // Create mock SubProductService
-        $this->subProductService = Mockery::mock(SubProductService::class);
+        $this->subProductService = \Mockery::mock(SubProductService::class);
         $this->app->instance(SubProductService::class, $this->subProductService);
 
         // Set up test routes
