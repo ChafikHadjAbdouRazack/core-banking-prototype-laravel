@@ -74,20 +74,23 @@
                         </div>
                     @endif
                     
+                    <form action="{{ route('cgo.notify') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <input type="email" name="email" required
+                            class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/70 focus:outline-none focus:border-white"
+                            placeholder="Enter your email address"
+                            @auth value="{{ auth()->user()->email }}" @endauth>
+                        <button type="submit" class="w-full bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Notify Me
+                        </button>
+                    </form>
+                    
                     @auth
-                        <a href="{{ route('cgo.invest') }}" id="investButton" class="block w-full bg-gray-400 text-gray-600 px-6 py-3 rounded-lg font-semibold cursor-not-allowed text-center" onclick="return checkCountdown()">
-                            <span id="investButtonText">Invest Now (Launching Soon)</span>
-                        </a>
-                    @else
-                        <form action="{{ route('cgo.notify') }}" method="POST" class="space-y-4">
-                            @csrf
-                            <input type="email" name="email" required
-                                class="w-full px-4 py-3 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/70 focus:outline-none focus:border-white"
-                                placeholder="Enter your email address">
-                            <button type="submit" class="w-full bg-white text-indigo-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                                Notify Me
-                            </button>
-                        </form>
+                        <div class="mt-4 pt-4 border-t border-white/20">
+                            <a href="{{ route('cgo.invest') }}" id="investButton" class="block w-full bg-gray-400 text-gray-600 px-6 py-3 rounded-lg font-semibold cursor-not-allowed text-center" onclick="return checkCountdown()">
+                                <span id="investButtonText">Invest Now (Launching Soon)</span>
+                            </a>
+                        </div>
                     @endauth
                 </div>
             </div>
