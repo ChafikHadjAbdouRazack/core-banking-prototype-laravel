@@ -81,7 +81,7 @@
                         Powering Democratic Banking
                     </h1>
                     <p class="text-xl md:text-2xl mb-8 text-purple-100 max-w-4xl mx-auto">
-                        Experience the Global Currency Unit - where your money stays in real banks while you control the currency composition through democratic voting
+                        Experience the <a href="{{ route('features.show', 'gcu') }}" class="text-white underline hover:text-purple-100">Global Currency Unit</a> - where your money stays in real banks while you control the currency composition through democratic voting
                     </p>
                     <p class="mb-8">
                         <a href="{{ route('about') }}" class="text-purple-200 hover:text-white underline">Learn more about FinAegis →</a>
@@ -90,8 +90,8 @@
                         <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
                             Open GCU Account
                         </a>
-                        <a href="#platform" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
-                            Explore Platform
+                        <a href="#features" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
+                            Explore Features
                         </a>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
         </section>
 
         <!-- Key Features Section -->
-        <section class="py-20 bg-white">
+        <section id="features" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">Key Platform Features</h2>
@@ -540,6 +540,16 @@
                             </li>
                         </ul>
                     </div>
+                </div>
+                
+                <!-- CTA Button -->
+                <div class="text-center mt-12">
+                    <a href="{{ route('features.show', 'gcu') }}" class="inline-flex items-center justify-center bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl">
+                        Learn More About GCU
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
                 </div>
             </div>
         </section>
