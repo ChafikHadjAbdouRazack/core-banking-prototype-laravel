@@ -54,7 +54,7 @@ class CreateAccountActivityTest extends DomainTestCase
     {
         // Create a user since DomainTestCase doesn't create one automatically
         $user = User::factory()->create();
-        
+
         return hydrate(
             Account::class,
             [

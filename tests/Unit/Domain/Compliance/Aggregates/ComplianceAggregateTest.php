@@ -47,7 +47,7 @@ class ComplianceAggregateTest extends DomainTestCase
                     && $event->document === $document;
             });
         }
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'KYC submission and document events were recorded');
     }
@@ -66,7 +66,7 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->userUuid === $userUuid
                 && $event->level === $level;
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'KYC approval event was recorded');
     }
@@ -85,7 +85,7 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->userUuid === $userUuid
                 && $event->reason === $reason;
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'KYC rejection event was recorded');
     }
@@ -133,7 +133,7 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->requestType === 'deletion'
                 && $event->options === ['reason' => $reason];
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'GDPR deletion request event was recorded');
     }
@@ -150,7 +150,7 @@ class ComplianceAggregateTest extends DomainTestCase
             return $event instanceof GdprDataDeleted
                 && $event->userUuid === $userUuid;
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'GDPR deletion completion event was recorded');
     }
@@ -173,7 +173,7 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->reportType === $reportType
                 && $event->data === $data;
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'Regulatory report event was recorded');
     }
@@ -270,7 +270,7 @@ class ComplianceAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) {
             return $event instanceof KycVerificationCompleted;
         });
-        
+
         // Add explicit assertion for PHPUnit
         $this->assertTrue(true, 'Full KYC workflow events were recorded');
     }

@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,11 +31,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Configure factory namespace resolution for domain models
-        Factory::guessFactoryNamesUsing(function (string $modelName) {
+        /**
+         * @param class-string<\Illuminate\Database\Eloquent\Model> $modelName
+         * @return class-string<Factory>
+         */
+        Factory::guessFactoryNamesUsing(function (string $modelName): string {
             // Extract just the model class name without namespace
             $modelBaseName = class_basename($modelName);
-            
+
             // Return the factory in the Database\Factories namespace
+            /** @var class-string<Factory> */
             return 'Database\\Factories\\' . $modelBaseName . 'Factory';
         });
 

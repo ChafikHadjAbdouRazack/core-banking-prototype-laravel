@@ -241,7 +241,7 @@ class LoanAggregateTest extends DomainTestCase
         $events = $loan->getRecordedEvents();
         $settlementEvent = end($events);
 
-        $this->assertInstanceOf(\App\Domain\Lending\Events\LoanSettledEarly::class, $settlementEvent);
+        $this->assertInstanceOf(LoanSettledEarly::class, $settlementEvent);
         $this->assertEquals($remainingBalance, $settlementEvent->settlementAmount);
         $this->assertEquals($remainingBalance, $settlementEvent->outstandingBalance);
     }
