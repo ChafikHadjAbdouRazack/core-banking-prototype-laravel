@@ -14,18 +14,18 @@ class ValidateKeyAccess
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $permission = 'access_keys'): Response
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         // Check if user has permission to access keys
-        if (!$user->can($permission)) {
+        if (! $user->can($permission)) {
             return response()->json(['error' => 'Forbidden - Insufficient permissions'], 403);
         }
 
@@ -39,20 +39,20 @@ class ValidateKeyAccess
 
             // Log suspicious activity
             KeyAccessLog::create([
-                'wallet_id' => 'rate_limit',
-                'user_id' => $user->id,
-                'action' => 'rate_limited',
+                'wallet_id'  => 'rate_limit',
+                'user_id'    => $user->id,
+                'action'     => 'rate_limited',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'metadata' => [
-                    'attempts' => $maxAttempts,
+                'metadata'   => [
+                    'attempts'    => $maxAttempts,
                     'retry_after' => $seconds,
                 ],
                 'accessed_at' => now(),
             ]);
 
             return response()->json([
-                'error' => 'Too many key access attempts',
+                'error'       => 'Too many key access attempts',
                 'retry_after' => $seconds,
             ], 429);
         }
@@ -78,15 +78,15 @@ class ValidateKeyAccess
         if ($recentAccesses > 20) {
             // Log suspicious activity
             KeyAccessLog::create([
-                'wallet_id' => 'suspicious_activity',
-                'user_id' => $user->id,
-                'action' => 'suspicious_pattern',
+                'wallet_id'  => 'suspicious_activity',
+                'user_id'    => $user->id,
+                'action'     => 'suspicious_pattern',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'metadata' => [
+                'metadata'   => [
                     'recent_accesses' => $recentAccesses,
-                    'threshold' => 20,
-                    'time_window' => '5 minutes',
+                    'threshold'       => 20,
+                    'time_window'     => '5 minutes',
                 ],
                 'accessed_at' => now(),
             ]);
@@ -102,14 +102,14 @@ class ValidateKeyAccess
 
         if ($lastAccess && $lastAccess->ip_address !== $request->ip()) {
             KeyAccessLog::create([
-                'wallet_id' => 'ip_change',
-                'user_id' => $user->id,
-                'action' => 'ip_changed',
+                'wallet_id'  => 'ip_change',
+                'user_id'    => $user->id,
+                'action'     => 'ip_changed',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'metadata' => [
+                'metadata'   => [
                     'previous_ip' => $lastAccess->ip_address,
-                    'new_ip' => $request->ip(),
+                    'new_ip'      => $request->ip(),
                 ],
                 'accessed_at' => now(),
             ]);

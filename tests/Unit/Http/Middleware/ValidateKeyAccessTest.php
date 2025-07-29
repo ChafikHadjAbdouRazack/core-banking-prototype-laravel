@@ -137,12 +137,12 @@ class ValidateKeyAccessTest extends TestCase
         // Create many recent access logs
         for ($i = 0; $i < 25; $i++) {
             KeyAccessLog::create([
-                'wallet_id' => 'wallet-' . $i,
-                'user_id' => $user->id,
-                'action' => 'retrieve',
-                'ip_address' => '192.168.1.100',
-                'user_agent' => 'Test Browser',
-                'metadata' => [],
+                'wallet_id'   => 'wallet-' . $i,
+                'user_id'     => $user->id,
+                'action'      => 'retrieve',
+                'ip_address'  => '192.168.1.100',
+                'user_agent'  => 'Test Browser',
+                'metadata'    => [],
                 'accessed_at' => now()->subMinutes(2),
             ]);
         }
@@ -187,12 +187,12 @@ class ValidateKeyAccessTest extends TestCase
 
         // Create previous access from different IP
         KeyAccessLog::create([
-            'wallet_id' => 'wallet-123',
-            'user_id' => $user->id,
-            'action' => 'retrieve',
-            'ip_address' => '192.168.1.100',
-            'user_agent' => 'Test Browser',
-            'metadata' => [],
+            'wallet_id'   => 'wallet-123',
+            'user_id'     => $user->id,
+            'action'      => 'retrieve',
+            'ip_address'  => '192.168.1.100',
+            'user_agent'  => 'Test Browser',
+            'metadata'    => [],
             'accessed_at' => now()->subMinutes(10),
         ]);
 
@@ -255,12 +255,12 @@ class ValidateKeyAccessTest extends TestCase
         // Create only a few recent access logs (below threshold)
         for ($i = 0; $i < 5; $i++) {
             KeyAccessLog::create([
-                'wallet_id' => 'wallet-' . $i,
-                'user_id' => $user->id,
-                'action' => 'retrieve',
-                'ip_address' => '192.168.1.100',
-                'user_agent' => 'Test Browser',
-                'metadata' => [],
+                'wallet_id'   => 'wallet-' . $i,
+                'user_id'     => $user->id,
+                'action'      => 'retrieve',
+                'ip_address'  => '192.168.1.100',
+                'user_agent'  => 'Test Browser',
+                'metadata'    => [],
                 'accessed_at' => now()->subMinutes(2),
             ]);
         }

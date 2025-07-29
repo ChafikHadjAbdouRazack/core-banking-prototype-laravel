@@ -23,7 +23,7 @@ class KeyAccessLog extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
+        'metadata'    => 'array',
         'accessed_at' => 'datetime',
     ];
 

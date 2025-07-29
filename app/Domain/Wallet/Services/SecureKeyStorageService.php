@@ -4,8 +4,6 @@ namespace App\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Events\KeyAccessed;
-use App\Domain\Wallet\Events\KeyRotated;
-use App\Domain\Wallet\Events\WalletKeyRotated;
 use App\Domain\Wallet\Events\KeyStored;
 use App\Domain\Wallet\Exceptions\KeyManagementException;
 use App\Domain\Wallet\Models\KeyAccessLog;
@@ -23,6 +21,7 @@ use Illuminate\Support\Str;
 class SecureKeyStorageService
 {
     protected Encrypter $encrypter;
+
     protected KeyManagementServiceInterface $keyManager;
 
     /**
@@ -70,22 +69,22 @@ class SecureKeyStorageService
 
             // Store encrypted data
             SecureKeyStorage::create([
-                'wallet_id' => $walletId,
+                'wallet_id'      => $walletId,
                 'encrypted_data' => base64_encode($encrypted['ciphertext']),
-                'auth_tag' => base64_encode($encrypted['tag']),
-                'iv' => base64_encode($iv),
-                'salt' => $salt,
-                'key_version' => self::CURRENT_KEY_VERSION,
-                'storage_type' => 'database',
-                'metadata' => array_merge($metadata, [
+                'auth_tag'       => base64_encode($encrypted['tag']),
+                'iv'             => base64_encode($iv),
+                'salt'           => $salt,
+                'key_version'    => self::CURRENT_KEY_VERSION,
+                'storage_type'   => 'database',
+                'metadata'       => array_merge($metadata, [
                     'created_by' => $userId,
-                    'algorithm' => 'AES-256-GCM',
+                    'algorithm'  => 'AES-256-GCM',
                 ]),
             ]);
 
             // Log the storage event
             $this->logKeyAccess($walletId, $userId, 'store', [
-                'key_version' => self::CURRENT_KEY_VERSION,
+                'key_version'  => self::CURRENT_KEY_VERSION,
                 'storage_type' => 'database',
             ]);
 
@@ -108,7 +107,7 @@ class SecureKeyStorageService
 
         // Log access attempt
         $this->logKeyAccess($walletId, $userId, 'retrieve', [
-            'purpose' => $purpose,
+            'purpose'     => $purpose,
             'key_version' => $storage->key_version,
         ]);
 
@@ -143,10 +142,10 @@ class SecureKeyStorageService
 
         // Encrypt the private key
         $encrypted = $this->encrypter->encrypt([
-            'key' => $privateKey,
+            'key'         => $privateKey,
             'permissions' => $permissions,
-            'created_at' => now()->timestamp,
-            'expires_at' => now()->addSeconds($ttl)->timestamp,
+            'created_at'  => now()->timestamp,
+            'expires_at'  => now()->addSeconds($ttl)->timestamp,
         ]);
 
         // Store with TTL
@@ -154,7 +153,7 @@ class SecureKeyStorageService
 
         // Log temporary storage
         $this->logKeyAccess('temporary', $userId, 'temp_store', [
-            'ttl' => $ttl,
+            'ttl'         => $ttl,
             'permissions' => $permissions,
         ]);
 
@@ -172,7 +171,7 @@ class SecureKeyStorageService
         $cacheKey = "secure_key:{$userId}:{$token}";
         $encrypted = Cache::get($cacheKey);
 
-        if (!$encrypted) {
+        if (! $encrypted) {
             return null;
         }
 
@@ -181,11 +180,12 @@ class SecureKeyStorageService
         // Validate expiration
         if ($data['expires_at'] < now()->timestamp) {
             Cache::forget($cacheKey);
+
             return null;
         }
 
         // Validate permissions
-        if ($requiredPermission && !in_array($requiredPermission, $data['permissions'])) {
+        if ($requiredPermission && ! in_array($requiredPermission, $data['permissions'])) {
             throw new KeyManagementException('Insufficient permissions for key access');
         }
 
@@ -221,14 +221,14 @@ class SecureKeyStorageService
 
             // Store with new encryption parameters
             $this->storeEncryptedSeed($walletId, $seed, $userId, [
-                'rotation_reason' => $reason,
+                'rotation_reason'  => $reason,
                 'previous_version' => $storage->key_version,
-                'rotated_at' => now()->toIso8601String(),
+                'rotated_at'       => now()->toIso8601String(),
             ]);
 
             // Log rotation
             $this->logKeyAccess($walletId, $userId, 'rotate', [
-                'reason' => $reason,
+                'reason'      => $reason,
                 'old_version' => $storage->key_version,
                 'new_version' => self::CURRENT_KEY_VERSION,
             ]);
@@ -237,8 +237,8 @@ class SecureKeyStorageService
             // In production, this would dispatch a proper event with all required data
             Log::info('Wallet keys rotated', [
                 'wallet_id' => $walletId,
-                'user_id' => $userId,
-                'reason' => $reason,
+                'user_id'   => $userId,
+                'reason'    => $reason,
             ]);
         });
     }
@@ -251,7 +251,7 @@ class SecureKeyStorageService
         // In production, this would integrate with actual HSM
         // For now, we'll use enhanced database storage
         $this->storeEncryptedSeed($walletId, $encryptedSeed, 'system', [
-            'storage_type' => 'hsm_simulated',
+            'storage_type'  => 'hsm_simulated',
             'hsm_partition' => config('blockchain.hsm.partition', 'default'),
         ]);
 
@@ -299,7 +299,7 @@ class SecureKeyStorageService
 
         return [
             'ciphertext' => $ciphertext,
-            'tag' => $tag,
+            'tag'        => $tag,
         ];
     }
 
@@ -338,12 +338,12 @@ class SecureKeyStorageService
         array $metadata = []
     ): void {
         KeyAccessLog::create([
-            'wallet_id' => $walletId,
-            'user_id' => $userId,
-            'action' => $action,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
-            'metadata' => $metadata,
+            'wallet_id'   => $walletId,
+            'user_id'     => $userId,
+            'action'      => $action,
+            'ip_address'  => request()->ip(),
+            'user_agent'  => request()->userAgent(),
+            'metadata'    => $metadata,
             'accessed_at' => now(),
         ]);
     }

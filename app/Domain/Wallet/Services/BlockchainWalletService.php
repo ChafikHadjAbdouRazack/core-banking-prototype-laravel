@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 class BlockchainWalletService implements WalletConnectorInterface
 {
     protected KeyManagementService $keyManager;
+
     protected SecureKeyStorageService $secureStorage;
 
     protected array $connectors = [];

@@ -22,8 +22,8 @@ class SecureKeyStorage extends Model
     ];
 
     protected $casts = [
-        'metadata' => 'array',
-        'is_active' => 'boolean',
+        'metadata'    => 'array',
+        'is_active'   => 'boolean',
         'key_version' => 'integer',
     ];
 

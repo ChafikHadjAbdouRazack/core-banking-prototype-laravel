@@ -2,7 +2,6 @@
 
 namespace Tests\Unit\Console\Commands;
 
-use App\Console\Commands\RotateWalletKeys;
 use App\Domain\Wallet\Models\SecureKeyStorage;
 use App\Domain\Wallet\Services\SecureKeyStorageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -65,27 +64,27 @@ class RotateWalletKeysTest extends TestCase
     {
         // Arrange
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-123',
+            'wallet_id'      => 'wallet-123',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-456',
+            'wallet_id'      => 'wallet-456',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         $this->keyStorage->shouldReceive('rotateKeys')
@@ -102,7 +101,7 @@ class RotateWalletKeysTest extends TestCase
 
         // Act
         $this->artisan('wallet:rotate-keys', [
-            '--all' => true,
+            '--all'   => true,
             '--force' => true,
         ])
             ->expectsOutput('Found 2 wallet(s) for key rotation')
@@ -118,27 +117,27 @@ class RotateWalletKeysTest extends TestCase
     {
         // Arrange
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-123',
+            'wallet_id'      => 'wallet-123',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-456',
+            'wallet_id'      => 'wallet-456',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         $this->keyStorage->shouldReceive('rotateKeys')
@@ -158,7 +157,7 @@ class RotateWalletKeysTest extends TestCase
 
         // Act
         $this->artisan('wallet:rotate-keys', [
-            '--all' => true,
+            '--all'   => true,
             '--force' => true,
         ])
             ->expectsOutput('Found 2 wallet(s) for key rotation')
@@ -196,7 +195,7 @@ class RotateWalletKeysTest extends TestCase
         // Act
         $this->artisan('wallet:rotate-keys', [
             '--wallet' => [$walletId],
-            '--force' => true,
+            '--force'  => true,
             '--reason' => $customReason,
         ])
             ->expectsOutput('Found 1 wallet(s) for key rotation')
@@ -227,7 +226,7 @@ class RotateWalletKeysTest extends TestCase
 
         // Act
         $this->artisan('wallet:rotate-keys', [
-            '--all' => true,
+            '--all'   => true,
             '--force' => true,
         ])
             ->expectsOutput('No wallets found for key rotation')
@@ -240,39 +239,39 @@ class RotateWalletKeysTest extends TestCase
         $walletIds = ['wallet-1', 'wallet-2', 'wallet-3'];
 
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-1',
+            'wallet_id'      => 'wallet-1',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-2',
+            'wallet_id'      => 'wallet-2',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         SecureKeyStorage::create([
-            'wallet_id' => 'wallet-3',
+            'wallet_id'      => 'wallet-3',
             'encrypted_data' => 'data',
-            'auth_tag' => 'tag',
-            'iv' => 'iv',
-            'salt' => 'salt',
-            'key_version' => 1,
-            'storage_type' => 'database',
-            'is_active' => true,
-            'metadata' => [],
+            'auth_tag'       => 'tag',
+            'iv'             => 'iv',
+            'salt'           => 'salt',
+            'key_version'    => 1,
+            'storage_type'   => 'database',
+            'is_active'      => true,
+            'metadata'       => [],
         ]);
 
         foreach ($walletIds as $walletId) {
@@ -287,7 +286,7 @@ class RotateWalletKeysTest extends TestCase
 
         // Act
         $this->artisan('wallet:rotate-keys', [
-            '--all' => true,
+            '--all'   => true,
             '--force' => true,
         ])
             ->expectsOutput('Found 3 wallet(s) for key rotation')

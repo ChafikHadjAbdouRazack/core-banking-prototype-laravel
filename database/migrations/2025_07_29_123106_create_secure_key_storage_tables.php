@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class () extends Migration {
     /**
      * Run the migrations.
      */
@@ -24,12 +23,12 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index(['wallet_id', 'is_active']);
             $table->index('key_version');
             // Note: We handle uniqueness of active keys in the application logic
         });
-        
+
         // Key access audit logs
         Schema::create('key_access_logs', function (Blueprint $table) {
             $table->id();
@@ -40,12 +39,12 @@ return new class extends Migration
             $table->text('user_agent')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamp('accessed_at');
-            
+
             $table->index(['wallet_id', 'action']);
             $table->index(['user_id', 'accessed_at']);
             $table->index('action');
         });
-        
+
         // Key rotation history
         Schema::create('key_rotation_history', function (Blueprint $table) {
             $table->id();
@@ -56,7 +55,7 @@ return new class extends Migration
             $table->integer('new_version');
             $table->json('metadata')->nullable();
             $table->timestamp('rotated_at');
-            
+
             $table->index('wallet_id');
             $table->index('rotated_at');
         });

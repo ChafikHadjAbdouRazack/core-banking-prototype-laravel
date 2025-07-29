@@ -299,6 +299,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         // This method is deprecated - use SecureKeyStorageService instead
         // Keeping for backward compatibility
         $secureStorage = app(SecureKeyStorageService::class);
+
         return $secureStorage->storeTemporaryKey($userId, $encryptedKey, $ttl);
     }
 
@@ -311,6 +312,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         // This method is deprecated - use SecureKeyStorageService instead
         // Keeping for backward compatibility
         $secureStorage = app(SecureKeyStorageService::class);
+
         return $secureStorage->retrieveTemporaryKey($userId, $token);
     }
 

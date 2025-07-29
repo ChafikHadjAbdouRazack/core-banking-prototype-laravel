@@ -48,8 +48,9 @@ class RotateWalletKeys extends Command
         $force = $this->option('force');
         $reason = $this->option('reason') ?? 'Scheduled key rotation';
 
-        if (empty($walletIds) && !$rotateAll) {
+        if (empty($walletIds) && ! $rotateAll) {
             $this->error('Please specify wallet IDs with --wallet or use --all flag');
+
             return self::FAILURE;
         }
 
@@ -61,18 +62,20 @@ class RotateWalletKeys extends Command
 
         if (empty($walletIds)) {
             $this->info('No wallets found for key rotation');
+
             return self::SUCCESS;
         }
 
         $this->info(sprintf('Found %d wallet(s) for key rotation', count($walletIds)));
 
-        if (!$force) {
+        if (! $force) {
             $confirm = $this->confirm(
                 sprintf('Are you sure you want to rotate keys for %d wallet(s)?', count($walletIds))
             );
 
-            if (!$confirm) {
+            if (! $confirm) {
                 $this->info('Key rotation cancelled');
+
                 return self::SUCCESS;
             }
         }
@@ -92,12 +95,12 @@ class RotateWalletKeys extends Command
             } catch (\Exception $e) {
                 $failed++;
                 $this->error(PHP_EOL . "✗ Failed to rotate keys for wallet: {$walletId}");
-                $this->error("  Error: " . $e->getMessage());
+                $this->error('  Error: ' . $e->getMessage());
 
                 Log::error('Key rotation failed', [
                     'wallet_id' => $walletId,
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'error'     => $e->getMessage(),
+                    'trace'     => $e->getTraceAsString(),
                 ]);
             }
 
@@ -107,7 +110,7 @@ class RotateWalletKeys extends Command
         $bar->finish();
         $this->newLine(2);
 
-        $this->info("Key rotation completed:");
+        $this->info('Key rotation completed:');
         $this->info("  Successful: {$successful}");
 
         if ($failed > 0) {

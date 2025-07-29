@@ -21,7 +21,9 @@ class SecureKeyStorageServiceTest extends TestCase
     use RefreshDatabase;
 
     private SecureKeyStorageService $service;
+
     private Encrypter $encrypter;
+
     private KeyManagementServiceInterface $keyManager;
 
     protected function setUp(): void
@@ -170,10 +172,10 @@ class SecureKeyStorageServiceTest extends TestCase
         $permissions = ['sign_transaction', 'read_balance'];
 
         $encryptedData = [
-            'key' => $privateKey,
+            'key'         => $privateKey,
             'permissions' => $permissions,
-            'created_at' => now()->timestamp,
-            'expires_at' => now()->addSeconds(300)->timestamp,
+            'created_at'  => now()->timestamp,
+            'expires_at'  => now()->addSeconds(300)->timestamp,
         ];
 
         Cache::shouldReceive('get')
@@ -213,10 +215,10 @@ class SecureKeyStorageServiceTest extends TestCase
         $permissions = ['read_balance'];
 
         $encryptedData = [
-            'key' => $privateKey,
+            'key'         => $privateKey,
             'permissions' => $permissions,
-            'created_at' => now()->timestamp,
-            'expires_at' => now()->addSeconds(300)->timestamp,
+            'created_at'  => now()->timestamp,
+            'expires_at'  => now()->addSeconds(300)->timestamp,
         ];
 
         Cache::shouldReceive('get')
@@ -243,10 +245,10 @@ class SecureKeyStorageServiceTest extends TestCase
         $token = 'test-token';
 
         $encryptedData = [
-            'key' => 'private-key-data',
+            'key'         => 'private-key-data',
             'permissions' => ['sign_transaction'],
-            'created_at' => now()->subSeconds(600)->timestamp,
-            'expires_at' => now()->subSeconds(300)->timestamp, // Expired
+            'created_at'  => now()->subSeconds(600)->timestamp,
+            'expires_at'  => now()->subSeconds(300)->timestamp, // Expired
         ];
 
         Cache::shouldReceive('get')
@@ -348,9 +350,9 @@ class SecureKeyStorageServiceTest extends TestCase
         // Test with various seed formats
         $testCases = [
             'mnemonic' => 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
-            'hex_key' => '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-            'base64' => base64_encode(random_bytes(32)),
-            'json' => json_encode(['key' => 'value', 'nested' => ['data' => 'test']]),
+            'hex_key'  => '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+            'base64'   => base64_encode(random_bytes(32)),
+            'json'     => json_encode(['key' => 'value', 'nested' => ['data' => 'test']]),
         ];
 
         foreach ($testCases as $type => $seed) {
@@ -392,22 +394,22 @@ class SecureKeyStorageServiceTest extends TestCase
 
         // Create old log entries
         KeyAccessLog::create([
-            'wallet_id' => 'temporary',
-            'user_id' => $userId,
-            'action' => 'temp_store',
-            'ip_address' => '127.0.0.1',
-            'user_agent' => 'test',
-            'metadata' => ['cache_key' => 'secure_key:user-123:old-token'],
+            'wallet_id'   => 'temporary',
+            'user_id'     => $userId,
+            'action'      => 'temp_store',
+            'ip_address'  => '127.0.0.1',
+            'user_agent'  => 'test',
+            'metadata'    => ['cache_key' => 'secure_key:user-123:old-token'],
             'accessed_at' => now()->subSeconds(400), // Older than TTL
         ]);
 
         KeyAccessLog::create([
-            'wallet_id' => 'temporary',
-            'user_id' => $userId,
-            'action' => 'temp_store',
-            'ip_address' => '127.0.0.1',
-            'user_agent' => 'test',
-            'metadata' => ['cache_key' => 'secure_key:user-123:recent-token'],
+            'wallet_id'   => 'temporary',
+            'user_id'     => $userId,
+            'action'      => 'temp_store',
+            'ip_address'  => '127.0.0.1',
+            'user_agent'  => 'test',
+            'metadata'    => ['cache_key' => 'secure_key:user-123:recent-token'],
             'accessed_at' => now()->subSeconds(100), // Within TTL
         ]);
 

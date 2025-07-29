@@ -113,9 +113,9 @@ return [
     |
     */
     'key_access' => [
-        'max_attempts' => env('KEY_ACCESS_MAX_ATTEMPTS', 10),
+        'max_attempts'  => env('KEY_ACCESS_MAX_ATTEMPTS', 10),
         'decay_minutes' => env('KEY_ACCESS_DECAY_MINUTES', 1),
-        'temp_key_ttl' => env('KEY_ACCESS_TEMP_TTL', 300), // 5 minutes
+        'temp_key_ttl'  => env('KEY_ACCESS_TEMP_TTL', 300), // 5 minutes
     ],
 
     /*
@@ -127,12 +127,12 @@ return [
     |
     */
     'hsm' => [
-        'enabled' => env('HSM_ENABLED', false),
-        'provider' => env('HSM_PROVIDER', 'aws'), // aws, azure, thales
-        'partition' => env('HSM_PARTITION', 'default'),
-        'endpoint' => env('HSM_ENDPOINT'),
+        'enabled'     => env('HSM_ENABLED', false),
+        'provider'    => env('HSM_PROVIDER', 'aws'), // aws, azure, thales
+        'partition'   => env('HSM_PARTITION', 'default'),
+        'endpoint'    => env('HSM_ENDPOINT'),
         'credentials' => [
-            'key' => env('HSM_ACCESS_KEY'),
+            'key'    => env('HSM_ACCESS_KEY'),
             'secret' => env('HSM_SECRET_KEY'),
         ],
     ],
