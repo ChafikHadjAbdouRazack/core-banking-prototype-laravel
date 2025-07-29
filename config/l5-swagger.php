@@ -13,7 +13,7 @@ return [
                  * Route for accessing api documentation interface
                  */
                 'api' => 'api/documentation',
-                
+
                 /*
                  * Route for accessing parsed swagger annotations.
                  */
@@ -34,7 +34,7 @@ return [
                  * File name of the generated json documentation file
                  */
                 'docs_json' => 'api-docs.json',
-                
+
                 /*
                  * Absolute path to file containing the swagger annotations
                  */

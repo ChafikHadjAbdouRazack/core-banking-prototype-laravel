@@ -81,10 +81,10 @@ class RegulatoryReportsController extends Controller
 
         try {
             $data = [
-                'report_type' => $request->report_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'jurisdiction' => $request->jurisdiction,
+                'report_type'     => $request->report_type,
+                'start_date'      => $request->start_date,
+                'end_date'        => $request->end_date,
+                'jurisdiction'    => $request->jurisdiction,
                 'include_details' => $request->boolean('include_details'),
             ];
 
