@@ -161,7 +161,7 @@ class StabilityMechanismServiceTest extends ServiceTestCase
             ->once()
             ->andReturn($mockRate);
 
-        $deviation = $this->service->checkPegDeviation('CUSD');
+        $deviation = $this->service->checkPegDeviation($this->collateralizedStablecoin);
 
         $this->assertEqualsWithDelta(0.05, $deviation['deviation'], 0.0001);
         $this->assertEqualsWithDelta(5.0, $deviation['percentage'], 0.0001);
@@ -181,7 +181,7 @@ class StabilityMechanismServiceTest extends ServiceTestCase
             ->once()
             ->andReturn($mockRate);
 
-        $deviation = $this->service->checkPegDeviation('CUSD');
+        $deviation = $this->service->checkPegDeviation($this->collateralizedStablecoin);
 
         $this->assertEqualsWithDelta(-0.03, $deviation['deviation'], 0.0001);
         $this->assertEqualsWithDelta(-3.0, $deviation['percentage'], 0.0001);
