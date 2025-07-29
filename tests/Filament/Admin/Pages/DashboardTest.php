@@ -39,8 +39,9 @@ it('getWidgets returns array of widget classes', function () {
     $widgets = $dashboard->getWidgets();
 
     expect($widgets)->toBeArray();
-    expect($widgets)->toHaveCount(4);
-    expect($widgets[0])->toBe(App\Filament\Admin\Resources\AccountResource\Widgets\AccountStatsOverview::class);
+    expect($widgets)->toHaveCount(7);
+    expect($widgets[0])->toBe(App\Filament\Admin\Widgets\PrimaryBasketWidget::class);
+    expect($widgets[3])->toBe(App\Filament\Admin\Resources\AccountResource\Widgets\AccountStatsOverview::class);
 });
 
 it('getColumns returns responsive column configuration', function () {

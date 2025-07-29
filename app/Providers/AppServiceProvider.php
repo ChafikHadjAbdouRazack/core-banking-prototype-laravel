@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Configure factory namespace resolution for domain models
+        Factory::guessFactoryNamesUsing(function (string $modelName) {
+            // Extract just the model class name without namespace
+            $modelBaseName = class_basename($modelName);
+            
+            // Return the factory in the Database\Factories namespace
+            return 'Database\\Factories\\' . $modelBaseName . 'Factory';
+        });
+
         // Treat 'demo' environment as production
         if ($this->app->environment('demo')) {
             // Force production-like settings

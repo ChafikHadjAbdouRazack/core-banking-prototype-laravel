@@ -2,6 +2,14 @@
 
 namespace Tests\Feature\Lending;
 
+use App\Domain\Lending\Aggregates\Loan;
+use App\Domain\Lending\Events\LoanCompleted;
+use App\Domain\Lending\Events\LoanCreated;
+use App\Domain\Lending\Events\LoanDisbursed;
+use App\Domain\Lending\Events\LoanFunded;
+use App\Domain\Lending\Events\LoanRepaymentMade;
+use App\Domain\Lending\Events\LoanSettledEarly;
+use App\Domain\Lending\ValueObjects\RepaymentSchedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;

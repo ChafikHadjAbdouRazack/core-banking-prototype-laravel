@@ -20,7 +20,7 @@ class ComplianceAggregateTest extends DomainTestCase
     use RefreshDatabase;
 
     #[Test]
-    public function test_submit_kyc_records_submission_and_document_events(): void
+    public function submit_kyc_records_submission_and_document_events(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-123';
@@ -47,10 +47,13 @@ class ComplianceAggregateTest extends DomainTestCase
                     && $event->document === $document;
             });
         }
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'KYC submission and document events were recorded');
     }
 
     #[Test]
-    public function test_approve_kyc_records_verification_completed(): void
+    public function approve_kyc_records_verification_completed(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-456';
@@ -63,10 +66,13 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->userUuid === $userUuid
                 && $event->level === $level;
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'KYC approval event was recorded');
     }
 
     #[Test]
-    public function test_reject_kyc_records_verification_rejected(): void
+    public function reject_kyc_records_verification_rejected(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-789';
@@ -79,10 +85,13 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->userUuid === $userUuid
                 && $event->reason === $reason;
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'KYC rejection event was recorded');
     }
 
     #[Test]
-    public function test_request_gdpr_export_records_request_event(): void
+    public function request_gdpr_export_records_request_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-gdpr-1';
@@ -96,7 +105,7 @@ class ComplianceAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function test_complete_gdpr_export_records_export_event(): void
+    public function complete_gdpr_export_records_export_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-gdpr-2';
@@ -110,7 +119,7 @@ class ComplianceAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function test_request_gdpr_deletion_records_request_event(): void
+    public function request_gdpr_deletion_records_request_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-delete-1';
@@ -124,10 +133,13 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->requestType === 'deletion'
                 && $event->options === ['reason' => $reason];
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'GDPR deletion request event was recorded');
     }
 
     #[Test]
-    public function test_complete_gdpr_deletion_records_deletion_event(): void
+    public function complete_gdpr_deletion_records_deletion_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-delete-2';
@@ -138,10 +150,13 @@ class ComplianceAggregateTest extends DomainTestCase
             return $event instanceof GdprDataDeleted
                 && $event->userUuid === $userUuid;
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'GDPR deletion completion event was recorded');
     }
 
     #[Test]
-    public function test_generate_regulatory_report_records_report_event(): void
+    public function generate_regulatory_report_records_report_event(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $reportType = 'SAR';
@@ -158,10 +173,13 @@ class ComplianceAggregateTest extends DomainTestCase
                 && $event->reportType === $reportType
                 && $event->data === $data;
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'Regulatory report event was recorded');
     }
 
     #[Test]
-    public function test_applies_kyc_submission_received_event(): void
+    public function applies_kyc_submission_received_event(): void
     {
         $aggregate = new ComplianceAggregate();
         $userUuid = 'user-apply-1';
@@ -183,7 +201,7 @@ class ComplianceAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function test_applies_kyc_verification_completed_event(): void
+    public function applies_kyc_verification_completed_event(): void
     {
         $aggregate = new ComplianceAggregate();
         $userUuid = 'user-verify-1';
@@ -207,7 +225,7 @@ class ComplianceAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function test_applies_kyc_verification_rejected_event(): void
+    public function applies_kyc_verification_rejected_event(): void
     {
         $aggregate = new ComplianceAggregate();
         $userUuid = 'user-reject-1';
@@ -227,7 +245,7 @@ class ComplianceAggregateTest extends DomainTestCase
     }
 
     #[Test]
-    public function test_full_kyc_workflow(): void
+    public function full_kyc_workflow(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-workflow-1';
@@ -252,10 +270,13 @@ class ComplianceAggregateTest extends DomainTestCase
         $aggregate->assertRecorded(function ($event) {
             return $event instanceof KycVerificationCompleted;
         });
+        
+        // Add explicit assertion for PHPUnit
+        $this->assertTrue(true, 'Full KYC workflow events were recorded');
     }
 
     #[Test]
-    public function test_full_gdpr_workflow(): void
+    public function full_gdpr_workflow(): void
     {
         $aggregate = ComplianceAggregate::fake();
         $userUuid = 'user-gdpr-workflow';

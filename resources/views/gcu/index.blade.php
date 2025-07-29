@@ -782,8 +782,6 @@
             </div>
         </section>
 
-@endsection
-
 @push('styles')
 <style>
     @keyframes blob {
@@ -830,3 +828,6 @@
     });
 </script>
 @endpush
+
+    </body>
+</html>

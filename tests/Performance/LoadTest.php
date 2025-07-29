@@ -9,6 +9,11 @@
 
 namespace Tests\Performance;
 
+use App\Domain\Account\Models\Account;
+use App\Domain\Asset\Models\Asset;
+use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
