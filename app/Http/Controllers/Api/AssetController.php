@@ -200,9 +200,13 @@ class AssetController extends Controller
             );
         }
 
-        // Calculate statistics
-        $totalAccounts = $asset->accountBalances()->count();
-        $totalBalance = $asset->accountBalances()->sum('balance');
+        // Calculate statistics with a single query
+        $balanceStats = $asset->accountBalances()
+            ->selectRaw('COUNT(*) as total_accounts, COALESCE(SUM(balance), 0) as total_balance')
+            ->first();
+
+        $totalAccounts = $balanceStats->total_accounts ?? 0;
+        $totalBalance = $balanceStats->total_balance ?? 0;
         $activeRates = $asset->exchangeRatesFrom()->valid()->count();
 
         // Format balance according to asset precision

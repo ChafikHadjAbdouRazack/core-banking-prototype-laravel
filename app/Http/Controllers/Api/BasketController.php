@@ -63,7 +63,10 @@ class BasketController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = BasketAsset::with(['components.asset']);
+        $query = BasketAsset::with([
+            'components.asset',
+            'latestValue' // This is already defined as a hasOne relationship
+        ]);
 
         if ($request->has('type')) {
             $query->where('type', $request->input('type'));
@@ -75,7 +78,7 @@ class BasketController extends Controller
 
         $baskets = $query->get()->map(
             function ($basket) {
-                $latestValue = $basket->values()->latest('calculated_at')->first();
+                $latestValue = $basket->latestValue;
 
                 return [
                     'code'                => $basket->code,
