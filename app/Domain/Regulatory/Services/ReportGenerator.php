@@ -12,6 +12,7 @@ class ReportGenerator
         if ($result === false) {
             throw new \RuntimeException('Failed to encode BSA report data: ' . json_last_error_msg());
         }
+
         return $result;
     }
 
@@ -21,6 +22,7 @@ class ReportGenerator
         if ($result === false) {
             throw new \RuntimeException('Failed to encode SAR report data: ' . json_last_error_msg());
         }
+
         return $result;
     }
 
@@ -30,6 +32,7 @@ class ReportGenerator
         if ($result === false) {
             throw new \RuntimeException('Failed to encode CTR report data: ' . json_last_error_msg());
         }
+
         return $result;
     }
 
@@ -39,6 +42,7 @@ class ReportGenerator
         if ($result === false) {
             throw new \RuntimeException('Failed to encode OFAC report data: ' . json_last_error_msg());
         }
+
         return $result;
     }
 }

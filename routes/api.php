@@ -40,20 +40,20 @@ use Illuminate\Support\Facades\Route;
 // API root endpoint
 Route::get('/', function () {
     return response()->json([
-        'message' => 'FinAegis Core Banking API',
-        'version' => 'v2',
+        'message'       => 'FinAegis Core Banking API',
+        'version'       => 'v2',
         'documentation' => url('/api/documentation'),
-        'status' => route('status.api'),
-        'endpoints' => [
-            'auth' => url('/auth'),
-            'accounts' => url('/accounts'),
+        'status'        => route('status.api'),
+        'endpoints'     => [
+            'auth'         => url('/auth'),
+            'accounts'     => url('/accounts'),
             'transactions' => url('/accounts/{uuid}/transactions'),
-            'transfers' => url('/transfers'),
-            'exchange' => url('/exchange'),
-            'baskets' => url('/baskets'),
-            'stablecoins' => url('/stablecoins'),
-            'v2' => url('/v2'),
-        ]
+            'transfers'    => url('/transfers'),
+            'exchange'     => url('/exchange'),
+            'baskets'      => url('/baskets'),
+            'stablecoins'  => url('/stablecoins'),
+            'v2'           => url('/v2'),
+        ],
     ]);
 })->name('api.root');
 
