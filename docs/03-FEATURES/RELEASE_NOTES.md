@@ -5,6 +5,49 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [8.0.0] - 2025-07-07 - Phase 8 Advanced Trading & DeFi Features
+
+### Added
+- **Exchange Engine**: Full trading platform with order book management
+  - Event-sourced architecture with OrderAggregate
+  - Saga-based matching engine for reliable execution
+  - Support for market and limit orders with partial fills
+  - Maker/taker fee model implementation
+- **Liquidity Pools**: Automated Market Maker (AMM) implementation
+  - Constant product formula for price discovery
+  - Liquidity provider tokens for tracking shares
+  - Dynamic fee distribution to LPs
+  - Multi-asset pool support
+- **Stablecoin Framework**: Collateralized stablecoin issuance
+  - Multi-collateral support (ETH, BTC, other assets)
+  - Health factor monitoring with real-time valuation
+  - Automated liquidation at configurable thresholds
+  - Oracle price aggregation for accurate valuations
+- **Blockchain Wallet System**: Multi-chain wallet support
+  - Bitcoin (Native SegWit), Ethereum (ERC-20)
+  - Polygon Layer 2, Binance Smart Chain
+  - HD Wallet Generation (BIP44-compliant)
+  - Secure key storage with encryption
+- **P2P Lending Platform**: Peer-to-peer lending marketplace
+  - Credit scoring using multiple data sources
+  - Risk assessment and categorization
+  - Automated repayment processing
+  - Collateralized and uncollateralized loans
+- **External Exchange Integration**: 
+  - Binance, Kraken, and Coinbase connectors
+  - Unified interface for all exchanges
+  - Arbitrage opportunity detection
+
+### Changed
+- **Architecture**: Enhanced to support DeFi and trading features
+- **API**: Expanded with Phase 8 endpoints for all new features
+- **Performance**: Optimized for high-frequency trading operations
+
+### Technical Details
+- Comprehensive test coverage for all Phase 8 features
+- Production-ready exchange and DeFi implementations
+- Full API documentation with OpenAPI specifications
+
 ## [7.0.0] - 2025-01-07 - Production Ready Platform with GCU
 
 ### Added
