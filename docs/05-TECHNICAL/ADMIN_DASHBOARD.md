@@ -310,5 +310,5 @@ Planned features for future releases:
 
 For issues or questions:
 - Check the [main documentation](../README.md)
-- Review [CLAUDE.md](../CLAUDE.md) for development guidance
+- Review [CLAUDE.md](../06-DEVELOPMENT/CLAUDE.md) for development guidance
 - Submit issues to the GitHub repository

@@ -20,11 +20,14 @@ return [
         'style_sources' => env('CSP_STYLE_SOURCES', 'https://fonts.googleapis.com,https://fonts.bunny.net'),
 
         // Script sources
-        'script_sources' => env('CSP_SCRIPT_SOURCES', 'https://cdn.jsdelivr.net'),
+        'script_sources' => env('CSP_SCRIPT_SOURCES', 'https://cdn.jsdelivr.net,https://www.googletagmanager.com'),
 
         // API endpoints
         'api_endpoint' => env('CSP_API_ENDPOINT', 'https://api.finaegis.org'),
         'ws_endpoint'  => env('CSP_WS_ENDPOINT', 'wss://ws.finaegis.org'),
+        
+        // Additional connect sources (comma-separated)
+        'connect_sources' => env('CSP_CONNECT_SOURCES', 'https://www.google-analytics.com,https://*.google-analytics.com,https://stats.g.doubleclick.net,https://*.doubleclick.net,https://www.googletagmanager.com'),
     ],
 
     /*
