@@ -15,6 +15,9 @@ beforeEach(function () {
 });
 
 test('can submit kyc documents', function () {
+    // Authenticate the user for audit log
+    $this->actingAs($this->user);
+    
     $documents = [
         [
             'type' => 'passport',
@@ -51,6 +54,9 @@ test('can submit kyc documents', function () {
 });
 
 test('can verify kyc', function () {
+    // Authenticate the user for audit log
+    $this->actingAs($this->user);
+    
     // Submit documents first
     $documents = [
         ['type' => 'passport', 'file' => UploadedFile::fake()->image('passport.jpg')],
@@ -80,11 +86,14 @@ test('can verify kyc', function () {
     expect($document->verified_by)->toBe('admin-123');
 
     // Check audit log
-    $log = AuditLog::where('action', 'kyc.verified')->first();
+    $log = AuditLog::where('action', 'kyc.approved')->first();
     expect($log)->not->toBeNull();
 });
 
 test('can reject kyc', function () {
+    // Authenticate the user for audit log
+    $this->actingAs($this->user);
+    
     // Submit documents first
     $documents = [
         ['type' => 'passport', 'file' => UploadedFile::fake()->image('passport.jpg')],
@@ -93,7 +102,7 @@ test('can reject kyc', function () {
 
     // Reject KYC
     $reason = 'Document is blurry and unreadable';
-    $this->kycService->rejectKyc($this->user, $reason, 'admin-456');
+    $this->kycService->rejectKyc($this->user, 'admin-456', $reason);
 
     // Check user status
     $this->user->refresh();
