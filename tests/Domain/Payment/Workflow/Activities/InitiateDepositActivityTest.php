@@ -2,6 +2,7 @@
 
 use App\Domain\Payment\Workflow\Activities\InitiateDepositActivity;
 use Illuminate\Support\Str;
+use Mockery;
 
 it('can initiate a deposit through activity', function () {
     $accountUuid = Str::uuid()->toString();

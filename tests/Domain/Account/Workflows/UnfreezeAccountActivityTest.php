@@ -4,6 +4,7 @@ use App\Domain\Account\Aggregates\LedgerAggregate;
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\UnfreezeAccountActivity;
 use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
+use Mockery;
 use Workflow\Models\StoredWorkflow;
 use Workflow\WorkflowStub;
 

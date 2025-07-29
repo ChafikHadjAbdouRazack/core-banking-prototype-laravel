@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Compliance\Activities;
 
+use App\Domain\Compliance\Activities\KycVerificationActivity;
+use App\Domain\Compliance\Services\KycService;
 use App\Models\User;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Workflow\Activity;
 
 class KycVerificationActivityTest extends TestCase
 {
@@ -16,7 +20,7 @@ class KycVerificationActivityTest extends TestCase
         $kycService = Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
-        $this->assertInstanceOf(\Workflow\Activity::class, $activity);
+        $this->assertInstanceOf(Activity::class, $activity);
     }
 
     #[Test]
