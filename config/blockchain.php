@@ -103,4 +103,37 @@ return [
             'minimum'    => env('BLOCKCHAIN_WITHDRAWAL_FEE_MIN', '1'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Key Access Security Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for secure key access control and rate limiting.
+    |
+    */
+    'key_access' => [
+        'max_attempts' => env('KEY_ACCESS_MAX_ATTEMPTS', 10),
+        'decay_minutes' => env('KEY_ACCESS_DECAY_MINUTES', 1),
+        'temp_key_ttl' => env('KEY_ACCESS_TEMP_TTL', 300), // 5 minutes
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hardware Security Module (HSM) Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for HSM integration for secure key storage.
+    |
+    */
+    'hsm' => [
+        'enabled' => env('HSM_ENABLED', false),
+        'provider' => env('HSM_PROVIDER', 'aws'), // aws, azure, thales
+        'partition' => env('HSM_PARTITION', 'default'),
+        'endpoint' => env('HSM_ENDPOINT'),
+        'credentials' => [
+            'key' => env('HSM_ACCESS_KEY'),
+            'secret' => env('HSM_SECRET_KEY'),
+        ],
+    ],
 ];

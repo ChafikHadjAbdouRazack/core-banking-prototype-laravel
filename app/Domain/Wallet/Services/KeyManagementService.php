@@ -292,26 +292,26 @@ class KeyManagementService implements KeyManagementServiceInterface
 
     /**
      * Store key temporarily in cache (for signing).
+     * @deprecated Use SecureKeyStorageService::storeTemporaryKey() instead
      */
     public function storeTemporaryKey(string $userId, string $encryptedKey, int $ttl = 300): string
     {
-        $token = bin2hex(random_bytes(32));
-        $cacheKey = "wallet_key:{$userId}:{$token}";
-
-        Cache::put($cacheKey, $encryptedKey, $ttl);
-
-        return $token;
+        // This method is deprecated - use SecureKeyStorageService instead
+        // Keeping for backward compatibility
+        $secureStorage = app(SecureKeyStorageService::class);
+        return $secureStorage->storeTemporaryKey($userId, $encryptedKey, $ttl);
     }
 
     /**
      * Retrieve temporary key from cache.
+     * @deprecated Use SecureKeyStorageService::retrieveTemporaryKey() instead
      */
     public function retrieveTemporaryKey(string $userId, string $token): ?string
     {
-        $cacheKey = "wallet_key:{$userId}:{$token}";
-        $encryptedKey = Cache::pull($cacheKey);
-
-        return $encryptedKey;
+        // This method is deprecated - use SecureKeyStorageService instead
+        // Keeping for backward compatibility
+        $secureStorage = app(SecureKeyStorageService::class);
+        return $secureStorage->retrieveTemporaryKey($userId, $token);
     }
 
     /**
