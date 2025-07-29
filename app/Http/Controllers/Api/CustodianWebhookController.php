@@ -21,6 +21,7 @@ class CustodianWebhookController extends Controller
 {
     public function __construct()
     {
+    }
 
     /**
      * Handle incoming webhook from Paysera.
