@@ -7,16 +7,14 @@ use Illuminate\Support\Facades\Route;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        api: __DIR__.'/../routes/api.php',
-        commands: __DIR__.'/../routes/console.php',
-        health: '/up',
-        then: function () {
-            // Check if we're on the api subdomain
+        using: function () {
             $isApiSubdomain = str_starts_with(request()->getHost(), 'api.');
             
+            // Always load console routes
+            Route::group([], base_path('routes/console.php'));
+            
             if ($isApiSubdomain) {
-                // For api.finaegis.org, load API routes without /api prefix
+                // For api.finaegis.org, ONLY load API routes without /api prefix
                 Route::middleware('api')
                     ->group(base_path('routes/api.php'));
                     
@@ -27,7 +25,14 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->prefix('v2')
                     ->group(base_path('routes/api-v2.php'));
             } else {
-                // For main domain, keep the /api prefix
+                // For main domain, load web routes and API routes with prefix
+                Route::middleware('web')
+                    ->group(base_path('routes/web.php'));
+                    
+                Route::middleware('api')
+                    ->prefix('api')
+                    ->group(base_path('routes/api.php'));
+                
                 Route::middleware('api')
                     ->prefix('api')
                     ->group(base_path('routes/api-bian.php'));
@@ -37,6 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->group(base_path('routes/api-v2.php'));
             }
         },
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
         // Register rate limiting middleware
@@ -75,6 +82,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions) {
         // Treat 'demo' environment as production for error handling
         $exceptions->shouldRenderJsonWhen(function ($request, $e) {
+            // Check if we're on the API subdomain
+            if (str_starts_with($request->getHost(), 'api.')) {
+                return true;
+            }
+            
             if ($request->is('api/*')) {
                 return true;
             }
