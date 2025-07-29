@@ -20,5 +20,6 @@ return [
     App\Providers\TelescopeServiceProvider::class,
     App\Providers\TestingServiceProvider::class,
     App\Providers\WalletServiceProvider::class,
+    App\Providers\WebhookServiceProvider::class,
     L5Swagger\L5SwaggerServiceProvider::class,
 ];

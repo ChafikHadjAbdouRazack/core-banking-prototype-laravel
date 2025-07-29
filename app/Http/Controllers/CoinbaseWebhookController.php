@@ -20,21 +20,9 @@ class CoinbaseWebhookController extends Controller
      */
     public function handleWebhook(Request $request)
     {
+        // Signature validation is now handled by middleware
         $payload = $request->getContent();
         $signature = $request->header('X-CC-Webhook-Signature');
-
-        if (! $signature) {
-            Log::warning('Coinbase webhook received without signature');
-
-            return response()->json(['error' => 'Missing signature'], 400);
-        }
-
-        // Verify webhook signature
-        if (! $this->coinbaseService->verifyWebhookSignature($payload, $signature)) {
-            Log::warning('Coinbase webhook signature verification failed');
-
-            return response()->json(['error' => 'Invalid signature'], 400);
-        }
 
         $event = json_decode($payload, true);
 
