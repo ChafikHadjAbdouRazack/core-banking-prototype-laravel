@@ -1,35 +1,38 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="FinAegis features - Global Currency Unit (GCU), multi-asset support, real-time settlements, democratic governance, and more.">
-    
-    <title>Features - Modern Banking Platform | FinAegis</title>
+@extends('layouts.public')
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'Features - Modern Banking Platform | FinAegis')
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .feature-card {
-            transition: all 0.3s ease;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body class="antialiased">
-    <!-- Navigation -->
-    @include('partials.public-nav')
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Features - Modern Banking Platform',
+        'description' => 'FinAegis features - Global Currency Unit (GCU), multi-asset support, real-time settlements, democratic governance, and more.',
+        'keywords' => 'FinAegis features, GCU, global currency unit, multi-asset banking, instant settlements, democratic governance, bank integration, developer APIs',
+    ])
+
+    {{-- Schema.org Markup --}}
+    <x-schema type="software" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Features', 'url' => url('/features')]
+    ]" />
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .feature-card {
+        transition: all 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+</style>
+@endpush
+
+@section('content')
 
     <!-- Hero Section -->
     <section class="pt-16 bg-gray-50">
@@ -77,7 +80,7 @@
                                 <span class="text-gray-700">Reduced volatility through diversification</span>
                             </li>
                         </ul>
-                        <a href="/features/gcu" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700">
+                        <a href="{{ route('features.show', 'gcu') }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700">
                             Learn more about GCU
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -162,7 +165,7 @@
                     <p class="text-gray-600 mb-4">
                         Hold and transact in multiple currencies and assets from a single account. Support for fiat, crypto, and commodities.
                     </p>
-                    <a href="/features/multi-asset" class="text-purple-600 font-medium hover:text-purple-700">
+                    <a href="{{ route('features.show', 'multi-asset') }}" class="text-purple-600 font-medium hover:text-purple-700">
                         Explore assets →
                     </a>
                 </div>
@@ -178,7 +181,7 @@
                     <p class="text-gray-600 mb-4">
                         Experience sub-second transaction processing with our advanced settlement engine. No more waiting days for transfers.
                     </p>
-                    <a href="/features/settlements" class="text-green-600 font-medium hover:text-green-700">
+                    <a href="{{ route('features.show', 'settlements') }}" class="text-green-600 font-medium hover:text-green-700">
                         Learn more →
                     </a>
                 </div>
@@ -194,7 +197,7 @@
                     <p class="text-gray-600 mb-4">
                         Participate in platform decisions through weighted voting. Your voice matters in shaping the future of finance.
                     </p>
-                    <a href="/features/governance" class="text-yellow-600 font-medium hover:text-yellow-700">
+                    <a href="{{ route('features.show', 'governance') }}" class="text-yellow-600 font-medium hover:text-yellow-700">
                         Join governance →
                     </a>
                 </div>
@@ -210,7 +213,7 @@
                     <p class="text-gray-600 mb-4">
                         Direct integration with major banks including Paysera, Deutsche Bank, and Santander for seamless operations.
                     </p>
-                    <a href="/features/bank-integration" class="text-red-600 font-medium hover:text-red-700">
+                    <a href="{{ route('features.show', 'bank-integration') }}" class="text-red-600 font-medium hover:text-red-700">
                         View partners →
                     </a>
                 </div>
@@ -226,7 +229,7 @@
                     <p class="text-gray-600 mb-4">
                         Comprehensive REST APIs and webhooks for seamless integration. Build powerful applications on our platform.
                     </p>
-                    <a href="/features/api" class="text-blue-600 font-medium hover:text-blue-700">
+                    <a href="{{ route('features.show', 'api') }}" class="text-blue-600 font-medium hover:text-blue-700">
                         View docs →
                     </a>
                 </div>
@@ -334,7 +337,4 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    @include('partials.footer')
-</body>
-</html>
+@endsection

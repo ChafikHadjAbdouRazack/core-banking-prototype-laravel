@@ -69,9 +69,16 @@ Route::get('/features', function () {
     return view('features.index');
 })->name('features');
 
-Route::get('/features/gcu', function () {
-    return view('features.gcu');
-})->name('features.gcu');
+Route::get('/features/{feature}', function ($feature) {
+    // List of valid feature pages
+    $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api'];
+
+    if (! in_array($feature, $validFeatures)) {
+        abort(404);
+    }
+
+    return view('features.' . $feature);
+})->name('features.show');
 
 Route::get('/pricing', function () {
     return view('pricing');
