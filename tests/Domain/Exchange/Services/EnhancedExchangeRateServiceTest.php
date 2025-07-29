@@ -253,14 +253,15 @@ it('handles crypto asset rate fetching', function () {
     $rate = $this->service->fetchAndStoreRate('BTC', 'USD');
 
     if ($rate) {
+        expect($rate)->toBeInstanceOf(ExchangeRate::class);
         expect($rate->from_asset_code)->toBe('BTC');
         expect($rate->to_asset_code)->toBe('USD');
         expect($rate->rate)->toBeString();
         expect($rate->source)->toBe('api');
+    } else {
+        // The mock might not have BTC-USD pair, so rate could be null
+        expect($rate)->toBeNull();
     }
-
-    // The mock might not have BTC-USD pair, so rate could be null
-    expect($rate)->toBeInstanceOf(ExchangeRate::class)->or->toBeNull();
 });
 
 it('handles fiat currency rate fetching', function () {
@@ -269,14 +270,15 @@ it('handles fiat currency rate fetching', function () {
     $rate = $this->service->fetchAndStoreRate('USD', 'EUR');
 
     if ($rate) {
+        expect($rate)->toBeInstanceOf(ExchangeRate::class);
         expect($rate->from_asset_code)->toBe('USD');
         expect($rate->to_asset_code)->toBe('EUR');
         expect($rate->rate)->toBeString();
         expect($rate->source)->toBe('api');
+    } else {
+        // The mock should have USD-EUR pair
+        expect($rate)->toBeNull();
     }
-
-    // The mock should have USD-EUR pair
-    expect($rate)->toBeInstanceOf(ExchangeRate::class)->or->toBeNull();
 });
 
 it('caches exchange rates appropriately', function () {
