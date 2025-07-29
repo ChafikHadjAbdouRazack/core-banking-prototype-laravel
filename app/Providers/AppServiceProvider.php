@@ -36,10 +36,18 @@ class AppServiceProvider extends ServiceProvider
          * @return class-string<Factory>
          */
         Factory::guessFactoryNamesUsing(function (string $modelName): string {
-            // Extract just the model class name without namespace
-            $modelBaseName = class_basename($modelName);
+            // For domain models, preserve the full path structure
+            if (str_starts_with($modelName, 'App\\Domain\\')) {
+                // Replace App\ with Database\Factories\ and append Factory
+                $factoryName = str_replace('App\\', 'Database\\Factories\\', $modelName) . 'Factory';
+                
+                /** @var class-string<Factory> */
+                return $factoryName;
+            }
 
-            // Return the factory in the Database\Factories namespace
+            // For non-domain models, use the default pattern
+            $modelBaseName = class_basename($modelName);
+            
             /** @var class-string<Factory> */
             return 'Database\\Factories\\' . $modelBaseName . 'Factory';
         });
