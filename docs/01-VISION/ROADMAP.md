@@ -1,7 +1,8 @@
 # FinAegis Prototype Roadmap
 
-**Last Updated:** 2025-01-07  
-**Version:** 4.0 (CGO Complete, Documentation Review)
+**Last Updated:** 2025-01-07 (6 months ago)  
+**Current Version:** 8.0 (Phase 8 Complete - July 2025)  
+**Note:** This roadmap was last updated in January 2025. See [RELEASE_NOTES.md](../03-FEATURES/RELEASE_NOTES.md) for current status.
 
 ## Vision
 
