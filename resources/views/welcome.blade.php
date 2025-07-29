@@ -211,6 +211,123 @@
             </div>
         </section>
 
+        <!-- Key Features Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Key Platform Features</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Built with enterprise-grade technology to deliver the best banking experience
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- GCU Feature -->
+                    <a href="{{ route('features.show', 'gcu') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-indigo-500 transition-all">
+                        <div class="w-14 h-14 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                            <span class="text-2xl font-bold text-indigo-600">Ǥ</span>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Global Currency Unit</h3>
+                        <p class="text-gray-600 mb-4">
+                            Democratically governed basket currency with monthly voting on composition.
+                        </p>
+                        <span class="text-indigo-600 font-medium hover:text-indigo-700">
+                            Learn more →
+                        </span>
+                    </a>
+
+                    <!-- Multi-Asset Support -->
+                    <a href="{{ route('features.show', 'multi-asset') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-purple-500 transition-all">
+                        <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Multi-Asset Support</h3>
+                        <p class="text-gray-600 mb-4">
+                            Hold and transact in multiple currencies and assets from a single account.
+                        </p>
+                        <span class="text-purple-600 font-medium hover:text-purple-700">
+                            Explore assets →
+                        </span>
+                    </a>
+
+                    <!-- Instant Settlements -->
+                    <a href="{{ route('features.show', 'settlements') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-green-500 transition-all">
+                        <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Instant Settlements</h3>
+                        <p class="text-gray-600 mb-4">
+                            Experience sub-second transaction processing with our advanced settlement engine.
+                        </p>
+                        <span class="text-green-600 font-medium hover:text-green-700">
+                            Learn more →
+                        </span>
+                    </a>
+
+                    <!-- Democratic Governance -->
+                    <a href="{{ route('features.show', 'governance') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-yellow-500 transition-all">
+                        <div class="w-14 h-14 bg-yellow-100 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Democratic Governance</h3>
+                        <p class="text-gray-600 mb-4">
+                            Participate in platform decisions through weighted voting.
+                        </p>
+                        <span class="text-yellow-600 font-medium hover:text-yellow-700">
+                            Join governance →
+                        </span>
+                    </a>
+
+                    <!-- Bank Integration -->
+                    <a href="{{ route('features.show', 'bank-integration') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-red-500 transition-all">
+                        <div class="w-14 h-14 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Bank Integration</h3>
+                        <p class="text-gray-600 mb-4">
+                            Direct integration with major banks for seamless operations.
+                        </p>
+                        <span class="text-red-600 font-medium hover:text-red-700">
+                            View partners →
+                        </span>
+                    </a>
+
+                    <!-- Developer APIs -->
+                    <a href="{{ route('features.show', 'api') }}" class="feature-card bg-white border border-gray-200 rounded-xl p-8 block hover:border-blue-500 transition-all">
+                        <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-semibold mb-3">Developer APIs</h3>
+                        <p class="text-gray-600 mb-4">
+                            Comprehensive REST APIs and webhooks for seamless integration.
+                        </p>
+                        <span class="text-blue-600 font-medium hover:text-blue-700">
+                            View docs →
+                        </span>
+                    </a>
+                </div>
+
+                <div class="text-center mt-12">
+                    <a href="{{ route('features') }}" class="inline-flex items-center justify-center bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-lg hover:shadow-xl">
+                        Explore All Features
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- Platform Overview Section -->
         <section id="platform" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

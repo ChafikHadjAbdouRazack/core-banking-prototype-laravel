@@ -1,35 +1,39 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Learn about the Global Currency Unit (GCU) - FinAegis's innovative basket currency with democratic governance and stable value.">
-    
-    <title>Global Currency Unit (GCU) - FinAegis</title>
+@extends('layouts.public')
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+@section('title', 'Global Currency Unit (GCU) - FinAegis')
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        .feature-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        }
-    </style>
-</head>
-<body class="antialiased">
-    <!-- Navigation -->
-    @include('partials.public-nav')
+@section('seo')
+    @include('partials.seo', [
+        'title' => 'Global Currency Unit (GCU)',
+        'description' => 'Learn about the Global Currency Unit (GCU) - FinAegis\'s innovative basket currency with democratic governance and stable value.',
+        'keywords' => 'GCU, global currency unit, basket currency, democratic governance, stable value, FinAegis',
+    ])
+
+    {{-- Schema.org Markup --}}
+    <x-schema type="software" />
+    <x-schema type="breadcrumb" :data="[
+        ['name' => 'Home', 'url' => url('/')],
+        ['name' => 'Features', 'url' => url('/features')],
+        ['name' => 'Global Currency Unit', 'url' => url('/features/gcu')]
+    ]" />
+@endsection
+
+@push('styles')
+<style>
+    .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .feature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+</style>
+@endpush
+
+@section('content')
 
     <!-- Hero Section -->
     <section class="gradient-bg text-white pt-24 pb-20">
@@ -63,35 +67,27 @@
                     <h3 class="text-2xl font-bold mb-6 text-gray-900">Current Composition</h3>
                     <div class="space-y-4">
                         <div class="flex justify-between items-center">
+                            <span class="text-lg">USD (US Dollar)</span>
+                            <span class="text-lg font-semibold">40%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 40%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
                             <span class="text-lg">EUR (Euro)</span>
                             <span class="text-lg font-semibold">30%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-indigo-600 h-2 rounded-full" style="width: 30%"></div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg">USD (US Dollar)</span>
-                            <span class="text-lg font-semibold">25%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: 30%"></div>
                         </div>
                         
                         <div class="flex justify-between items-center">
                             <span class="text-lg">GBP (British Pound)</span>
-                            <span class="text-lg font-semibold">20%</span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-pink-600 h-2 rounded-full" style="width: 20%"></div>
-                        </div>
-                        
-                        <div class="flex justify-between items-center">
-                            <span class="text-lg">JPY (Japanese Yen)</span>
                             <span class="text-lg font-semibold">15%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-green-600 h-2 rounded-full" style="width: 15%"></div>
+                            <div class="bg-pink-600 h-2 rounded-full" style="width: 15%"></div>
                         </div>
                         
                         <div class="flex justify-between items-center">
@@ -99,7 +95,23 @@
                             <span class="text-lg font-semibold">10%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: 10%"></div>
+                            <div class="bg-green-600 h-2 rounded-full" style="width: 10%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg">JPY (Japanese Yen)</span>
+                            <span class="text-lg font-semibold">3%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: 3%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg">XAU (Gold)</span>
+                            <span class="text-lg font-semibold">2%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-yellow-600 h-2 rounded-full" style="width: 2%"></div>
                         </div>
                     </div>
                 </div>
@@ -234,7 +246,7 @@
             
             <div class="max-w-4xl mx-auto">
                 <p class="text-lg text-gray-600 mb-8 text-center">
-                    GCU holders participate in key decisions through our transparent voting system. Each GCU represents one vote in governance decisions.
+                    GCU holders participate in key decisions through our transparent voting system. Your GCU holdings determine your voting power.
                 </p>
                 
                 <div class="bg-white rounded-2xl p-8 shadow-lg">
@@ -243,7 +255,7 @@
                     <div class="space-y-6">
                         <div class="border-l-4 border-indigo-500 pl-4">
                             <h4 class="font-semibold text-lg mb-2">Basket Composition</h4>
-                            <p class="text-gray-600">Quarterly reviews of currency weightings and potential additions or removals of currencies.</p>
+                            <p class="text-gray-600">Monthly voting on currency weightings and potential additions or removals of currencies.</p>
                         </div>
                         
                         <div class="border-l-4 border-purple-500 pl-4">
@@ -275,12 +287,12 @@
                 <div class="bg-gray-50 rounded-2xl p-8">
                     <h3 class="text-2xl font-bold mb-6 text-gray-900">Smart Contract Architecture</h3>
                     <ul class="space-y-3 text-gray-600">
-                        <li>• ERC-20 compatible token on Ethereum</li>
-                        <li>• Multi-signature treasury management</li>
-                        <li>• On-chain voting mechanisms</li>
-                        <li>• Automated rebalancing protocols</li>
-                        <li>• Real-time audit trails</li>
-                        <li>• Oracle integration for price feeds</li>
+                        <li>• Basket currency implementation with weighted composition</li>
+                        <li>• Multi-bank treasury management across 5 partner banks</li>
+                        <li>• On-chain voting mechanisms with asset-weighted power</li>
+                        <li>• Automated rebalancing protocols on the 10th of each month</li>
+                        <li>• Real-time audit trails and transparency reports</li>
+                        <li>• Oracle integration for real-time exchange rates</li>
                     </ul>
                 </div>
                 
@@ -288,11 +300,11 @@
                     <h3 class="text-2xl font-bold mb-6 text-gray-900">Security & Compliance</h3>
                     <ul class="space-y-3 text-gray-600">
                         <li>• Bank-grade security infrastructure</li>
-                        <li>• Regulatory compliance in all jurisdictions</li>
-                        <li>• Daily third-party audits</li>
-                        <li>• Segregated customer assets</li>
-                        <li>• Insurance coverage for reserves</li>
-                        <li>• Transparent reporting dashboard</li>
+                        <li>• Government deposit insurance up to €100k per bank</li>
+                        <li>• Daily third-party audits and reconciliation</li>
+                        <li>• Segregated customer assets across partner banks</li>
+                        <li>• Multi-signature authorization for treasury operations</li>
+                        <li>• Transparent reporting dashboard with real-time data</li>
                     </ul>
                 </div>
             </div>
@@ -315,7 +327,4 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    @include('partials.footer')
-</body>
-</html>
+@endsection
