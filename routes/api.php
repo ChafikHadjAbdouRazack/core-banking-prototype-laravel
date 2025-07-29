@@ -464,16 +464,19 @@ Route::middleware('auth:sanctum')->prefix('compliance')->group(function () {
     });
 });
 
-// Custodian webhook endpoints (no auth required - signature verification is used instead - webhook rate limiting)
-Route::prefix('webhooks/custodian')->middleware('api.rate_limit:webhook')->group(function () {
-    Route::post('/paysera', [App\Http\Controllers\Api\CustodianWebhookController::class, 'paysera']);
-    Route::post('/santander', [App\Http\Controllers\Api\CustodianWebhookController::class, 'santander']);
+// Custodian webhook endpoints (signature verification + webhook rate limiting)
+Route::prefix('webhooks/custodian')->middleware(['api.rate_limit:webhook'])->group(function () {
+    Route::post('/paysera', [App\Http\Controllers\Api\CustodianWebhookController::class, 'paysera'])
+        ->middleware('webhook.signature:paysera');
+    Route::post('/santander', [App\Http\Controllers\Api\CustodianWebhookController::class, 'santander'])
+        ->middleware('webhook.signature:santander');
     Route::post('/mock', [App\Http\Controllers\Api\CustodianWebhookController::class, 'mock']);
 });
 
 // Payment processor webhook endpoints
-Route::prefix('webhooks')->middleware('api.rate_limit:webhook')->group(function () {
-    Route::post('/coinbase-commerce', [App\Http\Controllers\CoinbaseWebhookController::class, 'handleWebhook']);
+Route::prefix('webhooks')->middleware(['api.rate_limit:webhook'])->group(function () {
+    Route::post('/coinbase-commerce', [App\Http\Controllers\CoinbaseWebhookController::class, 'handleWebhook'])
+        ->middleware('webhook.signature:coinbase');
 });
 
 // Include BIAN-compliant routes

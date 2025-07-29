@@ -49,6 +49,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.apikey' => \App\Http\Middleware\AuthenticateApiKey::class,
             'auth.api_or_sanctum' => \App\Http\Middleware\AuthenticateApiOrSanctum::class,
             'idempotency' => \App\Http\Middleware\IdempotencyMiddleware::class,
+            'webhook.signature' => \App\Http\Middleware\ValidateWebhookSignature::class,
         ]);
 
         // Prepend CORS middleware to handle it before other middleware

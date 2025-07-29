@@ -12,8 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        'stripe/*',
-        'webhook/*',
+        // Webhook endpoints are protected by signature validation instead of CSRF
+        'stripe/webhook',
+        'api/webhooks/*',
+        // OAuth callbacks use state parameter validation
         'paysera/callback',
         'openbanking/callback',
     ];

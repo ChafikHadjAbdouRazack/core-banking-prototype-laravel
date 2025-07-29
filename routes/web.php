@@ -660,19 +660,17 @@ Route::get('/docs/api-docs.json', function () {
     return response()->json(json_decode(file_get_contents($path), true));
 });
 
-
-
 // L5-Swagger routes - manually register since they're not loading automatically
 Route::group([
-    'middleware' => ['L5Swagger\Http\Middleware\Config'],
-    'l5-swagger.documentation' => 'default'
+    'middleware'               => ['L5Swagger\Http\Middleware\Config'],
+    'l5-swagger.documentation' => 'default',
 ], function () {
     Route::get('/api/documentation', '\L5Swagger\Http\Controllers\SwaggerController@api')
         ->name('l5-swagger.default.api');
-    
+
     Route::get('/docs', '\L5Swagger\Http\Controllers\SwaggerController@docs')
         ->name('l5-swagger.default.docs');
-        
+
     Route::get('/docs/asset/{asset}', '\L5Swagger\Http\Controllers\SwaggerAssetController@index')
         ->name('l5-swagger.default.asset');
 });

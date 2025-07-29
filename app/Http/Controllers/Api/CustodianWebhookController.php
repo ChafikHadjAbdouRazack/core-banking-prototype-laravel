@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Custodian\Models\CustodianWebhook;
-use App\Domain\Custodian\Services\WebhookVerificationService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,9 +18,8 @@ use Illuminate\Support\Facades\Log;
  */
 class CustodianWebhookController extends Controller
 {
-    public function __construct(
-        private readonly WebhookVerificationService $verificationService
-    ) {
+    public function __construct()
+    {
     }
 
     /**
@@ -192,32 +190,14 @@ class CustodianWebhookController extends Controller
         $payload = $request->getContent();
         $headers = $request->headers->all();
 
-        // Extract signature based on custodian
+        // Signature validation is now handled by middleware
+        // Extract signature for logging purposes
         $signature = match ($custodianName) {
             'paysera'   => $request->header('X-Paysera-Signature', ''),
             'santander' => $request->header('X-Santander-Signature', ''),
             'mock'      => 'mock-signature',
             default     => '',
         };
-
-        // Convert header arrays to single values for webhook verification
-        $cleanHeaders = [];
-        foreach ($headers as $key => $value) {
-            $cleanHeaders[$key] = is_array($value) ? $value[0] : $value;
-        }
-
-        // Verify signature
-        if (! $this->verificationService->verifySignature($custodianName, $payload, $signature, $cleanHeaders)) {
-            Log::warning(
-                'Invalid webhook signature',
-                [
-                    'custodian' => $custodianName,
-                    'signature' => $signature,
-                ]
-            );
-
-            return response()->json(['error' => 'Invalid signature'], 401);
-        }
 
         // Parse the payload
         $data = json_decode($payload, true);
