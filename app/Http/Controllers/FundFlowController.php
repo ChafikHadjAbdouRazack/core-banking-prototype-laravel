@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Inertia\Inertia;
+// use Inertia\Inertia; // Inertia not installed
 
 class FundFlowController extends Controller
 {
@@ -43,17 +43,15 @@ class FundFlowController extends Controller
         // Get daily flow chart data
         $chartData = $this->getDailyFlowData($user, $dateRange, $filters);
 
-        return Inertia::render(
-            'FundFlow/Visualization',
-            [
-                'accounts'    => $accounts,
-                'flowData'    => $flowData,
-                'statistics'  => $statistics,
-                'networkData' => $networkData,
-                'chartData'   => $chartData,
-                'filters'     => $filters,
-            ]
-        );
+        // Return blade view instead of Inertia (Inertia not installed)
+        return view('fund-flow.index', [
+            'accounts'    => $accounts,
+            'flowData'    => $flowData,
+            'statistics'  => $statistics,
+            'networkData' => $networkData,
+            'chartData'   => $chartData,
+            'filters'     => $filters,
+        ]);
     }
 
     /**
@@ -75,16 +73,14 @@ class FundFlowController extends Controller
         // Get counterparty analysis
         $counterparties = $this->getCounterpartyAnalysis($account);
 
-        return Inertia::render(
-            'FundFlow/AccountDetail',
-            [
-                'account'        => $account->load('balances.asset'),
-                'inflows'        => $inflows,
-                'outflows'       => $outflows,
-                'flowBalance'    => $flowBalance,
-                'counterparties' => $counterparties,
-            ]
-        );
+        // Return JSON response instead of Inertia (Inertia not installed)
+        return response()->json([
+            'account'        => $account->load('balances.asset'),
+            'inflows'        => $inflows,
+            'outflows'       => $outflows,
+            'flowBalance'    => $flowBalance,
+            'counterparties' => $counterparties,
+        ]);
     }
 
     /**
@@ -213,16 +209,16 @@ class FundFlowController extends Controller
      */
     private function getFlowStatistics($user, $dateRange, $filters)
     {
-        $stats = DB::table('transactions')
+        $stats = DB::table('transaction_projections')
             ->join('accounts', 'transaction_projections.account_uuid', '=', 'accounts.uuid')
             ->where('accounts.user_uuid', $user->uuid)
             ->whereBetween('transaction_projections.created_at', [$dateRange['start'], $dateRange['end']])
             ->where('transaction_projections.status', 'completed')
             ->select(
-                DB::raw('SUM(CASE WHEN type = "deposit" THEN amount ELSE 0 END) as total_inflow'),
-                DB::raw('SUM(CASE WHEN type = "withdrawal" THEN amount ELSE 0 END) as total_outflow'),
-                DB::raw('SUM(CASE WHEN type = "transfer" AND amount > 0 THEN amount ELSE 0 END) as total_internal'),
-                DB::raw('COUNT(DISTINCT CASE WHEN type = "deposit" THEN DATE(created_at) END) as active_days'),
+                DB::raw('SUM(CASE WHEN transaction_projections.type = "deposit" THEN transaction_projections.amount ELSE 0 END) as total_inflow'),
+                DB::raw('SUM(CASE WHEN transaction_projections.type = "withdrawal" THEN transaction_projections.amount ELSE 0 END) as total_outflow'),
+                DB::raw('SUM(CASE WHEN transaction_projections.type = "transfer" AND transaction_projections.amount > 0 THEN transaction_projections.amount ELSE 0 END) as total_internal'),
+                DB::raw('COUNT(DISTINCT CASE WHEN transaction_projections.type = "deposit" THEN DATE(transaction_projections.created_at) END) as active_days'),
                 DB::raw('COUNT(*) as total_flows')
             );
 
@@ -319,7 +315,7 @@ class FundFlowController extends Controller
      */
     private function getDailyFlowData($user, $dateRange, $filters)
     {
-        $query = DB::table('transactions')
+        $query = DB::table('transaction_projections')
             ->join('accounts', 'transaction_projections.account_uuid', '=', 'accounts.uuid')
             ->where('accounts.user_uuid', $user->uuid)
             ->whereBetween('transaction_projections.created_at', [$dateRange['start'], $dateRange['end']])
@@ -332,8 +328,8 @@ class FundFlowController extends Controller
 
         $dailyData = $query->select(
             DB::raw('DATE(transaction_projections.created_at) as date'),
-            DB::raw('SUM(CASE WHEN type = "deposit" THEN amount ELSE 0 END) as inflow'),
-            DB::raw('SUM(CASE WHEN type = "withdrawal" THEN amount ELSE 0 END) as outflow'),
+            DB::raw('SUM(CASE WHEN transaction_projections.type = "deposit" THEN transaction_projections.amount ELSE 0 END) as inflow'),
+            DB::raw('SUM(CASE WHEN transaction_projections.type = "withdrawal" THEN transaction_projections.amount ELSE 0 END) as outflow'),
             DB::raw('COUNT(*) as transaction_count')
         )
             ->groupBy('date')
@@ -505,11 +501,11 @@ class FundFlowController extends Controller
             ->whereBetween('transaction_projections.created_at', [$dateRange['start'], $dateRange['end']])
             ->where('transaction_projections.status', 'completed')
             ->select(
-                'type',
+                'transaction_projections.type',
                 DB::raw('COUNT(*) as count'),
-                DB::raw('SUM(ABS(amount)) as total_amount')
+                DB::raw('SUM(ABS(transaction_projections.amount)) as total_amount')
             )
-            ->groupBy('type')
+            ->groupBy('transaction_projections.type')
             ->orderBy('total_amount', 'desc')
             ->limit(5)
             ->get();
