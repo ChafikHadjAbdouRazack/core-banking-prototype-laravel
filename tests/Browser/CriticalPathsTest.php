@@ -2,7 +2,10 @@
 
 namespace Tests\Browser;
 
+use App\Models\User;
+use Laravel\Dusk\Browser;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\DuskTestCase;
 
 class CriticalPathsTest extends DuskTestCase
 {
