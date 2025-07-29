@@ -49,6 +49,11 @@ jobs:
           tools: composer:v2
           coverage: none
           
+      - name: Setup Environment
+        run: |
+          cp .env.testing .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --no-dev
         

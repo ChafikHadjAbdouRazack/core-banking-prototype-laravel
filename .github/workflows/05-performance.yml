@@ -68,13 +68,16 @@ jobs:
             ~/.composer/cache
           key: ${{ runner.os }}-performance-${{ hashFiles('**/composer.lock') }}
           
+      - name: Setup Environment
+        run: |
+          cp .env.ci .env
+          echo "APP_KEY set for composer install"
+          
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader --no-dev
           
       - name: Prepare Performance Testing
         run: |
-          cp .env.ci .env
-          php artisan key:generate
           php artisan config:cache
           php artisan route:cache
           php artisan event:cache
@@ -141,6 +144,11 @@ jobs:
             vendor
             ~/.composer/cache
           key: ${{ runner.os }}-benchmark-${{ hashFiles('**/composer.lock') }}
+          
+      - name: Setup Environment
+        run: |
+          cp .env.ci .env
+          echo "APP_KEY set for composer install"
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader --no-dev
@@ -244,6 +252,11 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gmp
           tools: composer:v2
           coverage: none
+          
+      - name: Setup Environment
+        run: |
+          cp .env.ci .env
+          echo "APP_KEY set for composer install"
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader --no-dev
