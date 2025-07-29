@@ -36,13 +36,14 @@ class ProcessCustodianWebhook implements ShouldQueue
 
         if (! $webhook) {
             Log::error('Webhook not found', ['uuid' => $this->webhookUuid]);
+
             return;
         }
 
         try {
             // Process the webhook based on custodian and event type
             Log::info('Processing custodian webhook', [
-                'custodian' => $webhook->custodian,
+                'custodian'  => $webhook->custodian,
                 'event_type' => $webhook->event_type,
                 'webhook_id' => $webhook->id,
             ]);
@@ -52,18 +53,18 @@ class ProcessCustodianWebhook implements ShouldQueue
 
             // Mark webhook as processed
             $webhook->update([
-                'status' => 'processed',
+                'status'       => 'processed',
                 'processed_at' => now(),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to process webhook', [
                 'webhook_id' => $webhook->id,
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
 
             // Mark webhook as failed
             $webhook->update([
-                'status' => 'failed',
+                'status'        => 'failed',
                 'error_message' => $e->getMessage(),
             ]);
 

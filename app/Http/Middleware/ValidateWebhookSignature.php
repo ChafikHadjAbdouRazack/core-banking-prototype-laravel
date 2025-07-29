@@ -14,25 +14,25 @@ class ValidateWebhookSignature
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  Closure(Request): (Response)  $next
      * @param  string  $provider  The webhook provider (stripe, coinbase, paysera, etc.)
      */
     public function handle(Request $request, Closure $next, string $provider): Response
     {
         $isValid = match ($provider) {
-            'stripe' => $this->validateStripeSignature($request),
-            'coinbase' => $this->validateCoinbaseSignature($request),
-            'paysera' => $this->validatePayseraSignature($request),
-            'santander' => $this->validateSantanderSignature($request),
+            'stripe'      => $this->validateStripeSignature($request),
+            'coinbase'    => $this->validateCoinbaseSignature($request),
+            'paysera'     => $this->validatePayseraSignature($request),
+            'santander'   => $this->validateSantanderSignature($request),
             'openbanking' => $this->validateOpenBankingSignature($request),
-            default => false,
+            default       => false,
         };
 
         if (! $isValid) {
             Log::warning('Webhook signature validation failed', [
                 'provider' => $provider,
-                'url' => $request->url(),
-                'ip' => $request->ip(),
+                'url'      => $request->url(),
+                'ip'       => $request->ip(),
             ]);
 
             return response()->json(['error' => 'Invalid signature'], 403);
