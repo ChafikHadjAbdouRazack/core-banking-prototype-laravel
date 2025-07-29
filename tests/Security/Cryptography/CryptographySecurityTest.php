@@ -2,7 +2,7 @@
 
 namespace Tests\Security\Cryptography;
 
-use App\Domain\Account\ValueObjects\Hash;
+use App\Domain\Account\DataObjects\Hash;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
