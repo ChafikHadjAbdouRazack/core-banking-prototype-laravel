@@ -54,7 +54,7 @@ class SecureKeyStorageService
         string $userId,
         array $metadata = []
     ): void {
-        DB::transaction(function () use ($walletId, $seed, $userId, $metadata) {
+        DB::transaction(function () use ($walletId, $seed, $userId) {
             // Generate unique salt for this wallet
             $salt = bin2hex(random_bytes(32));
 
