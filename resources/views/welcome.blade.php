@@ -90,8 +90,8 @@
                         <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
                             Open GCU Account
                         </a>
-                        <a href="#platform" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
-                            Explore Platform
+                        <a href="#features" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
+                            Explore Features
                         </a>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
         </section>
 
         <!-- Key Features Section -->
-        <section class="py-20 bg-white">
+        <section id="features" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">Key Platform Features</h2>
