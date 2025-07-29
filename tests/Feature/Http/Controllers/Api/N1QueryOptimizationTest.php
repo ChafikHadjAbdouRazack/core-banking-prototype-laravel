@@ -59,12 +59,12 @@ class N1QueryOptimizationTest extends TestCase
         // Create baskets with components and values
         for ($i = 1; $i <= 10; $i++) {
             $basket = BasketAsset::create([
-                'code' => 'BSKT' . $i,
-                'name' => 'Test Basket ' . $i,
-                'type' => 'fixed',
+                'code'                => 'BSKT' . $i,
+                'name'                => 'Test Basket ' . $i,
+                'type'                => 'fixed',
                 'rebalance_frequency' => 'never',
-                'is_active' => true,
-                'created_by' => $user->uuid,
+                'is_active'           => true,
+                'created_by'          => $user->uuid,
             ]);
 
             // Create components
@@ -75,9 +75,9 @@ class N1QueryOptimizationTest extends TestCase
 
                 BasketComponent::create([
                     'basket_asset_id' => $basket->id,
-                    'asset_code' => $asset->code,
-                    'weight' => $weight,
-                    'is_active' => true,
+                    'asset_code'      => $asset->code,
+                    'weight'          => $weight,
+                    'is_active'       => true,
                 ]);
             }
 
@@ -85,8 +85,8 @@ class N1QueryOptimizationTest extends TestCase
             for ($j = 1; $j <= 5; $j++) {
                 BasketValue::create([
                     'basket_asset_code' => $basket->code,
-                    'value' => rand(1000, 5000) / 100,
-                    'calculated_at' => now()->subDays($j),
+                    'value'             => rand(1000, 5000) / 100,
+                    'calculated_at'     => now()->subDays($j),
                 ]);
             }
         }
@@ -131,8 +131,8 @@ class N1QueryOptimizationTest extends TestCase
         $asset = Asset::firstOrCreate(
             ['code' => 'BTC'],
             [
-                'name' => 'Bitcoin',
-                'type' => 'crypto',
+                'name'      => 'Bitcoin',
+                'type'      => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ]
@@ -140,24 +140,24 @@ class N1QueryOptimizationTest extends TestCase
 
         // Create account and balances
         $account = Account::create([
-            'uuid' => Str::uuid()->toString(),
-            'name' => 'Test Account',
+            'uuid'      => Str::uuid()->toString(),
+            'name'      => 'Test Account',
             'user_uuid' => $user->uuid,
-            'balance' => 0,
+            'balance'   => 0,
         ]);
 
         // Create 10 different accounts with balances
         for ($i = 0; $i < 10; $i++) {
             $otherAccount = Account::create([
-                'uuid' => Str::uuid()->toString(),
-                'name' => 'Other Account ' . $i,
+                'uuid'      => Str::uuid()->toString(),
+                'name'      => 'Other Account ' . $i,
                 'user_uuid' => $user->uuid,
-                'balance' => 0,
+                'balance'   => 0,
             ]);
 
             AccountBalance::firstOrCreate([
                 'account_uuid' => $otherAccount->uuid,
-                'asset_code' => $asset->code,
+                'asset_code'   => $asset->code,
             ], [
                 'balance' => rand(1000, 10000),
             ]);
@@ -202,32 +202,32 @@ class N1QueryOptimizationTest extends TestCase
         // Create polls
         for ($i = 1; $i <= 10; $i++) {
             $poll = Poll::create([
-                'uuid' => Str::uuid()->toString(),
-                'title' => 'Test Poll ' . $i,
+                'uuid'        => Str::uuid()->toString(),
+                'title'       => 'Test Poll ' . $i,
                 'description' => 'Test poll description',
-                'type' => 'single_choice',
-                'status' => 'active',
-                'options' => [
+                'type'        => 'single_choice',
+                'status'      => 'active',
+                'options'     => [
                     ['value' => 'option1', 'label' => 'Option 1'],
                     ['value' => 'option2', 'label' => 'Option 2'],
                 ],
-                'start_date' => now()->subDay(),
-                'end_date' => now()->addDays(7),
-                'created_by' => $user->uuid,
+                'start_date'             => now()->subDay(),
+                'end_date'               => now()->addDays(7),
+                'created_by'             => $user->uuid,
                 'required_participation' => 0,
-                'allow_multiple_votes' => false,
-                'voting_power_strategy' => null,
-                'execution_strategy' => null,
-                'metadata' => [],
+                'allow_multiple_votes'   => false,
+                'voting_power_strategy'  => null,
+                'execution_strategy'     => null,
+                'metadata'               => [],
             ]);
 
             // Create votes for first 5 polls
             if ($i <= 5) {
                 Vote::create([
-                    'poll_uuid' => $poll->uuid,
-                    'user_uuid' => $user->uuid,
+                    'poll_uuid'        => $poll->uuid,
+                    'user_uuid'        => $user->uuid,
                     'selected_options' => ['option1'],
-                    'voting_power' => rand(100, 1000),
+                    'voting_power'     => rand(100, 1000),
                 ]);
             }
         }
@@ -272,9 +272,9 @@ class N1QueryOptimizationTest extends TestCase
 
         foreach ($queries as $index => $query) {
             dump([
-                'query' => $query['query'],
+                'query'    => $query['query'],
                 'bindings' => $query['bindings'],
-                'time' => $query['time'] ?? null,
+                'time'     => $query['time'] ?? null,
             ]);
         }
     }
