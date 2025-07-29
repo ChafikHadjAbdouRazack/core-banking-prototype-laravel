@@ -66,6 +66,7 @@ class SecurityHeaders
         $fontSources = explode(',', config('security.csp.font_sources', ''));
         $styleSources = explode(',', config('security.csp.style_sources', ''));
         $scriptSources = explode(',', config('security.csp.script_sources', ''));
+        $connectSources = explode(',', config('security.csp.connect_sources', ''));
         $apiEndpoint = config('security.csp.api_endpoint', '');
         $wsEndpoint = config('security.csp.ws_endpoint', '');
 
@@ -76,7 +77,7 @@ class SecurityHeaders
             "style-src 'self' 'unsafe-inline' " . implode(' ', $styleSources),
             "img-src 'self' data: https:",
             "font-src 'self' " . implode(' ', $fontSources),
-            "connect-src 'self' {$apiEndpoint} {$wsEndpoint} https://www.google-analytics.com https://*.google-analytics.com https://stats.g.doubleclick.net https://*.doubleclick.net https://www.googletagmanager.com",
+            "connect-src 'self' {$apiEndpoint} {$wsEndpoint} " . implode(' ', $connectSources),
             "media-src 'none'",
             "object-src 'none'",
             "frame-src 'none'",
@@ -109,7 +110,7 @@ class SecurityHeaders
                 "style-src 'self' 'unsafe-inline' " . implode(' ', $styleSources) . ' ' . str_replace('https://', 'http://', implode(' ', $styleSources)),
                 "img-src 'self' data: https: http:",
                 "font-src 'self' " . implode(' ', $fontSources) . ' ' . str_replace('https://', 'http://', implode(' ', $fontSources)),
-                "connect-src 'self' " . implode(' ', $localConnections) . " {$apiEndpoint} {$wsEndpoint} https://www.google-analytics.com https://*.google-analytics.com https://stats.g.doubleclick.net https://*.doubleclick.net https://www.googletagmanager.com",
+                "connect-src 'self' " . implode(' ', $localConnections) . " {$apiEndpoint} {$wsEndpoint} " . implode(' ', $connectSources),
                 "media-src 'none'",
                 "object-src 'none'",
                 "frame-src 'none'",
