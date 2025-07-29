@@ -166,6 +166,7 @@ Route::get('/cgo/terms', function () {
 })->name('cgo.terms');
 
 Route::post('/cgo/notify', [App\Http\Controllers\CgoController::class, 'notify'])->name('cgo.notify');
+Route::get('/cgo/notify-success', [App\Http\Controllers\CgoController::class, 'notifySuccess'])->name('cgo.notify-success');
 
 // Subscriber routes
 Route::get('/subscriber/unsubscribe/{email}', [App\Http\Controllers\SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
