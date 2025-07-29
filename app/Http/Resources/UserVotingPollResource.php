@@ -25,8 +25,8 @@ class UserVotingPollResource extends JsonResource
             $strategy = app($this->voting_power_strategy ?? AssetWeightedVotingStrategy::class);
             $votingPower = $strategy->calculatePower($user, $this->resource);
 
-            // Check if user has voted
-            $userVote = $this->votes()->where('user_uuid', $user->uuid)->first();
+            // Check if user has voted (using eager-loaded relationship)
+            $userVote = $this->resource->votes->first();
             $hasVoted = $userVote !== null;
         }
 
@@ -69,7 +69,8 @@ class UserVotingPollResource extends JsonResource
      */
     private function calculateParticipation(): float
     {
-        $totalVotingPower = $this->votes()->sum('voting_power');
+        // Use the eager-loaded aggregate value
+        $totalVotingPower = $this->resource->votes_sum_voting_power ?? 0;
         $potentialVotingPower = $this->estimatePotentialVotingPower();
 
         if ($potentialVotingPower === 0) {

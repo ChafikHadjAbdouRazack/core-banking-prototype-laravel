@@ -43,8 +43,17 @@ class UserVotingController extends Controller
      */
     public function getActivePolls(): JsonResponse
     {
+        $user = Auth::user();
+
         $polls = Poll::where('status', PollStatus::ACTIVE)
             ->where('end_date', '>', now())
+            ->with(['votes' => function ($query) use ($user) {
+                if ($user) {
+                    $query->where('user_uuid', $user->uuid);
+                }
+            }])
+            ->withCount('votes')
+            ->withSum('votes', 'voting_power')
             ->orderBy('end_date', 'asc')
             ->get();
 
