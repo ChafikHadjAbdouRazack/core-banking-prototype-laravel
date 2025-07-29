@@ -18,7 +18,13 @@ Resend is the simplest email service to set up for FinAegis. It requires only an
 2. Create a new API key
 3. Copy the key (it starts with `re_`)
 
-### 3. Configure Your Environment
+### 3. Install Resend Package
+
+```bash
+composer require resend/resend-php
+```
+
+### 4. Configure Your Environment
 
 Update your `.env` file:
 
@@ -34,7 +40,7 @@ MAIL_FROM_ADDRESS=noreply@yourdomain.com
 MAIL_FROM_NAME="FinAegis"
 ```
 
-### 4. Verify Your Domain (Optional but Recommended)
+### 5. Verify Your Domain (Optional but Recommended)
 
 For better deliverability:
 1. Go to [Domains](https://resend.com/domains) in Resend
