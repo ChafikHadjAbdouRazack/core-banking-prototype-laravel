@@ -8,8 +8,6 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Basket\Models\BasketAsset;
 use App\Domain\Basket\Models\BasketComponent;
 use App\Domain\Basket\Models\BasketValue;
-use App\Domain\Governance\Enums\PollStatus;
-use App\Domain\Governance\Enums\PollType;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Models\User;
@@ -50,9 +48,9 @@ class N1QueryOptimizationTest extends TestCase
         $assets = [];
         for ($i = 1; $i <= 5; $i++) {
             $assets[] = Asset::create([
-                'code' => 'TST' . $i,
-                'name' => 'Test Asset ' . $i,
-                'type' => 'crypto',
+                'code'      => 'TST' . $i,
+                'name'      => 'Test Asset ' . $i,
+                'type'      => 'crypto',
                 'precision' => 8,
                 'is_active' => true,
             ]);

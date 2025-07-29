@@ -65,7 +65,7 @@ class BasketController extends Controller
     {
         $query = BasketAsset::with([
             'components.asset',
-            'latestValue' // This is already defined as a hasOne relationship
+            'latestValue', // This is already defined as a hasOne relationship
         ]);
 
         if ($request->has('type')) {
