@@ -51,4 +51,3 @@ class SecureKeyStorage extends Model
         return $query->where('storage_type', $type);
     }
 }
-

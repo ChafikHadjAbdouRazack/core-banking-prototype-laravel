@@ -161,7 +161,7 @@ class BlockchainWalletService implements WalletConnectorInterface
         $userId = auth()->id() ?? 'system';
         $encryptedSeed = $this->secureStorage->retrieveEncryptedSeed(
             $walletId,
-            $userId,
+            (string) $userId,
             'generate_address'
         );
 

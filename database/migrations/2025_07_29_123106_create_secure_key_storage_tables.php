@@ -14,7 +14,7 @@ return new class extends Migration
         // Secure key storage table
         Schema::create('secure_key_storage', function (Blueprint $table) {
             $table->id();
-            $table->string('wallet_id')->unique();
+            $table->string('wallet_id');
             $table->text('encrypted_data');
             $table->string('auth_tag'); // For AES-GCM authentication
             $table->string('iv'); // Initialization vector
@@ -27,6 +27,7 @@ return new class extends Migration
             
             $table->index(['wallet_id', 'is_active']);
             $table->index('key_version');
+            // Note: We handle uniqueness of active keys in the application logic
         });
         
         // Key access audit logs

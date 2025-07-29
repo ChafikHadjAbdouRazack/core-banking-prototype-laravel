@@ -59,4 +59,3 @@ class KeyAccessLog extends Model
         return $query->whereBetween('accessed_at', [$startDate, $endDate]);
     }
 }
-

@@ -7,6 +7,7 @@ use App\Domain\Wallet\Connectors\PolygonConnector;
 use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
 use App\Domain\Wallet\Services\BlockchainWalletService;
 use App\Domain\Wallet\Services\KeyManagementService;
+use App\Domain\Wallet\Services\SecureKeyStorageService;
 use App\Workflows\BlockchainDepositActivities;
 use App\Workflows\BlockchainWithdrawalActivities;
 use Illuminate\Support\ServiceProvider;
@@ -65,7 +66,8 @@ class BlockchainServiceProvider extends ServiceProvider
             BlockchainWalletService::class,
             function ($app) {
                 return new BlockchainWalletService(
-                    $app->make(KeyManagementService::class)
+                    $app->make(KeyManagementService::class),
+                    $app->make(SecureKeyStorageService::class)
                 );
             }
         );
