@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Domain\Wallet\Connectors\EthereumConnector;
 use App\Domain\Wallet\Connectors\PolygonConnector;
 use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
-use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Services\BlockchainWalletService;
 use App\Domain\Wallet\Services\KeyManagementService;
 use App\Domain\Wallet\Services\SecureKeyStorageService;
