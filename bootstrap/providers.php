@@ -4,6 +4,7 @@ return [
     App\Providers\AccountServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\BankIntegrationServiceProvider::class,
+    App\Providers\BlockchainServiceProvider::class,
     App\Providers\CacheServiceProvider::class,
     App\Providers\CustodianServiceProvider::class,
     App\Providers\EventServiceProvider::class,
