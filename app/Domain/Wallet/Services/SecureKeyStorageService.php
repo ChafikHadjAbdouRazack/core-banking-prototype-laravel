@@ -54,7 +54,7 @@ class SecureKeyStorageService
         string $userId,
         array $metadata = []
     ): void {
-        DB::transaction(function () use ($walletId, $seed, $userId) {
+        DB::transaction(function () use ($walletId, $seed, $userId, $metadata) {
             // Generate unique salt for this wallet
             $salt = bin2hex(random_bytes(32));
 
@@ -68,13 +68,20 @@ class SecureKeyStorageService
             $encrypted = $this->encryptWithAesGcm($seed, $derivedKey, $iv);
 
             // Store encrypted data
-            // Use wallet_seeds table for backward compatibility
-            DB::table('wallet_seeds')->insert([
+            SecureKeyStorage::create([
                 'wallet_id'      => $walletId,
-                'encrypted_seed' => base64_encode($encrypted['ciphertext'] . '|' . $encrypted['tag'] . '|' . $iv),
+                'encrypted_data' => base64_encode($encrypted['ciphertext']),
+                'auth_tag'       => base64_encode($encrypted['tag']),
+                'iv'             => base64_encode($iv),
+                'salt'           => $salt,
+                'key_version'    => self::CURRENT_KEY_VERSION,
                 'storage_type'   => 'database',
-                'created_at'     => now(),
-                'updated_at'     => now(),
+                'is_active'      => true,
+                'metadata'       => array_merge($metadata, [
+                    'algorithm'  => 'AES-256-GCM',
+                    'created_by' => $userId,
+                    'created_at' => now()->toIso8601String(),
+                ]),
             ]);
 
             // Log the storage event
@@ -96,9 +103,8 @@ class SecureKeyStorageService
         string $userId,
         ?string $purpose = null
     ): string {
-        // Use wallet_seeds table for backward compatibility
-        $storage = DB::table('wallet_seeds')
-            ->where('wallet_id', $walletId)
+        $storage = SecureKeyStorage::where('wallet_id', $walletId)
+            ->where('is_active', true)
             ->first();
 
         if (! $storage) {
@@ -108,25 +114,24 @@ class SecureKeyStorageService
         // Log access attempt
         $this->logKeyAccess($walletId, $userId, 'retrieve', [
             'purpose'     => $purpose,
-            'key_version' => self::CURRENT_KEY_VERSION,
+            'key_version' => $storage->key_version,
         ]);
 
-        // For now, just return the encrypted seed as is
-        // In production, this would properly decrypt
-        $encryptedData = base64_decode($storage->encrypted_seed);
+        // Derive the same key using the stored salt
+        $derivedKey = $this->deriveKey($walletId, $storage->salt);
 
-        // Split the combined data
-        $parts = explode('|', $encryptedData);
-        if (count($parts) !== 3) {
-            // Legacy format, return as is
-            return $storage->encrypted_seed;
-        }
+        // Decrypt the seed
+        $decrypted = $this->decryptWithAesGcm(
+            base64_decode($storage->encrypted_data),
+            $derivedKey,
+            base64_decode($storage->iv),
+            base64_decode($storage->auth_tag)
+        );
 
         // Dispatch event
         Event::dispatch(new KeyAccessed($walletId, $userId, $purpose));
 
-        // For test purposes, return the encrypted seed
-        return $storage->encrypted_seed;
+        return $decrypted;
     }
 
     /**

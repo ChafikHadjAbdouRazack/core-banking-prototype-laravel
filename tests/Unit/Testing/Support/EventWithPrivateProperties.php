@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Testing\Support;
 
-class EventWithPrivateProperties
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
+
+class EventWithPrivateProperties extends ShouldBeStored
 {
     private string $privateData;
 

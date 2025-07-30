@@ -3,17 +3,24 @@
 namespace App\Testing;
 
 use Carbon\Carbon;
-use Spatie\EventSourcing\EventSerializers\EventSerializer;
-use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class TestEventSerializer implements EventSerializer
+/**
+ * Array-based event serializer for testing purposes.
+ * Returns array structure instead of JSON string.
+ */
+class ArrayEventSerializer
 {
-    public function serialize(ShouldBeStored $event): string
+    public function serialize(object $event): array
     {
-        $properties = [];
+        $data = [];
         $reflection = new \ReflectionClass($event);
 
         foreach ($reflection->getProperties() as $property) {
+            // Skip private properties
+            if ($property->isPrivate()) {
+                continue;
+            }
+
             $property->setAccessible(true);
 
             // Skip uninitialized properties
@@ -25,25 +32,25 @@ class TestEventSerializer implements EventSerializer
 
             // Handle Carbon instances
             if ($value instanceof Carbon) {
-                $properties[$property->getName()] = $value->toIso8601String();
+                $data[$property->getName()] = $value->toIso8601String();
             } elseif (is_object($value) && method_exists($value, 'toArray')) {
                 // Handle DataObjects
-                $properties[$property->getName()] = $value->toArray();
+                $data[$property->getName()] = $value->toArray();
             } else {
-                $properties[$property->getName()] = $value;
+                $data[$property->getName()] = $value;
             }
         }
 
-        return json_encode($properties);
+        return [
+            'class' => get_class($event),
+            'data'  => $data,
+        ];
     }
 
-    public function deserialize(
-        string $eventClass,
-        string $json,
-        int $version,
-        ?string $metadata = null
-    ): ShouldBeStored {
-        $data = json_decode($json, true);
+    public function deserialize(array $serialized): object
+    {
+        $eventClass = $serialized['class'];
+        $data = $serialized['data'];
 
         // Create instance without constructor
         $event = (new \ReflectionClass($eventClass))->newInstanceWithoutConstructor();
@@ -60,11 +67,12 @@ class TestEventSerializer implements EventSerializer
                     $typeName = $type->getName();
 
                     // Handle Carbon instances
-                    if ($typeName === Carbon::class) {
+                    if ($typeName === Carbon::class && $value !== null) {
                         $value = Carbon::parse($value);
                     } elseif (is_array($value) && function_exists('hydrate')) {
                         // Handle DataObject hydration
                         try {
+                            /** @var class-string<\JustSteveKing\DataObjects\Contracts\DataObjectContract> $typeName */
                             $value = hydrate($typeName, $value);
                         } catch (\Exception $e) {
                             // If hydration fails, try to create instance if it has fromArray method
@@ -98,6 +106,18 @@ class TestEventSerializer implements EventSerializer
             if ($reflection->hasProperty($property)) {
                 $prop = $reflection->getProperty($property);
                 $prop->setAccessible(true);
+
+                // Handle type hints
+                $type = $prop->getType();
+                if ($type && $type instanceof \ReflectionNamedType && ! $type->isBuiltin()) {
+                    $typeName = $type->getName();
+
+                    // Handle Carbon instances
+                    if ($typeName === Carbon::class && $value !== null) {
+                        $value = Carbon::parse($value);
+                    }
+                }
+
                 $prop->setValue($instance, $value);
             }
         }

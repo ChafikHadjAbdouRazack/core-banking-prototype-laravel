@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Testing;
 
-use App\Testing\TestEventSerializer;
+use App\Testing\ArrayEventSerializer;
 use Carbon\Carbon;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -12,12 +12,12 @@ use Tests\Unit\Testing\Support\SimpleTestEvent;
 
 class TestEventSerializerTest extends DomainTestCase
 {
-    private TestEventSerializer $serializer;
+    private ArrayEventSerializer $serializer;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->serializer = new TestEventSerializer();
+        $this->serializer = new ArrayEventSerializer();
     }
 
     #[Test]
@@ -48,8 +48,8 @@ class TestEventSerializerTest extends DomainTestCase
 
         $this->assertEquals(EventWithCarbonDate::class, $serialized['class']);
         $this->assertEquals('Date Event', $serialized['data']['title']);
-        $this->assertEquals('2024-01-15T10:30:00.000000Z', $serialized['data']['createdAt']);
-        $this->assertEquals('2024-01-16T15:45:30.000000Z', $serialized['data']['updatedAt']);
+        $this->assertEquals('2024-01-15T10:30:00+00:00', $serialized['data']['createdAt']);
+        $this->assertEquals('2024-01-16T15:45:30+00:00', $serialized['data']['updatedAt']);
     }
 
     #[Test]
@@ -109,8 +109,8 @@ class TestEventSerializerTest extends DomainTestCase
             'class' => EventWithCarbonDate::class,
             'data'  => [
                 'title'     => 'Restored Date Event',
-                'createdAt' => '2024-02-20T14:30:00.000000Z',
-                'updatedAt' => '2024-02-21T09:15:00.000000Z',
+                'createdAt' => '2024-02-20T14:30:00+00:00',
+                'updatedAt' => '2024-02-21T09:15:00+00:00',
             ],
         ];
 
@@ -149,7 +149,7 @@ class TestEventSerializerTest extends DomainTestCase
             'class' => EventWithCarbonDate::class,
             'data'  => [
                 'title'     => 'Null Date Event',
-                'createdAt' => '2024-03-01T00:00:00.000000Z',
+                'createdAt' => '2024-03-01T00:00:00+00:00',
                 'updatedAt' => null,
             ],
         ];
@@ -170,7 +170,7 @@ class TestEventSerializerTest extends DomainTestCase
             'value' => 123,
         ];
 
-        $event = TestEventSerializer::fromArray(SimpleTestEvent::class, $data);
+        $event = ArrayEventSerializer::fromArray(SimpleTestEvent::class, $data);
 
         $this->assertInstanceOf(SimpleTestEvent::class, $event);
         $this->assertEquals('Array Event', $event->name);
@@ -182,11 +182,11 @@ class TestEventSerializerTest extends DomainTestCase
     {
         $data = [
             'title'     => 'Carbon Array Event',
-            'createdAt' => '2024-04-10T12:00:00.000000Z',
-            'updatedAt' => '2024-04-11T13:30:00.000000Z',
+            'createdAt' => '2024-04-10T12:00:00+00:00',
+            'updatedAt' => '2024-04-11T13:30:00+00:00',
         ];
 
-        $event = TestEventSerializer::fromArray(EventWithCarbonDate::class, $data);
+        $event = ArrayEventSerializer::fromArray(EventWithCarbonDate::class, $data);
 
         $this->assertInstanceOf(EventWithCarbonDate::class, $event);
         $this->assertEquals('Carbon Array Event', $event->title);
@@ -206,7 +206,7 @@ class TestEventSerializerTest extends DomainTestCase
             'typedProperty'   => 'string value',
         ];
 
-        $event = TestEventSerializer::fromArray($className, $data);
+        $event = ArrayEventSerializer::fromArray($className, $data);
 
         $this->assertEquals('any value', $event->untypedProperty);
         $this->assertEquals('string value', $event->typedProperty);
@@ -251,7 +251,7 @@ class TestEventSerializerTest extends DomainTestCase
                 'normalProperty' => 'normal',
             ];
 
-            $event = TestEventSerializer::fromArray($className, $data);
+            $event = ArrayEventSerializer::fromArray($className, $data);
 
             $this->assertEquals('string value', $event->unionProperty);
             $this->assertEquals('normal', $event->normalProperty);
