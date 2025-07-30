@@ -18,7 +18,7 @@ it('can warm up cache for all accounts', function () {
         ->withArgs(function ($uuid) {
             return is_string($uuid) || (is_object($uuid) && method_exists($uuid, '__toString'));
         })
-        ->atLeast(1) // Allow any number of calls since chunking affects this
+        ->atLeast()->times(1) // Allow any number of calls since chunking affects this
         ->andReturn(true);
 
     $this->app->instance(CacheManager::class, $cacheManager);

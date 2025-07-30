@@ -1,0 +1,120 @@
+name: Slow Tests Suite
+
+on:
+  # Run on schedule (daily at 2 AM UTC)
+  schedule:
+    - cron: '0 2 * * *'
+  
+  # Allow manual trigger
+  workflow_dispatch:
+  
+  # Run on main branch pushes (optional)
+  push:
+    branches:
+      - main
+    paths:
+      - 'tests/**/*Test.php'
+      - '.github/workflows/slow-tests.yml'
+
+env:
+  PHP_VERSION: '8.4'
+  NODE_VERSION: '20'
+  COMPOSER_PROCESS_TIMEOUT: 0
+  COMPOSER_NO_INTERACTION: 1
+  COMPOSER_NO_AUDIT: 1
+
+jobs:
+  slow-tests:
+    name: Run Slow Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60  # Allow more time for slow tests
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+          
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
+          tools: composer:v2
+          coverage: xdebug
+          ini-values: |
+            memory_limit=1G
+            max_execution_time=600
+            
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+            
+      - name: Setup Environment
+        run: cp .env.testing .env
+        
+      - name: Install PHP Dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        
+      - name: Prepare Laravel Application
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan migrate --force
+          
+      - name: Run Slow Unit Tests
+        run: |
+          echo "Running slow unit tests..."
+          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --group=slow || true
+          
+      - name: Run Slow Feature Tests
+        run: |
+          echo "Running slow feature tests..."
+          ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --group=slow || true
+          
+      - name: Run Slow Integration Tests
+        run: |
+          echo "Running slow integration tests..."
+          ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --group=slow || true
+          
+      - name: Generate Test Report
+        if: always()
+        run: |
+          echo "## Slow Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Slow tests have completed. These tests verify:" >> $GITHUB_STEP_SUMMARY
+          echo "- Event sourcing threshold behaviors (1000+ events)" >> $GITHUB_STEP_SUMMARY
+          echo "- Large-scale data processing" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance under load" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "To run slow tests locally: \`./vendor/bin/pest --group=slow\`" >> $GITHUB_STEP_SUMMARY

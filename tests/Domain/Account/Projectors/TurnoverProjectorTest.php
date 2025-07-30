@@ -2,13 +2,33 @@
 
 namespace Tests\Domain\Account\Projectors;
 
+use App\Domain\Account\Aggregates\TransactionAggregate;
+use App\Domain\Account\DataObjects\Money;
+use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\Turnover;
+use App\Domain\Account\Repositories\TurnoverRepository;
 use App\Domain\Account\Utils\ValidatesHash;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TurnoverProjectorTest extends TestCase
 {
     use ValidatesHash;
+
+    protected Account $account;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Create a unique account for each test to avoid conflicts
+        $this->account = Account::factory()->create([
+            'uuid' => (string) Str::uuid(),
+            'name' => 'test-turnover-' . Str::random(8),
+        ]);
+    }
 
     #[Test]
     public function test_calculate_today_turnover(): void
@@ -102,6 +122,6 @@ class TurnoverProjectorTest extends TestCase
 
     private function money(int $amount): Money
     {
-        return hydrate(Money::class, ['amount' => $amount]);
+        return new Money($amount);
     }
 }
