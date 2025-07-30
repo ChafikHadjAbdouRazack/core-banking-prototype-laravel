@@ -30,7 +30,9 @@ trait TracksTestPerformance
     protected function trackTestPerformance(): void
     {
         $executionTime = microtime(true) - $this->testStartTime;
-        $testName = $this->getName();
+
+        // Get test name - compatible with both PHPUnit and Pest
+        $testName = $this->getTestName();
 
         // Log slow tests
         if ($executionTime > $this->slowTestThreshold) {
@@ -39,6 +41,36 @@ trait TracksTestPerformance
 
         // Store metrics for reporting
         $this->storeTestMetrics($testName, $executionTime);
+    }
+
+    /**
+     * Get the current test name in a way that works with both PHPUnit and Pest.
+     */
+    protected function getTestName(): string
+    {
+        // For Pest tests, we need to get the test name differently
+        if (defined('PEST_VERSION')) {
+            // In Pest, we can use the test description from the global test function
+            $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            foreach ($backtrace as $frame) {
+                if (isset($frame['function']) && $frame['function'] === 'test') {
+                    // Try to extract test description from the test closure
+                    return 'Pest Test';
+                }
+            }
+            // Fallback: use the test file and line number
+            $reflection = new \ReflectionClass($this);
+
+            return basename($reflection->getFileName()) . ':' . __LINE__;
+        }
+
+        // For PHPUnit tests, use the standard getName() method
+        if (method_exists($this, 'getName')) {
+            return $this->getName();
+        }
+
+        // Fallback: use class name
+        return get_class($this);
     }
 
     /**
