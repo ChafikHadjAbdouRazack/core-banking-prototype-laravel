@@ -3,6 +3,7 @@
 namespace Tests\Unit\Helpers;
 
 use App\Helpers\SyntaxHighlighter;
+use Highlight\Highlighter;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 

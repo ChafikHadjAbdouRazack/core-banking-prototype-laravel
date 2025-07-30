@@ -2,6 +2,10 @@
 
 namespace Tests\Unit\Listeners;
 
+use App\Domain\Custodian\Events\CustodianHealthChanged;
+use App\Domain\Custodian\Listeners\HandleCustodianHealthChange;
+use App\Domain\Custodian\Services\BankAlertingService;
+use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -24,9 +28,9 @@ class HandleCustodianHealthChangeTest extends TestCase
     {
         $event = new CustodianHealthChanged(
             custodian: 'test-custodian',
-            previousHealth: 'healthy',
-            currentHealth: 'unhealthy',
-            metadata: ['reason' => 'Connection timeout']
+            previousStatus: 'healthy',
+            newStatus: 'unhealthy',
+            timestamp: new \DateTimeImmutable()
         );
 
         $this->alertingService->shouldReceive('handleHealthChange')
@@ -50,9 +54,9 @@ class HandleCustodianHealthChangeTest extends TestCase
         foreach ($healthStates as [$previous, $current]) {
             $event = new CustodianHealthChanged(
                 custodian: 'test-custodian',
-                previousHealth: $previous,
-                currentHealth: $current,
-                metadata: []
+                previousStatus: $previous,
+                newStatus: $current,
+                timestamp: new \DateTimeImmutable()
             );
 
             $this->alertingService->shouldReceive('handleHealthChange')
@@ -66,23 +70,25 @@ class HandleCustodianHealthChangeTest extends TestCase
     #[Test]
     public function test_failed_method_logs_error(): void
     {
+        Log::spy();
+
         $event = new CustodianHealthChanged(
             custodian: 'failed-custodian',
-            previousHealth: 'healthy',
-            currentHealth: 'unhealthy',
-            metadata: ['test' => 'data']
+            previousStatus: 'healthy',
+            newStatus: 'unhealthy',
+            timestamp: new \DateTimeImmutable()
         );
 
         $exception = new \RuntimeException('Alert service unavailable');
 
-        Log::shouldReceive('error')
+        $this->listener->failed($event, $exception);
+
+        Log::shouldHaveReceived('error')
             ->once()
             ->with('Failed to handle custodian health change', [
                 'custodian' => 'failed-custodian',
                 'error'     => 'Alert service unavailable',
             ]);
-
-        $this->listener->failed($event, $exception);
     }
 
     #[Test]
