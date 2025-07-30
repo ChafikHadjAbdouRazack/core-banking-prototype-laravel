@@ -40,14 +40,14 @@ class AppServiceProvider extends ServiceProvider
             if (str_starts_with($modelName, 'App\\Domain\\')) {
                 // Replace App\ with Database\Factories\ and append Factory
                 $factoryName = str_replace('App\\', 'Database\\Factories\\', $modelName) . 'Factory';
-                
+
                 /** @var class-string<Factory> */
                 return $factoryName;
             }
 
             // For non-domain models, use the default pattern
             $modelBaseName = class_basename($modelName);
-            
+
             /** @var class-string<Factory> */
             return 'Database\\Factories\\' . $modelBaseName . 'Factory';
         });
