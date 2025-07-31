@@ -30,9 +30,8 @@ class BasketAccountService
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
         /** @var BasketAsset|null $basket */
-        $basket = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-        $$basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+        $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -107,9 +106,8 @@ class BasketAccountService
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        $basket = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-        $$basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+        $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -143,7 +141,7 @@ class BasketAccountService
                 $componentAmounts = $this->calculateComponentAmounts($basket, $amount);
 
                 // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
-                $accountUuid = AccountUuid::fromString($account->uuid);
+                $accountUuid = AccountUuid::fromString((string) $account->uuid);
 
                 // Subtract basket balance using WalletService
                 $this->walletService->withdraw($accountUuid, $basketCode, $amount);
@@ -188,9 +186,8 @@ class BasketAccountService
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        $basket = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-        $$basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+        $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");
@@ -227,7 +224,7 @@ class BasketAccountService
                 }
 
                 // Use WalletService for proper Service → Workflow → Activity → Aggregate architecture
-                $accountUuid = AccountUuid::fromString($account->uuid);
+                $accountUuid = AccountUuid::fromString((string) $account->uuid);
 
                 // Subtract component balances using WalletService
                 foreach ($requiredAmounts as $assetCode => $requiredAmount) {
@@ -292,8 +289,8 @@ class BasketAccountService
                 continue;
             }
 
-            /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-            $$basket = BasketAsset::where('code', $balance->asset_code)->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+            $basket = BasketAsset::where('code', $balance->asset_code)->first();
             if (! $basket) {
                 continue;
             }
@@ -329,9 +326,8 @@ class BasketAccountService
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        $basket = null;
-        /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-        $$basket = BasketAsset::where('code', $basketCode)->first();
+        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+        $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
             throw new \Exception("Basket not found: {$basketCode}");

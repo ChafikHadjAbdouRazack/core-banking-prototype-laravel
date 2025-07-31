@@ -13,6 +13,7 @@ use App\Domain\Basket\Services\BasketRebalancingService;
 use App\Domain\Basket\Services\BasketValueCalculationService;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 
@@ -26,7 +27,7 @@ class BasketRebalancingServiceTest extends ServiceTestCase
     {
         parent::setUp();
 
-        $this->valueCalculationService = \Mockery::mock(BasketValueCalculationService::class);
+        $this->valueCalculationService = Mockery::mock(BasketValueCalculationService::class);
         $this->service = new BasketRebalancingService($this->valueCalculationService);
 
         Event::fake();
@@ -34,7 +35,7 @@ class BasketRebalancingServiceTest extends ServiceTestCase
 
     protected function tearDown(): void
     {
-        \Mockery::close();
+        Mockery::close();
         parent::tearDown();
     }
 
@@ -464,7 +465,7 @@ class BasketRebalancingServiceTest extends ServiceTestCase
             ->once()
             ->with(
                 Mockery::pattern('/Failed to rebalance basket TEST_BASKET_/'),
-                \Mockery::any()
+                Mockery::any()
             );
 
         // Rebalance all
