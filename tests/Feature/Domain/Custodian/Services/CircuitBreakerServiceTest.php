@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
+use App\Domain\Custodian\Exceptions\CircuitOpenException;
+use App\Domain\Custodian\Services\CircuitBreakerService;
+use Illuminate\Support\Facades\Cache;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

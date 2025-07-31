@@ -4,25 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Compliance\Activities;
 
+use App\Domain\Compliance\Activities\KycVerificationActivity;
+use App\Domain\Compliance\Services\KycService;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Workflow\Activity;
 
 class KycVerificationActivityTest extends TestCase
 {
     #[Test]
     public function test_activity_extends_workflow_activity()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
-        $this->assertInstanceOf(\Workflow\Activity::class, $activity);
+        $this->assertInstanceOf(Activity::class, $activity);
     }
 
     #[Test]
     public function test_execute_method_validates_required_parameters()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -34,7 +37,7 @@ class KycVerificationActivityTest extends TestCase
     #[Test]
     public function test_execute_method_validates_invalid_action()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
         $this->expectException(\InvalidArgumentException::class);
@@ -56,7 +59,7 @@ class KycVerificationActivityTest extends TestCase
         // Create a user to avoid ModelNotFoundException
         $user = User::factory()->create(['uuid' => 'test-uuid']);
 
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
         $activity->execute([
@@ -69,7 +72,7 @@ class KycVerificationActivityTest extends TestCase
     #[Test]
     public function test_execute_method_has_correct_signature()
     {
-        $kycService = Mockery::mock(KycService::class);
+        $kycService = \Mockery::mock(KycService::class);
         $activity = new KycVerificationActivity($kycService);
 
         $reflection = new \ReflectionClass($activity);

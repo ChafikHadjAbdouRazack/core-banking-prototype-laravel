@@ -3,8 +3,9 @@
 namespace Tests\Unit\Testing\Support;
 
 use Carbon\Carbon;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class EventWithCarbonDate
+class EventWithCarbonDate extends ShouldBeStored
 {
     public string $title;
 

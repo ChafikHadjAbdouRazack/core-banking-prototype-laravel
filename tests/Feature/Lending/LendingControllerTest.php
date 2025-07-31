@@ -3,6 +3,8 @@
 namespace Tests\Feature\Lending;
 
 use App\Domain\Account\Models\Account;
+use App\Domain\Lending\Enums\EmploymentStatus;
+use App\Domain\Lending\Enums\LoanPurpose;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
@@ -15,7 +17,7 @@ class LendingControllerTest extends ControllerTestCase
 
     protected User $user;
 
-    protected string $accountId;
+    protected Account $account;
 
     protected function setUp(): void
     {
@@ -25,17 +27,12 @@ class LendingControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
 
         // Create account for the user
-        $this->accountId = (string) Str::uuid();
-        Account::create(
-            $this->accountId,
-            new AccountData(
-                userId: $this->user->id,
-                name: 'Test Account',
-                type: AccountType::PERSONAL,
-                status: AccountStatus::ACTIVE,
-                metadata: []
-            )
-        )->deposit('50000.00', 'USD', 'Initial deposit')->persist();
+        $this->account = Account::create([
+            'uuid'      => (string) Str::uuid(),
+            'user_uuid' => $this->user->uuid,
+            'name'      => 'Test Account',
+            'balance'   => 5000000, // 50000.00 in cents
+        ]);
     }
 
     #[Test]
@@ -119,7 +116,7 @@ class LendingControllerTest extends ControllerTestCase
         \App\Models\Loan::create([
             'id'                    => $loanId,
             'application_id'        => Str::uuid(),
-            'borrower_account_uuid' => $this->accountId,
+            'borrower_account_uuid' => $this->account->uuid,
             'lender_account_uuid'   => null,
             'amount'                => '10000.00',
             'interest_rate'         => 8.5,
@@ -144,7 +141,7 @@ class LendingControllerTest extends ControllerTestCase
         \App\Models\Loan::create([
             'id'                    => $loanId,
             'application_id'        => Str::uuid(),
-            'borrower_account_uuid' => $this->accountId,
+            'borrower_account_uuid' => $this->account->uuid,
             'lender_account_uuid'   => null,
             'amount'                => '10000.00',
             'interest_rate'         => 8.5,

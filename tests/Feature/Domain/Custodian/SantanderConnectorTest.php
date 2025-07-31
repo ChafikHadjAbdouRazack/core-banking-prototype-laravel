@@ -19,9 +19,12 @@ beforeEach(function () {
     ]);
 });
 
-it('throws exception when API credentials are missing', function () {
-    expect(fn () => new SantanderConnector([]))
-        ->toThrow(InvalidArgumentException::class, 'Santander api_key and api_secret are required');
+it('allows empty credentials in non-production environment', function () {
+    // In non-production environments, empty credentials are allowed
+    $connector = new SantanderConnector([]);
+
+    expect($connector)->toBeInstanceOf(SantanderConnector::class);
+    expect($connector->getName())->toBe('Santander');
 });
 
 it('can be instantiated with valid config', function () {

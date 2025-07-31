@@ -117,7 +117,8 @@ class SecureKeyStorageServiceTest extends TestCase
         $userId = 'user-456';
 
         // Act & Assert
-        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(KeyManagementException::class);
+        $this->expectExceptionMessage("Seed not found for wallet: {$walletId}");
         $this->service->retrieveEncryptedSeed($walletId, $userId);
     }
 

@@ -63,7 +63,7 @@ it('can test controller class existence', function () {
 
 // Test enum classes
 it('can test enum values and methods', function () {
-    $userRoles = App\Values\UserRoles::cases();
+    $userRoles = App\Domain\User\Values\UserRoles::cases();
     $eventQueues = App\Values\EventQueues::cases();
 
     expect($userRoles)->toBeArray();
@@ -71,7 +71,7 @@ it('can test enum values and methods', function () {
     expect(count($userRoles))->toBeGreaterThan(0);
     expect(count($eventQueues))->toBeGreaterThan(0);
 
-    expect(App\Values\UserRoles::ADMIN->value)->toBe('admin');
+    expect(App\Domain\User\Values\UserRoles::ADMIN->value)->toBe('admin');
     expect(App\Values\EventQueues::EVENTS->value)->toBe('events');
 });
 

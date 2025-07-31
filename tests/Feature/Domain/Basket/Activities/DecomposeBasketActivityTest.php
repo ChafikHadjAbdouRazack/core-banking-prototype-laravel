@@ -4,24 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Basket\Activities;
 
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Basket\Activities\DecomposeBasketActivity;
+use App\Domain\Basket\Activities\DecomposeBasketBusinessActivity;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
+use Workflow\Activity;
 
 class DecomposeBasketActivityTest extends TestCase
 {
     #[Test]
     public function test_activity_extends_workflow_activity()
     {
-        $basketService = Mockery::mock(DecomposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(DecomposeBasketBusinessActivity::class);
         $activity = new DecomposeBasketActivity($basketService);
 
-        $this->assertInstanceOf(\Workflow\Activity::class, $activity);
+        $this->assertInstanceOf(Activity::class, $activity);
     }
 
     #[Test]
     public function test_execute_method_calls_business_activity()
     {
-        $basketService = Mockery::mock(DecomposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(DecomposeBasketBusinessActivity::class);
         $activity = new DecomposeBasketActivity($basketService);
 
         $accountUuid = new AccountUuid('test-uuid');
@@ -42,7 +46,7 @@ class DecomposeBasketActivityTest extends TestCase
     #[Test]
     public function test_execute_method_has_correct_signature()
     {
-        $basketService = Mockery::mock(DecomposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(DecomposeBasketBusinessActivity::class);
         $activity = new DecomposeBasketActivity($basketService);
 
         $reflection = new \ReflectionClass($activity);
@@ -67,7 +71,7 @@ class DecomposeBasketActivityTest extends TestCase
     #[Test]
     public function test_execute_method_returns_business_activity_result()
     {
-        $basketService = Mockery::mock(DecomposeBasketBusinessActivity::class);
+        $basketService = \Mockery::mock(DecomposeBasketBusinessActivity::class);
         $activity = new DecomposeBasketActivity($basketService);
 
         $accountUuid = new AccountUuid('test-uuid');

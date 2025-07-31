@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Account\Services;
 
+use App\Domain\Account\DataObjects\Account as AccountDataObject;
+use App\Domain\Account\DataObjects\AccountUuid;
+use App\Domain\Account\Services\AccountService;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;

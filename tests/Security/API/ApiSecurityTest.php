@@ -348,10 +348,11 @@ class ApiSecurityTest extends DomainTestCase
     #[Test]
     public function test_api_error_messages_dont_leak_information()
     {
-        // Skip this test in development/testing environments where debug is enabled
-        if (config('app.debug')) {
-            $this->markTestSkipped('Debug mode is enabled - error messages will contain sensitive information');
-        }
+        // Test behavior depends on debug mode
+        $debugMode = config('app.debug');
+
+        // Temporarily disable debug mode for this test
+        config(['app.debug' => false]);
 
         $probes = [
             '/api/../../etc/passwd',
@@ -379,6 +380,9 @@ class ApiSecurityTest extends DomainTestCase
             $this->assertStringNotContainsString('MySQL', $content);
             $this->assertStringNotContainsString('PostgreSQL', $content);
         }
+
+        // Restore original debug mode
+        config(['app.debug' => $debugMode]);
     }
 
     #[Test]
@@ -400,9 +404,9 @@ class ApiSecurityTest extends DomainTestCase
             if ($response->headers->has('Access-Control-Allow-Origin')) {
                 $allowedOrigin = $response->headers->get('Access-Control-Allow-Origin');
 
-                // Should not allow all origins - skip if CORS is configured to allow all
+                // Should not allow all origins
                 if ($allowedOrigin === '*') {
-                    $this->markTestIncomplete('CORS is configured to allow all origins - this is insecure for production');
+                    $this->fail('CORS is configured to allow all origins - this is insecure for production');
                 }
 
                 // Should not allow suspicious origins

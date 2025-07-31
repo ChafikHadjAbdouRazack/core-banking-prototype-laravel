@@ -12,7 +12,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
@@ -37,9 +36,9 @@ class ComplianceControllerTest extends ControllerTestCase
         $this->user = User::factory()->create();
 
         // Mock compliance services
-        $this->mockKycService = Mockery::mock(KycService::class);
-        $this->mockAmlService = Mockery::mock(AmlService::class);
-        $this->mockRiskService = Mockery::mock(RiskAssessmentService::class);
+        $this->mockKycService = \Mockery::mock(KycService::class);
+        $this->mockAmlService = \Mockery::mock(AmlService::class);
+        $this->mockRiskService = \Mockery::mock(RiskAssessmentService::class);
 
         $this->app->instance(KycService::class, $this->mockKycService);
         $this->app->instance(AmlService::class, $this->mockAmlService);
@@ -50,7 +49,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 
@@ -141,7 +140,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $this->mockKycService
             ->shouldReceive('startVerification')
-            ->with($this->user->uuid, 'basic', Mockery::type('array'))
+            ->with($this->user->uuid, 'basic', \Mockery::type('array'))
             ->once()
             ->andReturn([
                 'verification_id' => 'kyc_123',
@@ -466,7 +465,7 @@ class ComplianceControllerTest extends ControllerTestCase
 
         $this->mockRiskService
             ->shouldReceive('checkTransactionEligibility')
-            ->with($this->user->uuid, Mockery::type('array'))
+            ->with($this->user->uuid, \Mockery::type('array'))
             ->once()
             ->andReturn([
                 'eligible'                         => true,

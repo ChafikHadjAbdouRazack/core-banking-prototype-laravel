@@ -7,11 +7,32 @@
 
 **Open Source Core Banking Prototype Demonstrating Modern Banking Architecture**
 
+🌐 **[Live Demo Available at https://finaegis.org](https://finaegis.org)** - Experience the prototype in action!
+
 FinAegis is a comprehensive prototype of a core banking platform built with event sourcing, domain-driven design, and modern banking patterns. It demonstrates the technical architecture for innovative financial products including the **Global Currency Unit (GCU)** concept - a democratic digital currency vision backed by real banks.
 
-📖 **See [GCU_VISION.md](GCU_VISION.md) for the complete platform vision and GCU implementation details.**
+📖 **See [GCU Vision Documentation](docs/01-VISION/GCU_VISION.md) for the complete platform vision and GCU implementation details.**
 
 **🤖 AI-Friendly Architecture**: This project is designed for AI-assisted development. The comprehensive documentation, domain-driven design, and well-structured patterns make it ideal for AI coding assistants (Claude Code, GitHub Copilot, Cursor) to understand and contribute effectively.
+
+## 🔗 Quick Links
+
+- 🌐 **[Live Demo](https://finaegis.org)** - Try the prototype
+- 📚 **[Documentation](docs/README.md)** - Complete documentation index
+- 🚀 **[Quick Start](#-quick-start)** - Get started immediately
+- 💻 **[API Reference](docs/04-API/REST_API_REFERENCE.md)** - REST API v2.0
+- 🎯 **[Roadmap](docs/01-VISION/ROADMAP.md)** - Development phases
+
+## 🌐 Live Demo
+
+**Experience the FinAegis prototype in action: [https://finaegis.org](https://finaegis.org)**
+
+The live demo showcases:
+- Multi-asset banking operations
+- Global Currency Unit (GCU) concept demonstration
+- Admin dashboard (request demo credentials)
+- API documentation and interactive testing
+- Complete feature demonstrations
 
 ## 🚧 Prototype Status
 
@@ -483,17 +504,49 @@ The platform includes a powerful admin dashboard built with Filament:
     - Account growth tracking over time
     - System health monitoring with performance metrics
 
-### Additional Resources
+### 📚 Documentation Index
 
-- **[Development Guide](DEVELOPMENT.md)**: Complete developer documentation
-- **[System Architecture](docs/02-ARCHITECTURE/ARCHITECTURE.md)**: Technical architecture overview
-- **[Workflow Patterns](WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
-- **[API Implementation](API_IMPLEMENTATION.md)**: Complete API layer documentation
-- **[BIAN API Documentation](BIAN_API_DOCUMENTATION.md)**: BIAN-compliant API following banking industry standards
-- **[Admin Dashboard Guide](docs/04-TECHNICAL/ADMIN_DASHBOARD.md)**: Comprehensive admin interface documentation
-- **[Webhook Integration Guide](docs/04-TECHNICAL/WEBHOOK_INTEGRATION.md)**: Webhook configuration and integration documentation
-- **[Business Team Management](docs/BUSINESS_TEAM_MANAGEMENT.md)**: Multi-tenant architecture and team management documentation
-- **[CGO Documentation](docs/CGO_DOCUMENTATION.md)**: Continuous Growth Offering implementation guide
+Our comprehensive documentation is organized into the following sections:
+
+#### Strategic & Vision Documents
+- **[Platform Vision](docs/01-VISION/UNIFIED_PLATFORM_VISION.md)**: Complete platform strategy and sub-products
+- **[GCU Vision](docs/01-VISION/GCU_VISION.md)**: Global Currency Unit detailed concept
+- **[Development Roadmap](docs/01-VISION/ROADMAP.md)**: Implementation phases and timeline
+- **[Banking Requirements](docs/01-VISION/FINANCIAL_INSTITUTION_REQUIREMENTS.md)**: Partner bank integration requirements
+
+#### Technical Architecture
+- **[System Architecture](docs/02-ARCHITECTURE/ARCHITECTURE.md)**: Core technical architecture
+- **[Multi-Asset Architecture](docs/02-ARCHITECTURE/MULTI_ASSET_ARCHITECTURE.md)**: Multi-currency implementation
+- **[Workflow Patterns](docs/02-ARCHITECTURE/WORKFLOW_PATTERNS.md)**: Saga patterns and best practices
+
+#### Features & Implementation
+- **[Features Overview](docs/03-FEATURES/FEATURES.md)**: Complete feature reference
+- **[Business Team Management](docs/03-FEATURES/BUSINESS_TEAM_MANAGEMENT.md)**: Multi-tenant architecture
+- **[CGO Documentation](docs/05-TECHNICAL/CGO_DOCUMENTATION.md)**: Continuous Growth Offering
+
+#### API Documentation
+- **[REST API Reference](docs/04-API/REST_API_REFERENCE.md)**: Complete v2.0 API documentation
+- **[BIAN API Documentation](docs/04-API/BIAN_API_DOCUMENTATION.md)**: BIAN-compliant banking APIs
+- **[API Implementation](docs/07-IMPLEMENTATION/API_IMPLEMENTATION.md)**: API implementation details
+- **[Webhook Integration](docs/04-API/WEBHOOK_INTEGRATION.md)**: Real-time event notifications
+
+#### Development Resources
+- **[Development Guide](docs/06-DEVELOPMENT/DEVELOPMENT.md)**: Complete developer setup
+- **[Testing Guide](docs/06-DEVELOPMENT/TESTING_GUIDE.md)**: Comprehensive testing documentation
+- **[AI Assistant Guide](docs/06-DEVELOPMENT/CLAUDE.md)**: Guide for AI coding assistants
+- **[Demo Setup](docs/06-DEVELOPMENT/DEMO.md)**: Demo environment configuration
+
+#### Administration
+- **[Admin Dashboard Guide](docs/05-TECHNICAL/ADMIN_DASHBOARD.md)**: Filament admin panel documentation
+- **[Database Schema](docs/05-TECHNICAL/DATABASE_SCHEMA.md)**: Complete database structure
+
+#### User Guides
+- **[Getting Started](docs/11-USER-GUIDES/GETTING-STARTED.md)**: User onboarding guide
+- **[Liquidity Pools Guide](docs/05-USER-GUIDES/LIQUIDITY_POOLS_GUIDE.md)**: DeFi liquidity management
+- **[P2P Lending Guide](docs/05-USER-GUIDES/P2P_LENDING_GUIDE.md)**: Peer-to-peer lending platform
+- **[Stablecoin Guide](docs/05-USER-GUIDES/STABLECOIN_GUIDE.md)**: Stablecoin minting and management
+
+For a complete documentation index, see **[Documentation Overview](docs/README.md)**.
 
 ### API Endpoints
 
@@ -680,7 +733,7 @@ We welcome contributions from the community, including **AI coding assistants an
 
 ## 📈 Roadmap
 
-See our comprehensive [Development Roadmap](ROADMAP.md) for detailed implementation phases.
+See our comprehensive [Development Roadmap](docs/01-VISION/ROADMAP.md) for detailed implementation phases.
 
 ### Current Status: Prototype Demonstration
 The FinAegis prototype demonstrates comprehensive banking architecture patterns and serves as a foundation for future development.
@@ -734,9 +787,10 @@ The FinAegis prototype demonstrates comprehensive banking architecture patterns 
 
 ## 🆘 Support
 
-- **Documentation**: [Full Documentation](./docs/)
-- **Issues**: [GitHub Issues](https://github.com/finaegis/core-banking-laravel/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/finaegis/core-banking-laravel/discussions)
+- **Documentation**: [Full Documentation](docs/README.md)
+- **Live Demo**: [https://finaegis.org](https://finaegis.org)
+- **Issues**: [GitHub Issues](https://github.com/finaegis/core-banking-prototype-laravel/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/finaegis/core-banking-prototype-laravel/discussions)
 - **Email**: support@finaegis.org
 
 ## 📄 License

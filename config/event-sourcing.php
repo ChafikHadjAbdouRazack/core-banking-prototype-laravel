@@ -191,6 +191,8 @@ return [
         'wallet_unfrozen'           => App\Domain\Wallet\Events\WalletUnfrozen::class,
         'wallet_key_rotated'        => App\Domain\Wallet\Events\WalletKeyRotated::class,
         'wallet_backup_created'     => App\Domain\Wallet\Events\WalletBackupCreated::class,
+        'key_stored'                => App\Domain\Wallet\Events\KeyStored::class,
+        'key_accessed'              => App\Domain\Wallet\Events\KeyAccessed::class,
 
         // Lending events
         'loan_application_submitted'                 => App\Domain\Lending\Events\LoanApplicationSubmitted::class,

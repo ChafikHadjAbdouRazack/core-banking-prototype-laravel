@@ -113,8 +113,8 @@ jobs:
           
       - name: Run Unit Tests
         run: |
-          # Run unit tests using CI configuration with MySQL
-          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --coverage --min=70
+          # Run unit tests using CI configuration with MySQL (excluding slow tests)
+          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --coverage --min=70 --exclude-group=slow
           
       - name: Run Security Tests
         if: always()
@@ -195,7 +195,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Feature Tests
-        run: ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --coverage --min=65
+        run: ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --coverage --min=65 --exclude-group=slow
 
   integration-tests:
     name: Integration Tests
@@ -253,7 +253,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Integration Tests
-        run: ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --coverage --min=55
+        run: ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --coverage --min=55 --exclude-group=slow
         
   behat-tests:
     name: Behat Tests

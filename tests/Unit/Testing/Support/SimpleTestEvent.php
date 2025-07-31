@@ -2,7 +2,9 @@
 
 namespace Tests\Unit\Testing\Support;
 
-class SimpleTestEvent
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
+
+class SimpleTestEvent extends ShouldBeStored
 {
     public string $name;
 

@@ -134,6 +134,9 @@ class AssetTransactionAggregateTest extends DomainTestCase
     }
 
     #[Test]
+    /**
+     * @group slow
+     */
     public function it_triggers_threshold_event_after_many_transactions()
     {
         $aggregate = AssetTransactionAggregate::retrieve($this->accountUuid);
@@ -154,6 +157,9 @@ class AssetTransactionAggregateTest extends DomainTestCase
     }
 
     #[Test]
+    /**
+     * @group slow
+     */
     public function it_resets_count_after_threshold_reached()
     {
         $aggregate = AssetTransactionAggregate::retrieve($this->accountUuid);

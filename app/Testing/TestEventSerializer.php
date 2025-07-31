@@ -81,4 +81,27 @@ class TestEventSerializer implements EventSerializer
 
         return $event;
     }
+
+    /**
+     * Create an event instance from array data.
+     * This is a helper method for testing purposes.
+     */
+    public static function fromArray(string $className, array $data): object
+    {
+        // Create instance without constructor
+        /** @var class-string $className */
+        $reflection = new \ReflectionClass($className);
+        $instance = $reflection->newInstanceWithoutConstructor();
+
+        // Set properties
+        foreach ($data as $property => $value) {
+            if ($reflection->hasProperty($property)) {
+                $prop = $reflection->getProperty($property);
+                $prop->setAccessible(true);
+                $prop->setValue($instance, $value);
+            }
+        }
+
+        return $instance;
+    }
 }

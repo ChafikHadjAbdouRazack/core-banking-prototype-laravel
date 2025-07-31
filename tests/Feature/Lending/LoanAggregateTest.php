@@ -2,6 +2,14 @@
 
 namespace Tests\Feature\Lending;
 
+use App\Domain\Lending\Aggregates\Loan;
+use App\Domain\Lending\Events\LoanCompleted;
+use App\Domain\Lending\Events\LoanCreated;
+use App\Domain\Lending\Events\LoanDisbursed;
+use App\Domain\Lending\Events\LoanFunded;
+use App\Domain\Lending\Events\LoanRepaymentMade;
+use App\Domain\Lending\Events\LoanSettledEarly;
+use App\Domain\Lending\ValueObjects\RepaymentSchedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
@@ -233,7 +241,7 @@ class LoanAggregateTest extends DomainTestCase
         $events = $loan->getRecordedEvents();
         $settlementEvent = end($events);
 
-        $this->assertInstanceOf(\App\Domain\Lending\Events\LoanSettledEarly::class, $settlementEvent);
+        $this->assertInstanceOf(LoanSettledEarly::class, $settlementEvent);
         $this->assertEquals($remainingBalance, $settlementEvent->settlementAmount);
         $this->assertEquals($remainingBalance, $settlementEvent->outstandingBalance);
     }

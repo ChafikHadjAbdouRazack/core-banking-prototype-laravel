@@ -19,5 +19,7 @@ it('passwordRules method is protected', function () {
 
 it('passwordRules returns array', function () {
     $reflection = new ReflectionMethod(PasswordValidationRules::class, 'passwordRules');
-    expect($reflection->getReturnType()?->getName())->toBe('array');
+    $returnType = $reflection->getReturnType();
+    expect($returnType)->toBeInstanceOf(ReflectionType::class);
+    expect((string) $returnType)->toBe('array');
 });

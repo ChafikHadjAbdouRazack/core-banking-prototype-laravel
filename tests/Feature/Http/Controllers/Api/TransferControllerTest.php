@@ -3,6 +3,7 @@
 namespace Tests\Feature\Http\Controllers\Api;
 
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,13 +36,11 @@ class TransferControllerTest extends ControllerTestCase
 
         $this->fromAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 100000, // 1000.00 USD
             'frozen'    => false,
         ]);
 
         $this->toAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
-            'balance'   => 50000, // 500.00 USD
             'frozen'    => false,
         ]);
 
@@ -65,6 +64,21 @@ class TransferControllerTest extends ControllerTestCase
                 'is_active' => true,
             ]
         );
+
+        // Create USD balances for the accounts
+        AccountBalance::create([
+            'account_uuid' => $this->fromAccount->uuid,
+            'asset_id'     => $this->usdAsset->id,
+            'asset_code'   => 'USD',
+            'balance'      => 100000, // 1000.00 USD
+        ]);
+
+        AccountBalance::create([
+            'account_uuid' => $this->toAccount->uuid,
+            'asset_id'     => $this->usdAsset->id,
+            'asset_code'   => 'USD',
+            'balance'      => 0, // 0 USD
+        ]);
     }
 
     #[Test]
@@ -210,8 +224,15 @@ class TransferControllerTest extends ControllerTestCase
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 50000,
             'frozen'    => true,
+        ]);
+
+        // Create USD balance for the frozen account
+        AccountBalance::create([
+            'account_uuid' => $frozenAccount->uuid,
+            'asset_id'     => $this->usdAsset->id,
+            'asset_code'   => 'USD',
+            'balance'      => 50000, // 500.00 USD
         ]);
 
         $response = $this->postJson('/api/transfers', [
@@ -411,12 +432,11 @@ class TransferControllerTest extends ControllerTestCase
         // Create an account with EUR balance
         $eurAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
-            'balance'   => 0, // Default USD balance
             'frozen'    => false,
         ]);
 
         // Create EUR balance using AccountBalance model
-        \App\Models\AccountBalance::create([
+        AccountBalance::create([
             'account_uuid' => $eurAccount->uuid,
             'asset_id'     => $this->eurAsset->id,
             'asset_code'   => 'EUR',

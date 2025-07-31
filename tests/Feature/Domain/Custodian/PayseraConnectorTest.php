@@ -19,9 +19,12 @@ beforeEach(function () {
     ]);
 });
 
-it('throws exception when client credentials are missing', function () {
-    expect(fn () => new PayseraConnector([]))
-        ->toThrow(InvalidArgumentException::class, 'Paysera client_id and client_secret are required');
+it('allows empty credentials in testing environment', function () {
+    // In testing environment, empty credentials are allowed
+    $connector = new PayseraConnector([]);
+
+    expect($connector)->toBeInstanceOf(PayseraConnector::class);
+    expect($connector->getName())->toBe('Paysera');
 });
 
 it('can be instantiated with valid config', function () {

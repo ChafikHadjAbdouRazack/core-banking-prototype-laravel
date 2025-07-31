@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Values;
 
+use App\Values\EventQueues;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 

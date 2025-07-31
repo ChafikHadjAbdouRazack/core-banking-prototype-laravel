@@ -2,11 +2,12 @@
 
 namespace Tests\Security\Cryptography;
 
-use App\Domain\Account\ValueObjects\Hash;
+use App\Domain\Account\DataObjects\Hash;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash as HashFacade;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -52,34 +53,7 @@ class CryptographySecurityTest extends TestCase
         $this->assertNotEquals($user->password, $user2->password);
     }
 
-    #[Test]
-    public function test_sensitive_data_is_encrypted_at_rest()
-    {
-        // Skip this test as the sensitive columns don't exist in the current schema
-        $this->markTestSkipped('Sensitive columns (ssn, bank_account, api_secret) not implemented in users table');
-
-        // TODO: When these columns are added, uncomment this test
-        /*
-        // Check if sensitive columns are encrypted in database
-        $sensitiveData = [
-            'ssn'          => '123-45-6789',
-            'bank_account' => '1234567890',
-            'api_secret'   => 'secret-key-12345',
-        ];
-
-        $user = User::factory()->create($sensitiveData);
-
-        // Query raw database values
-        $rawUser = DB::table('users')->where('id', $user->id)->first();
-
-        // Sensitive data should not be readable in database
-        foreach ($sensitiveData as $field => $value) {
-            if (property_exists($rawUser, $field)) {
-                $this->assertNotEquals($value, $rawUser->$field);
-            }
-        }
-        */
-    }
+    // Test removed: Sensitive columns (ssn, bank_account, api_secret) not implemented in users table
 
     #[Test]
     public function test_api_tokens_are_hashed()

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Domain\Custodian\Services;
 
+use App\Domain\Custodian\Exceptions\MaxRetriesExceededException;
+use App\Domain\Custodian\Services\RetryService;
+use Illuminate\Support\Facades\Log;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ServiceTestCase;
 

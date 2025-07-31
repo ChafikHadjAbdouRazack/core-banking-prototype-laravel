@@ -76,9 +76,11 @@ class SecureKeyStorageService
                 'salt'           => $salt,
                 'key_version'    => self::CURRENT_KEY_VERSION,
                 'storage_type'   => 'database',
+                'is_active'      => true,
                 'metadata'       => array_merge($metadata, [
-                    'created_by' => $userId,
                     'algorithm'  => 'AES-256-GCM',
+                    'created_by' => $userId,
+                    'created_at' => now()->toIso8601String(),
                 ]),
             ]);
 
@@ -103,7 +105,11 @@ class SecureKeyStorageService
     ): string {
         $storage = SecureKeyStorage::where('wallet_id', $walletId)
             ->where('is_active', true)
-            ->firstOrFail();
+            ->first();
+
+        if (! $storage) {
+            throw new KeyManagementException("Seed not found for wallet: {$walletId}");
+        }
 
         // Log access attempt
         $this->logKeyAccess($walletId, $userId, 'retrieve', [
@@ -111,7 +117,7 @@ class SecureKeyStorageService
             'key_version' => $storage->key_version,
         ]);
 
-        // Derive decryption key
+        // Derive the same key using the stored salt
         $derivedKey = $this->deriveKey($walletId, $storage->salt);
 
         // Decrypt the seed

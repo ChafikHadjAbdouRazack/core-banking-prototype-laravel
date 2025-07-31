@@ -6,6 +6,7 @@ namespace Tests\Feature\Middleware;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ValidateWebhookSignatureTest extends TestCase
@@ -23,7 +24,7 @@ class ValidateWebhookSignatureTest extends TestCase
         Config::set('custodians.connectors.santander.webhook_secret', 'santander_test_secret');
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_stripe_webhook_signature()
     {
         $payload = json_encode(['type' => 'payment_intent.succeeded', 'data' => ['object' => []]]);
@@ -39,7 +40,7 @@ class ValidateWebhookSignatureTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_stripe_webhook_with_invalid_signature()
     {
         $payload = json_encode(['type' => 'payment_intent.succeeded', 'data' => ['object' => []]]);
@@ -54,7 +55,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_stripe_webhook_with_expired_timestamp()
     {
         $payload = json_encode(['type' => 'payment_intent.succeeded', 'data' => ['object' => []]]);
@@ -71,7 +72,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_coinbase_webhook_signature()
     {
         $payload = ['event' => ['type' => 'charge:confirmed']];
@@ -85,7 +86,7 @@ class ValidateWebhookSignatureTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_coinbase_webhook_with_invalid_signature()
     {
         $payload = ['event' => ['type' => 'charge:confirmed']];
@@ -98,7 +99,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_paysera_webhook_signature()
     {
         $payload = ['event' => 'transaction.completed', 'event_id' => 'evt_123'];
@@ -113,7 +114,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['status' => 'accepted']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_paysera_webhook_with_invalid_signature()
     {
         $payload = ['event' => 'transaction.completed', 'event_id' => 'evt_123'];
@@ -126,7 +127,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_santander_webhook_signature()
     {
         $payload = ['event_type' => 'payment.received', 'id' => 'wh_987'];
@@ -144,7 +145,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['status' => 'accepted']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_santander_webhook_with_invalid_signature()
     {
         $payload = ['event_type' => 'payment.received', 'id' => 'wh_987'];
@@ -159,7 +160,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_santander_webhook_with_expired_timestamp()
     {
         $payload = ['event_type' => 'payment.received', 'id' => 'wh_987'];
@@ -177,7 +178,7 @@ class ValidateWebhookSignatureTest extends TestCase
             ->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_webhook_with_missing_signature_header()
     {
         $payload = ['event' => 'test'];
@@ -195,7 +196,7 @@ class ValidateWebhookSignatureTest extends TestCase
         $response->assertStatus(403)->assertJson(['error' => 'Invalid signature']);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_mock_custodian_webhook_without_signature()
     {
         $payload = ['type' => 'balance.updated', 'id' => 'mock_123'];

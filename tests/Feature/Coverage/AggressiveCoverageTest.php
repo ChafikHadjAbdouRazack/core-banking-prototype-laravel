@@ -428,9 +428,9 @@ it('can test enum values exhaustively', function () {
 
     // Test all EventQueues values
     $allEventQueues = EventQueues::cases();
-    expect($allEventQueues)->toHaveCount(4);
+    expect($allEventQueues)->toHaveCount(5);
 
-    $expectedQueues = ['events', 'ledger', 'transactions', 'transfers'];
+    $expectedQueues = ['events', 'ledger', 'transactions', 'transfers', 'liquidity_pools'];
     $actualQueues = array_map(fn ($queue) => $queue->value, $allEventQueues);
 
     foreach ($expectedQueues as $expectedQueue) {

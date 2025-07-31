@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
 use App\Domain\Banking\Models\BankAccountModel;
+use App\Domain\Banking\Models\UserBankPreference;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\User\Values\UserRoles;
@@ -178,7 +179,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function bankPreferences()
     {
-        return $this->hasMany(UserPreference::class, 'user_uuid', 'uuid');
+        return $this->hasMany(UserBankPreference::class, 'user_uuid', 'uuid');
     }
 
     /**

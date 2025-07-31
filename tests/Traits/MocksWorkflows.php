@@ -6,17 +6,16 @@ use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use Illuminate\Support\Str;
-use Mockery;
 
 trait MocksWorkflows
 {
     protected function mockWorkflows(): void
     {
         // Mock WorkflowStub::make to return a mock that can handle start() and await()
-        Mockery::mock('alias:Workflow\WorkflowStub')
+        \Mockery::mock('alias:Workflow\WorkflowStub')
             ->shouldReceive('make')
             ->andReturnUsing(function ($workflowClass) {
-                $mock = Mockery::mock('WorkflowStub');
+                $mock = \Mockery::mock('WorkflowStub');
 
                 // Handle specific workflows
                 if ($workflowClass === \App\Domain\Stablecoin\Workflows\MintStablecoinWorkflow::class) {
@@ -59,7 +58,7 @@ trait MocksWorkflows
                             $stablecoinBalance->increment('balance', $mintAmount);
                         }
 
-                        $resultMock = Mockery::mock('WorkflowResult');
+                        $resultMock = \Mockery::mock('WorkflowResult');
                         $resultMock->shouldReceive('await')->andReturn($positionUuid);
 
                         return $resultMock;
@@ -77,7 +76,7 @@ trait MocksWorkflows
     protected function mockSubProductService(array $enabledProducts = ['stablecoins']): void
     {
         $this->app->bind(\App\Domain\Product\Services\SubProductService::class, function () use ($enabledProducts) {
-            $mock = Mockery::mock(\App\Domain\Product\Services\SubProductService::class);
+            $mock = \Mockery::mock(\App\Domain\Product\Services\SubProductService::class);
 
             foreach ($enabledProducts as $product) {
                 $mock->shouldReceive('isEnabled')

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Providers;
 
+use App\Providers\HelperServiceProvider;
+use Illuminate\Support\ServiceProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\UnitTestCase;
 

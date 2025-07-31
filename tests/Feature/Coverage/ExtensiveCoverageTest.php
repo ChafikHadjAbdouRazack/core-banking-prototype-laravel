@@ -243,7 +243,7 @@ it('can test existing view components', function () {
 
 // Test command classes that exist
 it('can test existing console command classes', function () {
-    expect(class_exists(App\Console\Commands\VerifyTransactionHashes::class))->toBeTrue();
+    expect(class_exists(App\Domain\Account\Console\Commands\VerifyTransactionHashes::class))->toBeTrue();
 });
 
 // Test domain events

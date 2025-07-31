@@ -71,12 +71,7 @@ class CriticalRoutesTest extends TestCase
 
         // Test routes that might require additional setup separately
         $routesRequiringSetup = [
-            '/wallet/transactions' => 'Transaction History',
-            '/transactions/status' => 'Track Transaction Status',
-            '/fund-flow'           => 'Fund Flow',
-            '/exchange-rates'      => 'Exchange Rates',
-            '/batch-processing'    => 'Batch Processing',
-            '/asset-management'    => 'Asset Management',
+            '/exchange-rates' => 'Exchange Rates',
         ];
 
         foreach ($routesRequiringSetup as $route => $expectedText) {

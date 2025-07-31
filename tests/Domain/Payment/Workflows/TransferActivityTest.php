@@ -19,10 +19,9 @@ afterEach(function () {
     Mockery::close();
 });
 
-it('executes a successful transfer', function () {
-    // Skip this test as ActivityStub requires workflow context
-    $this->markTestSkipped('ActivityStub testing requires workflow context');
-});
+// Note: Tests that require workflow context have been removed.
+// ActivityStub testing requires a full workflow runtime which is not available in unit tests.
+// These tests should be implemented as integration tests with a proper workflow runtime.
 
 it('validates transfer before execution', function () {
     $from = new AccountUuid('550e8400-e29b-41d4-a716-446655440001');
@@ -36,26 +35,6 @@ it('validates transfer before execution', function () {
 
     expect(fn () => iterator_to_array($this->activity->execute($from, $to, $money)))
         ->toThrow(NotEnoughFunds::class, 'Insufficient funds');
-});
-
-it('records transfer after successful execution', function () {
-    // Skip this test as ActivityStub requires workflow context
-    $this->markTestSkipped('ActivityStub testing requires workflow context');
-});
-
-it('dispatches activities in correct order', function () {
-    // Skip this test as ActivityStub requires workflow context
-    $this->markTestSkipped('ActivityStub testing requires workflow context');
-});
-
-it('passes correct parameters to withdraw activity', function () {
-    // Skip this test as ActivityStub doesn't have assertDispatchedWithArgs method
-    $this->markTestSkipped('ActivityStub testing requires workflow context');
-});
-
-it('passes correct parameters to deposit activity', function () {
-    // Skip this test as ActivityStub doesn't have assertDispatchedWithArgs method
-    $this->markTestSkipped('ActivityStub testing requires workflow context');
 });
 
 it('handles validation exceptions properly', function () {

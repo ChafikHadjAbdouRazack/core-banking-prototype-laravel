@@ -277,11 +277,7 @@ class XssTest extends DomainTestCase
         $hasCSP = $response->headers->has('Content-Security-Policy') ||
                   $response->headers->has('X-Content-Security-Policy');
 
-        if (! $hasCSP) {
-            $this->markTestSkipped('CSP headers are not configured. Consider adding Content-Security-Policy headers for additional XSS protection.');
-        }
-
-        $this->assertTrue($hasCSP);
+        $this->assertTrue($hasCSP, 'Content-Security-Policy headers should be present');
     }
 
     #[Test]

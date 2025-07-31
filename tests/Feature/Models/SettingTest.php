@@ -6,13 +6,12 @@ namespace Tests\Feature\Models;
 
 use App\Models\Setting;
 use Illuminate\Support\Facades\Crypt;
-use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class SettingTest extends TestCase
 {
-    use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+    use \Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     protected function setUp(): void
     {
@@ -29,7 +28,7 @@ class SettingTest extends TestCase
 
     protected function tearDown(): void
     {
-        Mockery::close();
+        \Mockery::close();
         parent::tearDown();
     }
 
