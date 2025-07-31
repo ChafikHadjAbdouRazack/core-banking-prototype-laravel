@@ -241,22 +241,18 @@ class TestEventSerializerTest extends DomainTestCase
     #[Test]
     public function test_handles_reflection_union_types(): void
     {
-        // PHP 8+ union types
-        if (PHP_VERSION_ID >= 80000) {
-            $className = 'TestEventWithUnionType_' . uniqid();
-            eval("class $className { public string|int \$unionProperty; public string \$normalProperty; }");
+        // PHP 8+ union types (project requires PHP 8.3)
+        $className = 'TestEventWithUnionType_' . uniqid();
+        eval("class $className { public string|int \$unionProperty; public string \$normalProperty; }");
 
-            $data = [
-                'unionProperty'  => 'string value',
-                'normalProperty' => 'normal',
-            ];
+        $data = [
+            'unionProperty'  => 'string value',
+            'normalProperty' => 'normal',
+        ];
 
-            $event = ArrayEventSerializer::fromArray($className, $data);
+        $event = ArrayEventSerializer::fromArray($className, $data);
 
-            $this->assertEquals('string value', $event->unionProperty);
-            $this->assertEquals('normal', $event->normalProperty);
-        } else {
-            $this->markTestSkipped('Union types require PHP 8.0+');
-        }
+        $this->assertEquals('string value', $event->unionProperty);
+        $this->assertEquals('normal', $event->normalProperty);
     }
 }

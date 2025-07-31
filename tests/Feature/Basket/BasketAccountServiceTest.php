@@ -78,7 +78,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_can_decompose_basket_into_components()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         // Give account some basket holdings
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -111,7 +110,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_cannot_decompose_with_insufficient_balance()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
             'asset_code'   => 'STABLE_BASKET',
@@ -127,7 +125,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_can_compose_basket_from_components()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         // Give account component balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -170,7 +167,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_cannot_compose_with_insufficient_components()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         // Give account insufficient component balances
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -197,7 +193,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_can_get_basket_holdings_value()
     {
-        $this->markTestSkipped('Basket holdings functionality needs event sourcing refactoring');
         // Give account various basket holdings
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -249,7 +244,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_only_decomposes_active_components()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         // Deactivate EUR component
         $this->basket->components()->where('asset_code', 'EUR')->update(['is_active' => false]);
 
@@ -273,7 +267,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_handles_basket_not_found()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Basket not found: INVALID_BASKET');
 
@@ -283,7 +276,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_handles_inactive_basket()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         $this->basket->update(['is_active' => false]);
 
         $this->expectException(\Exception::class);
@@ -295,7 +287,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_validates_positive_amounts()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Amount must be positive');
 
@@ -305,7 +296,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_handles_no_basket_holdings()
     {
-        $this->markTestSkipped('Basket holdings functionality needs event sourcing refactoring');
         $holdings = $this->service->getBasketHoldingsValue($this->account);
 
         $this->assertEmpty($holdings['basket_holdings']);
@@ -315,7 +305,6 @@ class BasketAccountServiceTest extends ServiceTestCase
     #[Test]
     public function it_calculates_required_components()
     {
-        $this->markTestSkipped('Basket decompose/compose functionality needs event sourcing refactoring');
         $required = $this->service->calculateRequiredComponents('STABLE_BASKET', 10000);
 
         $this->assertArrayHasKey('USD', $required);

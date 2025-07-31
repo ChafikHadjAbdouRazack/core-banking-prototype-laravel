@@ -189,12 +189,6 @@ class SubProductServiceTest extends ServiceTestCase
     }
 
     #[Test]
-    public function it_validates_feature_access()
-    {
-        $this->markTestSkipped('validateFeatureAccess method not implemented in service');
-    }
-
-    #[Test]
     public function it_enables_sub_product()
     {
         // Create a fresh instance for this test

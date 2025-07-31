@@ -316,34 +316,7 @@ class AuthorizationSecurityTest extends DomainTestCase
         );
     }
 
-    #[Test]
-    public function test_transaction_authorization_with_limits()
-    {
-        $this->markTestSkipped('Transaction limits not implemented - daily_limit and transaction_limit columns do not exist');
-
-        // TODO: Implement transaction limits feature
-        /*
-        // Create account with transaction limits
-        $limitedAccount = Account::factory()->create([
-            'user_uuid'         => $this->user1->uuid,
-            'balance'           => 100000,
-            'daily_limit'       => 10000,
-            'transaction_limit' => 5000,
-        ]);
-
-        // Try to exceed single transaction limit
-        $response = $this->withToken($this->userToken)
-            ->postJson('/api/transfers', [
-                'from_account' => $limitedAccount->uuid,
-                'to_account'   => Account::factory()->create()->uuid,
-                'amount'       => 6000, // Exceeds limit
-                'currency'     => 'USD',
-            ]);
-
-        $this->assertEquals(422, $response->status());
-        $this->assertArrayHasKey('amount', $response->json('errors'));
-        */
-    }
+    // Test removed: Transaction limits feature not implemented in accounts table
 
     #[Test]
     public function test_path_traversal_in_authorization()

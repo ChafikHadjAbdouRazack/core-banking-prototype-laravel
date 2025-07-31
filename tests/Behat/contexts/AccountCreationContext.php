@@ -15,7 +15,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @Given I am logged in as a user
      */
-    public function iAmLoggedInAsAUser()
+    public function iAmLoggedInAsAUser(): void
     {
         $this->currentUser = User::factory()->create([
             'name'     => 'Test User',
@@ -37,7 +37,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @Given I have an account named :accountName
      */
-    public function iHaveAnAccountNamed($accountName)
+    public function iHaveAnAccountNamed($accountName): void
     {
         if (! $this->currentUser) {
             $this->iAmLoggedInAsAUser();
@@ -53,7 +53,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @When I click :text
      */
-    public function iClick($text)
+    public function iClick($text): void
     {
         $button = $this->getSession()->getPage()->findButton($text);
         if (! $button) {
@@ -70,7 +70,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @Then I should see :text in the modal
      */
-    public function iShouldSeeInTheModal($text)
+    public function iShouldSeeInTheModal($text): void
     {
         $modal = $this->getSession()->getPage()->find('css', '#accountModal');
         Assert::assertNotNull($modal, 'Modal not found');
@@ -80,7 +80,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @When I press :button in the modal
      */
-    public function iPressInTheModal($button)
+    public function iPressInTheModal($button): void
     {
         $modal = $this->getSession()->getPage()->find('css', '#accountModal');
         $btn = $modal->findButton($button);
@@ -94,7 +94,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @When I clear :field
      */
-    public function iClear($field)
+    public function iClear($field): void
     {
         $this->getSession()->getPage()->fillField($field, '');
     }
@@ -102,7 +102,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @Then I should see an error message
      */
-    public function iShouldSeeAnErrorMessage()
+    public function iShouldSeeAnErrorMessage(): void
     {
         $errorDiv = $this->getSession()->getPage()->find('css', '#accountError');
         Assert::assertNotNull($errorDiv);
@@ -112,7 +112,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @Then I should still see the modal
      */
-    public function iShouldStillSeeTheModal()
+    public function iShouldStillSeeTheModal(): void
     {
         $modal = $this->getSession()->getPage()->find('css', '#accountModal');
         Assert::assertNotNull($modal);
@@ -122,7 +122,7 @@ class AccountCreationContext extends MinkContext implements Context
     /**
      * @AfterScenario
      */
-    public function cleanup()
+    public function cleanup(): void
     {
         // Clean up test data
         if ($this->currentUser) {

@@ -52,8 +52,25 @@ class SettingsServiceTest extends ServiceTestCase
     #[Test]
     public function it_decrypts_encrypted_settings()
     {
-        // Skip this test as it requires encryption setup
-        $this->markTestSkipped('Encryption test requires proper setup');
+        // Test encryption/decryption functionality
+        $key = 'test.encrypted.setting';
+        $value = 'sensitive-data-123';
+
+        // Set an encrypted setting
+        $this->service->set($key, $value, 'string', true);
+
+        // Retrieve the encrypted setting
+        $retrieved = $this->service->get($key);
+
+        // Should match the original value (automatically decrypted)
+        $this->assertEquals($value, $retrieved);
+
+        // Verify it's stored encrypted in the database
+        $setting = Setting::where('key', $key)->first();
+        $this->assertTrue($setting->is_encrypted);
+
+        // Raw value should be different from original (encrypted)
+        $this->assertNotEquals($value, $setting->getRawOriginal('value'));
     }
 
     #[Test]

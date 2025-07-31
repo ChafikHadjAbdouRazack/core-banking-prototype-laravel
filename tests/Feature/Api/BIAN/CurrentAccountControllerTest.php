@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
 it('can initiate a current account', function () {
-    $this->markTestSkipped('Temporarily skipping due to route loading issues in parallel testing');
 
     $user = User::factory()->create();
     Sanctum::actingAs($user);
@@ -110,13 +109,9 @@ it('can control current account (freeze)', function () {
         ->assertJsonPath('currentAccountFulfillmentControlRecord.controlStatus', 'frozen');
 });
 
-it('can execute payment from current account', function () {
-    $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions');
-});
+// Test removed - executePayment method implementation incomplete
 
-it('skipped_can_execute_payment_from_current_account', function () {
-    $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions');
-});
+// Test removed - duplicate of above test
 
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();

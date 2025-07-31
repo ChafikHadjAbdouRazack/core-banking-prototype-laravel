@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Domain\Exchange\LiquidityPool\Reactors;
 
-use App\Domain\Exchange\LiquidityPool\Events\LiquidityAdded;
-use App\Domain\Exchange\LiquidityPool\Events\LiquidityPoolRebalanced;
-use App\Domain\Exchange\LiquidityPool\Events\LiquidityRemoved;
-use App\Domain\Exchange\LiquidityPool\Events\LiquidityRewardsDistributed;
+use App\Domain\Exchange\Events\LiquidityAdded;
+use App\Domain\Exchange\Events\LiquidityPoolRebalanced;
+use App\Domain\Exchange\Events\LiquidityRemoved;
+use App\Domain\Exchange\Events\LiquidityRewardsDistributed;
 use App\Domain\Exchange\LiquidityPool\Reactors\SnapshotLiquidityPoolReactor;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
@@ -13,18 +13,13 @@ use Tests\TestCase;
 
 class SnapshotLiquidityPoolReactorTest extends TestCase
 {
-    private SnapshotLiquidityPoolReactor $reactor;
-
     private string $poolId;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->markTestSkipped('Liquidity pool implementation is incomplete - Events do not exist');
 
-        // The following would be the setup if events existed:
-        // $this->reactor = new SnapshotLiquidityPoolReactor();
-        // $this->poolId = Str::uuid()->toString();
+        $this->poolId = Str::uuid()->toString();
     }
 
     #[Test]

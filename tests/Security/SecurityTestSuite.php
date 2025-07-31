@@ -12,10 +12,11 @@ class SecurityTestSuite extends TestCase
  */ #[Test]
     public function test_complete_security_suite()
     {
-        $this->markTestIncomplete('This is a meta-test for running the complete security suite');
-
         // This test serves as documentation for running all security tests
         // Run with: ./vendor/bin/pest tests/Security --parallel
+        // This test serves as a placeholder and documentation
+        // The actual security tests are in individual test files
+        $this->assertDirectoryExists(__DIR__, 'Security test directory exists');
     }
 
     #[Test]

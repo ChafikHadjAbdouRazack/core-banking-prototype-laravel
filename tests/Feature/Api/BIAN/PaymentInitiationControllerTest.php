@@ -7,14 +7,6 @@ use App\Models\User;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 
-it('can initiate a payment transaction', function () {
-    $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions');
-});
-
-it('skipped_can_initiate_a_payment_transaction', function () {
-    $this->markTestSkipped('Temporarily skipping due to AccountUuid toString() method issue');
-});
-
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();
     Sanctum::actingAs($user);
@@ -67,11 +59,6 @@ it('can update a payment transaction', function () {
     $response->assertStatus(200)
         ->assertJsonPath('paymentInitiationTransaction.updateAction', 'cancelled')
         ->assertJsonPath('paymentInitiationTransaction.updateStatus', 'successful');
-});
-
-it('can retrieve payment transaction details', function () {
-    // Skip this test as it requires event sourcing setup
-    $this->markTestSkipped('Payment retrieval requires event sourcing setup');
 });
 
 it('can execute a payment transaction', function () {

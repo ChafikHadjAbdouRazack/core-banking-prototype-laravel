@@ -33,11 +33,6 @@ class TurnoverProjectorTest extends TestCase
     #[Test]
     public function test_calculate_today_turnover(): void
     {
-        $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions with unique constraints');
-    }
-
-    public function skipped_test_calculate_today_turnover(): void
-    {
         $this->resetHash();
         $date = Carbon::createFromDate(2024, 1, 1);
         Carbon::setTestNow($date);
@@ -68,11 +63,6 @@ class TurnoverProjectorTest extends TestCase
 
     #[Test]
     public function test_calculate_tomorrow_turnover(): void
-    {
-        $this->markTestSkipped('Temporarily skipping due to parallel testing race conditions with unique constraints');
-    }
-
-    public function skipped_test_calculate_tomorrow_turnover(): void
     {
         $this->resetHash();
         $date1 = Carbon::createFromDate(2024, 1, 1);

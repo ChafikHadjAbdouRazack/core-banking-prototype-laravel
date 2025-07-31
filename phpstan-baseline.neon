@@ -6913,18 +6913,6 @@ parameters:
 			path: tests/Domain/Account/Workflows/CreateAccountActivityTest.php
 
 		-
-			message: '#^Call to an undefined static method Workflow\\WorkflowStub\:\:assertDispatched\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: tests/Domain/Account/Workflows/CreateAccountWorkflowTest.php
-
-		-
-			message: '#^Call to an undefined static method Workflow\\WorkflowStub\:\:mock\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: tests/Domain/Account/Workflows/CreateAccountWorkflowTest.php
-
-		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
 			identifier: method.notFound
 			count: 5
@@ -7567,12 +7555,6 @@ parameters:
 			path: tests/Feature/Api/AssetControllerTest.php
 
 		-
-			message: '#^Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy\:\:skip\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Feature/Api/AssetControllerTest.php
-
-		-
 			message: '#^Cannot call method toString\(\) on string\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -7581,12 +7563,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Models\\AccountBalance\>\:\:create\(\) expects array\<model property of App\\Models\\AccountBalance, mixed\>\|\(callable\(array\<string, mixed\>\)\: array\<string, mixed\>\), array\{account_uuid\: string, asset_code\: ''USD'', balance\: 2000\} given\.$#'
 			identifier: argument.type
-			count: 1
-			path: tests/Feature/Api/BIAN/CurrentAccountControllerTest.php
-
-		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
 			count: 1
 			path: tests/Feature/Api/BIAN/CurrentAccountControllerTest.php
 
@@ -7639,15 +7615,21 @@ parameters:
 			path: tests/Feature/Api/TransactionControllerTest.php
 
 		-
+			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, float\|string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/Basket/BasketAccountServiceTest.php
+
+		-
 			message: '#^Parameter \#1 \$records of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:createMany\(\) expects iterable\<array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\>, array\<int, array\<string, float\|string\>\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Basket/BasketAccountServiceTest.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 11
+			message: '#^Parameter \#1 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, false\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: tests/Feature/Basket/BasketAccountServiceTest.php
 
 		-
@@ -8045,12 +8027,6 @@ parameters:
 			identifier: method.notFound
 			count: 4
 			path: tests/Feature/Custodian/SettlementServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy\:\:skip\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/DeleteAccountTest.php
 
 		-
 			message: '#^Call to function method_exists\(\) with App\\Domain\\Account\\Services\\AccountService and ''create'' will always evaluate to true\.$#'
@@ -8495,12 +8471,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Domain/Stablecoin/Services/StabilityMechanismServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Pest\\PendingCalls\\TestCall\|Pest\\Support\\HigherOrderTapProxy\:\:skip\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Feature/EmailVerificationTest.php
 
 		-
 			message: '#^Call to static method generateId\(\) on an unknown class Tests\\Feature\\Exchange\\OrderBook\.$#'
@@ -9031,268 +9001,10 @@ parameters:
 			path: tests/Feature/InviteTeamMemberTest.php
 
 		-
-			message: '#^Access to constant ACTIVE on an unknown class Tests\\Feature\\Lending\\AccountStatus\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Access to constant EMPLOYED on an unknown class Tests\\Feature\\Lending\\EmploymentStatus\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Access to constant PERSONAL on an unknown class Tests\\Feature\\Lending\\AccountType\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Access to constant PERSONAL on an unknown class Tests\\Feature\\Lending\\LoanPurpose\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Account\\Models\\Account\:\:deposit\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
 			message: '#^Call to static method create\(\) on an unknown class App\\Models\\Loan\.$#'
 			identifier: class.notFound
 			count: 2
 			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Instantiated class Tests\\Feature\\Lending\\AccountData not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\Account\>\:\:create\(\) expects array\<model property of App\\Domain\\Account\\Models\\Account, mixed\>, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Static method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\Account\>\:\:create\(\) invoked with 2 parameters, 0\-1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: tests/Feature/Lending/LendingControllerTest.php
-
-		-
-			message: '#^Access to property \$id on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 7
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$id on an unknown class Tests\\Feature\\Lending\\LoanApplication\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$interest_rate on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$outstanding_balance on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 4
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$principal_amount on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$status on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 5
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Access to property \$status on an unknown class Tests\\Feature\\Lending\\LoanApplication\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method applyForRefinancing\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method approveApplication\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method approveRefinancing\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method calculateEarlyRepayment\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method calculateMonthlyPayment\(\) on an unknown class Tests\\Feature\\Lending\\InterestCalculationService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method calculateScore\(\) on an unknown class Tests\\Feature\\Lending\\CreditScoringService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method checkDefaultedLoans\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method createApplication\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method fundLoan\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method initiateRecovery\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method makePayment\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method recordRecovery\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method refresh\(\) on an unknown class Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 7
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method refresh\(\) on an unknown class Tests\\Feature\\Lending\\LoanApplication\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method settleEarly\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to method writeOffLoan\(\) on an unknown class Tests\\Feature\\Lending\\LoanService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Call to static method of\(\) on an unknown class Tests\\Feature\\Lending\\BigDecimal\.$#'
-			identifier: class.notFound
-			count: 3
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Lending\\CreditScoringService not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Lending\\InterestCalculationService not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Lending\\Loan not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Lending\\LoanApplication not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Lending\\LoanService not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Lending\\LoanLifecycleTest\:\:createAndFundLoan\(\) has invalid return type Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Parameter \$loan of method Tests\\Feature\\Lending\\LoanLifecycleTest\:\:makePaymentForLoan\(\) has invalid type Tests\\Feature\\Lending\\Loan\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Lending\\LoanLifecycleTest\:\:\$creditScoringService has unknown class Tests\\Feature\\Lending\\CreditScoringService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Lending\\LoanLifecycleTest\:\:\$interestService has unknown class Tests\\Feature\\Lending\\InterestCalculationService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Lending\\LoanLifecycleTest\:\:\$loanService has unknown class Tests\\Feature\\Lending\\LoanService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Lending/LoanLifecycleTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string will always evaluate to true\.$#'
@@ -9961,18 +9673,6 @@ parameters:
 			path: tests/Security/Cryptography/CryptographySecurityTest.php
 
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
-			count: 1
-			path: tests/Security/Penetration/CsrfTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Security/Penetration/XssTest.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -10377,42 +10077,6 @@ parameters:
 		-
 			message: '#^Call to an undefined method Mockery\\LegacyMockInterface\:\:onLiquidityRewardsDistributed\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Exchange\\LiquidityPool\\Events\\LiquidityAdded not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Exchange\\LiquidityPool\\Events\\LiquidityPoolRebalanced not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Exchange\\LiquidityPool\\Events\\LiquidityRemoved not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Exchange\\LiquidityPool\\Events\\LiquidityRewardsDistributed not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Domain\\Exchange\\LiquidityPool\\Reactors\\SnapshotLiquidityPoolReactorTest\:\:\$poolId is never written, only read\.$#'
-			identifier: property.onlyRead
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Domain\\Exchange\\LiquidityPool\\Reactors\\SnapshotLiquidityPoolReactorTest\:\:\$reactor is unused\.$#'
-			identifier: property.unused
 			count: 1
 			path: tests/Unit/Domain/Exchange/LiquidityPool/Reactors/SnapshotLiquidityPoolReactorTest.php
 
@@ -11565,12 +11229,6 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Testing/TestEventSerializerTest.php
-
-		-
-			message: '#^Comparison operation "\>\=" between int\<80300, 80499\> and 80000 is always true\.$#'
-			identifier: greaterOrEqual.alwaysTrue
 			count: 1
 			path: tests/Unit/Testing/TestEventSerializerTest.php
 

@@ -204,51 +204,9 @@ describe('Asset API - Public Endpoints', function () {
         expect($response->json('is_active'))->toBeFalse();
     });
 
-    test('handles pagination correctly', function () {
-        // Create additional assets
-        Asset::factory()->count(15)->create(['is_active' => true]);
-
-        $response = $this->getJson('/api/v1/assets?per_page=5');
-
-        $response->assertStatus(200);
-        // Note: Pagination not yet implemented in controller, returns all assets
-        expect($response->json('data'))->toBeArray();
-        expect(count($response->json('data')))->toBeGreaterThan(5); // Should return all assets
-    })->skip('Pagination not yet implemented');
-
-    test('sorts assets by market cap rank when available', function () {
-        $response = $this->getJson('/api/v1/assets?sort=market_cap');
-
-        $response->assertStatus(200);
-
-        // Note: Sorting by market cap not yet implemented in controller
-        expect($response->json('data'))->toBeArray();
-    })->skip('Sorting by market cap not yet implemented');
-
-    test('sorts assets alphabetically by default', function () {
-        $response = $this->getJson('/api/v1/assets?sort=name');
-
-        $response->assertStatus(200);
-
-        // Note: Custom sorting not yet implemented, controller sorts by 'code' by default
-        expect($response->json('data'))->toBeArray();
-    })->skip('Custom sorting not yet implemented');
-
-    test('validates asset type filter', function () {
-        $response = $this->getJson('/api/v1/assets?type=invalid_type');
-
-        // Note: Validation not yet implemented in controller, returns 200 with empty results
-        $response->assertStatus(200);
-        expect($response->json('data'))->toBeArray();
-    })->skip('Request validation not yet implemented');
-
-    test('validates pagination parameters', function () {
-        $response = $this->getJson('/api/v1/assets?per_page=101'); // Max 100
-
-        // Note: Pagination validation not yet implemented in controller
-        $response->assertStatus(200);
-        expect($response->json('data'))->toBeArray();
-    })->skip('Pagination validation not yet implemented');
+    // Removed pagination tests - feature not implemented in AssetController
+    // Removed sorting tests - feature not implemented in AssetController
+    // Removed validation tests - feature not implemented in AssetController
 
     test('returns asset with market data when available', function () {
         // Update asset with market data
