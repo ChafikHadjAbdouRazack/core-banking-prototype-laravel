@@ -42,8 +42,8 @@ class RebalanceBasketsCommand extends Command
 
         if ($basketCode) {
             // Rebalance specific basket
-            /** @var \Illuminate\Database\Eloquent\Model|null $$basket */
-            $$basket = BasketAsset::where('code', $basketCode)->first();
+            /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+            $basket = BasketAsset::where('code', $basketCode)->first();
 
             if (! $basket) {
                 $this->error("Basket with code '{$basketCode}' not found.");
