@@ -30,7 +30,6 @@ class BasketAccountService
     public function addBasketBalance(Account $account, string $basketCode, int $amount): AccountBalance
     {
         /** @var BasketAsset|null $basket */
-        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
@@ -106,7 +105,6 @@ class BasketAccountService
     public function decomposeBasket(Account $account, string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
@@ -186,7 +184,6 @@ class BasketAccountService
     public function composeBasket(Account $account, string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
@@ -289,7 +286,7 @@ class BasketAccountService
                 continue;
             }
 
-            /** @var \Illuminate\Database\Eloquent\Model|null $basket */
+            /** @var BasketAsset|null $basket */
             $basket = BasketAsset::where('code', $balance->asset_code)->first();
             if (! $basket) {
                 continue;
@@ -326,7 +323,6 @@ class BasketAccountService
     public function calculateRequiredComponents(string $basketCode, int $amount): array
     {
         /** @var BasketAsset|null $basket */
-        /** @var \Illuminate\Database\Eloquent\Model|null $basket */
         $basket = BasketAsset::where('code', $basketCode)->first();
 
         if (! $basket) {
