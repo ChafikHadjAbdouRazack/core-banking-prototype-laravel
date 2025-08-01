@@ -3,12 +3,12 @@
 namespace Database\Seeders;
 
 use App\Domain\Account\Models\Account;
+use App\Domain\Banking\Models\UserBankPreference;
 use App\Domain\Governance\Enums\PollStatus;
 use App\Domain\Governance\Models\Poll;
 use App\Domain\Governance\Models\Vote;
 use App\Domain\Governance\Services\VotingTemplateService;
 use App\Models\User;
-use App\Domain\Banking\Models\UserBankPreference;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
