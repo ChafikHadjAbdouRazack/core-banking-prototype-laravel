@@ -31,25 +31,58 @@ final class TurnoverRepository
         string $accountUuid,
         int $amount
     ): Turnover {
-        return DB::transaction(
-            function () use ($date, $accountUuid, $amount) {
-                // Use updateOrCreate with lock for atomic operation
-                $turnover = Turnover::lockForUpdate()->updateOrCreate(
-                    [
-                        'date'         => $date->toDateString(),
-                        'account_uuid' => $accountUuid,
-                    ],
-                    [
-                        'count'  => 0,
-                        'amount' => 0,
-                        'debit'  => 0,
-                        'credit' => 0,
-                    ]
-                );
+        $dateString = $date->toDateString();
 
-                return $this->updateTurnover($turnover, $amount);
-            }
-        );
+        // Use raw SQL for atomic upsert operation
+        if (config('database.default') === 'sqlite') {
+            // SQLite specific implementation
+            DB::statement(
+                'INSERT INTO turnovers (account_uuid, date, count, amount, debit, credit, created_at, updated_at) 
+                VALUES (?, ?, 1, ?, ?, ?, ?, ?) 
+                ON CONFLICT(account_uuid, date) 
+                DO UPDATE SET 
+                    count = count + 1,
+                    amount = amount + excluded.amount,
+                    debit = debit + excluded.debit,
+                    credit = credit + excluded.credit,
+                    updated_at = excluded.updated_at',
+                [
+                    $accountUuid,
+                    $dateString,
+                    $amount,
+                    $amount < 0 ? abs($amount) : 0,
+                    $amount > 0 ? $amount : 0,
+                    now(),
+                    now(),
+                ]
+            );
+        } else {
+            // MySQL specific implementation
+            DB::statement(
+                'INSERT INTO turnovers (account_uuid, date, count, amount, debit, credit, created_at, updated_at) 
+                VALUES (?, ?, 1, ?, ?, ?, ?, ?) 
+                ON DUPLICATE KEY UPDATE 
+                    count = count + 1,
+                    amount = amount + VALUES(amount),
+                    debit = debit + VALUES(debit),
+                    credit = credit + VALUES(credit),
+                    updated_at = VALUES(updated_at)',
+                [
+                    $accountUuid,
+                    $dateString,
+                    $amount,
+                    $amount < 0 ? abs($amount) : 0,
+                    $amount > 0 ? $amount : 0,
+                    now(),
+                    now(),
+                ]
+            );
+        }
+
+        // Fetch and return the updated record
+        return Turnover::where('account_uuid', $accountUuid)
+            ->where('date', $dateString)
+            ->firstOrFail();
     }
 
     protected function updateTurnover(Turnover $turnover, int $amount): Turnover

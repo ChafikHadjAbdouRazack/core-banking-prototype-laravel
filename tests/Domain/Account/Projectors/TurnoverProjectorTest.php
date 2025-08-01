@@ -103,11 +103,13 @@ class TurnoverProjectorTest extends TestCase
 
     private function performTransactions(array $transactions): void
     {
-        $aggregate = TransactionAggregate::retrieve($this->account->uuid);
         foreach ($transactions as [$type, $amount]) {
+            // Create a new aggregate instance for each transaction
+            // to ensure events are persisted one by one
+            $aggregate = TransactionAggregate::retrieve($this->account->uuid);
             $aggregate->$type($this->money($amount));
+            $aggregate->persist();
         }
-        $aggregate->persist();
     }
 
     private function money(int $amount): Money

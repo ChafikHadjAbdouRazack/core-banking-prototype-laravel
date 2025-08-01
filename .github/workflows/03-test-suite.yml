@@ -114,13 +114,14 @@ jobs:
       - name: Run Unit Tests
         run: |
           # Run unit tests using CI configuration with MySQL (excluding slow tests)
-          ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci.xml --coverage --min=70 --exclude-group=slow
+          # Increase memory limit to prevent exhaustion during coverage generation
+          php -d memory_limit=2G ./vendor/bin/pest --testsuite=Unit --configuration=phpunit.ci-optimized.xml --coverage --min=70 --exclude-group=slow
           
       - name: Run Security Tests
         if: always()
         run: |
           # Run security tests separately with CI configuration
-          ./vendor/bin/pest --testsuite=Security --configuration=phpunit.ci.xml
+          ./vendor/bin/pest --testsuite=Security --configuration=phpunit.ci-optimized.xml
           
       - name: Upload Test Coverage
         uses: codecov/codecov-action@v4
@@ -195,7 +196,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Feature Tests
-        run: ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci.xml --coverage --min=65 --exclude-group=slow
+        run: php -d memory_limit=2G ./vendor/bin/pest --testsuite=Feature --configuration=phpunit.ci-optimized.xml --coverage --min=65 --exclude-group=slow
 
   integration-tests:
     name: Integration Tests
@@ -253,7 +254,7 @@ jobs:
           php artisan migrate --force
           
       - name: Run Integration Tests
-        run: ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci.xml --coverage --min=55 --exclude-group=slow
+        run: php -d memory_limit=2G ./vendor/bin/pest --testsuite=Integration --configuration=phpunit.ci-optimized.xml --coverage --min=55 --exclude-group=slow
         
   behat-tests:
     name: Behat Tests
