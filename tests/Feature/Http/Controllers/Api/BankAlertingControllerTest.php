@@ -2,9 +2,14 @@
 
 namespace Tests\Feature\Http\Controllers\Api;
 
+use App\Domain\Custodian\Services\BankAlertingService;
+use App\Domain\Custodian\Services\CircuitBreakerService;
+use App\Domain\Custodian\Services\CustodianHealthMonitor;
+use App\Domain\Custodian\Services\CustodianRegistry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
 
@@ -16,9 +21,25 @@ class BankAlertingControllerTest extends ControllerTestCase
 
     protected User $regularUser;
 
-    protected BankAlertingService $mockAlertingService;
+    /**
+     * @var BankAlertingService&MockInterface
+     */
+    protected $mockAlertingService;
 
-    protected CustodianHealthMonitor $mockHealthMonitor;
+    /**
+     * @var CustodianHealthMonitor&MockInterface
+     */
+    protected $mockHealthMonitor;
+
+    /**
+     * @var CustodianRegistry&MockInterface
+     */
+    protected $mockRegistry;
+
+    /**
+     * @var CircuitBreakerService&MockInterface
+     */
+    protected $mockCircuitBreaker;
 
     protected function setUp(): void
     {
@@ -32,11 +53,28 @@ class BankAlertingControllerTest extends ControllerTestCase
 
         $this->regularUser = User::factory()->create();
 
-        $this->mockAlertingService = \Mockery::mock(BankAlertingService::class);
-        $this->mockHealthMonitor = \Mockery::mock(CustodianHealthMonitor::class);
+        // Create mocks
+        /** @var BankAlertingService&MockInterface $mockAlertingService */
+        $mockAlertingService = \Mockery::mock(BankAlertingService::class);
+        $this->mockAlertingService = $mockAlertingService;
 
+        /** @var CustodianHealthMonitor&MockInterface $mockHealthMonitor */
+        $mockHealthMonitor = \Mockery::mock(CustodianHealthMonitor::class);
+        $this->mockHealthMonitor = $mockHealthMonitor;
+
+        /** @var CustodianRegistry&MockInterface $mockRegistry */
+        $mockRegistry = \Mockery::mock(CustodianRegistry::class);
+        $this->mockRegistry = $mockRegistry;
+
+        /** @var CircuitBreakerService&MockInterface $mockCircuitBreaker */
+        $mockCircuitBreaker = \Mockery::mock(CircuitBreakerService::class);
+        $this->mockCircuitBreaker = $mockCircuitBreaker;
+
+        // Register mocks with the container
         $this->app->instance(BankAlertingService::class, $this->mockAlertingService);
         $this->app->instance(CustodianHealthMonitor::class, $this->mockHealthMonitor);
+        $this->app->instance(CustodianRegistry::class, $this->mockRegistry);
+        $this->app->instance(CircuitBreakerService::class, $this->mockCircuitBreaker);
     }
 
     #[Test]
@@ -44,12 +82,13 @@ class BankAlertingControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->adminUser);
 
-        $this->mockAlertingService->shouldReceive('performHealthCheck')
-            ->once();
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockAlertingService->shouldReceive('performHealthCheck');
+        $expectation->once();
 
-        $this->mockHealthMonitor->shouldReceive('getAllCustodiansHealth')
-            ->once()
-            ->andReturn([
+        /** @var \Mockery\Expectation $expectation2 */
+        $expectation2 = $this->mockHealthMonitor->shouldReceive('getAllCustodiansHealth');
+        $expectation2->once()->andReturn([
                 'paysera' => [
                     'status'               => 'healthy',
                     'overall_failure_rate' => 2.5,
@@ -108,9 +147,9 @@ class BankAlertingControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->adminUser);
 
-        $this->mockAlertingService->shouldReceive('performHealthCheck')
-            ->once()
-            ->andThrow(new \Exception('Health check service unavailable'));
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockAlertingService->shouldReceive('performHealthCheck');
+        $expectation->once()->andThrow(new \Exception('Health check service unavailable'));
 
         $response = $this->postJson('/api/bank-health/check');
 
@@ -126,9 +165,9 @@ class BankAlertingControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->adminUser);
 
-        $this->mockHealthMonitor->shouldReceive('getAllCustodiansHealth')
-            ->once()
-            ->andReturn([
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockHealthMonitor->shouldReceive('getAllCustodiansHealth');
+        $expectation->once()->andReturn([
                 'paysera' => [
                     'status'               => 'healthy',
                     'overall_failure_rate' => 2.5,
@@ -178,10 +217,9 @@ class BankAlertingControllerTest extends ControllerTestCase
             'last_check'           => now()->toISOString(),
         ];
 
-        $this->mockHealthMonitor->shouldReceive('getCustodianHealth')
-            ->once()
-            ->with('paysera')
-            ->andReturn($health);
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockHealthMonitor->shouldReceive('getCustodianHealth');
+        $expectation->once()->with('paysera')->andReturn($health);
 
         $response = $this->getJson('/api/bank-health/custodians/paysera');
 
@@ -206,10 +244,9 @@ class BankAlertingControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->adminUser);
 
-        $this->mockHealthMonitor->shouldReceive('getCustodianHealth')
-            ->once()
-            ->with('unknown')
-            ->andReturn([]); // Return empty array which is falsy
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockHealthMonitor->shouldReceive('getCustodianHealth');
+        $expectation->once()->with('unknown')->andReturn([]); // Return empty array which is falsy
 
         $response = $this->getJson('/api/bank-health/custodians/unknown');
 
@@ -230,10 +267,9 @@ class BankAlertingControllerTest extends ControllerTestCase
             ['alert_id' => '2', 'severity' => 'critical', 'timestamp' => now()->subDays(2)->toISOString()],
         ];
 
-        $this->mockAlertingService->shouldReceive('getAlertHistory')
-            ->once()
-            ->with('paysera', \Mockery::type('int'))
-            ->andReturn($history);
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockAlertingService->shouldReceive('getAlertHistory');
+        $expectation->once()->with('paysera', \Mockery::type('int'))->andReturn($history);
 
         $response = $this->getJson('/api/bank-health/alerts/paysera/history');
 
@@ -260,10 +296,9 @@ class BankAlertingControllerTest extends ControllerTestCase
     {
         Sanctum::actingAs($this->adminUser);
 
-        $this->mockAlertingService->shouldReceive('getAlertHistory')
-            ->once()
-            ->with('wise', \Mockery::type('int'))
-            ->andReturn([]);
+        /** @var \Mockery\Expectation $expectation */
+        $expectation = $this->mockAlertingService->shouldReceive('getAlertHistory');
+        $expectation->once()->with('wise', \Mockery::type('int'))->andReturn([]);
 
         $response = $this->getJson('/api/bank-health/alerts/wise/history?days=30');
 

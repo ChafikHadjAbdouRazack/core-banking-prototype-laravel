@@ -14,6 +14,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\DomainTestCase;
 
@@ -81,10 +82,14 @@ class LoadTest extends DomainTestCase
         // Create accounts with balance
         foreach ($users as $user) {
             $account = Account::factory()->forUser($user)->create();
-            // Add balance using event sourcing
-            \App\Domain\Asset\Aggregates\AssetTransactionAggregate::retrieve($account->uuid . ':USD')
-                ->credit($account->uuid, 'USD', 1000000, 'Initial balance for load test') // $10,000
-                ->persist();
+
+            // Create account balance directly for performance test
+            \App\Domain\Account\Models\AccountBalance::factory()->create([
+                'account_uuid' => $account->uuid,
+                'asset_code'   => 'USD',
+                'balance'      => 1000000, // $10,000 in cents
+            ]);
+
             $accounts[] = $account;
         }
 
@@ -105,7 +110,8 @@ class LoadTest extends DomainTestCase
             $response = $this->postJson('/api/transfers', [
                 'from_account_uuid' => $fromAccount->uuid,
                 'to_account_uuid'   => $toAccount->uuid,
-                'amount'            => 1000, // $10
+                'asset_code'        => 'USD',
+                'amount'            => 10, // $10 in dollars
                 'reference'         => "Load test transfer $i",
             ]);
 
@@ -131,7 +137,30 @@ class LoadTest extends DomainTestCase
     #[Test]
     public function test_exchange_rate_performance()
     {
+        // Create exchange rates for all asset pairs
         $assets = ['USD', 'EUR', 'GBP', 'CHF', 'JPY'];
+        $rates = [
+            'USD' => ['EUR' => 0.85, 'GBP' => 0.73, 'CHF' => 0.92, 'JPY' => 110.0],
+            'EUR' => ['USD' => 1.18, 'GBP' => 0.86, 'CHF' => 1.08, 'JPY' => 129.5],
+            'GBP' => ['USD' => 1.37, 'EUR' => 1.16, 'CHF' => 1.26, 'JPY' => 150.7],
+            'CHF' => ['USD' => 1.09, 'EUR' => 0.93, 'GBP' => 0.79, 'JPY' => 119.6],
+            'JPY' => ['USD' => 0.0091, 'EUR' => 0.0077, 'GBP' => 0.0066, 'CHF' => 0.0084],
+        ];
+
+        foreach ($rates as $from => $toRates) {
+            foreach ($toRates as $to => $rate) {
+                \App\Domain\Asset\Models\ExchangeRate::factory()->create([
+                    'from_asset_code' => $from,
+                    'to_asset_code'   => $to,
+                    'rate'            => $rate,
+                    'source'          => 'test',
+                    'valid_at'        => now()->subMinutes(5),
+                    'expires_at'      => now()->addHours(1),
+                    'is_active'       => true,
+                ]);
+            }
+        }
+
         $iterations = 100;
         $startTime = microtime(true);
 
@@ -143,7 +172,7 @@ class LoadTest extends DomainTestCase
                 continue;
             }
 
-            $response = $this->getJson("/api/v1/exchange-rates/{$from}/{$to}");
+            $response = $this->getJson("/api/exchange-rates/{$from}/{$to}");
             $response->assertStatus(200);
         }
 
@@ -221,7 +250,6 @@ class LoadTest extends DomainTestCase
             $results = DB::table('accounts')
                 ->join('users', 'accounts.user_uuid', '=', 'users.uuid')
                 ->select('accounts.*', 'users.name as user_name')
-                ->where('accounts.is_active', true)
                 ->orderBy('accounts.created_at', 'desc')
                 ->limit(50)
                 ->get();

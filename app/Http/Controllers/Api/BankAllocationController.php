@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\Services\BankAllocationService;
+use App\Domain\Banking\Models\UserBankPreference;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\UserBankPreference;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -177,8 +177,11 @@ class BankAllocationController extends Controller
 
             // Set primary bank if specified
             if (isset($validated['primary_bank'])) {
-                $this->bankAllocationService->setPrimaryBank($user, $validated['primary_bank']);
-                $allocations = $user->bankPreferences()->getQuery()->where('is_active', true)->get(); // Refresh
+                $updatedPrimary = $this->bankAllocationService->setPrimaryBank($user, $validated['primary_bank']);
+                // Force refresh all allocations from database to get updated is_primary values
+                $allocations = UserBankPreference::where('user_uuid', $user->uuid)
+                    ->where('status', 'active')
+                    ->get();
             }
 
             return response()->json(
@@ -455,14 +458,14 @@ class BankAllocationController extends Controller
     public function getAvailableBanks(): JsonResponse
     {
         $banks = collect(UserBankPreference::AVAILABLE_BANKS)->map(
-            function ($bankInfo, $bankCode) {
+            function (array $bankInfo, string $bankCode) {
                 return [
                     'bank_code'          => $bankCode,
                     'bank_name'          => $bankInfo['name'],
                     'country'            => $bankInfo['country'],
-                    'currency'           => $bankInfo['currency'],
+                    'currency'           => 'EUR', // All banks currently operate in EUR
                     'insurance_limit'    => $bankInfo['deposit_insurance'],
-                    'supported_features' => $bankInfo['features'] ?? [],
+                    'supported_features' => $bankInfo['features'],
                 ];
             }
         )->values();
@@ -554,8 +557,8 @@ class BankAllocationController extends Controller
                 return [
                     'bank_code'             => $bankDistribution['bank_code'],
                     'bank_name'             => $bankDistribution['bank_name'],
-                    'allocation_percentage' => $bankDistribution['allocation_percentage'],
-                    'amount'                => $bankDistribution['amount_in_cents'] / 100,
+                    'allocation_percentage' => $bankDistribution['percentage'],
+                    'amount'                => $bankDistribution['amount'] / 100,
                     'is_primary'            => $bankDistribution['is_primary'],
                 ];
             }

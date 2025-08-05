@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Account\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -133,13 +134,13 @@ class TransactionStatusController extends Controller
         DB::beginTransaction();
         try {
             // Update transaction status
-            $transaction->update(
-                [
+            DB::table('transaction_projections')
+                ->where('id', $transaction->id)
+                ->update([
                     'status'       => 'cancelled',
                     'cancelled_at' => now(),
-                    'cancelled_by' => $user->id,
-                ]
-            );
+                    'cancelled_by' => $user->uuid,
+                ]);
 
             // Reverse any holds or pending operations
             $this->reverseTransaction($transaction);
@@ -182,12 +183,12 @@ class TransactionStatusController extends Controller
             $newTransaction = $this->createRetryTransaction($transaction);
 
             // Mark original as retried
-            $transaction->update(
-                [
+            DB::table('transaction_projections')
+                ->where('id', $transaction->id)
+                ->update([
                     'retried_at'           => now(),
-                    'retry_transaction_id' => $newTransaction->id,
-                ]
-            );
+                    'retry_transaction_id' => $newTransaction->uuid,
+                ]);
 
             DB::commit();
 
@@ -294,6 +295,12 @@ class TransactionStatusController extends Controller
      */
     private function getTransactionStatistics($user)
     {
+        $isTestingWithSqlite = config('database.default') === 'sqlite';
+
+        $avgCompletionTimeQuery = $isTestingWithSqlite
+            ? 'AVG(CASE WHEN status = "completed" THEN (julianday(transaction_projections.updated_at) - julianday(transaction_projections.created_at)) * 86400 END) as avg_completion_time'
+            : 'AVG(CASE WHEN status = "completed" THEN TIMESTAMPDIFF(SECOND, transaction_projections.created_at, transaction_projections.updated_at) END) as avg_completion_time';
+
         $stats = DB::table('transaction_projections')
             ->join('accounts', 'transaction_projections.account_uuid', '=', 'accounts.uuid')
             ->where('accounts.user_uuid', $user->uuid)
@@ -304,7 +311,7 @@ class TransactionStatusController extends Controller
                 DB::raw('SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending'),
                 DB::raw('SUM(CASE WHEN status = "processing" THEN 1 ELSE 0 END) as processing'),
                 DB::raw('SUM(CASE WHEN status = "failed" THEN 1 ELSE 0 END) as failed'),
-                DB::raw('AVG(CASE WHEN status = "completed" THEN TIMESTAMPDIFF(SECOND, transaction_projections.created_at, transaction_projections.updated_at) END) as avg_completion_time')
+                DB::raw($avgCompletionTimeQuery)
             )
             ->first();
 
@@ -340,30 +347,42 @@ class TransactionStatusController extends Controller
             return $transaction;
         }
 
-        // Check payment requests
-        $payment = DB::table('payment_requests')
-            ->join('accounts', 'payment_requests.account_uuid', '=', 'accounts.uuid')
-            ->where('accounts.user_uuid', $user->uuid)
-            ->where('payment_requests.id', $transactionId)
-            ->select('payment_requests.*', 'accounts.name as account_name')
-            ->first();
+        // Check payment requests (if table exists)
+        try {
+            if (\Schema::hasTable('payment_requests')) {
+                $payment = DB::table('payment_requests')
+                    ->join('accounts', 'payment_requests.account_uuid', '=', 'accounts.uuid')
+                    ->where('accounts.user_uuid', $user->uuid)
+                    ->where('payment_requests.id', $transactionId)
+                    ->select('payment_requests.*', 'accounts.name as account_name')
+                    ->first();
 
-        if ($payment) {
-            $payment->source = 'payment';
+                if ($payment) {
+                    $payment->source = 'payment';
 
-            return $payment;
+                    return $payment;
+                }
+            }
+        } catch (\Exception $e) {
+            // Table doesn't exist, skip
         }
 
-        // Check bank transfers
-        $transfer = DB::table('bank_transfers')
-            ->where('user_uuid', $user->uuid)
-            ->where('id', $transactionId)
-            ->first();
+        // Check bank transfers (if table exists)
+        try {
+            if (\Schema::hasTable('bank_transfers')) {
+                $transfer = DB::table('bank_transfers')
+                    ->where('user_uuid', $user->uuid)
+                    ->where('id', $transactionId)
+                    ->first();
 
-        if ($transfer) {
-            $transfer->source = 'bank_transfer';
+                if ($transfer) {
+                    $transfer->source = 'bank_transfer';
 
-            return $transfer;
+                    return $transfer;
+                }
+            }
+        } catch (\Exception $e) {
+            // Table doesn't exist, skip
         }
 
         return null;
@@ -503,7 +522,12 @@ class TransactionStatusController extends Controller
 
         $estimateMinutes = $estimates[$type][$subtype] ?? 60;
 
-        return $transaction->created_at->addMinutes($estimateMinutes);
+        // Parse created_at as Carbon if it's a string
+        $createdAt = is_string($transaction->created_at)
+            ? Carbon::parse($transaction->created_at)
+            : $transaction->created_at;
+
+        return $createdAt->addMinutes($estimateMinutes);
     }
 
     /**
@@ -530,7 +554,7 @@ class TransactionStatusController extends Controller
         }
 
         // Calculate based on time elapsed
-        $created = \Carbon\Carbon::parse($transaction->created_at);
+        $created = Carbon::parse($transaction->created_at);
         $estimate = $this->getEstimatedCompletion($transaction);
 
         if (! $estimate) {
@@ -561,7 +585,7 @@ class TransactionStatusController extends Controller
         }
 
         // Check if too much time has passed
-        $created = \Carbon\Carbon::parse($transaction->created_at);
+        $created = Carbon::parse($transaction->created_at);
         if ($created->diffInMinutes(now()) > 30) {
             return false; // After 30 minutes, likely already processing
         }
@@ -585,7 +609,7 @@ class TransactionStatusController extends Controller
         }
 
         // Check retry limit (e.g., within 24 hours)
-        $failed = \Carbon\Carbon::parse($transaction->updated_at);
+        $failed = Carbon::parse($transaction->updated_at);
         if ($failed->diffInHours(now()) > 24) {
             return false;
         }
@@ -617,13 +641,31 @@ class TransactionStatusController extends Controller
     {
         // Clone the transaction with a new ID and reset status
         $data = (array) $originalTransaction;
-        unset($data['id'], $data['created_at'], $data['updated_at']);
+
+        // Remove fields that are not columns in the table
+        unset(
+            $data['id'],
+            $data['created_at'],
+            $data['updated_at'],
+            $data['cancelled_at'],
+            $data['cancelled_by'],
+            $data['retried_at'],
+            $data['retry_transaction_id'],
+            $data['account_name'],
+            $data['source']
+        ); // Remove joined fields
 
         $data['status'] = 'pending';
-        $data['parent_transaction_id'] = $originalTransaction->id;
+        $data['parent_transaction_id'] = $originalTransaction->uuid; // Use UUID instead of ID
         $data['reference'] = 'RETRY-' . $originalTransaction->reference;
+        $data['uuid'] = \Str::uuid();
+        $data['created_at'] = now();
+        $data['updated_at'] = now();
 
-        return DB::table('transaction_projections')->insertGetId($data);
+        $id = DB::table('transaction_projections')->insertGetId($data);
+
+        // Return an object with the ID and UUID
+        return (object) ['id' => $id, 'uuid' => $data['uuid']];
     }
 
     /**
