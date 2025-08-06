@@ -51,6 +51,10 @@ class LoanApplication extends Model
     use HasFactory;
     use HasUuids;
 
+    protected $keyType = 'string';
+
+    public $incrementing = false;
+
     protected $fillable = [
         'id',
         'borrower_id',
@@ -72,6 +76,7 @@ class LoanApplication extends Model
         'terms',
         'approved_by',
         'approved_at',
+        'approval_metadata',
         'rejection_reasons',
         'rejected_by',
         'rejected_at',
@@ -83,6 +88,7 @@ class LoanApplication extends Model
         'credit_report'       => 'array',
         'risk_factors'        => 'array',
         'terms'               => 'array',
+        'approval_metadata'   => 'array',
         'rejection_reasons'   => 'array',
         'requested_amount'    => 'decimal:2',
         'approved_amount'     => 'decimal:2',
