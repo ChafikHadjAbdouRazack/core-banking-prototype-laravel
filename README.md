@@ -16,7 +16,7 @@ FinAegis is a comprehensive prototype of a core banking platform built with even
 
 📖 **See [GCU Vision Documentation](docs/01-VISION/GCU_VISION.md) for the complete platform vision and GCU implementation details.**
 
-**🤖 AI-Friendly Architecture**: This project is designed for AI-assisted development. The comprehensive documentation, domain-driven design, and well-structured patterns make it ideal for AI coding assistants (Claude Code, GitHub Copilot, Cursor) to understand and contribute effectively.
+**🤖 AI-Powered Banking Framework**: Beyond being AI-development friendly, FinAegis is evolving into a complete AI Agent Framework for financial institutions. With MCP (Model Context Protocol) compatibility, it enables banks to deploy intelligent AI agents for customer service, compliance, risk assessment, and automated trading - all built on our robust event-sourced architecture.
 
 ## 🔗 Quick Links
 
@@ -50,12 +50,20 @@ The demo environment showcases all platform capabilities without real transactio
 
 ## 🏗️ Architecture Highlights
 
+### 🤖 AI Agent Framework (Coming Soon)
+- **MCP Compatible**: Full Model Context Protocol server implementation
+- **Intelligent Agents**: Customer service, compliance, risk, and trading agents
+- **Event-Driven AI**: Every AI decision tracked via event sourcing
+- **Human-in-the-Loop**: Configurable approval workflows for high-value operations
+- **Vector Search**: Semantic understanding of financial operations
+- **RAG Integration**: Context-aware responses using your data
+
 ### Domain-Driven Design (DDD)
 - **25+ Bounded Contexts**: Account, Exchange, Stablecoin, Lending, Wallet, and more
-- **Event Sourcing**: 130+ domain events with full audit trail
-- **CQRS Pattern**: Separated command and query responsibilities
+- **Event Sourcing**: 130+ domain events with full audit trail (perfect for AI audit)
+- **CQRS Pattern**: Separated command and query responsibilities (ideal for AI actions)
 - **Repository Pattern**: Abstracted data access with interfaces
-- **Saga Pattern**: Cross-domain transaction orchestration
+- **Saga Pattern**: Cross-domain transaction orchestration (AI workflow foundation)
 
 ### Recent Improvements (v2.1)
 - **Saga Implementation**: Laravel Workflow-based sagas for complex transactions
