@@ -6,7 +6,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
-[![Demo Available](https://img.shields.io/badge/demo-live-blue.svg)](https://demo.finaegis.com)
+[![Demo Available](https://img.shields.io/badge/demo-live-blue.svg)](https://finaegis.org)
 
 **Open Source Core Banking Prototype Demonstrating Modern Banking Architecture**
 
@@ -20,7 +20,7 @@ FinAegis is a comprehensive prototype of a core banking platform built with even
 
 ## 🔗 Quick Links
 
-- 🌐 **[Live Demo](https://demo.finaegis.com)** - Try the demo environment
+- 🌐 **[Live Demo](https://finaegis.org)** - Try the demo environment
 - 🎮 **[Demo Guide](docs/11-USER-GUIDES/DEMO-USER-GUIDE.md)** - Demo features walkthrough  
 - 📚 **[Documentation](docs/README.md)** - Complete documentation index
 - 🚀 **[Quick Start](#-quick-start)** - Get started immediately
@@ -29,8 +29,7 @@ FinAegis is a comprehensive prototype of a core banking platform built with even
 
 ## 🌐 Live Demo
 
-**🎮 Demo Environment: [https://demo.finaegis.com](https://demo.finaegis.com)**  
-**🌍 Production Site: [https://finaegis.org](https://finaegis.org)**
+**🎮 Prototype/Demo: [https://finaegis.org](https://finaegis.org)**
 
 ### Demo Features
 The demo environment showcases all platform capabilities without real transactions:
@@ -48,8 +47,24 @@ The demo environment showcases all platform capabilities without real transactio
 
 - A technical demonstration of core banking patterns
 - An educational resource for developers
-- A foundation for future development
-- A showcase of modern financial technology concepts
+
+## 🏗️ Architecture Highlights
+
+### Domain-Driven Design (DDD)
+- **25+ Bounded Contexts**: Account, Exchange, Stablecoin, Lending, Wallet, and more
+- **Event Sourcing**: 130+ domain events with full audit trail
+- **CQRS Pattern**: Separated command and query responsibilities
+- **Repository Pattern**: Abstracted data access with interfaces
+- **Saga Pattern**: Cross-domain transaction orchestration
+
+### Recent Improvements (v2.1)
+- **Saga Implementation**: Laravel Workflow-based sagas for complex transactions
+  - `OrderFulfillmentSaga`: Orchestrates exchange order processing
+  - `StablecoinIssuanceSaga`: Manages multi-domain stablecoin minting
+- **CQRS Infrastructure**: CommandBus and QueryBus for clean separation
+- **Domain Event Bus**: Decoupled event publishing and handling
+- **Repository Interfaces**: Proper abstraction for all key aggregates
+- **Compensation Support**: Full rollback capabilities for failed transactions
 
 ### 🌍 Conceptual Implementation: Global Currency Unit (GCU)
 

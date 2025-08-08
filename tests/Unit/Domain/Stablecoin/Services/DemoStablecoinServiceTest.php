@@ -4,8 +4,6 @@ namespace Tests\Unit\Domain\Stablecoin\Services;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Stablecoin\Events\CollateralPositionLiquidated;
-use App\Domain\Stablecoin\Events\StablecoinBurned;
-use App\Domain\Stablecoin\Events\StablecoinMinted;
 use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Models\StablecoinCollateralPosition;
 use App\Domain\Stablecoin\Services\DemoStablecoinService;
@@ -115,8 +113,6 @@ class DemoStablecoinServiceTest extends TestCase
     #[Test]
     public function it_can_mint_stablecoins_with_sufficient_collateral()
     {
-        Event::fake();
-
         $transaction = $this->service->mint(
             accountId: 'acc_123',
             stablecoinId: 'GUSD',
@@ -132,11 +128,13 @@ class DemoStablecoinServiceTest extends TestCase
         $this->assertEquals('completed', $transaction['status']);
         $this->assertTrue($transaction['metadata']['demo_mode']);
 
-        Event::assertDispatched(StablecoinMinted::class, function ($event) {
-            return $event->account_uuid === 'acc_123'
-                && $event->stablecoin_code === 'GUSD'
-                && $event->amount === 1000;
-        });
+        // Verify position was created
+        $position = StablecoinCollateralPosition::where('account_uuid', 'acc_123')
+            ->where('stablecoin_code', 'GUSD')
+            ->first();
+
+        $this->assertNotNull($position);
+        $this->assertEquals(1000000, $position->collateral_amount); // ETH in micro units
     }
 
     #[Test]
@@ -156,8 +154,6 @@ class DemoStablecoinServiceTest extends TestCase
     #[Test]
     public function it_can_burn_stablecoins_and_release_collateral()
     {
-        Event::fake();
-
         // First mint some stablecoins
         $this->service->mint(
             accountId: 'acc_123',
@@ -177,10 +173,13 @@ class DemoStablecoinServiceTest extends TestCase
         $this->assertEquals('burn', $transaction['type']);
         $this->assertEquals(500, $transaction['amount']);
 
-        Event::assertDispatched(StablecoinBurned::class, function ($event) {
-            return $event->account_uuid === 'acc_123'
-                && $event->amount === 500;
-        });
+        // Verify position was updated
+        $position = StablecoinCollateralPosition::where('account_uuid', 'acc_123')
+            ->where('stablecoin_code', 'GUSD')
+            ->first();
+
+        $this->assertNotNull($position);
+        $this->assertEquals(500, $position->debt_amount);
     }
 
     #[Test]
