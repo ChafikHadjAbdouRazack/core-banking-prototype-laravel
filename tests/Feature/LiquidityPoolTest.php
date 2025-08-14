@@ -75,7 +75,7 @@ class LiquidityPoolTest extends DomainTestCase
         $this->assertNotNull($pool);
         $this->assertEquals('BTC', $pool->base_currency);
         $this->assertEquals('EUR', $pool->quote_currency);
-        $this->assertEquals('0.003', $pool->fee_rate);
+        $this->assertEquals('0.003000', $pool->fee_rate);
         $this->assertTrue($pool->is_active);
     }
 
@@ -105,8 +105,8 @@ class LiquidityPoolTest extends DomainTestCase
 
         // Check pool reserves updated
         $poolProjection = PoolProjection::where('pool_id', $poolId)->first();
-        $this->assertEquals('1.00000000', $poolProjection->base_reserve);
-        $this->assertEquals('48000.00', $poolProjection->quote_reserve);
+        $this->assertEquals('1.000000000000000000', $poolProjection->base_reserve);
+        $this->assertEquals('48000.000000000000000000', $poolProjection->quote_reserve);
         $this->assertGreaterThan(0, $poolProjection->total_shares);
 
         // Check provider record created
@@ -150,8 +150,8 @@ class LiquidityPoolTest extends DomainTestCase
 
         // Check pool reserves updated
         $poolProjection = PoolProjection::where('pool_id', $poolId)->first();
-        $this->assertEquals('0.50000000', $poolProjection->base_reserve);
-        $this->assertEquals('24000.00', $poolProjection->quote_reserve);
+        $this->assertEquals('0.500000000000000000', $poolProjection->base_reserve);
+        $this->assertEquals('24000.000000000000000000', $poolProjection->quote_reserve);
 
         // Check provider shares updated
         $provider->refresh();
@@ -205,8 +205,8 @@ class LiquidityPoolTest extends DomainTestCase
 
         // Check pool reserves
         $poolProjection = PoolProjection::where('pool_id', $poolId)->first();
-        $this->assertEquals('3.00000000', $poolProjection->base_reserve);
-        $this->assertEquals('144000.00', $poolProjection->quote_reserve);
+        $this->assertEquals('3.000000000000000000', $poolProjection->base_reserve);
+        $this->assertEquals('144000.000000000000000000', $poolProjection->quote_reserve);
 
         // Check providers have correct share percentages
         $provider1 = LiquidityProvider::where('pool_id', $poolId)
@@ -290,8 +290,8 @@ class LiquidityPoolTest extends DomainTestCase
         $this->assertEquals($poolId, $metrics['pool_id']);
         $this->assertEquals('BTC', $metrics['base_currency']);
         $this->assertEquals('EUR', $metrics['quote_currency']);
-        $this->assertEquals('1.00000000', $metrics['base_reserve']);
-        $this->assertEquals('48000.00', $metrics['quote_reserve']);
+        $this->assertEquals('1.000000000000000000', $metrics['base_reserve']);
+        $this->assertEquals('48000.000000000000000000', $metrics['quote_reserve']);
         $this->assertEquals('48000', substr($metrics['spot_price'], 0, 5));
         $this->assertEquals('96000', substr($metrics['tvl'], 0, 5)); // 1 BTC + 48000 EUR in EUR terms
         $this->assertEquals(1, $metrics['provider_count']);

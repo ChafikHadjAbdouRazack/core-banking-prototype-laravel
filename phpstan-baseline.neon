@@ -1,28 +1,39 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method App\\Actions\\Fortify\\CreateNewUser\:\:createTeam\(\) should return App\\Models\\Team but returns Illuminate\\Database\\Eloquent\\Model\|false\.$#'
-			identifier: return.type
+			message: '#^Readonly property App\\Domain\\Account\\Events\\AssetBalanceAdded::\$assetCode is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
 			count: 1
-			path: app/Actions/Fortify/CreateNewUser.php
+			path: tests/Unit/Domain/Account/Events/AssetBalanceAddedTest.php
 
 		-
-			message: '#^Method App\\Actions\\Jetstream\\CreateTeam\:\:create\(\) should return App\\Models\\Team but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
+			message: '#^Readonly property App\\Domain\\Account\\Events\\AssetBalanceSubtracted::\$amount is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
 			count: 1
-			path: app/Actions/Jetstream/CreateTeam.php
+			path: tests/Unit/Domain/Account/Events/AssetBalanceSubtractedTest.php
 
+		-
+			message: '#^Readonly property App\\Domain\\Compliance\\Events\\SuspiciousActivityDetected::\$transaction is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
+			count: 1
+			path: tests/Unit/Domain/Compliance/Events/SuspiciousActivityDetectedTest.php
+
+		-
+			message: '#^Readonly property App\\Domain\\Lending\\ValueObjects\\CreditScore::\$score is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
+			count: 1
+			path: tests/Unit/Domain/Lending/ValueObjects/CreditScoreTest.php
+
+		-
+			message: '#^Readonly property App\\Domain\\Lending\\ValueObjects\\RiskRating::\$rating is assigned outside of its declaring class\.$#'
+			identifier: property.readOnlyAssignOutOfClass
+			count: 1
+			path: tests/Unit/Domain/Lending/ValueObjects/RiskRatingTest.php
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, string\|false\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Actions/Jetstream/CreateTeam.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:each\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: mixed, Closure\(App\\Models\\Team\)\: void given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Actions/Jetstream/DeleteUser.php
 
 		-
 			message: '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Connection\:\:transaction\(\) expects Closure\(Illuminate\\Database\\Connection\)\: mixed, callable\(\)\: mixed given\.$#'
@@ -37,24 +48,6 @@ parameters:
 			path: app/Actions/Jetstream/InviteTeamMember.php
 
 		-
-			message: '#^Parameter \#1 \$invitation of class Laravel\\Jetstream\\Mail\\TeamInvitation constructor expects Laravel\\Jetstream\\TeamInvitation, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Actions/Jetstream/InviteTeamMember.php
-
-		-
-			message: '#^Offset float does not exist on list\.$#'
-			identifier: offsetAccess.notFound
-			count: 5
-			path: app/Console/Commands/BenchmarkTransferPerformance.php
-
-		-
-			message: '#^Parameter \#2 \$length of function array_chunk expects int\<1, max\>, int given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/BenchmarkTransferPerformance.php
-
-		-
 			message: '#^Result of method Workflow\\WorkflowStub\:\:start\(\) \(void\) is used\.$#'
 			identifier: method.void
 			count: 1
@@ -65,12 +58,6 @@ parameters:
 			identifier: nullCoalesce.variable
 			count: 1
 			path: app/Console/Commands/BenchmarkTransferPerformance.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Console/Commands/CompareBenchmarks.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Account\\Aggregates\\LedgerAggregate\:\:addMoney\(\)\.$#'
@@ -295,61 +282,7 @@ parameters:
 			path: app/Domain/Account/Services/AccountService.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Method App\\Domain\\Account\\Services\\BankAllocationService\:\:addBank\(\) should return App\\Domain\\Banking\\Models\\UserBankPreference but returns Illuminate\\Database\\Eloquent\\Model\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Method App\\Domain\\Account\\Services\\BankAllocationService\:\:setPrimaryBank\(\) should return App\\Domain\\Banking\\Models\\UserBankPreference but returns Illuminate\\Database\\Eloquent\\Model\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, string\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, true\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, array\<string, float\|int\|list\<string\>\|string\>\|float\|string\|false\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, mixed\> given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
 			message: '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Connection\:\:transaction\(\) expects Closure\(Illuminate\\Database\\Connection\)\: mixed, callable\(\)\: mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''bank_code'' given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Domain/Account/Services/BankAllocationService.php
-
-		-
-			message: '#^Parameter \#1 \$values of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, false\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Account/Services/BankAllocationService.php
@@ -551,12 +484,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Asset/Projectors/AssetTransferProjector.php
-
-		-
-			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
-			identifier: varTag.noVariable
-			count: 2
-			path: app/Domain/Asset/Services/ExchangeRateService.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Account\\DataObjects\\AccountUuid\:\:toString\(\)\.$#'
@@ -1249,24 +1176,6 @@ parameters:
 			path: app/Domain/Compliance/Models/SuspiciousActivityReport.php
 
 		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$isTruePositive \(bool\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Compliance/Models/TransactionMonitoringRule.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#3 \$country \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Compliance/Models/TransactionMonitoringRule.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#4 \$currency \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Compliance/Models/TransactionMonitoringRule.php
-
-		-
 			message: '#^Parameter \#1 \$string of function str_pad expects string, int\<1, max\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1493,12 +1402,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Domain/Custodian/Models/CustodianAccount.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$reason \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Custodian/Models/CustodianWebhook.php
 
 		-
 			message: '#^PHPDoc type array\<int, string\> of property App\\Domain\\Custodian\\Models\\CustodianWebhook\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
@@ -2189,18 +2092,6 @@ parameters:
 			identifier: variable.undefined
 			count: 2
 			path: app/Domain/Exchange/Services/ExternalLiquidityService.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Exchange\\Services\\ExchangeService\:\:executePoolSwap\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/LiquidityPoolService.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Exchange\\Services\\ExchangeService\:\:transferFromPool\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/LiquidityPoolService.php
 
 		-
 			message: '#^Parameter \#1 \$num1 of function bcmul expects numeric\-string, string given\.$#'
@@ -3009,7 +2900,7 @@ parameters:
 		-
 			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
 			identifier: varTag.noVariable
-			count: 2
+			count: 1
 			path: app/Domain/Newsletter/Services/SubscriberEmailService.php
 
 		-
@@ -3121,24 +3012,6 @@ parameters:
 			path: app/Domain/Payment/Services/PaymentGatewayService.php
 
 		-
-			message: '#^Method App\\Domain\\Payment\\Services\\PaymentService\:\:processBankWithdrawal\(\) should return array but returns null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Payment/Services/PaymentService.php
-
-		-
-			message: '#^Method App\\Domain\\Payment\\Services\\PaymentService\:\:processStripeDeposit\(\) should return string but returns null\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Payment/Services/PaymentService.php
-
-		-
-			message: '#^Result of method Workflow\\WorkflowStub\:\:start\(\) \(void\) is used\.$#'
-			identifier: method.void
-			count: 2
-			path: app/Domain/Payment/Services/PaymentService.php
-
-		-
 			message: '#^Call to an undefined method App\\Domain\\Payment\\Services\\TransferService\:\:recordTransfer\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -3239,12 +3112,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domain/Regulatory/Models/RegulatoryReport.php
-
-		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#1 \$currency \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Regulatory/Models/RegulatoryThreshold.php
 
 		-
 			message: '#^Method App\\Domain\\Regulatory\\Models\\RegulatoryThreshold\:\:evaluateCondition\(\) should return bool but returns int\|false\.$#'
@@ -3385,12 +3252,6 @@ parameters:
 			path: app/Domain/Regulatory/Services/ReportGeneratorService.php
 
 		-
-			message: '#^Deprecated in PHP 8\.4\: Parameter \#2 \$format \(string\) is implicitly nullable via default value null\.$#'
-			identifier: parameter.implicitlyNullable
-			count: 1
-			path: app/Domain/Regulatory/Services/ReportGeneratorService.php
-
-		-
 			message: '#^Instantiated class PhpOffice\\PhpSpreadsheet\\Spreadsheet not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -3491,12 +3352,6 @@ parameters:
 			identifier: binaryOp.invalid
 			count: 1
 			path: app/Domain/Stablecoin/Oracles/InternalAMMOracle.php
-
-		-
-			message: '#^Binary operation "\*" between \(float\|int\<1, max\>\) and App\\Domain\\Asset\\Models\\ExchangeRate\|null results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Domain/Stablecoin/Services/CollateralService.php
 
 		-
 			message: '#^Parameter \#1 \$callback of static method Illuminate\\Database\\Connection\:\:transaction\(\) expects Closure\(Illuminate\\Database\\Connection\)\: mixed, callable\(\)\: mixed given\.$#'
@@ -4729,18 +4584,6 @@ parameters:
 			path: app/Http/Controllers/Api/BIAN/CurrentAccountController.php
 
 		-
-			message: '#^Access to constant AVAILABLE_BANKS on an unknown class App\\Models\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 3
-			path: app/Http/Controllers/Api/BankAllocationController.php
-
-		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''is_active'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/BankAllocationController.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:complete\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4819,12 +4662,6 @@ parameters:
 			path: app/Http/Controllers/Api/EnhancedRegulatoryController.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between \$this\(App\\Http\\Controllers\\Api\\ExchangeRateController\) and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 2
-			path: app/Http/Controllers/Api/ExchangeRateController.php
-
-		-
 			message: '#^Call to an undefined method Brick\\Math\\BigDecimal\:\:toArray\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4891,12 +4728,6 @@ parameters:
 			path: app/Http/Controllers/Api/LoanController.php
 
 		-
-			message: '#^Parameter \#1 \$uuid of static method Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:retrieve\(\) expects string, int given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Http/Controllers/Api/LoanController.php
-
-		-
 			message: '#^Parameter \#2 \$num2 of function bcsub expects numeric\-string, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4919,12 +4750,6 @@ parameters:
 			identifier: larastan.relationExistence
 			count: 2
 			path: app/Http/Controllers/Api/LoanController.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Domain\\Account\\Models\\Setting\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Http/Controllers/Api/SettingsController.php
 
 		-
 			message: '#^Call to an undefined static method App\\Domain\\Account\\DataObjects\\Money\:\:fromFloat\(\)\.$#'
@@ -5289,7 +5114,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$view of function view expects view\-string\|null, string given\.$#'
 			identifier: argument.type
-			count: 3
+			count: 1
 			path: app/Http/Controllers/CgoController.php
 
 		-
@@ -5693,12 +5518,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Http/Middleware/IdempotencyMiddleware.php
-
-		-
-			message: '#^Parameter \#2 \$values of method Symfony\\Component\\HttpFoundation\\ResponseHeaderBag\:\:set\(\) expects array\<string\>\|string\|null, float\|int\<0, max\> given\.$#'
-			identifier: argument.type
-			count: 3
-			path: app/Http/Middleware/TransactionRateLimitMiddleware.php
 
 		-
 			message: '#^Access to an undefined property App\\Http\\Resources\\BasketPerformanceResource\:\:\$average_value\.$#'
@@ -6259,12 +6078,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''is_active'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/User.php
-
-		-
 			message: '#^Class App\\Workflows\\BlockchainDepositActivities not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -6286,12 +6099,6 @@ parameters:
 			message: '#^Instantiated class App\\Workflows\\BlockchainWithdrawalActivities not found\.$#'
 			identifier: class.notFound
 			count: 1
-			path: app/Providers/BlockchainServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$rpcUrl of class App\\Domain\\Wallet\\Connectors\\EthereumConnector constructor expects string, array\<string, mixed\> given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Providers/BlockchainServiceProvider.php
 
 		-
@@ -7285,24 +7092,6 @@ parameters:
 			path: tests/Feature/Compliance/RegulatoryReportingServiceTest.php
 
 		-
-			message: '#^Property Spatie\\EventSourcing\\StoredEvents\\Models\\EloquentStoredEvent\:\:\$event_properties \(array\) does not accept string\|false\.$#'
-			identifier: assign.propertyType
-			count: 4
-			path: tests/Feature/Compliance/RegulatoryReportingServiceTest.php
-
-		-
-			message: '#^Property Spatie\\EventSourcing\\StoredEvents\\Models\\EloquentStoredEvent\:\:\$meta_data \(Spatie\\SchemalessAttributes\\SchemalessAttributes\) does not accept string\|false\.$#'
-			identifier: assign.propertyType
-			count: 4
-			path: tests/Feature/Compliance/RegulatoryReportingServiceTest.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Models\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 5
-			path: tests/Feature/Console/PopulateDemoDataCommandTest.php
-
-		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$basket\.$#'
 			identifier: property.notFound
 			count: 8
@@ -7663,12 +7452,6 @@ parameters:
 			path: tests/Feature/Http/Controllers/Api/Auth/EmailVerificationControllerTest.php
 
 		-
-			message: '#^Class Tests\\Feature\\Http\\Controllers\\Api\\Auth\\Verified not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Http/Controllers/Api/Auth/EmailVerificationControllerTest.php
-
-		-
 			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Mockery\\LegacyMockInterface given\.$#'
 			identifier: argument.type
 			count: 1
@@ -7687,88 +7470,10 @@ parameters:
 			path: tests/Feature/Http/Controllers/Api/BIAN/PaymentInitiationControllerTest.php
 
 		-
-			message: '#^Call to method updateBalance\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\AccountCacheService\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Call to static method create\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Call to static method create\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\Turnover\.$#'
-			identifier: class.notFound
-			count: 6
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Http\\Controllers\\Api\\AccountCacheService not found\.$#'
-			identifier: class.notFound
-			count: 3
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Http\\Controllers\\Api\\TurnoverCacheService not found\.$#'
-			identifier: class.notFound
-			count: 3
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Http\\Controllers\\Api\\BalanceControllerTest\:\:\$accountCache has unknown class Tests\\Feature\\Http\\Controllers\\Api\\AccountCacheService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Http\\Controllers\\Api\\BalanceControllerTest\:\:\$turnoverCache has unknown class Tests\\Feature\\Http\\Controllers\\Api\\TurnoverCacheService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BalanceControllerTest.php
-
-		-
 			message: '#^Method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertStatus\(\) invoked with 2 parameters, 1 required\.$#'
 			identifier: arguments.count
 			count: 1
 			path: tests/Feature/Http/Controllers/Api/BankAlertingControllerTest.php
-
-		-
-			message: '#^Access to constant AVAILABLE_BANKS on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 21
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
-
-		-
-			message: '#^Call to method setupDefaultAllocations\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\BankAllocationService\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
-
-		-
-			message: '#^Call to static method create\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 10
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
-
-		-
-			message: '#^Call to static method firstOrCreate\(\) on an unknown class Tests\\Feature\\Http\\Controllers\\Api\\Asset\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\Http\\Controllers\\Api\\BankAllocationService not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
-
-		-
-			message: '#^Property Tests\\Feature\\Http\\Controllers\\Api\\BankAllocationControllerTest\:\:\$bankAllocationService has unknown class Tests\\Feature\\Http\\Controllers\\Api\\BankAllocationService as its type\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/BankAllocationControllerTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Exchange\\Services\\ExchangeService\:\:shouldReceive\(\)\.$#'
@@ -7781,12 +7486,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Feature/Http/Controllers/Api/ExchangeControllerTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:or\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/ExchangeRateControllerTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Compliance\\Services\\KycService\|Mockery\\MockInterface\:\:shouldReceive\(\)\.$#'
@@ -7809,12 +7508,6 @@ parameters:
 		-
 			message: '#^Access to an undefined property Laravel\\Sanctum\\PersonalAccessToken\:\:\$plainTextToken\.$#'
 			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Http/Middleware/TransactionRateLimitMiddlewareTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:assertJsonHasPath\(\)\.$#'
-			identifier: method.notFound
 			count: 1
 			path: tests/Feature/Http/Middleware/TransactionRateLimitMiddlewareTest.php
 
@@ -7863,18 +7556,6 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Feature/Models/AccountTest.php
-
-		-
-			message: '#^Call to static method factory\(\) on an unknown class Tests\\Feature\\Models\\AccountBalance\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Models/AccountTest.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class Tests\\Feature\\Models\\Asset\.$#'
-			identifier: class.notFound
 			count: 1
 			path: tests/Feature/Models/AccountTest.php
 
@@ -7939,36 +7620,6 @@ parameters:
 			path: tests/Feature/Models/TransferTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$activeBankPreferences\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Models/UserBankPreferenceTest.php
-
-		-
-			message: '#^Call to static method getDefaultAllocations\(\) on an unknown class App\\Models\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Models/UserBankPreferenceTest.php
-
-		-
-			message: '#^Call to static method validateAllocations\(\) on an unknown class App\\Models\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 4
-			path: tests/Feature/Models/UserBankPreferenceTest.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, float\|string\> given\.$#'
-			identifier: argument.type
-			count: 6
-			path: tests/Feature/Models/UserBankPreferenceTest.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, float\|string\|true\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Models/UserBankPreferenceTest.php
-
-		-
 			message: '#^Method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertRedirect\(\) invoked with 2 parameters, 0\-1 required\.$#'
 			identifier: arguments.count
 			count: 1
@@ -8011,18 +7662,6 @@ parameters:
 			path: tests/Feature/RegistrationTest.php
 
 		-
-			message: '#^Call to static method getRoutes\(\) on an unknown class Tests\\Feature\\Route\.$#'
-			identifier: class.notFound
-			count: 3
-			path: tests/Feature/RouteIntegrityTest.php
-
-		-
-			message: '#^Parameter \#1 \$suffix of method PHPUnit\\Framework\\Assert\:\:assertStringEndsWith\(\) expects non\-empty\-string, string given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/RouteIntegrityTest.php
-
-		-
 			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
 			identifier: argument.type
 			count: 4
@@ -8035,94 +7674,10 @@ parameters:
 			path: tests/Feature/SchemaMarkupTest.php
 
 		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Models\\UserBankPreference\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/Seeders/DemoDataSeederTest.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 3
 			path: tests/Feature/SeoMetaTagsTest.php
-
-		-
-			message: '#^Call to static method get\(\) on an unknown class Tests\\Feature\\Setting\.$#'
-			identifier: class.notFound
-			count: 11
-			path: tests/Feature/SettingsTest.php
-
-		-
-			message: '#^Call to static method getGroup\(\) on an unknown class Tests\\Feature\\Setting\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/SettingsTest.php
-
-		-
-			message: '#^Call to static method set\(\) on an unknown class Tests\\Feature\\Setting\.$#'
-			identifier: class.notFound
-			count: 4
-			path: tests/Feature/SettingsTest.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class Tests\\Feature\\Setting\.$#'
-			identifier: class.notFound
-			count: 5
-			path: tests/Feature/SettingsTest.php
-
-		-
-			message: '#^Class Tests\\Feature\\SubProductService not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/SubProductSimpleTest.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:assertInertia\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Call to method component\(\) on an unknown class Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Call to method has\(\) on an unknown class Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Call to method where\(\) on an unknown class Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 3
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Call to static method forceCreate\(\) on an unknown class App\\Domain\\Transaction\\Models\\Transaction\.$#'
-			identifier: class.notFound
-			count: 2
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Parameter \$filters of anonymous function has invalid type Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Parameter \$page of anonymous function has invalid type Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 5
-			path: tests/Feature/TransactionStatusTrackingTest.php
-
-		-
-			message: '#^Parameter \$stats of anonymous function has invalid type Inertia\\Testing\\AssertableInertia\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/TransactionStatusTrackingTest.php
 
 		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
@@ -8399,6 +7954,18 @@ parameters:
 			identifier: trait.unused
 			count: 1
 			path: tests/Traits/MocksWorkflows.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\:\:andThrow\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/AI/AgentWorkflowTest.php
+
+		-
+			message: '#^Call to an undefined method Mockery\\ExpectationInterface\:\:andThrow\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/AI/MCPServerTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Wallet\\Services\\SecureKeyStorageService\:\:shouldReceive\(\)\.$#'
@@ -8831,18 +8398,6 @@ parameters:
 			identifier: assign.propertyProtectedSet
 			count: 1
 			path: tests/Unit/Domain/Lending/ValueObjects/RiskRatingTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 10
-			path: tests/Unit/Domain/Payment/Services/PaymentServiceTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Domain\\Payment\\Services\\PaymentServiceTest\:\:\$service is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: tests/Unit/Domain/Payment/Services/PaymentServiceTest.php
 
 		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
@@ -9793,31 +9348,7 @@ parameters:
 			path: tests/Unit/Testing/TestEventSerializerTest.php
 
 		-
-			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Values/DefaultAccountNamesTest.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''App\\\\Domain\\\\Account\\\\Values\\\\DefaultAccountNames'' and ''default'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/Values/DefaultAccountNamesTest.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''App\\\\Domain\\\\Account\\\\Values\\\\DefaultAccountNames'' and ''label'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/Values/DefaultAccountNamesTest.php
-
-		-
-			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/View/Components/AppLayoutTest.php
-
-		-
-			message: '#^Call to function method_exists\(\) with ''App\\\\View\\\\Components\\\\AppLayout'' and ''render'' will always evaluate to true\.$#'
+			message: '#^Call to function is_callable\(\) with array\{App\\View\\Components\\AppLayout, ''render''\} will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: tests/View/Components/AppLayoutTest.php

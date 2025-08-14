@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.4'
+        default: '8.3'
         type: string
 
 env:
@@ -57,7 +57,8 @@ jobs:
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          echo "APP_KEY set for composer install"
+          # Ensure APP_KEY is set for composer install
+          echo "APP_KEY=base64:L0Y3T6X2hNmHYRlFrxbCqzFtZPZvGPVzYvNDzUMMNFw=" >> .env
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
@@ -114,7 +115,8 @@ jobs:
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          echo "APP_KEY set for composer install"
+          # Ensure APP_KEY is set for composer install
+          echo "APP_KEY=base64:L0Y3T6X2hNmHYRlFrxbCqzFtZPZvGPVzYvNDzUMMNFw=" >> .env
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
@@ -171,7 +173,8 @@ jobs:
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          echo "APP_KEY set for composer install"
+          # Ensure APP_KEY is set for composer install
+          echo "APP_KEY=base64:L0Y3T6X2hNmHYRlFrxbCqzFtZPZvGPVzYvNDzUMMNFw=" >> .env
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
@@ -228,7 +231,8 @@ jobs:
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          echo "APP_KEY set for composer install"
+          # Ensure APP_KEY is set for composer install
+          echo "APP_KEY=base64:L0Y3T6X2hNmHYRlFrxbCqzFtZPZvGPVzYvNDzUMMNFw=" >> .env
           
       - name: Install Dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader

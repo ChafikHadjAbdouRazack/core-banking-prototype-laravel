@@ -26,17 +26,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Code Quality (ALWAYS RUN BEFORE COMMITTING)
 ```bash
-# Run PHPStan analysis (Level 5)
-TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
+# Run PHPStan analysis (Level 5) - Xdebug disabled for performance
+XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
 
-# Fix code style issues
+# Stricter analysis for new/modified files (Level 7)
+XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse [files] --level=7 --memory-limit=2G
+
+# Check for dead code and bleeding edge issues
+XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse [files] --level=max --memory-limit=2G
+
+# Fix code style issues (IMPORTANT: Run before committing!)
 ./vendor/bin/php-cs-fixer fix
 
-# Check style without fixing
+# Check style without fixing (use this to verify)
 ./vendor/bin/php-cs-fixer fix --dry-run --diff
 
-# Quick validation before commit (one-liner)
-./vendor/bin/pest --parallel && TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G && ./vendor/bin/php-cs-fixer fix --dry-run --diff
+# Quick validation before commit (one-liner - RECOMMENDED)
+./vendor/bin/pest --parallel && XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G && ./vendor/bin/php-cs-fixer fix
+
+# Full pre-commit validation (ensures all style issues are fixed)
+./vendor/bin/php-cs-fixer fix && ./vendor/bin/pest --parallel && XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
 ```
 
 ### Development Server

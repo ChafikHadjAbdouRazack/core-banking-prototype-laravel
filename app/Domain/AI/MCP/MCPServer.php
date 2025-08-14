@@ -168,8 +168,40 @@ class MCPServer implements MCPServerInterface
 
         $tool = $this->tools[$toolName];
 
-        // Validate input against schema
+        // Validate input against schema first (before authorization)
         $this->validateToolInput($tool, $arguments);
+
+        // Additional validation using tool's validateInput method
+        if (! $tool->validateInput($arguments)) {
+            throw new \InvalidArgumentException("Tool input validation failed for: {$toolName}");
+        }
+
+        // Check authorization after validation
+        $userId = $arguments['user_uuid'] ?? null;
+
+        // Check authorization - the tool decides if it needs a user
+        if (! $tool->authorize($userId)) {
+            // Determine the type of failure based on context
+            // If there's no user ID and no authenticated user, this might be a "not found" case
+            // But we need to check if the tool actually requires authentication
+            if (! $userId && ! auth()->check()) {
+                // Check if this tool typically requires auth by looking at its input schema
+                $schema = $tool->getInputSchema();
+                $requiresUser = isset($schema['properties']['user_uuid']) ||
+                               in_array('user_uuid', $schema['required'] ?? []);
+
+                // If the tool expects a user and none is provided, it's a "not found/not authenticated" issue
+                if ($requiresUser) {
+                    // Return an error response that will be handled by the handle() method
+                    throw new MCPException('User not found or not authenticated');
+                }
+            }
+
+            // Otherwise it's a proper authorization failure
+            throw new \Illuminate\Auth\Access\AuthorizationException(
+                "User is not authorized to use tool: {$toolName}"
+            );
+        }
 
         // Execute tool with timing
         $startTime = microtime(true);
@@ -422,7 +454,20 @@ class MCPServer implements MCPServerInterface
 
     public function listTools(): array
     {
-        return array_values($this->tools);
+        // Get fresh tools from registry
+        $this->tools = $this->toolRegistry->getAllTools();
+
+        $tools = [];
+        foreach ($this->tools as $name => $tool) {
+            if ($tool instanceof MCPToolInterface) {
+                $tools[] = [
+                    'name'        => $tool->getName(),
+                    'description' => $tool->getDescription(),
+                ];
+            }
+        }
+
+        return $tools;
     }
 
     public function listResources(): array
