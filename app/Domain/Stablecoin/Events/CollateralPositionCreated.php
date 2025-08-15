@@ -16,8 +16,7 @@ class CollateralPositionCreated extends ShouldBeStored
         public readonly int $collateral_amount,
         public readonly int $debt_amount,
         public readonly float $collateral_ratio,
-        public readonly string $status = 'active',
-        public readonly array $metadata = []
+        public readonly string $status
     ) {
     }
 }

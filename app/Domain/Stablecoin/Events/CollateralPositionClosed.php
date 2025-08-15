@@ -10,8 +10,7 @@ class CollateralPositionClosed extends ShouldBeStored
 {
     public function __construct(
         public readonly string $position_uuid,
-        public readonly string $reason = 'user_closed',
-        public readonly array $metadata = []
+        public readonly string $reason
     ) {
     }
 }
