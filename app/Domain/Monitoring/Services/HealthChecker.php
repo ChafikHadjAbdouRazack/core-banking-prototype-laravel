@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Redis;
 
 class HealthChecker
 {
+    private ?MetricsCollector $metricsCollector;
+
+    public function __construct(?MetricsCollector $metricsCollector = null)
+    {
+        $this->metricsCollector = $metricsCollector;
+    }
+
     /**
      * Perform comprehensive health check.
      */
@@ -26,8 +33,14 @@ class HealthChecker
 
         $healthy = collect($checks)->every(fn ($check) => $check['healthy']);
 
+        // Update metrics if collector is available
+        if ($this->metricsCollector) {
+            $this->updateHealthMetrics($checks, $healthy);
+        }
+
         return [
             'status'    => $healthy ? 'healthy' : 'unhealthy',
+            'healthy'   => $healthy,
             'timestamp' => now()->toIso8601String(),
             'checks'    => $checks,
         ];
@@ -73,7 +86,7 @@ class HealthChecker
             return [
                 'name'    => 'database',
                 'healthy' => false,
-                'message' => 'Database connection failed: ' . $e->getMessage(),
+                'message' => 'Database connection failed',
                 'error'   => $e->getMessage(),
             ];
         }
@@ -102,7 +115,7 @@ class HealthChecker
             return [
                 'name'    => 'cache',
                 'healthy' => false,
-                'message' => 'Cache check failed: ' . $e->getMessage(),
+                'message' => 'Cache check failed',
                 'error'   => $e->getMessage(),
             ];
         }
@@ -128,7 +141,7 @@ class HealthChecker
             return [
                 'name'    => 'redis',
                 'healthy' => false,
-                'message' => 'Redis connection failed: ' . $e->getMessage(),
+                'message' => 'Redis connection failed',
                 'error'   => $e->getMessage(),
             ];
         }
@@ -159,7 +172,7 @@ class HealthChecker
             return [
                 'name'    => 'queue',
                 'healthy' => false,
-                'message' => 'Queue check failed: ' . $e->getMessage(),
+                'message' => 'Queue check failed',
                 'error'   => $e->getMessage(),
             ];
         }
@@ -190,7 +203,7 @@ class HealthChecker
             return [
                 'name'    => 'storage',
                 'healthy' => false,
-                'message' => 'Storage check failed: ' . $e->getMessage(),
+                'message' => 'Storage check failed',
                 'error'   => $e->getMessage(),
             ];
         }
@@ -216,9 +229,33 @@ class HealthChecker
             return [
                 'name'    => 'migrations',
                 'healthy' => false,
-                'message' => 'Migration check failed: ' . $e->getMessage(),
+                'message' => 'Migration check failed',
                 'error'   => $e->getMessage(),
             ];
+        }
+    }
+
+    /**
+     * Update health metrics.
+     */
+    private function updateHealthMetrics(array $checks, bool $healthy): void
+    {
+        if (! $this->metricsCollector) {
+            return;
+        }
+
+        // Overall health metric (1 = healthy, 0 = unhealthy)
+        $this->metricsCollector->recordBusinessEvent('health_check', [
+            'status'  => $healthy ? 'healthy' : 'unhealthy',
+            'healthy' => $healthy,
+        ]);
+
+        // Component health metrics
+        foreach ($checks as $component => $check) {
+            $this->metricsCollector->recordBusinessEvent("health_check_{$component}", [
+                'healthy' => $check['healthy'],
+                'message' => $check['message'] ?? '',
+            ]);
         }
     }
 }

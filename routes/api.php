@@ -36,7 +36,6 @@ use App\Http\Controllers\Api\TransferController;
 use App\Http\Controllers\Api\UserVotingController;
 use App\Http\Controllers\Api\VoteController;
 use App\Http\Controllers\Api\WorkflowMonitoringController;
-use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\StatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -63,10 +62,11 @@ Route::get('/', function () {
 
 // Monitoring endpoints (public - for Prometheus and Kubernetes)
 Route::prefix('monitoring')->group(function () {
-    Route::get('/metrics', [MonitoringController::class, 'metrics'])->name('monitoring.metrics');
-    Route::get('/health', [MonitoringController::class, 'health'])->name('monitoring.health');
-    Route::get('/ready', [MonitoringController::class, 'ready'])->name('monitoring.ready');
-    Route::get('/alive', [MonitoringController::class, 'alive'])->name('monitoring.alive');
+    Route::get('/metrics', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])->name('monitoring.metrics');
+    Route::get('/prometheus', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])->name('monitoring.prometheus');
+    Route::get('/health', [App\Http\Controllers\Api\MonitoringController::class, 'health'])->name('monitoring.health');
+    Route::get('/ready', [App\Http\Controllers\Api\MonitoringController::class, 'ready'])->name('monitoring.ready');
+    Route::get('/alive', [App\Http\Controllers\Api\MonitoringController::class, 'alive'])->name('monitoring.alive');
 });
 
 // Legacy authentication routes for backward compatibility
@@ -558,6 +558,22 @@ Route::prefix('webhooks/custodian')->middleware(['api.rate_limit:webhook'])->gro
 Route::prefix('webhooks')->middleware(['api.rate_limit:webhook'])->group(function () {
     Route::post('/coinbase-commerce', [App\Http\Controllers\CoinbaseWebhookController::class, 'handleWebhook'])
         ->middleware('webhook.signature:coinbase');
+});
+
+// Extended monitoring endpoints with authentication
+Route::prefix('monitoring')->middleware('auth:sanctum')->group(function () {
+    // JSON metrics endpoint (different from Prometheus format)
+    Route::get('/metrics-json', [App\Http\Controllers\Api\MonitoringController::class, 'metrics']);
+    Route::get('/traces', [App\Http\Controllers\Api\MonitoringController::class, 'traces']);
+    Route::get('/trace/{traceId}', [App\Http\Controllers\Api\MonitoringController::class, 'trace']);
+    Route::get('/alerts', [App\Http\Controllers\Api\MonitoringController::class, 'alerts']);
+    Route::put('/alerts/{alertId}/acknowledge', [App\Http\Controllers\Api\MonitoringController::class, 'acknowledgeAlert']);
+
+    // Workflow management (admin only)
+    Route::middleware('is_admin')->group(function () {
+        Route::post('/workflow/start', [App\Http\Controllers\Api\MonitoringController::class, 'startWorkflow']);
+        Route::post('/workflow/stop', [App\Http\Controllers\Api\MonitoringController::class, 'stopWorkflow']);
+    });
 });
 
 // Include BIAN-compliant routes

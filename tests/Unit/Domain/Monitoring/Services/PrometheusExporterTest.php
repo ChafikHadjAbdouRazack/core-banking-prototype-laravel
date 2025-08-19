@@ -152,7 +152,7 @@ class PrometheusExporterTest extends TestCase
         $this->assertStringContainsString('http_requests_total', $output);
         // Prometheus format uses labels in curly braces
         if (strpos($output, 'status=') !== false) {
-            $this->assertMatchesRegularExpression('/\{[^}]*status="?\w+"?[^}]*\}/', $output);
+            $this->assertMatchesRegularExpression('/\{[^}]*status=\"?\w+\"?[^}]*\}/', $output);
         }
     }
 
