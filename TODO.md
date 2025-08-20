@@ -65,6 +65,60 @@ Last updated: 2025-01-08 (January 2025)
 
 ## 📋 Current Priorities
 
+### 🔴 URGENT - AGENTS.md Specification Implementation
+
+#### Action Items for Full AGENTS.md Compatibility
+
+##### Website Content Updates
+- [ ] Add dedicated "AI-Friendly Development" section to website
+- [ ] Create developer portal page highlighting AGENTS.md support
+- [ ] Add code examples showing AI agent integration
+- [ ] Include testimonials/case studies of AI-assisted development
+- [ ] Add "Built with AI Assistance" badge/recognition
+- [ ] Create interactive demo showing AI agents working with the codebase
+
+##### Documentation Updates
+- [x] Create root AGENTS.md file with comprehensive project guidance
+- [x] Add domain-specific AGENTS.md in app/Domain/
+- [x] Add testing-specific AGENTS.md in tests/
+- [x] Create AI-AGENT-COMPATIBILITY.md documentation
+- [x] Update README.md to mention AGENTS.md support
+- [ ] Add AGENTS.md files for each major domain (Exchange, Stablecoin, Lending, etc.)
+- [ ] Create AGENTS.md for database migrations directory
+- [ ] Add AGENTS.md for config directory
+- [ ] Create AGENTS.md for routes directory
+- [ ] Add AGENTS.md for each Filament admin resource
+
+##### Development Implementation
+- [ ] Create automated AGENTS.md discovery endpoint for AI tools
+- [ ] Implement AGENTS.md validation in CI/CD pipeline
+- [ ] Add pre-commit hook to check AGENTS.md consistency
+- [ ] Create Artisan command to generate AGENTS.md templates
+- [ ] Implement AGENTS.md linting rules
+- [ ] Add AGENTS.md to code generation templates
+- [ ] Create PHPDoc annotations for AI agent hints
+- [ ] Implement structured logging for AI agent debugging
+
+##### Additional Recommendations
+- [ ] Create AI agent integration tests
+- [ ] Set up GitHub Copilot workspace configuration
+- [ ] Configure Cursor IDE settings with project patterns
+- [ ] Create prompt templates for common tasks
+- [ ] Document successful AI agent use cases
+- [ ] Establish AI agent contribution guidelines
+- [ ] Create AI-specific issue templates
+- [ ] Set up AI agent performance metrics
+- [ ] Implement feedback mechanism for AI suggestions
+- [ ] Create AI agent onboarding guide
+
+##### Marketing & Community
+- [ ] Write blog post about AGENTS.md implementation
+- [ ] Create video tutorial for AI-assisted development
+- [ ] Submit to agents.md directory/showcase
+- [ ] Share implementation on social media
+- [ ] Create case study for OpenAI
+- [ ] Contribute improvements back to AGENTS.md spec
+
 ### 🔴 URGENT - AI Agent Framework Implementation (DDD + Event Sourcing)
 
 #### Phase 1: Foundation - MCP Server & Domain Structure ✅ COMPLETED (January 2025)
