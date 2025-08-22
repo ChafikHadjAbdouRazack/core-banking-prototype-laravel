@@ -398,8 +398,10 @@ class AccountController extends Controller
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
-        // Check authorization - user must own the account
-        if ($account->user_uuid !== $request->user()->uuid) {
+        // Check authorization - user must own the account OR be an admin
+        // Use Spatie role check for admin, not tokenCan which is for Sanctum scopes
+        $isAdmin = $request->user()->hasRole(['admin', 'super_admin', 'bank_admin']);
+        if (! $isAdmin && $account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');
         }
 
@@ -487,8 +489,9 @@ class AccountController extends Controller
 
         $account = Account::where('uuid', $uuid)->firstOrFail();
 
-        // Check authorization - user must own the account
-        if ($account->user_uuid !== $request->user()->uuid) {
+        // Check authorization - user must own the account OR be an admin
+        $isAdmin = $request->user()->hasRole(['admin', 'super_admin', 'bank_admin']);
+        if (! $isAdmin && $account->user_uuid !== $request->user()->uuid) {
             abort(403, 'Forbidden');
         }
 

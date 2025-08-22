@@ -17,6 +17,8 @@ class AuthenticationSecurityTest extends TestCase
     {
         parent::setUp();
         RateLimiter::clear('login');
+        // Clear password reset rate limits for test IP
+        RateLimiter::clear('password-reset:127.0.0.1');
     }
 
     #[Test]
@@ -194,9 +196,8 @@ class AuthenticationSecurityTest extends TestCase
     #[Test]
     public function test_token_expiration_is_enforced()
     {
-        // WARNING: This test documents that token expiration is not properly enforced
-        // The expires_at field exists but is not being checked by the Sanctum guard
-        // TODO: Investigate why Sanctum is not respecting the expires_at field
+        // This test verifies that token expiration is properly enforced
+        // Expired tokens should not be able to authenticate
 
         $user = User::factory()->create();
 
@@ -211,26 +212,32 @@ class AuthenticationSecurityTest extends TestCase
 
         // Token should work immediately
         $response = $this->withToken($token)->getJson('/api/auth/user');
-        $this->assertEquals(200, $response->status());
+        $this->assertEquals(200, $response->status(), 'Fresh token should authenticate successfully');
 
         // Simulate time passing beyond expiration
         $this->travel(2)->minutes();
 
-        // Token should be expired but currently isn't (vulnerability)
+        // Token should be expired and authentication should fail
         $response = $this->withToken($token)->getJson('/api/auth/user');
 
-        // Document the current behavior (should be 401 but returns 200)
+        // Expect 401 since we've fixed the token expiration vulnerability
         $this->assertEquals(
-            200,
+            401,
             $response->status(),
-            'SECURITY WARNING: Token expiration is not enforced. Expired tokens still authenticate.'
+            'Expired tokens should not authenticate'
         );
 
-        // Verify the token is actually expired in the database
-        $this->assertTrue(
-            $tokenResult->accessToken->fresh()->expires_at->isPast(),
-            'Token should be expired in database but still authenticates'
-        );
+        // Verify the token is actually expired in the database (or deleted)
+        $freshToken = $tokenResult->accessToken->fresh();
+        if ($freshToken) {
+            $this->assertTrue(
+                $freshToken->expires_at->isPast(),
+                'Token should be expired in database'
+            );
+        } else {
+            // Token may have been deleted as part of cleanup
+            $this->assertNull($freshToken, 'Token may have been deleted after expiration');
+        }
     }
 
     #[Test]
@@ -275,6 +282,9 @@ class AuthenticationSecurityTest extends TestCase
     {
         $user = User::factory()->create();
 
+        // Clear rate limits for test IP
+        RateLimiter::clear('password-reset:127.0.0.1');
+
         // Request password reset
         $response = $this->postJson('/api/auth/forgot-password', [
             'email' => $user->email,
@@ -299,31 +309,37 @@ class AuthenticationSecurityTest extends TestCase
     #[Test]
     public function test_user_enumeration_is_prevented()
     {
-        // WARNING: This test documents a security vulnerability that should be fixed
-        // The password reset endpoint currently allows user enumeration
-        // TODO: Fix PasswordResetController to always return the same response
+        // This test verifies that user enumeration is prevented
+        // The password reset endpoint should return the same response
+        // regardless of whether the email exists or not
 
         User::factory()->create(['email' => 'exists@example.com']);
+
+        // Clear rate limits for test IP
+        RateLimiter::clear('password-reset:127.0.0.1');
 
         // Test password reset with existing user
         $response1 = $this->postJson('/api/auth/forgot-password', [
             'email' => 'exists@example.com',
         ]);
 
+        // Clear rate limits between requests
+        RateLimiter::clear('password-reset:127.0.0.1');
+
         // Test password reset with non-existing user
         $response2 = $this->postJson('/api/auth/forgot-password', [
             'email' => 'doesnotexist@example.com',
         ]);
 
-        // Currently, these return different responses (vulnerability)
+        // Both should return the same status to prevent user enumeration
         $this->assertEquals(200, $response1->status());
-        $this->assertEquals(422, $response2->status());
+        $this->assertEquals(200, $response2->status());
 
-        // Document that this is a security issue
-        $this->assertTrue(
-            $response1->status() !== $response2->status(),
-            'SECURITY WARNING: Password reset endpoint allows user enumeration. ' .
-            'Both requests should return the same status code and message.'
+        // Verify the responses have the same structure
+        $this->assertEquals(
+            $response1->json('message'),
+            $response2->json('message'),
+            'Both responses should have identical messages to prevent user enumeration'
         );
     }
 
