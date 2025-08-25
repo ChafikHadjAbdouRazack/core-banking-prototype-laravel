@@ -60,6 +60,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'validate.key.access' => \App\Http\Middleware\ValidateKeyAccess::class,
             'demo' => \App\Http\Middleware\DemoMode::class,
             'scope' => \App\Http\Middleware\CheckApiScope::class,
+            'check.blocked.ip' => \App\Http\Middleware\CheckBlockedIp::class,
             'ip.blocking' => \App\Http\Middleware\IpBlocking::class,
             'require.2fa.admin' => \App\Http\Middleware\RequireTwoFactorForAdmin::class,
         ]);

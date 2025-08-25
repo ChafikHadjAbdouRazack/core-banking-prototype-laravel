@@ -120,6 +120,7 @@ else
     fi
 fi
 echo ""
+echo ""
 
 # 4. Security Tests - Check if tests pass
 echo -e "${BLUE}[4/5] Running Security Tests...${NC}"
