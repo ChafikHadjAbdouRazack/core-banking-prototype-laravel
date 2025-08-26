@@ -4,7 +4,9 @@ namespace Database\Factories;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transaction;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domain\Account\Models\Transaction>
@@ -15,13 +17,20 @@ class TransactionFactory extends Factory
      * The name of the factory's corresponding model.
      *
      * @var string
+     * @phpstan-ignore property.phpDocType
      */
     protected $model = Transaction::class;
+
+    /**
+     * Track aggregate versions for each account UUID to ensure they're sequential.
+     */
+    private static array $aggregateVersions = [];
 
     /**
      * Define the model's default state.
      *
      * @return array<string, mixed>
+     * @phpstan-ignore method.childReturnType
      */
     public function definition(): array
     {
@@ -29,7 +38,7 @@ class TransactionFactory extends Factory
         $type = fake()->randomElement($types);
 
         // Generate amount based on type (deposits and transfers in are positive, withdrawals and transfers out are negative)
-        $amount = match($type) {
+        $amount = match($type) { // @phpstan-ignore match.unhandled
             'deposit', 'transfer_in' => fake()->numberBetween(100, 100000), // $1 to $1000
             'withdrawal', 'transfer_out' => -fake()->numberBetween(100, 50000), // -$1 to -$500
         };
@@ -38,7 +47,7 @@ class TransactionFactory extends Factory
 
         return [
             'aggregate_uuid'    => $accountUuid,
-            'aggregate_version' => fake()->numberBetween(1, 100),
+            'aggregate_version' => $this->getNextVersionForAggregate($accountUuid),
             'event_version'     => 1,
             'event_class'       => 'App\\Domain\\Account\\Events\\MoneyAdded',
             'event_properties'  => [
@@ -53,6 +62,23 @@ class TransactionFactory extends Factory
             ],
             'created_at' => now(),
         ];
+    }
+
+    /**
+     * Get the next version for an aggregate, ensuring sequential versions.
+     */
+    private function getNextVersionForAggregate(string $aggregateUuid): int
+    {
+        if (! isset(self::$aggregateVersions[$aggregateUuid])) {
+            // Check if there are existing transactions for this aggregate
+            $lastVersion = Transaction::where('aggregate_uuid', $aggregateUuid)
+                ->orderBy('aggregate_version', 'desc')
+                ->value('aggregate_version') ?? 0;
+
+            self::$aggregateVersions[$aggregateUuid] = $lastVersion;
+        }
+
+        return ++self::$aggregateVersions[$aggregateUuid];
     }
 
     /**
@@ -120,8 +146,49 @@ class TransactionFactory extends Factory
      */
     public function forAccount(Account $account): static
     {
-        return $this->state(fn (array $attributes) => [
-            'aggregate_uuid' => $account->uuid,
-        ]);
+        return $this->state(function (array $attributes) use ($account) {
+            return [
+                'aggregate_uuid'    => $account->uuid,
+                'aggregate_version' => $this->getNextVersionForAggregate($account->uuid),
+            ];
+        });
+    }
+
+    /**
+     * Create a new instance of the model and filter out invalid attributes.
+     *
+     * Override parent create to handle amount attribute properly for event sourcing.
+     *
+     * @param array $attributes
+     * @param Model|null $parent
+     * @return Transaction|Collection
+     * @phpstan-return Transaction|Collection<int, Transaction>
+     */
+    public function create($attributes = [], ?Model $parent = null)
+    {
+        // Transaction extends EloquentStoredEvent so it only has event sourcing columns
+        // If amount is passed as a direct attribute, move it to event_properties
+        if (is_array($attributes) && isset($attributes['amount'])) {
+            $amount = $attributes['amount'];
+            unset($attributes['amount']);
+
+            // Ensure event_properties exists in attributes
+            if (! isset($attributes['event_properties'])) {
+                $attributes['event_properties'] = [];
+            }
+
+            // Add amount to event_properties
+            $attributes['event_properties']['amount'] = $amount;
+        }
+
+        return parent::create($attributes, $parent);
+    }
+
+    /**
+     * Clear the version cache (useful for tests).
+     */
+    public static function clearVersionCache(): void
+    {
+        self::$aggregateVersions = [];
     }
 }
