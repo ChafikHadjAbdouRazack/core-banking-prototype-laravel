@@ -46,23 +46,33 @@ echo ""
 
 # Get list of modified PHP files
 if [ "$CHECK_ALL" = true ]; then
-    FILES="app/ tests/"
-    echo -e "${YELLOW}Checking all files in app/ and tests/...${NC}"
+    FILES="app/ config/ database/ routes/ tests/"
+    echo -e "${YELLOW}Checking all files in app/, config/, database/, routes/, and tests/...${NC}"
 else
-    # Get modified PHP files (staged and unstaged) from both app/ and tests/
-    FILES=$(git diff --name-only --diff-filter=ACMR HEAD -- '*.php' | grep -E '^(app|tests)/' || true)
+    # Get modified PHP files - check BOTH staged AND working directory changes
+    # This ensures we catch issues whether files are staged or not
+    FILES=$(
+        {
+            # Staged changes (files in index)
+            git diff --cached --name-only --diff-filter=ACMR -- '*.php'
+            # Working directory changes (modified but not staged)
+            git diff --name-only --diff-filter=ACMR -- '*.php'
+            # Files different from HEAD (catches both staged and unstaged)
+            git diff --name-only --diff-filter=ACMR HEAD -- '*.php'
+        } | sort -u | grep -E '^(app|config|database|routes|tests)/' || true
+    )
     if [ -z "$FILES" ]; then
-        echo -e "${GREEN}No PHP files modified in app/ or tests/. Skipping checks.${NC}"
+        echo -e "${GREEN}No PHP files modified in app/, config/, database/, routes/, or tests/. Skipping checks.${NC}"
         exit 0
     fi
     echo -e "${YELLOW}Checking modified files:${NC}"
     echo "$FILES" | sed 's/^/  - /'
 fi
-echo ""
 
 # Track if any checks fail
 FAILED=false
 FAILURE_REASONS=""
+ISSUES_FIXED=false
 
 # Function to add failure reason
 add_failure() {
@@ -70,41 +80,105 @@ add_failure() {
     FAILURE_REASONS="${FAILURE_REASONS}  - $1\n"
 }
 
-# 1. PHP CS Fixer - EXACTLY as CI runs it
-echo -e "${BLUE}[1/5] Running PHP CS Fixer (CI Standard)...${NC}"
-if [ "$AUTO_FIX" = true ]; then
-    ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php || true
-    echo -e "${GREEN}✓ PHP CS Fixer: Fixed style issues${NC}"
-else
-    # CI runs with --dry-run --diff
-    if ./vendor/bin/php-cs-fixer fix --dry-run --diff > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ PHP CS Fixer: No issues found${NC}"
+# IMPORTANT: First check for issues BEFORE fixing them
+# This ensures we report what was wrong, even if we auto-fix
+
+# 1. Check PHP CodeSniffer FIRST (before any fixes) - CHECK BOTH app/ AND tests/
+echo -e "${BLUE}[1/6] Checking PHP CodeSniffer (PSR-12)...${NC}"
+PHPCS_HAD_ISSUES=false
+
+# Check app/ directory with standard rules
+if ! ./vendor/bin/phpcs app/ database/ routes/ config/ > /dev/null 2>&1; then
+    PHPCS_HAD_ISSUES=true
+    echo -e "${YELLOW}⚠ PHPCS: PSR-12 violations detected in app/, database/, routes/, config/${NC}"
+    ./vendor/bin/phpcs app/ database/ routes/ config/ | head -20
+fi
+
+# Check tests/ directory with our custom ruleset (handles Pest patterns)
+if ! ./vendor/bin/phpcs tests/ --standard=phpcs.xml > /dev/null 2>&1; then
+    PHPCS_HAD_ISSUES=true
+    echo -e "${YELLOW}⚠ PHPCS: PSR-12 violations detected in tests/${NC}"
+    ./vendor/bin/phpcs tests/ --standard=phpcs.xml | head -20
+fi
+
+if [ "$PHPCS_HAD_ISSUES" = true ]; then
+    if [ "$AUTO_FIX" = true ]; then
+        echo -e "${BLUE}  Attempting auto-fix with PHPCBF...${NC}"
+        ./vendor/bin/phpcbf app/ database/ routes/ config/ 2>/dev/null || true
+        ./vendor/bin/phpcbf tests/ 2>/dev/null || true
+        ISSUES_FIXED=true
+        
+        # Re-check after fix
+        STILL_HAS_ISSUES=false
+        if ! ./vendor/bin/phpcs app/ database/ routes/ config/ > /dev/null 2>&1; then
+            STILL_HAS_ISSUES=true
+        fi
+        if ! ./vendor/bin/phpcs tests/ --standard=phpcs.xml > /dev/null 2>&1; then
+            STILL_HAS_ISSUES=true
+        fi
+        
+        if [ "$STILL_HAS_ISSUES" = false ]; then
+            echo -e "${GREEN}  ✓ PHPCS issues auto-fixed${NC}"
+        else
+            echo -e "${RED}  ✗ Some PHPCS issues could not be auto-fixed${NC}"
+            add_failure "PSR-12 violations (not auto-fixable)"
+        fi
     else
-        echo -e "${RED}✗ PHP CS Fixer: Issues found${NC}"
-        ./vendor/bin/php-cs-fixer fix --dry-run --diff | head -50
+        add_failure "PSR-12 violations"
+    fi
+else
+    echo -e "${GREEN}✓ PHPCS: PSR-12 compliant${NC}"
+fi
+echo ""
+
+# 2. Check PHP CS Fixer (runs on both app/ and tests/ via config)
+echo -e "${BLUE}[2/6] Running PHP CS Fixer (CI Standard)...${NC}"
+PHPCS_FIXER_HAD_ISSUES=false
+if ! ./vendor/bin/php-cs-fixer fix --dry-run --diff > /dev/null 2>&1; then
+    PHPCS_FIXER_HAD_ISSUES=true
+    echo -e "${YELLOW}⚠ PHP CS Fixer: Style issues detected${NC}"
+    ./vendor/bin/php-cs-fixer fix --dry-run --diff | head -20
+    
+    if [ "$AUTO_FIX" = true ]; then
+        echo -e "${BLUE}  Applying PHP CS Fixer fixes...${NC}"
+        ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php || true
+        ISSUES_FIXED=true
+        echo -e "${GREEN}  ✓ PHP CS Fixer: Fixed style issues${NC}"
+    else
         add_failure "PHP CS Fixer violations"
     fi
-fi
-echo ""
-
-# 2. PHP CodeSniffer - EXACTLY as CI runs it (PSR12 on app/ only)
-echo -e "${BLUE}[2/5] Running PHP CodeSniffer (PSR-12)...${NC}"
-if [ "$AUTO_FIX" = true ]; then
-    ./vendor/bin/phpcbf --standard=PSR12 --exclude=Generic.Files.LineLength app/ 2>/dev/null || true
-fi
-
-# CI command: vendor/bin/phpcs --standard=PSR12 --exclude=Generic.Files.LineLength app/
-if ./vendor/bin/phpcs --standard=PSR12 --exclude=Generic.Files.LineLength app/ > /dev/null 2>&1; then
-    echo -e "${GREEN}✓ PHPCS: PSR-12 compliant${NC}"
 else
-    echo -e "${RED}✗ PHPCS: PSR-12 violations found${NC}"
-    ./vendor/bin/phpcs --standard=PSR12 --exclude=Generic.Files.LineLength app/ | head -50
-    add_failure "PSR-12 violations"
+    echo -e "${GREEN}✓ PHP CS Fixer: No issues found${NC}"
 fi
 echo ""
 
-# 3. PHPStan - EXACTLY as CI runs it (with timeout to prevent hanging)
-echo -e "${BLUE}[3/5] Running PHPStan (Level 5)...${NC}"
+# 3. After all fixes, re-run PHPCS to ensure compliance
+if [ "$AUTO_FIX" = true ] && [ "$ISSUES_FIXED" = true ]; then
+    echo -e "${BLUE}[3/6] Final PSR-12 compliance check...${NC}"
+    FINAL_ISSUES=false
+    
+    if ! ./vendor/bin/phpcs app/ database/ routes/ config/ > /dev/null 2>&1; then
+        FINAL_ISSUES=true
+        echo -e "${RED}✗ Final check: Still has PSR-12 violations in app/, database/, routes/, config/${NC}"
+        ./vendor/bin/phpcs app/ database/ routes/ config/ | head -20
+    fi
+    
+    if ! ./vendor/bin/phpcs tests/ --standard=phpcs.xml > /dev/null 2>&1; then
+        FINAL_ISSUES=true
+        echo -e "${RED}✗ Final check: Still has PSR-12 violations in tests/${NC}"
+        ./vendor/bin/phpcs tests/ --standard=phpcs.xml | head -20
+    fi
+    
+    if [ "$FINAL_ISSUES" = false ]; then
+        echo -e "${GREEN}✓ Final check: PSR-12 compliant${NC}"
+    else
+        add_failure "PSR-12 violations remain after auto-fix"
+    fi
+    echo ""
+fi
+
+# 4. PHPStan - EXACTLY as CI runs it (with timeout to prevent hanging)
+echo -e "${BLUE}[4/6] Running PHPStan (Level 5)...${NC}"
 # CI command: vendor/bin/phpstan analyse --memory-limit=2G
 # Adding 60-second timeout to prevent hanging on large codebases
 if timeout 60 bash -c "XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G --no-progress --no-ansi 2>&1" | grep -q "\[OK\] No errors"; then
@@ -120,10 +194,9 @@ else
     fi
 fi
 echo ""
-echo ""
 
-# 4. Security Tests - Check if tests pass
-echo -e "${BLUE}[4/5] Running Security Tests...${NC}"
+# 5. Security Tests - Check if tests pass
+echo -e "${BLUE}[5/6] Running Security Tests...${NC}"
 if [ "$CI_MODE" = true ] || [ "$CHECK_ALL" = true ]; then
     # Run security tests specifically
     if ./vendor/bin/pest tests/Feature/Security --parallel --compact > /dev/null 2>&1; then
@@ -138,8 +211,8 @@ else
 fi
 echo ""
 
-# 5. All Tests - Run full test suite in CI mode
-echo -e "${BLUE}[5/5] Running Test Suite...${NC}"
+# 6. All Tests - Run full test suite in CI mode
+echo -e "${BLUE}[6/6] Running Test Suite...${NC}"
 if [ "$CI_MODE" = true ]; then
     echo -e "${YELLOW}  Running full test suite (CI mode)...${NC}"
     if ./vendor/bin/pest --parallel --compact > /dev/null 2>&1; then
@@ -175,6 +248,22 @@ else
     fi
 fi
 echo ""
+
+# Report if issues were fixed
+if [ "$ISSUES_FIXED" = true ]; then
+    echo -e "${YELLOW}========================================${NC}"
+    echo -e "${YELLOW}  Issues Were Auto-Fixed${NC}"
+    echo -e "${YELLOW}========================================${NC}"
+    if [ "$PHPCS_HAD_ISSUES" = true ]; then
+        echo -e "${YELLOW}  - PHPCS (PSR-12) violations were fixed${NC}"
+    fi
+    if [ "$PHPCS_FIXER_HAD_ISSUES" = true ]; then
+        echo -e "${YELLOW}  - PHP CS Fixer style issues were fixed${NC}"
+    fi
+    echo -e "${YELLOW}  Review changes before committing!${NC}"
+    echo -e "${YELLOW}========================================${NC}"
+    echo ""
+fi
 
 # CI Simulation Summary
 if [ "$CI_MODE" = true ]; then
@@ -212,7 +301,7 @@ if [ "$FAILED" = true ]; then
     
     echo ""
     echo -e "${YELLOW}GitHub Actions CI runs these exact commands:${NC}"
-    echo -e "  1. vendor/bin/phpcs --standard=PSR12 --exclude=Generic.Files.LineLength app/"
+    echo -e "  1. vendor/bin/phpcs"
     echo -e "  2. vendor/bin/phpstan analyse --memory-limit=2G"
     echo -e "  3. vendor/bin/php-cs-fixer fix --dry-run --diff"
     echo -e "  4. vendor/bin/pest --parallel"
@@ -220,7 +309,11 @@ if [ "$FAILED" = true ]; then
     exit 1
 else
     echo -e "${GREEN}✓ All pre-commit checks PASSED${NC}"
-    echo -e "${GREEN}Ready to commit!${NC}"
+    if [ "$ISSUES_FIXED" = true ]; then
+        echo -e "${YELLOW}Note: Issues were auto-fixed. Review changes before committing!${NC}"
+    else
+        echo -e "${GREEN}Ready to commit!${NC}"
+    fi
     
     if [ "$CI_MODE" = false ]; then
         echo -e "${YELLOW}Tip: Run with --ci to ensure GitHub Actions will pass${NC}"

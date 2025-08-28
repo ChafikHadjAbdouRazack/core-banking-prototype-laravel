@@ -6,14 +6,17 @@ use App\Domain\Stablecoin\Contracts\OracleConnector;
 use App\Domain\Stablecoin\Oracles\BinanceOracle;
 use App\Domain\Stablecoin\ValueObjects\PriceData;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BinanceOracleTest extends TestCase
 {
-    use \Illuminate\Foundation\Testing\WithoutMiddleware;
+    use WithoutMiddleware;
 
     private BinanceOracle $oracle;
 
@@ -112,10 +115,10 @@ class BinanceOracleTest extends TestCase
         Log::spy();
 
         // Create a partial mock that throws exception for specific pair
-        $oracle = \Mockery::mock(BinanceOracle::class)->makePartial();
+        $oracle = Mockery::mock(BinanceOracle::class)->makePartial();
         $oracle->shouldReceive('getPrice')
             ->with('INVALID', 'PAIR')
-            ->andThrow(new \Exception('Invalid pair'));
+            ->andThrow(new Exception('Invalid pair'));
         $oracle->shouldReceive('getPrice')
             ->with('BTC', 'USDT')
             ->andReturn(new PriceData('BTC', 'USDT', '48000', 'binance', Carbon::now()));
@@ -128,7 +131,7 @@ class BinanceOracleTest extends TestCase
 
         // Only verify the warning log since getMultiplePrices catches the exception
         Log::shouldHaveReceived('warning')
-            ->with(\Mockery::pattern('/Failed to get price for INVALID\/PAIR:/'));
+            ->with(Mockery::pattern('/Failed to get price for INVALID\/PAIR:/'));
     }
 
     #[Test]
@@ -195,7 +198,7 @@ class BinanceOracleTest extends TestCase
     public function test_is_healthy_returns_false_on_timeout(): void
     {
         Http::fake(function () {
-            throw new \Exception('Connection timeout');
+            throw new Exception('Connection timeout');
         });
 
         $this->assertFalse($this->oracle->isHealthy());
@@ -272,7 +275,7 @@ class BinanceOracleTest extends TestCase
 
     protected function tearDown(): void
     {
-        \Mockery::close();
+        Mockery::close();
         parent::tearDown();
     }
 }
