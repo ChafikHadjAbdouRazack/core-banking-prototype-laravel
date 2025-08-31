@@ -125,3 +125,9 @@ parameters:
         
     reportUnmatchedIgnoredErrors: false
     treatPhpDocTypesAsCertain: false
+    # Enable result cache for faster subsequent runs
+    resultCachePath: %tmpDir%/resultCache.php
+    
+    # Parallel processing for better performance  
+    parallel:
+        maximumNumberOfProcesses: 4

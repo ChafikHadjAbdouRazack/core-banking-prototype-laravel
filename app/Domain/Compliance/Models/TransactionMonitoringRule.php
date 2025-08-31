@@ -18,6 +18,14 @@ class TransactionMonitoringRule extends Model
     use HasFactory;
     use HasUuids;
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): \Illuminate\Database\Eloquent\Factories\Factory
+    {
+        return \Database\Factories\Domain\Compliance\TransactionMonitoringRuleFactory::new();
+    }
+
     protected $fillable = [
         'rule_code',
         'name',
