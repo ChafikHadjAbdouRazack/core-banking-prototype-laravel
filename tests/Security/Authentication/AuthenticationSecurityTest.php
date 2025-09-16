@@ -8,24 +8,26 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
-use Tests\Traits\CleansUpSecurityState;
 
 class AuthenticationSecurityTest extends TestCase
 {
     use RefreshDatabase;
-    use CleansUpSecurityState;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         // Clear all security state before each test
-        $this->setUpSecurityTesting();
+        // $this->setUpSecurityTesting(); // Removed - trait deleted
 
         // Clear rate limiter specifically
         RateLimiter::clear('login');
         // Clear password reset rate limits for test IP
         RateLimiter::clear('password-reset:127.0.0.1');
+
+        // Clear IP blocks to ensure clean test state
+        \Illuminate\Support\Facades\DB::table('blocked_ips')->truncate();
+        \Illuminate\Support\Facades\Cache::flush();
     }
 
     #[Test]

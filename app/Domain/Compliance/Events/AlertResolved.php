@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace App\Domain\Compliance\Events;
 
-use App\Domain\Compliance\Models\ComplianceAlert;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use DateTimeImmutable;
+use Spatie\EventSourcing\StoredEvents\ShouldBeStored;
 
-class AlertResolved
+class AlertResolved extends ShouldBeStored
 {
-    use Dispatchable;
-    use InteractsWithSockets;
-    use SerializesModels;
-
     public function __construct(
-        public ComplianceAlert $alert
+        public readonly string $alertId,
+        public readonly string $resolution,
+        public readonly string $resolvedBy,
+        public readonly string $notes,
+        public readonly DateTimeImmutable $resolvedAt
     ) {
     }
 }

@@ -16,14 +16,12 @@ use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
 use Mockery;
 use ReflectionClass;
-use Tests\Traits\TracksTestPerformance;
 use Throwable;
 
 abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
     use RefreshDatabase;
-    use TracksTestPerformance;
 
     protected User $user;
 
@@ -33,21 +31,17 @@ abstract class TestCase extends BaseTestCase
 
     protected function tearDown(): void
     {
-        // Track test performance
-        $this->trackTestPerformance();
-
         parent::tearDown();
 
         // Close any Mockery mocks
+        // Force garbage collection to free memory
+        gc_collect_cycles();
         Mockery::close();
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Set up performance tracking
-        $this->setUpPerformanceTracking();
 
         // Set up parallel testing tokens for isolated Redis and cache prefixes
         $this->setUpParallelTesting();

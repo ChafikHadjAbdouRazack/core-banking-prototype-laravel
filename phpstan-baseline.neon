@@ -1,35 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Readonly property App\\Domain\\Account\\Events\\AssetBalanceAdded::\$assetCode is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Domain/Account/Events/AssetBalanceAddedTest.php
-
-		-
-			message: '#^Readonly property App\\Domain\\Account\\Events\\AssetBalanceSubtracted::\$amount is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Domain/Account/Events/AssetBalanceSubtractedTest.php
-
-		-
-			message: '#^Readonly property App\\Domain\\Compliance\\Events\\SuspiciousActivityDetected::\$transaction is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Domain/Compliance/Events/SuspiciousActivityDetectedTest.php
-
-		-
-			message: '#^Readonly property App\\Domain\\Lending\\ValueObjects\\CreditScore::\$score is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Domain/Lending/ValueObjects/CreditScoreTest.php
-
-		-
-			message: '#^Readonly property App\\Domain\\Lending\\ValueObjects\\RiskRating::\$rating is assigned outside of its declaring class\.$#'
-			identifier: property.readOnlyAssignOutOfClass
-			count: 1
-			path: tests/Unit/Domain/Lending/ValueObjects/RiskRatingTest.php
-		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, string\|false\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -70,36 +41,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/PerformSystemHealthChecks.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Account\\ValueObjects\\AccountUuid not found\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Console/Commands/RunLoadTests.php
-
-		-
-			message: '#^Instantiated class App\\Domain\\Account\\ValueObjects\\Money not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Console/Commands/RunLoadTests.php
-
-		-
-			message: '#^Parameter \#1 \$from of method App\\Domain\\Payment\\Workflows\\TransferWorkflow\:\:execute\(\) expects App\\Domain\\Account\\DataObjects\\AccountUuid, App\\Domain\\Account\\ValueObjects\\AccountUuid given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/RunLoadTests.php
-
-		-
-			message: '#^Parameter \#2 \$to of method App\\Domain\\Payment\\Workflows\\TransferWorkflow\:\:execute\(\) expects App\\Domain\\Account\\DataObjects\\AccountUuid, App\\Domain\\Account\\ValueObjects\\AccountUuid given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/RunLoadTests.php
-
-		-
-			message: '#^Parameter \#3 \$money of method App\\Domain\\Payment\\Workflows\\TransferWorkflow\:\:execute\(\) expects App\\Domain\\Account\\DataObjects\\Money, App\\Domain\\Account\\ValueObjects\\Money given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Console/Commands/RunLoadTests.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Account\\Events\\HasMoney\:\:aggregateRootUuid\(\)\.$#'
@@ -1128,54 +1069,6 @@ parameters:
 			path: app/Domain/Cgo/Workflows/ProcessRefundWorkflow.php
 
 		-
-			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
-			identifier: varTag.noVariable
-			count: 1
-			path: app/Domain/Compliance/Activities/KycSubmissionActivity.php
-
-		-
-			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$gdprConsents is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Domain/Compliance/Aggregates/ComplianceAggregate.php
-
-		-
-			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$kycDocuments is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Domain/Compliance/Aggregates/ComplianceAggregate.php
-
-		-
-			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$kycLevel is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Domain/Compliance/Aggregates/ComplianceAggregate.php
-
-		-
-			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$kycStatus is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Domain/Compliance/Aggregates/ComplianceAggregate.php
-
-		-
-			message: '#^Property App\\Domain\\Compliance\\Aggregates\\ComplianceAggregate\:\:\$userUuid is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: app/Domain/Compliance/Aggregates/ComplianceAggregate.php
-
-		-
-			message: '#^Method App\\Domain\\Compliance\\Models\\SuspiciousActivityReport\:\:calculateTotalAmount\(\) should return float but returns int\|string\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Compliance/Models/SuspiciousActivityReport.php
-
-		-
-			message: '#^Method App\\Domain\\Compliance\\Models\\SuspiciousActivityReport\:\:getActivityDuration\(\) should return int but returns float\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domain/Compliance/Models/SuspiciousActivityReport.php
-
-		-
 			message: '#^Parameter \#1 \$string of function str_pad expects string, int\<1, max\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1342,12 +1235,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domain/Compliance/Services/SuspiciousActivityReportService.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Support\\Collection\<\(int\|string\), mixed\>\:\:variance\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Compliance/Services/TransactionMonitoringService.php
 
 		-
 			message: '#^Trait App\\Domain\\Compliance\\Traits\\Auditable is used zero times and is not analysed\.$#'
@@ -2616,31 +2503,13 @@ parameters:
 			path: app/Domain/Governance/Workflows/AddAssetWorkflow.php
 
 		-
-			message: '#^Attribute class Temporal\\Workflow\\WorkflowMethod does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: app/Domain/Governance/Workflows/AddAssetWorkflow.php
-
-		-
 			message: '#^Attribute class Temporal\\Workflow\\WorkflowInterface does not exist\.$#'
 			identifier: attribute.notFound
 			count: 1
 			path: app/Domain/Governance/Workflows/FeatureToggleWorkflow.php
 
 		-
-			message: '#^Attribute class Temporal\\Workflow\\WorkflowMethod does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: app/Domain/Governance/Workflows/FeatureToggleWorkflow.php
-
-		-
 			message: '#^Attribute class Temporal\\Workflow\\WorkflowInterface does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: app/Domain/Governance/Workflows/UpdateConfigurationWorkflow.php
-
-		-
-			message: '#^Attribute class Temporal\\Workflow\\WorkflowMethod does not exist\.$#'
 			identifier: attribute.notFound
 			count: 1
 			path: app/Domain/Governance/Workflows/UpdateConfigurationWorkflow.php
@@ -6936,12 +6805,6 @@ parameters:
 			path: tests/Feature/Api/AssetControllerTest.php
 
 		-
-			message: '#^Cannot call method toString\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Api/BIAN/CurrentAccountControllerTest.php
-
-		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$asset\.$#'
 			identifier: property.notFound
 			count: 1
@@ -7018,12 +6881,6 @@ parameters:
 			identifier: argument.type
 			count: 3
 			path: tests/Feature/Basket/BasketRebalancingServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Feature/Basket/BasketValueCalculationServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, false\> given\.$#'
@@ -7800,12 +7657,6 @@ parameters:
 			path: tests/Models/TeamInvitationTest.php
 
 		-
-			message: '#^Parameter \#1 \$user of method Illuminate\\Foundation\\Testing\\TestCase\:\:actingAs\(\) expects Illuminate\\Contracts\\Auth\\Authenticatable, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Performance/LoadTest.php
-
-		-
 			message: '#^Call to an undefined method Pest\\PendingCalls\\BeforeEachCall\:\:in\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -7832,24 +7683,6 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''API endpoint does…'' will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Security/Authentication/AuthenticationSecurityTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''WARNING\: Deleted…'' will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Security/Authentication/AuthenticationSecurityTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and non\-falsy\-string will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Security/Authentication/AuthenticationSecurityTest.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
 			count: 1
 			path: tests/Security/Authentication/AuthenticationSecurityTest.php
 
@@ -7908,12 +7741,6 @@ parameters:
 			path: tests/Security/Vulnerabilities/VulnerabilityTest.php
 
 		-
-			message: '#^Offset ''function'' on array\{function\: string, line\?\: int, file\?\: string, class\?\: class\-string, type\?\: ''\-\>''\|''\:\:'', args\?\: array\<mixed\>, object\?\: object\} in isset\(\) always exists and is not nullable\.$#'
-			identifier: isset.offset
-			count: 1
-			path: tests/TestCase.php
-
-		-
 			message: '#^Parameter \#1 \$expected of method PHPUnit\\Framework\\Assert\:\:assertInstanceOf\(\) expects class\-string\<object\>, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -7926,46 +7753,10 @@ parameters:
 			path: tests/TestCase.php
 
 		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/TestCase.php
-
-		-
-			message: '#^Parameter \#1 \$path of function basename expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/TestCase.php
-
-		-
-			message: '#^Trait Tests\\Traits\\CreatesStablecoins is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: tests/Traits/CreatesStablecoins.php
-
-		-
 			message: '#^Trait Tests\\Traits\\InteractsWithFilament is used zero times and is not analysed\.$#'
 			identifier: trait.unused
 			count: 1
 			path: tests/Traits/InteractsWithFilament.php
-
-		-
-			message: '#^Trait Tests\\Traits\\MocksWorkflows is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: tests/Traits/MocksWorkflows.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\:\:andThrow\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AI/AgentWorkflowTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\:\:andThrow\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/AI/MCPServerTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Domain\\Wallet\\Services\\SecureKeyStorageService\:\:shouldReceive\(\)\.$#'
@@ -8070,54 +7861,6 @@ parameters:
 			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
 
 		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:approveKyc\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:completeGdprDeletion\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:completeGdprExport\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:generateRegulatoryReport\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:rejectKyc\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:requestGdprDeletion\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:requestGdprExport\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:submitKyc\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''Full KYC workflow…'' will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -8154,57 +7897,9 @@ parameters:
 			path: tests/Unit/Domain/Compliance/Aggregates/ComplianceAggregateTest.php
 
 		-
-			message: '#^Assign to protected\(set\) property App\\Domain\\Compliance\\Events\\SuspiciousActivityDetected\:\:\$transaction\.$#'
-			identifier: assign.propertyProtectedSet
-			count: 1
-			path: tests/Unit/Domain/Compliance/Events/SuspiciousActivityDetectedTest.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Models\\User\>\:\:make\(\) expects array\<model property of App\\Models\\User, mixed\>\|\(callable\(array\<string, mixed\>\)\: array\<string, mixed\>\), array\{name\: ''Test User'', country\: ''UK''\} given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/Domain/Compliance/Services/AmlScreeningServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Compliance\\Models\\TransactionMonitoringRule\:\:shouldReceive\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
 			message: '#^Call to an undefined method App\\Domain\\Compliance\\Services\\SuspiciousActivityReportService\:\:shouldReceive\(\)\.$#'
 			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Compliance\\Services\\TransactionMonitoringService\:\:shouldReceive\(\)\.$#'
-			identifier: method.notFound
 			count: 3
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andThrow\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Call to method shouldReceive\(\) on an unknown class Tests\\Unit\\Domain\\Compliance\\Services\\Mockery\\MockInterface\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Class Tests\\Unit\\Domain\\Compliance\\Services\\Mockery\\MockInterface not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Domain\\Compliance\\Services\\TransactionMonitoringServiceTest\:\:createMockRule\(\) should return App\\Domain\\Compliance\\Models\\TransactionMonitoringRule but returns Mockery\\MockInterface\.$#'
-			identifier: return.type
-			count: 1
 			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
 
 		-
@@ -8218,18 +7913,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Property Tests\\Unit\\Domain\\Compliance\\Services\\TransactionMonitoringServiceTest\:\:\$service \(App\\Domain\\Compliance\\Services\\TransactionMonitoringService\) does not accept Mockery\\LegacyMockInterface\.$#'
-			identifier: assign.propertyType
-			count: 3
-			path: tests/Unit/Domain/Compliance/Services/TransactionMonitoringServiceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Domain/Exchange/LiquidityPool/AutomatedMarketMakerServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$priceAggregator of class App\\Domain\\Exchange\\LiquidityPool\\Services\\AutomatedMarketMakerService constructor expects App\\Domain\\Exchange\\Contracts\\PriceAggregatorInterface, Mockery\\MockInterface given\.$#'
@@ -8346,12 +8029,6 @@ parameters:
 			path: tests/Unit/Domain/Fraud/Services/FraudDetectionServiceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Domain/Fraud/Services/FraudDetectionServiceTest.php
-
-		-
 			message: '#^Property Tests\\Unit\\Domain\\Fraud\\Services\\FraudDetectionServiceTest\:\:\$behavioralAnalysis \(App\\Domain\\Fraud\\Services\\BehavioralAnalysisService\) does not accept Mockery\\MockInterface\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -8418,7 +8095,7 @@ parameters:
 			path: tests/Unit/Domain/Stablecoin/Oracles/BinanceOracleTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Unit/Domain/Stablecoin/Oracles/BinanceOracleTest.php
@@ -8427,25 +8104,7 @@ parameters:
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
-			path: tests/Unit/Domain/Stablecoin/Oracles/BinanceOracleTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
 			path: tests/Unit/Domain/Stablecoin/Oracles/ChainlinkOracleTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Domain/Stablecoin/Oracles/ChainlinkOracleTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Domain/Stablecoin/Oracles/InternalAMMOracleTest.php
 
 		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
@@ -9024,12 +8683,6 @@ parameters:
 			path: tests/Unit/Domain/Stablecoin/Workflows/BurnStablecoinWorkflowTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Domain/Stablecoin/Workflows/Data/ReserveDepositDataTest.php
-
-		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
 			identifier: method.notFound
 			count: 6
@@ -9340,21 +8993,3 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Unit/Testing/Support/EventWithPrivateProperties.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Testing/TestEventSerializerTest.php
-
-		-
-			message: '#^Call to function is_callable\(\) with array\{App\\View\\Components\\AppLayout, ''render''\} will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: tests/View/Components/AppLayoutTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionClass\|false\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/View/Components/AppLayoutTest.php

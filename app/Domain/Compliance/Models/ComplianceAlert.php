@@ -11,6 +11,22 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string $alert_id
+ * @property string $type
+ * @property string $severity
+ * @property string $status
+ * @property string $entity_type
+ * @property string $entity_id
+ * @property string $description
+ * @property array|null $details
+ * @property string|null $assigned_to
+ * @property array|null $notes
+ * @property string|null $resolution
+ * @property string|null $created_by
+ * @property string|null $case_id
+ */
 class ComplianceAlert extends Model
 {
     use HasFactory;
@@ -32,6 +48,7 @@ class ComplianceAlert extends Model
         'status',
         'title',
         'description',
+        'details',
         'source',
         'entity_type',
         'entity_id',
@@ -53,6 +70,7 @@ class ComplianceAlert extends Model
         'assigned_by',
         'resolved_at',
         'resolved_by',
+        'resolution',
         'resolution_notes',
         'resolution_time_hours',
         'false_positive_notes',
@@ -63,6 +81,7 @@ class ComplianceAlert extends Model
         'history',
         'status_changed_at',
         'status_changed_by',
+        'created_by',
     ];
 
     protected $casts = [
@@ -70,6 +89,7 @@ class ComplianceAlert extends Model
         'evidence'              => 'array',
         'metadata'              => 'array',
         'tags'                  => 'array',
+        'details'               => 'array',
         'investigation_notes'   => 'array',
         'linked_alerts'         => 'array',
         'history'               => 'array',
@@ -83,6 +103,52 @@ class ComplianceAlert extends Model
         'escalated_at'          => 'datetime',
         'status_changed_at'     => 'datetime',
     ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($alert) {
+            // Set detected_at if not provided
+            if (empty($alert->detected_at)) {
+                $alert->detected_at = now();
+            }
+
+            if (empty($alert->alert_id)) {
+                // Get the next sequence number for this year
+                $year = now()->format('Y');
+                $lastAlert = static::where('alert_id', 'like', "ALERT-{$year}-%")
+                    ->orderBy('alert_id', 'desc')
+                    ->first();
+
+                if ($lastAlert) {
+                    $lastNumber = (int) substr($lastAlert->alert_id, -6);
+                    $newNumber = $lastNumber + 1;
+                } else {
+                    $newNumber = 1;
+                }
+
+                $alert->alert_id = sprintf('ALERT-%s-%06d', $year, $newNumber);
+            }
+        });
+    }
+
+    /**
+     * Get the notes attribute.
+     */
+    public function getNotesAttribute()
+    {
+        return $this->investigation_notes ?? [];
+    }
+
+    /**
+     * Set the notes attribute.
+     */
+    public function setNotesAttribute($value)
+    {
+        $this->investigation_notes = $value;
+    }
 
     // Status constants
     public const STATUS_OPEN = 'open';

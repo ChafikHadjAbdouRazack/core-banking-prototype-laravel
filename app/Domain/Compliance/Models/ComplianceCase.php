@@ -12,6 +12,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property string $id
+ * @property string $case_id
+ * @property string $case_number
+ * @property string $title
+ * @property string $description
+ * @property string $status
+ * @property string $priority
+ * @property string|null $assigned_to
+ * @property array|null $related_alerts
+ * @property array|null $entities
+ * @property array|null $evidence
+ * @property array|null $notes
+ * @property string|null $resolution
+ * @property string|null $created_by
+ */
 class ComplianceCase extends Model
 {
     use HasFactory;
@@ -28,6 +44,7 @@ class ComplianceCase extends Model
 
     protected $fillable = [
         'case_id',
+        'case_number',
         'title',
         'description',
         'type',
@@ -62,6 +79,10 @@ class ComplianceCase extends Model
         'history',
         'documents',
         'communications',
+        'notes',
+        'user_id',
+        'resolved_at',
+        'resolved_by',
     ];
 
     protected $casts = [
@@ -76,13 +97,40 @@ class ComplianceCase extends Model
         'history'            => 'array',
         'documents'          => 'array',
         'communications'     => 'array',
+        'notes'              => 'array',
         'total_risk_score'   => 'decimal:2',
         'assigned_at'        => 'datetime',
         'reviewed_at'        => 'datetime',
         'closed_at'          => 'datetime',
+        'resolved_at'        => 'datetime',
         'last_activity_at'   => 'datetime',
         'due_date'           => 'datetime',
     ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($case) {
+            if (empty($case->case_id)) {
+                // Generate case number
+                $year = now()->format('Y');
+                $lastCase = static::where('case_id', 'like', "CASE-{$year}-%")
+                    ->orderBy('case_id', 'desc')
+                    ->first();
+
+                if ($lastCase) {
+                    $lastNumber = (int) substr($lastCase->case_id, -6);
+                    $newNumber = $lastNumber + 1;
+                } else {
+                    $newNumber = 1;
+                }
+
+                $case->case_id = sprintf('CASE-%s-%06d', $year, $newNumber);
+            }
+        });
+    }
 
     // Status constants
     public const STATUS_OPEN = 'open';
@@ -142,6 +190,14 @@ class ComplianceCase extends Model
      * Get the assigned user.
      */
     public function assignedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    /**
+     * Alias for assignedUser relationship.
+     */
+    public function assignedTo(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }
