@@ -64,17 +64,20 @@ class AgentIdentityAggregate extends AggregateRoot
     }
 
     public function advertiseCapability(
-        string $capability,
-        string $version = '1.0.0',
+        string $capabilityId,
+        array $endpoints = [],
         array $parameters = [],
-        array $metadata = []
+        array $requiredPermissions = [],
+        array $supportedProtocols = ['AP2', 'A2A']
     ): self {
         $this->recordThat(new CapabilityAdvertised(
+            capabilityId: $capabilityId,
             agentId: $this->agentId,
-            capability: $capability,
-            version: $version,
+            endpoints: $endpoints,
             parameters: $parameters,
-            metadata: $metadata
+            requiredPermissions: $requiredPermissions,
+            supportedProtocols: $supportedProtocols,
+            advertisedAt: now()->toDateTimeString()
         ));
 
         return $this;
@@ -110,11 +113,12 @@ class AgentIdentityAggregate extends AggregateRoot
 
     protected function applyCapabilityAdvertised(CapabilityAdvertised $event): void
     {
-        $this->capabilities[$event->capability] = [
-            'version'       => $event->version,
-            'parameters'    => $event->parameters,
-            'metadata'      => $event->metadata,
-            'advertised_at' => now()->toIso8601String(),
+        $this->capabilities[$event->capabilityId] = [
+            'endpoints'            => $event->endpoints,
+            'parameters'           => $event->parameters,
+            'required_permissions' => $event->requiredPermissions,
+            'supported_protocols'  => $event->supportedProtocols,
+            'advertised_at'        => $event->advertisedAt,
         ];
     }
 

@@ -54,17 +54,18 @@ class AgentIdentityAggregateTest extends TestCase
         $aggregate = AgentIdentityAggregate::register($agentId, $did, 'Test Agent');
         $aggregate->advertiseCapability(
             'payment.transfer',
-            '1.0.0',
-            ['max_amount' => 10000],
-            ['certified'  => true]
+            [], // endpoints
+            ['max_amount' => 10000], // parameters
+            [], // requiredPermissions
+            ['AP2', 'A2A'] // supportedProtocols
         );
 
         $aggregate->persist();
 
         $capabilities = $aggregate->getCapabilities();
         $this->assertArrayHasKey('payment.transfer', $capabilities);
-        $this->assertEquals('1.0.0', $capabilities['payment.transfer']['version']);
         $this->assertEquals(['max_amount' => 10000], $capabilities['payment.transfer']['parameters']);
+        $this->assertEquals(['AP2', 'A2A'], $capabilities['payment.transfer']['supported_protocols']);
         $this->assertTrue($aggregate->hasCapability('payment.transfer'));
         $this->assertFalse($aggregate->hasCapability('payment.escrow'));
     }
@@ -96,8 +97,8 @@ class AgentIdentityAggregateTest extends TestCase
         $walletId2 = Str::uuid()->toString();
 
         $aggregate = AgentIdentityAggregate::register($agentId, $did, 'Test Agent')
-            ->advertiseCapability('payment.transfer', '1.0.0')
-            ->advertiseCapability('payment.escrow', '1.0.0')
+            ->advertiseCapability('payment.transfer', [], [], [], ['AP2', 'A2A'])
+            ->advertiseCapability('payment.escrow', [], [], [], ['AP2', 'A2A'])
             ->createWallet($walletId1, 'USD', 5000.0)
             ->createWallet($walletId2, 'EUR', 2000.0);
 
@@ -119,7 +120,7 @@ class AgentIdentityAggregateTest extends TestCase
 
         // Create and persist aggregate
         $aggregate = AgentIdentityAggregate::register($agentId, $did, 'Test Agent')
-            ->advertiseCapability('payment.transfer', '1.0.0')
+            ->advertiseCapability('payment.transfer', [], [], [], ['AP2', 'A2A'])
             ->createWallet($walletId, 'USD', 1000.0);
         $aggregate->persist();
 
@@ -139,17 +140,19 @@ class AgentIdentityAggregateTest extends TestCase
         $did = 'did:finaegis:key:' . substr(hash('sha256', $agentId), 0, 32);
 
         $aggregate = AgentIdentityAggregate::register($agentId, $did, 'Test Agent')
-            ->advertiseCapability('payment.transfer', '1.0.0', ['max_amount' => 10000])
-            ->advertiseCapability('payment.transfer', '2.0.0', ['max_amount' => 50000])
-            ->advertiseCapability('messaging.a2a', '1.0.0');
+            ->advertiseCapability('payment.transfer.v1', [], ['max_amount' => 10000], [], ['AP2', 'A2A'])
+            ->advertiseCapability('payment.transfer.v2', [], ['max_amount' => 50000], [], ['AP2', 'A2A'])
+            ->advertiseCapability('messaging.a2a', [], [], [], ['AP2', 'A2A']);
 
         $aggregate->persist();
 
         $capabilities = $aggregate->getCapabilities();
 
-        // Latest version should overwrite previous
-        $this->assertEquals('2.0.0', $capabilities['payment.transfer']['version']);
-        $this->assertEquals(50000, $capabilities['payment.transfer']['parameters']['max_amount']);
+        // Each capability is stored with its full ID
+        $this->assertArrayHasKey('payment.transfer.v1', $capabilities);
+        $this->assertArrayHasKey('payment.transfer.v2', $capabilities);
+        $this->assertEquals(10000, $capabilities['payment.transfer.v1']['parameters']['max_amount']);
+        $this->assertEquals(50000, $capabilities['payment.transfer.v2']['parameters']['max_amount']);
         $this->assertArrayHasKey('messaging.a2a', $capabilities);
     }
 }
