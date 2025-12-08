@@ -310,52 +310,201 @@ class DIDService
     }
 }
 
-// Helper function for base58 encoding (simplified version)
+// Helper function for base58 encoding (with GMP/BCMath fallback)
 if (! function_exists('base58_encode')) {
-    function base58_encode($data): string
+    function base58_encode(string $data): string
     {
         $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
         $encoded = '';
-        $num = gmp_import($data);
 
-        while (gmp_cmp($num, 0) > 0) {
-            $remainder = gmp_mod($num, 58);
-            $num = gmp_div($num, 58);
-            $encoded = $alphabet[gmp_intval($remainder)] . $encoded;
+        // Use GMP if available (most efficient)
+        if (extension_loaded('gmp')) {
+            $num = gmp_import($data);
+            while (gmp_cmp($num, 0) > 0) {
+                $remainder = gmp_mod($num, 58);
+                $num = gmp_div($num, 58);
+                $encoded = $alphabet[gmp_intval($remainder)] . $encoded;
+            }
+        } elseif (extension_loaded('bcmath')) {
+            // BCMath fallback
+            $num = '0';
+            $dataLen = strlen($data);
+            for ($i = 0; $i < $dataLen; $i++) {
+                $num = bcadd(bcmul($num, '256'), (string) ord($data[$i]));
+            }
+            while (bccomp($num, '0') > 0) {
+                $remainder = (int) bcmod($num, '58');
+                $num = bcdiv($num, '58', 0);
+                $encoded = $alphabet[$remainder] . $encoded;
+            }
+        } else {
+            // Pure PHP fallback for small data (prototype/demo use)
+            $hex = bin2hex($data);
+            $dec = '0';
+            $hexLen = strlen($hex);
+            for ($i = 0; $i < $hexLen; $i++) {
+                $dec = base58_bcadd(base58_bcmul($dec, '16'), (string) hexdec($hex[$i]));
+            }
+            while (base58_bccomp($dec, '0') > 0) {
+                $remainder = (int) base58_bcmod($dec, '58');
+                $dec = base58_bcdiv($dec, '58');
+                $encoded = $alphabet[$remainder] . $encoded;
+            }
         }
 
-        // Add leading 1s for leading zeros
+        // Add leading 1s for leading zero bytes
         for ($i = 0; isset($data[$i]) && $data[$i] === "\0"; $i++) {
             $encoded = '1' . $encoded;
         }
 
-        return $encoded;
+        return $encoded ?: '1';
     }
 }
 
-// Helper function for base58 decoding
+// Helper function for base58 decoding (with GMP/BCMath fallback)
 if (! function_exists('base58_decode')) {
     function base58_decode(string $encoded): string
     {
         $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        $num = gmp_init(0);
         $len = strlen($encoded);
 
-        for ($i = 0; $i < $len; $i++) {
-            $pos = strpos($alphabet, $encoded[$i]);
-            if ($pos === false) {
-                return '';
+        // Use GMP if available
+        if (extension_loaded('gmp')) {
+            $num = gmp_init(0);
+            for ($i = 0; $i < $len; $i++) {
+                $pos = strpos($alphabet, $encoded[$i]);
+                if ($pos === false) {
+                    return '';
+                }
+                $num = gmp_add(gmp_mul($num, 58), $pos);
             }
-            $num = gmp_add(gmp_mul($num, 58), $pos);
+            $decoded = gmp_cmp($num, 0) === 0 ? '' : gmp_export($num);
+        } elseif (extension_loaded('bcmath')) {
+            // BCMath fallback
+            $num = '0';
+            for ($i = 0; $i < $len; $i++) {
+                $pos = strpos($alphabet, $encoded[$i]);
+                if ($pos === false) {
+                    return '';
+                }
+                $num = bcadd(bcmul($num, '58'), (string) $pos);
+            }
+            // Convert decimal to binary
+            $decoded = '';
+            while (bccomp($num, '0') > 0) {
+                $decoded = chr((int) bcmod($num, '256')) . $decoded;
+                $num = bcdiv($num, '256', 0);
+            }
+        } else {
+            // Pure PHP fallback
+            $num = '0';
+            for ($i = 0; $i < $len; $i++) {
+                $pos = strpos($alphabet, $encoded[$i]);
+                if ($pos === false) {
+                    return '';
+                }
+                $num = base58_bcadd(base58_bcmul($num, '58'), (string) $pos);
+            }
+            // Convert to binary
+            $decoded = '';
+            while (base58_bccomp($num, '0') > 0) {
+                $decoded = chr((int) base58_bcmod($num, '256')) . $decoded;
+                $num = base58_bcdiv($num, '256');
+            }
         }
 
-        $decoded = gmp_export($num);
-
-        // Add leading zeros
+        // Add leading zero bytes
         for ($i = 0; $i < $len && $encoded[$i] === '1'; $i++) {
             $decoded = "\0" . $decoded;
         }
 
         return $decoded;
+    }
+}
+
+// Pure PHP arbitrary precision math helpers (fallback when no extensions available)
+if (! function_exists('base58_bcadd')) {
+    function base58_bcadd(string $a, string $b): string
+    {
+        $result = '';
+        $carry = 0;
+        $a = strrev($a);
+        $b = strrev($b);
+        $maxLen = max(strlen($a), strlen($b));
+
+        for ($i = 0; $i < $maxLen || $carry; $i++) {
+            $sum = $carry;
+            $sum += $i < strlen($a) ? (int) $a[$i] : 0;
+            $sum += $i < strlen($b) ? (int) $b[$i] : 0;
+            $result .= $sum % 10;
+            $carry = (int) ($sum / 10);
+        }
+
+        return strrev($result) ?: '0';
+    }
+}
+
+if (! function_exists('base58_bcmul')) {
+    function base58_bcmul(string $a, string $b): string
+    {
+        if ($a === '0' || $b === '0') {
+            return '0';
+        }
+        $bInt = (int) $b;
+        $result = '0';
+        $a = strrev($a);
+        $carry = 0;
+        $temp = '';
+
+        for ($i = 0; $i < strlen($a) || $carry; $i++) {
+            $prod = $carry + ($i < strlen($a) ? (int) $a[$i] * $bInt : 0);
+            $temp .= $prod % 10;
+            $carry = (int) ($prod / 10);
+        }
+
+        return strrev($temp) ?: '0';
+    }
+}
+
+if (! function_exists('base58_bccomp')) {
+    function base58_bccomp(string $a, string $b): int
+    {
+        $a = ltrim($a, '0') ?: '0';
+        $b = ltrim($b, '0') ?: '0';
+        if (strlen($a) !== strlen($b)) {
+            return strlen($a) > strlen($b) ? 1 : -1;
+        }
+
+        return strcmp($a, $b) <=> 0;
+    }
+}
+
+if (! function_exists('base58_bcmod')) {
+    function base58_bcmod(string $a, string $b): string
+    {
+        $bInt = (int) $b;
+        $mod = 0;
+        for ($i = 0; $i < strlen($a); $i++) {
+            $mod = ($mod * 10 + (int) $a[$i]) % $bInt;
+        }
+
+        return (string) $mod;
+    }
+}
+
+if (! function_exists('base58_bcdiv')) {
+    function base58_bcdiv(string $a, string $b): string
+    {
+        $bInt = (int) $b;
+        $result = '';
+        $carry = 0;
+
+        for ($i = 0; $i < strlen($a); $i++) {
+            $current = $carry * 10 + (int) $a[$i];
+            $result .= (int) ($current / $bInt);
+            $carry = $current % $bInt;
+        }
+
+        return ltrim($result, '0') ?: '0';
     }
 }

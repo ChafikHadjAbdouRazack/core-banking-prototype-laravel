@@ -228,16 +228,27 @@ class DIDServiceTest extends TestCase
         $this->assertNull($method);
     }
 
-    public function test_verify_did_signature_placeholder(): void
+    public function test_verify_did_signature_rejects_invalid_signature(): void
     {
         $did = $this->service->generateDID();
-        $signature = 'dummy_signature';
+        $invalidSignature = 'invalid_dummy_signature';
         $message = 'test_message';
 
-        // This is a placeholder implementation that always returns true
-        // In production, this would perform actual cryptographic verification
-        $result = $this->service->verifyDIDSignature($did, $signature, $message);
+        // Invalid signatures should be rejected
+        $result = $this->service->verifyDIDSignature($did, $invalidSignature, $message);
 
-        $this->assertTrue($result);
+        $this->assertFalse($result);
+    }
+
+    public function test_verify_did_signature_returns_false_for_invalid_did(): void
+    {
+        $invalidDid = 'invalid:did:format';
+        $signature = 'some_signature';
+        $message = 'test_message';
+
+        // Invalid DID should return false
+        $result = $this->service->verifyDIDSignature($invalidDid, $signature, $message);
+
+        $this->assertFalse($result);
     }
 }
