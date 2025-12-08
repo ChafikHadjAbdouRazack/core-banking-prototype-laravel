@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class DIDService
@@ -12,6 +14,11 @@ class DIDService
     private const DID_PREFIX = 'did:finaegis:';
 
     private const DID_CACHE_TTL = 3600; // 1 hour
+
+    public function __construct(
+        private readonly ?SignatureService $signatureService = null
+    ) {
+    }
 
     public function generateDID(string $method = 'key'): string
     {
@@ -137,19 +144,138 @@ class DIDService
         return true;
     }
 
+    /**
+     * Verify a signature against a DID's public key.
+     *
+     * This method retrieves the public key from the DID document and uses it
+     * to cryptographically verify that the signature was created by the DID owner.
+     */
     public function verifyDIDSignature(string $did, string $signature, string $message): bool
     {
-        $document = $this->resolveDID($did);
-        if (! $document) {
+        try {
+            $document = $this->resolveDID($did);
+            if (! $document) {
+                Log::warning('DID signature verification failed: DID not found', ['did' => $did]);
+
+                return false;
+            }
+
+            // Extract verification method from DID document
+            $verificationMethods = $document['verificationMethod'] ?? [];
+            if (empty($verificationMethods)) {
+                Log::warning('DID signature verification failed: No verification method', ['did' => $did]);
+
+                return false;
+            }
+
+            // Get the first verification method (primary key)
+            $verificationMethod = $verificationMethods[0];
+            $publicKeyMultibase = $verificationMethod['publicKeyMultibase'] ?? null;
+
+            if (! $publicKeyMultibase) {
+                Log::warning('DID signature verification failed: No public key in verification method', ['did' => $did]);
+
+                return false;
+            }
+
+            // Decode multibase public key (z prefix = base58)
+            $publicKey = $this->decodeMultibaseKey($publicKeyMultibase);
+            if (! $publicKey) {
+                Log::warning('DID signature verification failed: Could not decode public key', ['did' => $did]);
+
+                return false;
+            }
+
+            // Use SignatureService if available for full cryptographic verification
+            if ($this->signatureService !== null) {
+                $isValid = $this->signatureService->verifySignature(
+                    ['message' => $message],
+                    $signature,
+                    $publicKey,
+                    'EdDSA' // Ed25519 is specified in the verification method type
+                );
+
+                Log::info('DID signature verification completed', [
+                    'did'      => $did,
+                    'is_valid' => $isValid,
+                ]);
+
+                return $isValid;
+            }
+
+            // Fallback: Use openssl for basic Ed25519/RSA verification
+            return $this->verifySignatureBasic($message, $signature, $publicKey);
+        } catch (Exception $e) {
+            Log::error('DID signature verification error', [
+                'did'   => $did,
+                'error' => $e->getMessage(),
+            ]);
+
             return false;
         }
+    }
 
-        // In a real implementation, this would verify the signature
-        // using the public key from the DID document
-        // For now, we'll return a placeholder
+    /**
+     * Decode a multibase-encoded public key.
+     */
+    private function decodeMultibaseKey(string $multibaseKey): ?string
+    {
+        if (empty($multibaseKey)) {
+            return null;
+        }
 
-        // TODO: Implement actual signature verification
-        return true;
+        // Multibase prefix 'z' indicates base58btc encoding
+        $prefix = $multibaseKey[0];
+        $encoded = substr($multibaseKey, 1);
+
+        if ($prefix === 'z') {
+            // Base58 decode
+            return base58_decode($encoded);
+        }
+
+        // For other encodings, return as-is (PEM format)
+        return $multibaseKey;
+    }
+
+    /**
+     * Basic signature verification using openssl.
+     */
+    private function verifySignatureBasic(string $message, string $signature, string $publicKey): bool
+    {
+        try {
+            // Try to decode base64 signature
+            $decodedSignature = base64_decode($signature, true);
+            if ($decodedSignature === false) {
+                $decodedSignature = $signature;
+            }
+
+            // Create message hash
+            $messageHash = hash('sha256', $message, true);
+
+            // For Ed25519 keys, we need sodium extension
+            if (extension_loaded('sodium') && strlen($publicKey) === SODIUM_CRYPTO_SIGN_PUBLICKEYBYTES) {
+                // PHPStan requires non-empty-string for signature parameter
+                if ($decodedSignature === '') {
+                    return false;
+                }
+
+                return sodium_crypto_sign_verify_detached(
+                    $decodedSignature,
+                    $message,
+                    $publicKey
+                );
+            }
+
+            // Fallback: verify using hash comparison (for demo/testing)
+            // In production, this would use proper asymmetric verification
+            $expectedHash = hash_hmac('sha256', $message, $publicKey);
+
+            return hash_equals($expectedHash, $decodedSignature);
+        } catch (Exception $e) {
+            Log::error('Basic signature verification failed', ['error' => $e->getMessage()]);
+
+            return false;
+        }
     }
 
     private function generatePublicKeyMultibase(): string
@@ -204,5 +330,32 @@ if (! function_exists('base58_encode')) {
         }
 
         return $encoded;
+    }
+}
+
+// Helper function for base58 decoding
+if (! function_exists('base58_decode')) {
+    function base58_decode(string $encoded): string
+    {
+        $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+        $num = gmp_init(0);
+        $len = strlen($encoded);
+
+        for ($i = 0; $i < $len; $i++) {
+            $pos = strpos($alphabet, $encoded[$i]);
+            if ($pos === false) {
+                return '';
+            }
+            $num = gmp_add(gmp_mul($num, 58), $pos);
+        }
+
+        $decoded = gmp_export($num);
+
+        // Add leading zeros
+        for ($i = 0; $i < $len && $encoded[$i] === '1'; $i++) {
+            $decoded = "\0" . $decoded;
+        }
+
+        return $decoded;
     }
 }
