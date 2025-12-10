@@ -210,7 +210,14 @@ class FeeTierServiceTest extends TestCase
         $ordersCount = 10;
         $volumePerOrder = $totalVolume / $ordersCount;
 
+        // Ensure all orders are within the current month to avoid flaky tests
+        // when running near the start of a month
+        $startOfMonth = now()->startOfMonth();
+
         for ($i = 0; $i < $ordersCount; $i++) {
+            // Spread orders across the current month (hours instead of days to stay within month)
+            $executedAt = $startOfMonth->copy()->addHours($i);
+
             DB::table('orders')->insert([
                 'order_id'       => "order-{$i}",
                 'account_id'     => $userId, // Required field
@@ -223,9 +230,9 @@ class FeeTierServiceTest extends TestCase
                 'amount'         => $volumePerOrder / 50000, // Assuming BTC price of $50k
                 'price'          => 50000,
                 'fee_amount'     => $volumePerOrder * 0.003,
-                'executed_at'    => now()->subDays($i),
-                'created_at'     => now()->subDays($i),
-                'updated_at'     => now()->subDays($i),
+                'executed_at'    => $executedAt,
+                'created_at'     => $executedAt,
+                'updated_at'     => $executedAt,
             ]);
         }
     }

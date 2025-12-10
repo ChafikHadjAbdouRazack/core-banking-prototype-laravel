@@ -781,3 +781,83 @@ Route::prefix('treasury')->name('api.treasury.')->group(function () {
         });
     });
 });
+
+// =============================================================================
+// Agent Protocol (AP2/A2A) endpoints - Phase 5
+// =============================================================================
+use App\Http\Controllers\Api\AgentProtocol\AgentEscrowController;
+use App\Http\Controllers\Api\AgentProtocol\AgentIdentityController;
+use App\Http\Controllers\Api\AgentProtocol\AgentMessageController;
+use App\Http\Controllers\Api\AgentProtocol\AgentPaymentController;
+use App\Http\Controllers\Api\AgentProtocol\AgentReputationController;
+
+// AP2 well-known configuration (public)
+Route::get('/.well-known/ap2-configuration', [AgentIdentityController::class, 'wellKnownConfiguration'])
+    ->name('ap2.configuration');
+
+Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () {
+    // Public endpoints
+    Route::middleware('api.rate_limit:public')->group(function () {
+        // Agent discovery (public)
+        Route::get('/agents/discover', [AgentIdentityController::class, 'discover'])->name('agents.discover');
+        Route::get('/agents/{did}', [AgentIdentityController::class, 'show'])->name('agents.show');
+
+        // Reputation queries (public)
+        Route::get('/agents/{did}/reputation', [AgentReputationController::class, 'show'])->name('reputation.show');
+        Route::get('/reputation/leaderboard', [AgentReputationController::class, 'leaderboard'])->name('reputation.leaderboard');
+    });
+
+    // Protected endpoints (require authentication)
+    Route::middleware(['auth:sanctum', 'check.token.expiration', 'api.rate_limit:private'])->group(function () {
+        // Agent registration and management
+        Route::post('/agents/register', [AgentIdentityController::class, 'register'])->name('agents.register');
+        Route::put('/agents/{did}/capabilities', [AgentIdentityController::class, 'updateCapabilities'])->name('agents.capabilities');
+
+        // Payment endpoints
+        Route::prefix('agents/{did}/payments')->name('payments.')->group(function () {
+            Route::get('/', [AgentPaymentController::class, 'listPayments'])->name('list');
+            Route::post('/', [AgentPaymentController::class, 'initiatePayment'])
+                ->middleware('transaction.rate_limit:agent_payment')
+                ->name('initiate');
+            Route::get('/{transactionId}', [AgentPaymentController::class, 'getPaymentStatus'])->name('status');
+            Route::post('/{transactionId}/confirm', [AgentPaymentController::class, 'confirmPayment'])
+                ->middleware('transaction.rate_limit:agent_payment')
+                ->name('confirm');
+            Route::post('/{transactionId}/cancel', [AgentPaymentController::class, 'cancelPayment'])->name('cancel');
+        });
+
+        // Escrow endpoints
+        Route::prefix('escrow')->name('escrow.')->group(function () {
+            Route::post('/', [AgentEscrowController::class, 'create'])
+                ->middleware('transaction.rate_limit:agent_escrow')
+                ->name('create');
+            Route::get('/{escrowId}', [AgentEscrowController::class, 'show'])->name('show');
+            Route::post('/{escrowId}/fund', [AgentEscrowController::class, 'fund'])
+                ->middleware('transaction.rate_limit:agent_escrow')
+                ->name('fund');
+            Route::post('/{escrowId}/release', [AgentEscrowController::class, 'release'])
+                ->middleware('transaction.rate_limit:agent_escrow')
+                ->name('release');
+            Route::post('/{escrowId}/dispute', [AgentEscrowController::class, 'dispute'])->name('dispute');
+            Route::post('/{escrowId}/resolve', [AgentEscrowController::class, 'resolveDispute'])->name('resolve');
+        });
+
+        // Messaging endpoints (A2A)
+        Route::prefix('agents/{did}/messages')->name('messages.')->group(function () {
+            Route::get('/', [AgentMessageController::class, 'list'])->name('list');
+            Route::post('/', [AgentMessageController::class, 'send'])
+                ->middleware('transaction.rate_limit:agent_message')
+                ->name('send');
+            Route::get('/{messageId}', [AgentMessageController::class, 'show'])->name('show');
+            Route::post('/{messageId}/ack', [AgentMessageController::class, 'acknowledge'])->name('acknowledge');
+        });
+
+        // Reputation management endpoints
+        Route::post('/agents/{did}/reputation/feedback', [AgentReputationController::class, 'submitFeedback'])
+            ->name('reputation.feedback');
+        Route::get('/agents/{did}/reputation/history', [AgentReputationController::class, 'history'])
+            ->name('reputation.history');
+        Route::get('/agents/{agentA}/trust/{agentB}', [AgentReputationController::class, 'evaluateTrust'])
+            ->name('reputation.trust');
+    });
+});
