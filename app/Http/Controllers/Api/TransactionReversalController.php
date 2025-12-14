@@ -13,6 +13,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Workflow\WorkflowStub;
 
@@ -126,8 +127,8 @@ class TransactionReversalController extends Controller
                 $validated['authorized_by'] ?? Auth::user()->email
             );
 
-            // Generate reversal ID for tracking
-            $reversalId = 'rev_' . uniqid() . '_' . time();
+            // Generate cryptographically secure reversal ID for tracking
+            $reversalId = 'rev_' . Str::uuid()->toString();
 
             return response()->json(
                 [
@@ -162,7 +163,7 @@ class TransactionReversalController extends Controller
             return response()->json(
                 [
                     'message' => 'Transaction reversal failed',
-                    'error'   => $e->getMessage(),
+                    'error'   => 'An internal error occurred. Please try again later.',
                 ],
                 500
             );
