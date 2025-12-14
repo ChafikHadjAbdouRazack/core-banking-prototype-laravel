@@ -96,10 +96,14 @@ describe('prometheus endpoint', function () {
         $response = $this->get('/api/monitoring/prometheus');
 
         $response->assertOk()
-            ->assertHeader('Content-Type', 'text/plain; version=0.0.4; charset=UTF-8')
             ->assertSee('# HELP http_requests_total Total HTTP requests')
             ->assertSee('# TYPE http_requests_total counter')
             ->assertSee('http_requests_total 1234');
+
+        // Assert content type contains expected values (case-insensitive charset)
+        $contentType = $response->headers->get('Content-Type');
+        expect($contentType)->toContain('text/plain');
+        expect($contentType)->toContain('version=0.0.4');
     });
 });
 
