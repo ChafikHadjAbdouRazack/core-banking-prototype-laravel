@@ -916,7 +916,7 @@ We welcome contributions from the community, including **AI coding assistants an
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Laravel 12, PHP 8.3+
+- **Backend**: Laravel 12, PHP 8.4+
 - **Event Sourcing**: Spatie Event Sourcing
 - **Workflows**: Laravel Workflow
 - **Database**: MySQL 8.0+/PostgreSQL 13+
@@ -1034,4 +1034,3 @@ This project is open-sourced software licensed under the [Apache License 2.0](LI
 ---
 
 **Built with ❤️ for the banking industry**
-# Trigger CI
