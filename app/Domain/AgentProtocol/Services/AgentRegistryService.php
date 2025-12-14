@@ -198,4 +198,162 @@ class AgentRegistryService
         // Clear related caches
         Cache::tags(['agents'])->flush();
     }
+
+    /**
+     * Discover agents with filtering options.
+     */
+    public function discoverAgents(
+        ?string $capability = null,
+        ?string $type = null,
+        string $status = 'active',
+        int $limit = 20
+    ): array {
+        $cacheKey = 'agent:discover:' . md5((string) json_encode([$capability, $type, $status, $limit]));
+
+        return Cache::remember($cacheKey, 300, function () use ($capability, $type, $status, $limit) {
+            $query = Agent::query()->where('status', $status);
+
+            if ($capability) {
+                $query->whereJsonContains('capabilities', $capability);
+            }
+
+            if ($type) {
+                $query->where('type', $type);
+            }
+
+            return $query->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(fn ($agent) => [
+                    'agent_id'     => $agent->agent_id,
+                    'did'          => $agent->did,
+                    'name'         => $agent->name,
+                    'type'         => $agent->type,
+                    'status'       => $agent->status,
+                    'capabilities' => $agent->capabilities ?? [],
+                    'endpoints'    => $agent->endpoints ?? [],
+                    'created_at'   => $agent->created_at?->toIso8601String(),
+                ])
+                ->toArray();
+        });
+    }
+
+    /**
+     * Get agent by DID.
+     */
+    public function getAgentByDID(string $did): ?array
+    {
+        $cacheKey = "agent:did:{$did}";
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($did) {
+            $agent = Agent::where('did', $did)
+                ->where('status', 'active')
+                ->first();
+
+            if (! $agent) {
+                return null;
+            }
+
+            return [
+                'agent_id'         => $agent->agent_id,
+                'did'              => $agent->did,
+                'name'             => $agent->name,
+                'type'             => $agent->type,
+                'status'           => $agent->status,
+                'organization'     => $agent->organization,
+                'network_id'       => $agent->network_id,
+                'capabilities'     => $agent->capabilities ?? [],
+                'endpoints'        => $agent->endpoints ?? [],
+                'metadata'         => $agent->metadata ?? [],
+                'public_key'       => $agent->public_key,
+                'created_at'       => $agent->created_at?->toIso8601String(),
+                'last_activity_at' => $agent->last_activity_at?->toIso8601String(),
+            ];
+        });
+    }
+
+    /**
+     * Get agent payments.
+     */
+    public function getAgentPayments(
+        string $did,
+        ?string $status = null,
+        string $type = 'all',
+        int $limit = 20
+    ): array {
+        // In a real implementation, this would query the event store or transactions table
+        // For now, return empty array - the actual data comes from aggregates
+        return [];
+    }
+
+    /**
+     * Get agent messages.
+     */
+    public function getAgentMessages(
+        string $did,
+        string $type = 'all',
+        ?string $status = null,
+        bool $unacknowledgedOnly = false,
+        int $limit = 20
+    ): array {
+        // In a real implementation, this would query the event store or messages table
+        // For now, return empty array - the actual data comes from aggregates
+        return [];
+    }
+
+    /**
+     * Get agent reputation history.
+     */
+    public function getAgentReputationHistory(string $agentId, int $limit = 20): array
+    {
+        // In a real implementation, this would query the event store for reputation events
+        // For now, return empty array - the actual data comes from aggregates
+        return [];
+    }
+
+    /**
+     * Get reputation leaderboard.
+     */
+    public function getReputationLeaderboard(int $limit = 10, ?string $capability = null): array
+    {
+        $cacheKey = 'reputation:leaderboard:' . md5((string) json_encode([$limit, $capability]));
+
+        return Cache::remember($cacheKey, 300, function () use ($limit, $capability) {
+            $query = Agent::query()
+                ->where('status', 'active')
+                ->whereNotNull('reputation_score');
+
+            if ($capability) {
+                $query->whereJsonContains('capabilities', $capability);
+            }
+
+            return $query->orderBy('reputation_score', 'desc')
+                ->limit($limit)
+                ->get()
+                ->map(fn ($agent, $index) => [
+                    'rank'             => $index + 1,
+                    'agent_id'         => $agent->agent_id,
+                    'did'              => $agent->did,
+                    'name'             => $agent->name,
+                    'reputation_score' => $agent->reputation_score ?? 50.0,
+                    'trust_level'      => $this->calculateTrustLevel((float) ($agent->reputation_score ?? 50.0)),
+                    'capabilities'     => $agent->capabilities ?? [],
+                ])
+                ->toArray();
+        });
+    }
+
+    /**
+     * Calculate trust level from score.
+     */
+    private function calculateTrustLevel(float $score): string
+    {
+        return match (true) {
+            $score >= 80 => 'trusted',
+            $score >= 60 => 'high',
+            $score >= 40 => 'neutral',
+            $score >= 20 => 'low',
+            default      => 'untrusted',
+        };
+    }
 }
