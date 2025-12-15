@@ -15,9 +15,20 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
+/**
+ * Service for managing escrow transactions with dispute resolution.
+ *
+ * Configuration is loaded from config/agent_protocol.php:
+ * - escrow.default_expiration_days: Default expiration period in days
+ * - escrow.voting_threshold: Amount threshold for voting vs arbitration
+ * - escrow.resolution_methods: Enabled resolution methods
+ * - escrow.types: Available escrow types with descriptions
+ * - escrow.minimum_amount: Minimum escrow amount
+ * - escrow.maximum_amount: Maximum escrow amount
+ */
 class EscrowService
 {
-    // Escrow types
+    // Escrow types - used internally, but config overrides descriptions
     private const TYPE_STANDARD = 'standard';
 
     private const TYPE_MILESTONE = 'milestone';
@@ -33,8 +44,37 @@ class EscrowService
 
     private const RESOLUTION_VOTING = 'voting';
 
-    // Default escrow expiration (days)
-    private const DEFAULT_EXPIRATION_DAYS = 30;
+    /**
+     * Get default expiration days from configuration.
+     */
+    private function getDefaultExpirationDays(): int
+    {
+        return (int) config('agent_protocol.escrow.default_expiration_days', 30);
+    }
+
+    /**
+     * Get the voting threshold for dispute resolution.
+     */
+    private function getVotingThreshold(): float
+    {
+        return (float) config('agent_protocol.escrow.voting_threshold', 10000.0);
+    }
+
+    /**
+     * Get minimum escrow amount from configuration.
+     */
+    private function getMinimumAmount(): float
+    {
+        return (float) config('agent_protocol.escrow.minimum_amount', 10.0);
+    }
+
+    /**
+     * Get maximum escrow amount from configuration.
+     */
+    private function getMaximumAmount(): float
+    {
+        return (float) config('agent_protocol.escrow.maximum_amount', 1000000.0);
+    }
 
     public function __construct(
         private readonly AgentWalletService $walletService,
@@ -44,6 +84,18 @@ class EscrowService
 
     /**
      * Create a new escrow.
+     *
+     * @param string $transactionId Associated transaction ID
+     * @param string $senderAgentId Sender agent's DID
+     * @param string $receiverAgentId Receiver agent's DID
+     * @param float $amount Escrow amount
+     * @param string $currency Currency code (default: USD)
+     * @param array<string, mixed> $conditions Release conditions
+     * @param string|null $expiresAt Expiration timestamp (ISO 8601)
+     * @param array<string, mixed> $metadata Additional metadata
+     * @param string $type Escrow type (standard, milestone, timed, conditional)
+     * @return Escrow Created escrow record
+     * @throws InvalidArgumentException If validation fails
      */
     public function createEscrow(
         string $transactionId,
@@ -56,14 +108,26 @@ class EscrowService
         array $metadata = [],
         string $type = self::TYPE_STANDARD
     ): Escrow {
-        // Validate agents and amount
+        // Validate amount against config limits
+        $minAmount = $this->getMinimumAmount();
+        $maxAmount = $this->getMaximumAmount();
+
         if ($amount <= 0) {
             throw new InvalidArgumentException('Escrow amount must be greater than zero');
         }
 
-        // Set default expiration if not provided
+        if ($amount < $minAmount) {
+            throw new InvalidArgumentException("Escrow amount must be at least {$minAmount}");
+        }
+
+        if ($amount > $maxAmount) {
+            throw new InvalidArgumentException("Escrow amount cannot exceed {$maxAmount}");
+        }
+
+        // Set default expiration if not provided using config
         if ($expiresAt === null) {
-            $expiresAt = now()->addDays(self::DEFAULT_EXPIRATION_DAYS)->toIso8601String();
+            $expirationDays = $this->getDefaultExpirationDays();
+            $expiresAt = now()->addDays($expirationDays)->toIso8601String();
         }
 
         // Run compliance checks
@@ -435,7 +499,15 @@ class EscrowService
     }
 
     /**
-     * Determine dispute resolution method.
+     * Determine dispute resolution method based on escrow type and amount.
+     *
+     * Resolution priority:
+     * 1. Automated - if conditions support automatic verification
+     * 2. Voting - for amounts below the voting threshold
+     * 3. Arbitration - for high-value disputes
+     *
+     * @param Escrow $escrow The escrow being disputed
+     * @return string Resolution method (automated, voting, arbitration)
      */
     private function determineResolutionMethod(Escrow $escrow): string
     {
@@ -444,8 +516,9 @@ class EscrowService
             return self::RESOLUTION_AUTOMATED;
         }
 
-        // Check if community voting is available
-        if ($escrow->amount < 10000) {
+        // Check if community voting is available for lower amounts
+        $votingThreshold = $this->getVotingThreshold();
+        if ($escrow->amount < $votingThreshold) {
             return self::RESOLUTION_VOTING;
         }
 
@@ -581,28 +654,30 @@ class EscrowService
     }
 
     /**
-     * Get available escrow types.
+     * Get available escrow types with descriptions.
+     *
+     * @return array<string, string> Map of type codes to descriptions
      */
     public function getEscrowTypes(): array
     {
-        return [
+        return config('agent_protocol.escrow.types', [
             self::TYPE_STANDARD    => 'Standard escrow with basic release conditions',
             self::TYPE_MILESTONE   => 'Milestone-based escrow with phased releases',
             self::TYPE_TIMED       => 'Time-based escrow with automatic release',
             self::TYPE_CONDITIONAL => 'Conditional escrow with complex criteria',
-        ];
+        ]);
     }
 
     /**
-     * Validate escrow type.
+     * Validate escrow type against configured types.
+     *
+     * @param string $type Type code to validate
+     * @return bool True if type is valid
      */
     public function isValidEscrowType(string $type): bool
     {
-        return in_array($type, [
-            self::TYPE_STANDARD,
-            self::TYPE_MILESTONE,
-            self::TYPE_TIMED,
-            self::TYPE_CONDITIONAL,
-        ], true);
+        $validTypes = array_keys($this->getEscrowTypes());
+
+        return in_array($type, $validTypes, true);
     }
 }

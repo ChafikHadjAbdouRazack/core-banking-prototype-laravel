@@ -15,24 +15,69 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
+/**
+ * Service for managing agent wallets with multi-currency support.
+ *
+ * Configuration is loaded from config/agent_protocol.php:
+ * - wallet.supported_currencies: List of supported currency codes
+ * - wallet.exchange_rate_cache_ttl: Cache duration for exchange rates
+ * - wallet.transaction_fees: Fee rates by transaction type
+ * - wallet.crypto_currencies: List of cryptocurrency codes
+ */
 class AgentWalletService
 {
-    // Supported currencies
-    private const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'NZD'];
+    /**
+     * Get supported currencies from configuration.
+     *
+     * @return array<string>
+     */
+    private function getSupportedCurrencies(): array
+    {
+        return config('agent_protocol.wallet.supported_currencies', ['USD', 'EUR', 'GBP']);
+    }
 
-    // Exchange rate cache duration (seconds)
-    private const EXCHANGE_RATE_CACHE_TTL = 300; // 5 minutes
+    /**
+     * Get exchange rate cache TTL from configuration.
+     */
+    private function getExchangeRateCacheTtl(): int
+    {
+        return (int) config('agent_protocol.wallet.exchange_rate_cache_ttl', 300);
+    }
 
-    // Transaction fee rates
-    private const FEE_RATES = [
-        'domestic'      => 0.01,      // 1%
-        'international' => 0.025, // 2.5%
-        'crypto'        => 0.005,       // 0.5%
-        'escrow'        => 0.02,        // 2%
-    ];
+    /**
+     * Get transaction fee rates from configuration.
+     *
+     * @return array<string, float>
+     */
+    private function getTransactionFeeRates(): array
+    {
+        return config('agent_protocol.wallet.transaction_fees', [
+            'domestic'      => 0.01,
+            'international' => 0.025,
+            'crypto'        => 0.005,
+            'escrow'        => 0.02,
+        ]);
+    }
+
+    /**
+     * Get crypto currencies from configuration.
+     *
+     * @return array<string>
+     */
+    private function getCryptoCurrencies(): array
+    {
+        return config('agent_protocol.wallet.crypto_currencies', ['BTC', 'ETH', 'USDT']);
+    }
 
     /**
      * Create a new wallet for an agent.
+     *
+     * @param string $agentId The agent's DID
+     * @param string $currency The wallet currency (default: USD)
+     * @param float $initialBalance Initial balance to set
+     * @param array<string, mixed> $metadata Additional wallet metadata
+     * @return AgentWallet The created wallet
+     * @throws InvalidArgumentException If currency is not supported
      */
     public function createWallet(
         string $agentId,
@@ -40,8 +85,9 @@ class AgentWalletService
         float $initialBalance = 0.0,
         array $metadata = []
     ): AgentWallet {
-        if (! $this->isCurrencySupported($currency)) {
-            throw new InvalidArgumentException("Unsupported currency: {$currency}");
+        $supportedCurrencies = $this->getSupportedCurrencies();
+        if (! in_array(strtoupper($currency), $supportedCurrencies, true)) {
+            throw new InvalidArgumentException("Unsupported currency: {$currency}. Supported: " . implode(', ', $supportedCurrencies));
         }
 
         $walletId = 'wallet_' . Str::uuid()->toString();
@@ -139,9 +185,10 @@ class AgentWalletService
                 throw new InvalidArgumentException('Insufficient balance for transfer');
             }
 
-            // Calculate fees
+            // Calculate fees using config-based rates
             $feeType = $this->determineFeeType($fromWallet->currency, $toWallet->currency);
-            $feeAmount = round($amount * self::FEE_RATES[$feeType], 2);
+            $feeRates = $this->getTransactionFeeRates();
+            $feeAmount = round($amount * ($feeRates[$feeType] ?? 0.01), 2);
 
             // Create transaction aggregate
             $transactionId = 'trans_' . Str::uuid()->toString();
@@ -254,23 +301,35 @@ class AgentWalletService
     }
 
     /**
-     * Get supported currencies.
+     * Get list of supported currencies.
+     *
+     * @return array<string> List of currency codes
      */
-    public function getSupportedCurrencies(): array
+    public function listSupportedCurrencies(): array
     {
-        return self::SUPPORTED_CURRENCIES;
+        return $this->getSupportedCurrencies();
     }
 
     /**
-     * Check if currency is supported.
+     * Check if a currency is supported.
+     *
+     * @param string $currency Currency code to check
+     * @return bool True if currency is supported
      */
     public function isCurrencySupported(string $currency): bool
     {
-        return in_array(strtoupper($currency), self::SUPPORTED_CURRENCIES, true);
+        return in_array(strtoupper($currency), $this->getSupportedCurrencies(), true);
     }
 
     /**
-     * Get exchange rate between currencies (mock implementation).
+     * Get exchange rate between currencies.
+     *
+     * Note: This is a mock implementation. In production, integrate with
+     * a real exchange rate API service.
+     *
+     * @param string $fromCurrency Source currency code
+     * @param string $toCurrency Target currency code
+     * @return float Exchange rate (1.0 if same currency or rate not found)
      */
     private function getExchangeRate(string $fromCurrency, string $toCurrency): float
     {
@@ -279,8 +338,9 @@ class AgentWalletService
         }
 
         $cacheKey = "exchange_rate:{$fromCurrency}:{$toCurrency}";
+        $cacheTtl = $this->getExchangeRateCacheTtl();
 
-        $rate = Cache::remember($cacheKey, self::EXCHANGE_RATE_CACHE_TTL, function () use ($fromCurrency, $toCurrency): float {
+        $rate = Cache::remember($cacheKey, $cacheTtl, function () use ($fromCurrency, $toCurrency): float {
             // Mock exchange rates (in production, use real exchange rate API)
             $rates = [
                 'USD' => ['EUR' => 0.85, 'GBP' => 0.73, 'JPY' => 110.0, 'CHF' => 0.92, 'CAD' => 1.25, 'AUD' => 1.35, 'NZD' => 1.45],
@@ -288,7 +348,18 @@ class AgentWalletService
                 'GBP' => ['USD' => 1.37, 'EUR' => 1.16, 'JPY' => 150.0, 'CHF' => 1.26, 'CAD' => 1.71, 'AUD' => 1.85, 'NZD' => 1.99],
             ];
 
-            return (float) ($rates[$fromCurrency][$toCurrency] ?? 1.0);
+            $rate = $rates[$fromCurrency][$toCurrency] ?? null;
+
+            if ($rate === null) {
+                Log::warning('Exchange rate not found, using fallback', [
+                    'from' => $fromCurrency,
+                    'to'   => $toCurrency,
+                ]);
+
+                return 1.0;
+            }
+
+            return (float) $rate;
         });
 
         return (float) $rate;
@@ -296,6 +367,10 @@ class AgentWalletService
 
     /**
      * Determine fee type based on currencies.
+     *
+     * @param string $fromCurrency Source currency code
+     * @param string $toCurrency Target currency code
+     * @return string Fee type (domestic, international, or crypto)
      */
     private function determineFeeType(string $fromCurrency, string $toCurrency): string
     {
@@ -303,8 +378,9 @@ class AgentWalletService
             return 'domestic';
         }
 
-        // Check if crypto (simplified check)
-        if (in_array($fromCurrency, ['BTC', 'ETH', 'USDT']) || in_array($toCurrency, ['BTC', 'ETH', 'USDT'])) {
+        // Check if crypto using config-based list
+        $cryptoCurrencies = $this->getCryptoCurrencies();
+        if (in_array($fromCurrency, $cryptoCurrencies, true) || in_array($toCurrency, $cryptoCurrencies, true)) {
             return 'crypto';
         }
 
