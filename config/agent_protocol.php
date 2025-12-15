@@ -44,11 +44,24 @@ return [
     |--------------------------------------------------------------------------
     */
     'escrow' => [
-        'minimum_amount'       => env('ESCROW_MIN_AMOUNT', 10.00),
-        'maximum_amount'       => env('ESCROW_MAX_AMOUNT', 1000000.00),
-        'default_timeout'      => env('ESCROW_DEFAULT_TIMEOUT', 86400), // 24 hours in seconds
-        'dispute_timeout'      => env('ESCROW_DISPUTE_TIMEOUT', 3600), // 1 hour
-        'auto_release_enabled' => env('ESCROW_AUTO_RELEASE', true),
+        'minimum_amount'          => env('ESCROW_MIN_AMOUNT', 10.00),
+        'maximum_amount'          => env('ESCROW_MAX_AMOUNT', 1000000.00),
+        'default_expiration_days' => env('ESCROW_EXPIRATION_DAYS', 30),
+        'default_timeout'         => env('ESCROW_DEFAULT_TIMEOUT', 86400), // 24 hours in seconds
+        'dispute_timeout'         => env('ESCROW_DISPUTE_TIMEOUT', 3600), // 1 hour
+        'auto_release_enabled'    => env('ESCROW_AUTO_RELEASE', true),
+        'voting_threshold'        => env('ESCROW_VOTING_THRESHOLD', 10000.00), // Amount below which voting is used
+        'resolution_methods'      => [
+            'automated'   => env('ESCROW_RESOLUTION_AUTOMATED', true),
+            'voting'      => env('ESCROW_RESOLUTION_VOTING', true),
+            'arbitration' => env('ESCROW_RESOLUTION_ARBITRATION', true),
+        ],
+        'types' => [
+            'standard'    => 'Standard escrow with basic release conditions',
+            'milestone'   => 'Milestone-based escrow with phased releases',
+            'timed'       => 'Time-based escrow with automatic release',
+            'conditional' => 'Conditional escrow with complex criteria',
+        ],
     ],
 
     /*
@@ -250,14 +263,21 @@ return [
     */
     'wallet' => [
         'default_currency'        => env('AGENT_DEFAULT_CURRENCY', 'USD'),
-        'supported_currencies'    => explode(',', env('AGENT_SUPPORTED_CURRENCIES', 'USD,EUR,GBP,BTC,ETH')),
+        'supported_currencies'    => explode(',', (string) env('AGENT_SUPPORTED_CURRENCIES', 'USD,EUR,GBP,JPY,CHF,CAD,AUD,NZD,BTC,ETH')),
         'exchange_rate_cache_ttl' => env('EXCHANGE_RATE_CACHE_TTL', 300), // 5 minutes
         'fee_rates'               => [
             'standard'   => env('WALLET_FEE_STANDARD', 0.025),
             'premium'    => env('WALLET_FEE_PREMIUM', 0.01),
             'enterprise' => env('WALLET_FEE_ENTERPRISE', 0.005),
         ],
-        'minimum_balance' => env('WALLET_MIN_BALANCE', 0),
+        'transaction_fees' => [
+            'domestic'      => env('WALLET_FEE_DOMESTIC', 0.01),       // 1%
+            'international' => env('WALLET_FEE_INTERNATIONAL', 0.025), // 2.5%
+            'crypto'        => env('WALLET_FEE_CRYPTO', 0.005),        // 0.5%
+            'escrow'        => env('WALLET_FEE_ESCROW', 0.02),         // 2%
+        ],
+        'crypto_currencies' => explode(',', (string) env('WALLET_CRYPTO_CURRENCIES', 'BTC,ETH,USDT')),
+        'minimum_balance'   => env('WALLET_MIN_BALANCE', 0),
     ],
 
     /*
@@ -278,7 +298,7 @@ return [
     */
     'aml' => [
         'enabled'              => env('AGENT_AML_ENABLED', true),
-        'high_risk_countries'  => explode(',', env('AML_HIGH_RISK_COUNTRIES', 'KP,IR,SY,CU')),
+        'high_risk_countries'  => explode(',', (string) env('AML_HIGH_RISK_COUNTRIES', 'KP,IR,SY,CU')),
         'large_transaction'    => env('AML_LARGE_TRANSACTION', 10000),
         'risk_score_threshold' => env('AML_RISK_THRESHOLD', 75),
     ],

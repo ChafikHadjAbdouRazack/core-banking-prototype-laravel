@@ -352,7 +352,7 @@ class AgentWalletServiceTest extends TestCase
     #[Test]
     public function it_gets_supported_currencies()
     {
-        $currencies = $this->service->getSupportedCurrencies();
+        $currencies = $this->service->listSupportedCurrencies();
 
         $this->assertIsArray($currencies);
         $this->assertContains('USD', $currencies);
@@ -367,8 +367,9 @@ class AgentWalletServiceTest extends TestCase
         $this->assertTrue($this->service->isCurrencySupported('USD'));
         $this->assertTrue($this->service->isCurrencySupported('EUR'));
         $this->assertTrue($this->service->isCurrencySupported('usd')); // Case insensitive
-        $this->assertFalse($this->service->isCurrencySupported('XYZ'));
-        $this->assertFalse($this->service->isCurrencySupported('BTC'));
+        $this->assertTrue($this->service->isCurrencySupported('BTC')); // Crypto currencies are supported
+        $this->assertFalse($this->service->isCurrencySupported('XYZ')); // Unknown currency not supported
+        $this->assertFalse($this->service->isCurrencySupported('ABC')); // Another unknown currency
     }
 
     #[Test]
