@@ -207,15 +207,37 @@ return [
         'cache_ttl'              => env('VERIFICATION_CACHE_TTL', 2592000), // 30 days
         'multi_factor_threshold' => env('VERIFICATION_MF_THRESHOLD', 2), // Required factors
         'risk_thresholds'        => [
-            'low'      => env('VERIFICATION_RISK_LOW', 20),
-            'medium'   => env('VERIFICATION_RISK_MEDIUM', 50),
-            'high'     => env('VERIFICATION_RISK_HIGH', 75),
-            'critical' => env('VERIFICATION_RISK_CRITICAL', 90),
+            'low'      => env('VERIFICATION_RISK_LOW', 30),
+            'medium'   => env('VERIFICATION_RISK_MEDIUM', 60),
+            'high'     => env('VERIFICATION_RISK_HIGH', 80),
+            'critical' => env('VERIFICATION_RISK_CRITICAL', 95),
+        ],
+        'risk_weights' => [
+            'signature'    => env('VERIFICATION_WEIGHT_SIGNATURE', 25),
+            'agent'        => env('VERIFICATION_WEIGHT_AGENT', 15),
+            'limits'       => env('VERIFICATION_WEIGHT_LIMITS', 10),
+            'velocity'     => env('VERIFICATION_WEIGHT_VELOCITY', 15),
+            'fraud'        => env('VERIFICATION_WEIGHT_FRAUD', 20),
+            'compliance'   => env('VERIFICATION_WEIGHT_COMPLIANCE', 10),
+            'encryption'   => env('VERIFICATION_WEIGHT_ENCRYPTION', 3),
+            'multi_factor' => env('VERIFICATION_WEIGHT_MFA', 2),
         ],
         'velocity_limits' => [
-            'hourly_count' => env('VELOCITY_HOURLY_COUNT', 10),
-            'daily_count'  => env('VELOCITY_DAILY_COUNT', 50),
-            'daily_amount' => env('VELOCITY_DAILY_AMOUNT', 10000),
+            'hourly'  => ['amount' => env('VELOCITY_HOURLY_AMOUNT', 10000), 'count' => env('VELOCITY_HOURLY_COUNT', 10)],
+            'daily'   => ['amount' => env('VELOCITY_DAILY_AMOUNT', 50000), 'count' => env('VELOCITY_DAILY_COUNT', 50)],
+            'weekly'  => ['amount' => env('VELOCITY_WEEKLY_AMOUNT', 200000), 'count' => env('VELOCITY_WEEKLY_COUNT', 200)],
+            'monthly' => ['amount' => env('VELOCITY_MONTHLY_AMOUNT', 500000), 'count' => env('VELOCITY_MONTHLY_COUNT', 500)],
+        ],
+        'default_limits' => [
+            'single_transaction' => env('DEFAULT_SINGLE_TX_LIMIT', 10000),
+            'daily'              => env('DEFAULT_DAILY_LIMIT', 50000),
+            'monthly'            => env('DEFAULT_MONTHLY_LIMIT', 200000),
+        ],
+        'levels' => [
+            'basic'    => ['signature', 'agent'],
+            'standard' => ['signature', 'agent', 'limits', 'velocity'],
+            'enhanced' => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance'],
+            'maximum'  => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance', 'encryption', 'multi_factor'],
         ],
     ],
 
@@ -225,10 +247,16 @@ return [
     |--------------------------------------------------------------------------
     */
     'fraud_detection' => [
-        'enabled'        => env('FRAUD_DETECTION_ENABLED', true),
-        'cache_ttl'      => env('FRAUD_CACHE_TTL', 2592000), // 30 days
-        'min_reputation' => env('FRAUD_MIN_REPUTATION', 30),
-        'risk_weights'   => [
+        'enabled'         => env('FRAUD_DETECTION_ENABLED', true),
+        'cache_ttl'       => env('FRAUD_CACHE_TTL', 2592000), // 30 days
+        'min_reputation'  => env('FRAUD_MIN_REPUTATION', 30),
+        'risk_thresholds' => [
+            'low'      => env('FRAUD_RISK_THRESHOLD_LOW', 30),
+            'medium'   => env('FRAUD_RISK_THRESHOLD_MEDIUM', 60),
+            'high'     => env('FRAUD_RISK_THRESHOLD_HIGH', 80),
+            'critical' => env('FRAUD_RISK_THRESHOLD_CRITICAL', 95),
+        ],
+        'risk_weights' => [
             'velocity'       => env('FRAUD_WEIGHT_VELOCITY', 25),
             'amount_anomaly' => env('FRAUD_WEIGHT_AMOUNT', 20),
             'reputation'     => env('FRAUD_WEIGHT_REPUTATION', 15),
@@ -236,12 +264,24 @@ return [
             'time_of_day'    => env('FRAUD_WEIGHT_TIME', 10),
             'geographic'     => env('FRAUD_WEIGHT_GEO', 10),
         ],
+        'velocity_limits' => [
+            'hourly_count' => env('FRAUD_VELOCITY_HOURLY_COUNT', 10),
+            'daily_count'  => env('FRAUD_VELOCITY_DAILY_COUNT', 50),
+        ],
+        'pattern_scores' => [
+            'round_amount'  => env('FRAUD_PATTERN_ROUND_AMOUNT', 20),
+            'structuring'   => env('FRAUD_PATTERN_STRUCTURING', 40),
+            'sequential'    => env('FRAUD_PATTERN_SEQUENTIAL', 30),
+            'suspicious_ua' => env('FRAUD_PATTERN_SUSPICIOUS_UA', 25),
+        ],
         'suspicious_hours' => [
             'start' => env('FRAUD_SUSPICIOUS_HOUR_START', 2),
             'end'   => env('FRAUD_SUSPICIOUS_HOUR_END', 5),
         ],
-        'structuring_threshold' => env('FRAUD_STRUCTURING_THRESHOLD', 1000),
-        'large_transaction'     => env('FRAUD_LARGE_TRANSACTION', 50000),
+        'structuring_threshold'    => env('FRAUD_STRUCTURING_THRESHOLD', 1000),
+        'structuring_count'        => env('FRAUD_STRUCTURING_COUNT', 5),
+        'small_transaction_amount' => env('FRAUD_SMALL_TX_AMOUNT', 100),
+        'large_transaction'        => env('FRAUD_LARGE_TRANSACTION', 50000),
     ],
 
     /*

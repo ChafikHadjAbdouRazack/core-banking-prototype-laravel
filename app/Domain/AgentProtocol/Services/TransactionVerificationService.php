@@ -11,24 +11,20 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for comprehensive transaction verification.
+ *
+ * Configuration is loaded from config/agent_protocol.php:
+ * - verification.levels: Verification level definitions and their checks
+ * - verification.risk_thresholds: Score thresholds for risk levels
+ * - verification.risk_weights: Weights for risk calculation by check type
+ * - verification.velocity_limits: Transaction velocity limits by period
+ * - verification.default_limits: Default transaction limits
+ * - verification.cache_ttl: Cache duration for verification results
+ * - verification.multi_factor_threshold: Required MFA factors
+ */
 class TransactionVerificationService
 {
-    // Verification levels
-    private const VERIFICATION_LEVELS = [
-        'basic'    => ['signature', 'agent'],
-        'standard' => ['signature', 'agent', 'limits', 'velocity'],
-        'enhanced' => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance'],
-        'maximum'  => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance', 'encryption', 'multi_factor'],
-    ];
-
-    // Risk thresholds
-    private const RISK_THRESHOLDS = [
-        'low'      => 30,
-        'medium'   => 60,
-        'high'     => 80,
-        'critical' => 95,
-    ];
-
     public function __construct(
         private readonly DigitalSignatureService $signatureService,
         private readonly EncryptionService $encryptionService,
@@ -37,7 +33,112 @@ class TransactionVerificationService
     }
 
     /**
+     * Get verification levels from configuration.
+     *
+     * @return array<string, array<string>>
+     */
+    private function getVerificationLevels(): array
+    {
+        return config('agent_protocol.verification.levels', [
+            'basic'    => ['signature', 'agent'],
+            'standard' => ['signature', 'agent', 'limits', 'velocity'],
+            'enhanced' => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance'],
+            'maximum'  => ['signature', 'agent', 'limits', 'velocity', 'fraud', 'compliance', 'encryption', 'multi_factor'],
+        ]);
+    }
+
+    /**
+     * Get risk thresholds from configuration.
+     *
+     * @return array<string, int>
+     */
+    private function getRiskThresholds(): array
+    {
+        $thresholds = config('agent_protocol.verification.risk_thresholds', []);
+
+        return [
+            'low'      => (int) ($thresholds['low'] ?? 30),
+            'medium'   => (int) ($thresholds['medium'] ?? 60),
+            'high'     => (int) ($thresholds['high'] ?? 80),
+            'critical' => (int) ($thresholds['critical'] ?? 95),
+        ];
+    }
+
+    /**
+     * Get risk weights from configuration.
+     *
+     * @return array<string, int>
+     */
+    private function getRiskWeights(): array
+    {
+        $weights = config('agent_protocol.verification.risk_weights', []);
+
+        return [
+            'signature'    => (int) ($weights['signature'] ?? 25),
+            'agent'        => (int) ($weights['agent'] ?? 15),
+            'limits'       => (int) ($weights['limits'] ?? 10),
+            'velocity'     => (int) ($weights['velocity'] ?? 15),
+            'fraud'        => (int) ($weights['fraud'] ?? 20),
+            'compliance'   => (int) ($weights['compliance'] ?? 10),
+            'encryption'   => (int) ($weights['encryption'] ?? 3),
+            'multi_factor' => (int) ($weights['multi_factor'] ?? 2),
+        ];
+    }
+
+    /**
+     * Get velocity limits from configuration.
+     *
+     * @return array<string, array{limit: int, count: int}>
+     */
+    private function getVelocityLimits(): array
+    {
+        $limits = config('agent_protocol.verification.velocity_limits', []);
+
+        return [
+            'hourly' => [
+                'limit' => (int) ($limits['hourly']['amount'] ?? 10000),
+                'count' => (int) ($limits['hourly']['count'] ?? 10),
+            ],
+            'daily' => [
+                'limit' => (int) ($limits['daily']['amount'] ?? 50000),
+                'count' => (int) ($limits['daily']['count'] ?? 50),
+            ],
+            'weekly' => [
+                'limit' => (int) ($limits['weekly']['amount'] ?? 200000),
+                'count' => (int) ($limits['weekly']['count'] ?? 200),
+            ],
+            'monthly' => [
+                'limit' => (int) ($limits['monthly']['amount'] ?? 500000),
+                'count' => (int) ($limits['monthly']['count'] ?? 500),
+            ],
+        ];
+    }
+
+    /**
+     * Get default transaction limits from configuration.
+     *
+     * @return array<string, int>
+     */
+    private function getDefaultLimits(): array
+    {
+        $limits = config('agent_protocol.verification.default_limits', []);
+
+        return [
+            'single_transaction' => (int) ($limits['single_transaction'] ?? 10000),
+            'daily'              => (int) ($limits['daily'] ?? 50000),
+            'monthly'            => (int) ($limits['monthly'] ?? 200000),
+        ];
+    }
+
+    /**
      * Perform comprehensive transaction verification.
+     *
+     * @param string $transactionId Unique transaction identifier
+     * @param string $agentId Agent's DID
+     * @param array<string, mixed> $transactionData Transaction data to verify
+     * @param array<string, mixed> $securityMetadata Security-related metadata
+     * @param string $verificationLevel Verification level (basic, standard, enhanced, maximum)
+     * @return array<string, mixed> Verification results
      */
     public function verifyTransaction(
         string $transactionId,
@@ -55,8 +156,9 @@ class TransactionVerificationService
                 'checks'             => [],
             ];
 
-            // Get verification checks for level
-            $requiredChecks = self::VERIFICATION_LEVELS[$verificationLevel] ?? self::VERIFICATION_LEVELS['standard'];
+            // Get verification checks for level from config
+            $verificationLevels = $this->getVerificationLevels();
+            $requiredChecks = $verificationLevels[$verificationLevel] ?? $verificationLevels['standard'];
 
             // Perform each verification check
             foreach ($requiredChecks as $check) {
@@ -206,18 +308,16 @@ class TransactionVerificationService
     }
 
     /**
-     * Perform velocity checks for fraud prevention.
+     * Perform velocity checks for fraud prevention using configured limits.
+     *
+     * @param string $agentId Agent's DID
+     * @param float $amount Transaction amount
+     * @return array<string, mixed> Velocity check results
      */
     public function performVelocityChecks(string $agentId, float $amount): array
     {
         try {
-            $velocityLimits = [
-                'hourly'  => ['limit' => 10000, 'count' => 10],
-                'daily'   => ['limit' => 50000, 'count' => 50],
-                'weekly'  => ['limit' => 200000, 'count' => 200],
-                'monthly' => ['limit' => 500000, 'count' => 500],
-            ];
-
+            $velocityLimits = $this->getVelocityLimits();
             $violations = [];
 
             foreach ($velocityLimits as $period => $limits) {
@@ -541,21 +641,15 @@ class TransactionVerificationService
     }
 
     /**
-     * Calculate risk score based on verification checks.
+     * Calculate risk score based on verification checks using configured weights.
+     *
+     * @param array<string, array<string, mixed>> $checks Verification check results
+     * @return float Risk score (0-100)
      */
     private function calculateRiskScore(array $checks): float
     {
         $baseScore = 0;
-        $weights = [
-            'signature'    => 25,
-            'agent'        => 15,
-            'limits'       => 10,
-            'velocity'     => 15,
-            'fraud'        => 20,
-            'compliance'   => 10,
-            'encryption'   => 3,
-            'multi_factor' => 2,
-        ];
+        $weights = $this->getRiskWeights();
 
         foreach ($checks as $checkType => $result) {
             if (! $result['passed']) {
@@ -575,14 +669,21 @@ class TransactionVerificationService
     }
 
     /**
-     * Determine risk level from score.
+     * Determine risk level from score using configured thresholds.
+     *
+     * @param float $score Risk score (0-100)
+     * @return string Risk level: 'low', 'medium', 'high', or 'critical'
      */
     private function determineRiskLevel(float $score): string
     {
-        foreach (self::RISK_THRESHOLDS as $level => $threshold) {
-            if ($score <= $threshold) {
-                return $level;
-            }
+        $thresholds = $this->getRiskThresholds();
+
+        if ($score <= $thresholds['low']) {
+            return 'low';
+        } elseif ($score <= $thresholds['medium']) {
+            return 'medium';
+        } elseif ($score <= $thresholds['high']) {
+            return 'high';
         }
 
         return 'critical';
@@ -637,7 +738,12 @@ class TransactionVerificationService
     }
 
     /**
-     * Verify transaction limits.
+     * Verify transaction limits using agent-specific or configured default limits.
+     *
+     * @param string $agentId Agent's DID
+     * @param float $amount Transaction amount
+     * @param string $currency Currency code
+     * @return array<string, mixed> Limit verification result
      */
     private function verifyTransactionLimits(string $agentId, float $amount, string $currency): array
     {
@@ -647,10 +753,11 @@ class TransactionVerificationService
             return ['within_limits' => false, 'reason' => 'Agent not found'];
         }
 
+        $defaultLimits = $this->getDefaultLimits();
         $limits = [
-            'single_transaction' => $agent->single_transaction_limit ?? 10000,
-            'daily'              => $agent->daily_limit ?? 50000,
-            'monthly'            => $agent->monthly_limit ?? 200000,
+            'single_transaction' => $agent->single_transaction_limit ?? $defaultLimits['single_transaction'],
+            'daily'              => $agent->daily_limit ?? $defaultLimits['daily'],
+            'monthly'            => $agent->monthly_limit ?? $defaultLimits['monthly'],
         ];
 
         // Convert amount if needed
