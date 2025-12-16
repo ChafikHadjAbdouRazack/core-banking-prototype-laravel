@@ -6,6 +6,7 @@ namespace App\Domain\AgentProtocol\Services;
 
 use App\Domain\AgentProtocol\Aggregates\AgentTransactionAggregate;
 use App\Domain\AgentProtocol\Aggregates\EscrowAggregate;
+use App\Domain\AgentProtocol\Models\AgentWallet;
 use App\Domain\AgentProtocol\Models\Escrow;
 use App\Domain\AgentProtocol\Models\EscrowDispute;
 use App\Domain\Compliance\Services\ComplianceService;
@@ -611,22 +612,48 @@ class EscrowService
 
     /**
      * Get sender's wallet ID.
+     *
+     * @param string $agentId The agent's DID
+     * @return string The wallet ID for the sender
+     * @throws InvalidArgumentException If no active wallet found for agent
      */
     private function getSenderWallet(string $agentId): string
     {
-        // In production, this would look up the actual wallet
-        // For now, return a mock wallet ID
-        return 'wallet_sender_' . $agentId;
+        return $this->getAgentWalletId($agentId);
     }
 
     /**
      * Get receiver's wallet ID.
+     *
+     * @param string $agentId The agent's DID
+     * @return string The wallet ID for the receiver
+     * @throws InvalidArgumentException If no active wallet found for agent
      */
     private function getReceiverWallet(string $agentId): string
     {
-        // In production, this would look up the actual wallet
-        // For now, return a mock wallet ID
-        return 'wallet_receiver_' . $agentId;
+        return $this->getAgentWalletId($agentId);
+    }
+
+    /**
+     * Get wallet ID for an agent.
+     *
+     * Looks up the agent's primary active wallet from the database.
+     *
+     * @param string $agentId The agent's DID
+     * @return string The wallet ID
+     * @throws InvalidArgumentException If no active wallet found for agent
+     */
+    private function getAgentWalletId(string $agentId): string
+    {
+        $wallet = AgentWallet::where('agent_id', $agentId)
+            ->where('is_active', true)
+            ->first();
+
+        if (! $wallet) {
+            throw new InvalidArgumentException("No active wallet found for agent: {$agentId}");
+        }
+
+        return $wallet->wallet_id;
     }
 
     /**
