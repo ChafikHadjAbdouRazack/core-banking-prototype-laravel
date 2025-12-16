@@ -6,6 +6,7 @@ namespace App\Domain\AgentProtocol\Services;
 
 use App\Domain\AgentProtocol\Aggregates\AgentTransactionAggregate;
 use App\Domain\AgentProtocol\Aggregates\AgentWalletAggregate;
+use App\Domain\AgentProtocol\Contracts\WalletOperationInterface;
 use App\Domain\AgentProtocol\Models\AgentTransaction;
 use App\Domain\AgentProtocol\Models\AgentWallet;
 use Exception;
@@ -24,7 +25,7 @@ use InvalidArgumentException;
  * - wallet.transaction_fees: Fee rates by transaction type
  * - wallet.crypto_currencies: List of cryptocurrency codes
  */
-class AgentWalletService
+class AgentWalletService implements WalletOperationInterface
 {
     /**
      * Get supported currencies from configuration.
@@ -116,46 +117,48 @@ class AgentWalletService
     }
 
     /**
-     * Get wallet balance with multi-currency support.
+     * Get the current balance for a wallet.
+     *
+     * {@inheritDoc}
      */
-    public function getBalance(string $walletId, ?string $targetCurrency = null): array
+    public function getBalance(string $walletId, ?string $currency = null): array
     {
         $wallet = AgentWallet::where('wallet_id', $walletId)->firstOrFail();
 
-        $balance = [
-            'wallet_id' => $walletId,
-            'currency'  => $wallet->currency,
-            'available' => $wallet->available_balance,
-            'held'      => $wallet->held_balance,
-            'total'     => $wallet->total_balance,
-        ];
+        // Build balances array (per currency)
+        $balances = [$wallet->currency => $wallet->total_balance];
+        $available = [$wallet->currency => $wallet->available_balance];
+        $held = [$wallet->currency => $wallet->held_balance];
 
         // Convert to target currency if requested
-        if ($targetCurrency && $targetCurrency !== $wallet->currency) {
-            $rate = $this->getExchangeRate($wallet->currency, $targetCurrency);
-            $balance['converted'] = [
-                'currency'      => $targetCurrency,
-                'available'     => round($wallet->available_balance * $rate, 2),
-                'held'          => round($wallet->held_balance * $rate, 2),
-                'total'         => round($wallet->total_balance * $rate, 2),
-                'exchange_rate' => $rate,
-            ];
+        if ($currency && $currency !== $wallet->currency) {
+            $rate = $this->getExchangeRate($wallet->currency, $currency);
+            $balances[$currency] = round($wallet->total_balance * $rate, 2);
+            $available[$currency] = round($wallet->available_balance * $rate, 2);
+            $held[$currency] = round($wallet->held_balance * $rate, 2);
         }
 
-        return $balance;
+        return [
+            'wallet_id'  => $walletId,
+            'balances'   => $balances,
+            'available'  => $available,
+            'held'       => $held,
+            'updated_at' => $wallet->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+        ];
     }
 
     /**
-     * Transfer funds between agent wallets with multi-currency support.
+     * Transfer funds between wallets.
+     *
+     * {@inheritDoc}
      */
     public function transfer(
         string $fromWalletId,
         string $toWalletId,
         float $amount,
         string $currency,
-        string $type = 'transfer',
         array $metadata = []
-    ): AgentTransaction {
+    ): array {
         DB::beginTransaction();
 
         try {
@@ -192,6 +195,7 @@ class AgentWalletService
 
             // Create transaction aggregate
             $transactionId = 'trans_' . Str::uuid()->toString();
+            $type = $metadata['type'] ?? 'transfer';
             $aggregate = AgentTransactionAggregate::initiate(
                 transactionId: $transactionId,
                 fromAgentId: $fromWallet->agent_id,
@@ -212,7 +216,7 @@ class AgentWalletService
             $this->updateWalletBalance($toWalletId, $toAmount);
 
             // Create transaction record
-            $transaction = AgentTransaction::create([
+            AgentTransaction::create([
                 'transaction_id' => $transactionId,
                 'from_agent_id'  => $fromWallet->agent_id,
                 'to_agent_id'    => $toWallet->agent_id,
@@ -240,7 +244,16 @@ class AgentWalletService
                 'currency'       => $currency,
             ]);
 
-            return $transaction;
+            return [
+                'success'        => true,
+                'transaction_id' => $transactionId,
+                'from_wallet'    => $fromWalletId,
+                'to_wallet'      => $toWalletId,
+                'amount'         => $amount,
+                'currency'       => $currency,
+                'fee'            => $feeAmount,
+                'timestamp'      => now()->toIso8601String(),
+            ];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Agent wallet transfer failed', [
@@ -253,10 +266,17 @@ class AgentWalletService
     }
 
     /**
-     * Hold funds for escrow or pending transactions.
+     * Hold funds in a wallet for escrow or pending transactions.
+     *
+     * {@inheritDoc}
      */
-    public function holdFunds(string $walletId, float $amount, string $reason, array $metadata = []): void
-    {
+    public function holdFunds(
+        string $walletId,
+        float $amount,
+        string $currency,
+        string $reason,
+        ?int $expiresInSeconds = null
+    ): array {
         $wallet = AgentWallet::where('wallet_id', $walletId)
             ->lockForUpdate()
             ->firstOrFail();
@@ -265,8 +285,15 @@ class AgentWalletService
             throw new InvalidArgumentException('Insufficient available balance to hold');
         }
 
+        // Generate hold ID
+        $holdId = 'hold_' . Str::uuid()->toString();
+
         $aggregate = AgentWalletAggregate::retrieve($walletId);
-        $aggregate->holdFunds($amount, $reason, $metadata);
+        $aggregate->holdFunds($amount, $reason, [
+            'hold_id'    => $holdId,
+            'currency'   => $currency,
+            'expires_at' => $expiresInSeconds ? now()->addSeconds($expiresInSeconds)->toIso8601String() : null,
+        ]);
         $aggregate->persist();
 
         // Update read model
@@ -274,13 +301,47 @@ class AgentWalletService
             'available_balance' => $wallet->available_balance - $amount,
             'held_balance'      => $wallet->held_balance + $amount,
         ]);
+
+        // Store hold details in cache for release lookup
+        $expiresAt = $expiresInSeconds ? now()->addSeconds($expiresInSeconds) : now()->addDays(30);
+        Cache::put("wallet_hold:{$holdId}", [
+            'wallet_id' => $walletId,
+            'amount'    => $amount,
+            'currency'  => $currency,
+            'reason'    => $reason,
+        ], $expiresAt);
+
+        return [
+            'success'    => true,
+            'hold_id'    => $holdId,
+            'wallet_id'  => $walletId,
+            'amount'     => $amount,
+            'currency'   => $currency,
+            'reason'     => $reason,
+            'expires_at' => $expiresInSeconds ? $expiresAt->toIso8601String() : null,
+        ];
     }
 
     /**
-     * Release held funds.
+     * Release previously held funds.
+     *
+     * {@inheritDoc}
      */
-    public function releaseFunds(string $walletId, float $amount, string $reason, array $metadata = []): void
+    public function releaseFunds(string $holdId, ?string $releaseToWalletId = null): array
     {
+        // Retrieve hold details from cache
+        $holdDetails = Cache::get("wallet_hold:{$holdId}");
+
+        if (! $holdDetails) {
+            throw new InvalidArgumentException("Hold not found: {$holdId}");
+        }
+
+        $walletId = $holdDetails['wallet_id'];
+        $amount = $holdDetails['amount'];
+        $currency = $holdDetails['currency'];
+
+        $targetWalletId = $releaseToWalletId ?? $walletId;
+
         $wallet = AgentWallet::where('wallet_id', $walletId)
             ->lockForUpdate()
             ->firstOrFail();
@@ -290,7 +351,7 @@ class AgentWalletService
         }
 
         $aggregate = AgentWalletAggregate::retrieve($walletId);
-        $aggregate->releaseFunds($amount, $reason, $metadata);
+        $aggregate->releaseFunds($amount, 'hold_release', ['hold_id' => $holdId]);
         $aggregate->persist();
 
         // Update read model
@@ -298,6 +359,56 @@ class AgentWalletService
             'available_balance' => $wallet->available_balance + $amount,
             'held_balance'      => $wallet->held_balance - $amount,
         ]);
+
+        // If releasing to a different wallet, transfer the funds
+        if ($releaseToWalletId && $releaseToWalletId !== $walletId) {
+            $this->transfer($walletId, $releaseToWalletId, $amount, $currency, [
+                'type'    => 'hold_release',
+                'hold_id' => $holdId,
+            ]);
+        }
+
+        // Remove hold from cache
+        Cache::forget("wallet_hold:{$holdId}");
+
+        return [
+            'success'         => true,
+            'hold_id'         => $holdId,
+            'released_amount' => $amount,
+            'currency'        => $currency,
+            'released_to'     => $targetWalletId,
+        ];
+    }
+
+    /**
+     * Check if a wallet has sufficient balance for an operation.
+     *
+     * {@inheritDoc}
+     */
+    public function hasSufficientBalance(
+        string $walletId,
+        float $amount,
+        string $currency,
+        bool $includeHeld = false
+    ): bool {
+        $wallet = AgentWallet::where('wallet_id', $walletId)->first();
+
+        if (! $wallet) {
+            return false;
+        }
+
+        // Convert amount if currencies don't match
+        $requiredAmount = $amount;
+        if ($wallet->currency !== $currency) {
+            $rate = $this->getExchangeRate($currency, $wallet->currency);
+            $requiredAmount = round($amount * $rate, 2);
+        }
+
+        $availableBalance = $includeHeld
+            ? $wallet->total_balance
+            : $wallet->available_balance;
+
+        return $availableBalance >= $requiredAmount;
     }
 
     /**

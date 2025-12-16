@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Services;
 
+use App\Domain\AgentProtocol\Contracts\RiskScoringInterface;
 use App\Domain\AgentProtocol\Models\Agent;
 use Exception;
 use Illuminate\Support\Facades\Cache;
@@ -22,9 +23,10 @@ use Illuminate\Support\Facades\Log;
  * - fraud_detection.structuring_threshold: Amount threshold for round amount detection
  * - fraud_detection.structuring_count: Count threshold for structuring detection
  * - fraud_detection.small_transaction_amount: Threshold for small transaction detection
+ * - fraud_detection.suspicious_user_agents: User agent patterns indicating automation/bots
  * - fraud_detection.cache_ttl: Cache duration for fraud analysis results
  */
-class FraudDetectionService
+class FraudDetectionService implements RiskScoringInterface
 {
     /**
      * Get risk thresholds from configuration.
@@ -145,6 +147,18 @@ class FraudDetectionService
     }
 
     /**
+     * Get suspicious user agent patterns from configuration.
+     *
+     * @return array<string>
+     */
+    private function getSuspiciousUserAgents(): array
+    {
+        return config('agent_protocol.fraud_detection.suspicious_user_agents', [
+            'bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python',
+        ]);
+    }
+
+    /**
      * Analyze transaction for fraud risk.
      *
      * @param string $transactionId Unique transaction identifier
@@ -212,7 +226,7 @@ class FraudDetectionService
             'transaction_id'  => $transactionId,
             'agent_id'        => $agentId,
             'risk_score'      => round($totalRiskScore, 2),
-            'risk_level'      => $this->getRiskLevel($totalRiskScore),
+            'risk_level'      => $this->determineRiskLevel($totalRiskScore),
             'risk_factors'    => $riskFactors,
             'decision'        => $decision,
             'requires_review' => $decision === 'review',
@@ -228,6 +242,85 @@ class FraudDetectionService
         }
 
         return $analysis;
+    }
+
+    /**
+     * Calculate the overall risk score for an agent transaction.
+     *
+     * {@inheritDoc}
+     */
+    public function calculateRisk(string $agentId, float $amount, array $context = []): array
+    {
+        $transactionId = $context['transaction_id'] ?? 'risk_check_' . uniqid();
+        $analysis = $this->analyzeTransaction($transactionId, $agentId, $amount, $context);
+
+        // Map to interface format
+        $factors = [];
+        foreach ($analysis['risk_factors'] ?? [] as $factorName => $factorData) {
+            $factors[$factorName] = [
+                'score'  => (int) ($factorData['score'] ?? 0),
+                'weight' => (int) (($this->getFraudPatterns()[$factorName . '_check']['weight'] ?? 0.1) * 100),
+                'reason' => $factorData['reason'] ?? $factorName . ' analysis',
+            ];
+        }
+
+        return [
+            'score'     => (int) round($analysis['risk_score']),
+            'level'     => $analysis['risk_level'],
+            'factors'   => $factors,
+            'passed'    => $analysis['decision'] !== 'reject',
+            'timestamp' => $analysis['timestamp'],
+        ];
+    }
+
+    /**
+     * Get the risk level label for a given score.
+     *
+     * {@inheritDoc}
+     */
+    public function getRiskLevel(int $score): string
+    {
+        return $this->determineRiskLevel((float) $score);
+    }
+
+    /**
+     * Check if a risk score is within acceptable thresholds.
+     *
+     * {@inheritDoc}
+     */
+    public function isAcceptableRisk(int $score, string $operationType = 'default'): bool
+    {
+        $thresholds = $this->getRiskThresholds();
+
+        // Different operations have different risk tolerances
+        $maxAcceptable = match ($operationType) {
+            'payment'      => $thresholds['high'],
+            'withdrawal'   => $thresholds['medium'],
+            'registration' => $thresholds['critical'],
+            'high_value'   => $thresholds['medium'],
+            default        => $thresholds['high'],
+        };
+
+        return $score < $maxAcceptable;
+    }
+
+    /**
+     * Get the configured risk weights for scoring factors.
+     *
+     * {@inheritDoc}
+     */
+    public function getRiskWeights(): array
+    {
+        $weights = config('agent_protocol.fraud_detection.risk_weights', []);
+
+        return [
+            'velocity'       => (int) ($weights['velocity'] ?? 25),
+            'amount_anomaly' => (int) ($weights['amount_anomaly'] ?? 20),
+            'reputation'     => (int) ($weights['reputation'] ?? 15),
+            'pattern'        => (int) ($weights['pattern'] ?? 20),
+            'time_of_day'    => (int) ($weights['time_of_day'] ?? 10),
+            'geographic'     => (int) ($weights['geographic'] ?? 10),
+        ];
     }
 
     /**
@@ -489,12 +582,12 @@ class FraudDetectionService
     }
 
     /**
-     * Get risk level from score using configured thresholds.
+     * Determine risk level from score using configured thresholds.
      *
      * @param float $riskScore Calculated risk score
      * @return string Risk level: 'low', 'medium', 'high', or 'critical'
      */
-    private function getRiskLevel(float $riskScore): string
+    private function determineRiskLevel(float $riskScore): string
     {
         $thresholds = $this->getRiskThresholds();
 
@@ -586,11 +679,15 @@ class FraudDetectionService
         return count($uniqueDiffs) === 1 && $uniqueDiffs[0] != 0;
     }
 
+    /**
+     * Check if user agent matches suspicious patterns from configuration.
+     *
+     * @param string $userAgent User agent string to check
+     * @return bool True if user agent matches a suspicious pattern
+     */
     private function isSuspiciousUserAgent(string $userAgent): bool
     {
-        $suspiciousPatterns = [
-            'bot', 'crawler', 'spider', 'scraper', 'curl', 'wget', 'python',
-        ];
+        $suspiciousPatterns = $this->getSuspiciousUserAgents();
 
         $userAgentLower = strtolower($userAgent);
         foreach ($suspiciousPatterns as $pattern) {

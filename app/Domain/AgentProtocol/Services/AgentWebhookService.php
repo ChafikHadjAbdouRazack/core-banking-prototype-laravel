@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for managing webhook notifications in the Agent Protocol.
+ *
+ * Handles delivery of event notifications to registered agent endpoints.
+ * Supports retry logic, signature verification, and delivery tracking.
+ *
+ * Configuration from config/agent_protocol.php:
+ * - webhooks.external_timeout: Request timeout in seconds
+ * - webhooks.retry_attempts: Number of retry attempts
+ * - webhooks.retry_delay: Delay between retries in milliseconds
+ */
 class AgentWebhookService
 {
     private const WEBHOOK_TIMEOUT = 10; // seconds
@@ -31,6 +42,7 @@ class AgentWebhookService
 
         while ($attempt < self::RETRY_ATTEMPTS) {
             try {
+                /** @var \Illuminate\Http\Client\Response $response */
                 $response = Http::timeout($timeout)
                     ->withHeaders($headers)
                     ->retry(self::RETRY_ATTEMPTS, self::RETRY_DELAY * 1000)

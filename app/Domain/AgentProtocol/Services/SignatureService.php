@@ -8,6 +8,13 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
+/**
+ * Service for cryptographic signature operations in the Agent Protocol.
+ *
+ * Handles digital signature creation, verification, and key management
+ * for secure agent-to-agent communication. Supports multiple signature
+ * algorithms including RSA (RS256/384/512) and ECDSA (ES256/384/512).
+ */
 class SignatureService
 {
     private const SIGNATURE_ALGORITHMS = [
