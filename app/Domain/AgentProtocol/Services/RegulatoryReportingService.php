@@ -17,6 +17,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Service for regulatory reporting within the Agent Protocol.
+ *
+ * Generates compliance reports, handles CTR/SAR filings, and manages
+ * regulatory submissions. Integrates with ComplianceAlertService for
+ * suspicious activity monitoring and alert generation.
+ *
+ * Supports various reporting requirements including AML, KYC verification,
+ * and transaction limit monitoring.
+ */
 class RegulatoryReportingService
 {
     private ComplianceAlertService $complianceAlertService;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Services;
 
+use App\Domain\AgentProtocol\Contracts\TransactionVerifierInterface;
 use App\Domain\AgentProtocol\Models\Agent;
 use App\Domain\AgentProtocol\Models\AgentTransaction;
 use Exception;
@@ -23,13 +24,107 @@ use Illuminate\Support\Facades\Log;
  * - verification.cache_ttl: Cache duration for verification results
  * - verification.multi_factor_threshold: Required MFA factors
  */
-class TransactionVerificationService
+class TransactionVerificationService implements TransactionVerifierInterface
 {
     public function __construct(
         private readonly DigitalSignatureService $signatureService,
         private readonly EncryptionService $encryptionService,
         private readonly FraudDetectionService $fraudService
     ) {
+    }
+
+    /**
+     * Verify a transaction and return the verification result.
+     *
+     * {@inheritDoc}
+     */
+    public function verify(string $transactionId, array $transactionData): array
+    {
+        $senderId = $transactionData['sender_id'] ?? '';
+        $result = $this->verifyTransaction(
+            $transactionId,
+            $senderId,
+            $transactionData,
+            $transactionData['metadata'] ?? [],
+            'standard'
+        );
+
+        // Map to interface format
+        $checksPassed = [];
+        $checksFailed = [];
+
+        foreach ($result['checks'] ?? [] as $checkName => $checkResult) {
+            if ($checkResult['passed'] ?? false) {
+                $checksPassed[] = $checkName;
+            } else {
+                $checksFailed[] = $checkName;
+            }
+        }
+
+        return [
+            'verified'           => $result['status'] === 'approved',
+            'verification_level' => $result['verification_level'] ?? 'standard',
+            'risk_score'         => (int) ($result['risk_score'] ?? 0),
+            'checks_passed'      => $checksPassed,
+            'checks_failed'      => $checksFailed,
+            'timestamp'          => $result['timestamp'] ?? now()->toIso8601String(),
+        ];
+    }
+
+    /**
+     * Get the verification level for a given risk score.
+     *
+     * {@inheritDoc}
+     */
+    public function getVerificationLevel(int $riskScore): string
+    {
+        return $this->determineRiskLevel((float) $riskScore);
+    }
+
+    /**
+     * Calculate the risk score for a transaction.
+     *
+     * {@inheritDoc}
+     */
+    public function calculateRiskScore(array $transactionData): int
+    {
+        $senderId = $transactionData['sender_id'] ?? '';
+        $amount = (float) ($transactionData['amount'] ?? 0);
+
+        // Perform fraud analysis
+        $fraudAnalysis = $this->fraudService->analyzeTransaction(
+            'risk_calc_' . uniqid(),
+            $senderId,
+            $amount,
+            $transactionData
+        );
+
+        return (int) round($fraudAnalysis['risk_score'] ?? 0);
+    }
+
+    /**
+     * Check if a transaction passes velocity limits.
+     *
+     * {@inheritDoc}
+     */
+    public function checkVelocityLimits(string $agentId, float $amount): array
+    {
+        $result = $this->performVelocityChecks($agentId, $amount);
+        $velocityLimits = $this->getVelocityLimits();
+        $stats = $this->getTransactionStats($agentId, 'daily');
+
+        return [
+            'passed'       => $result['passed'],
+            'hourly_count' => $this->getTransactionStats($agentId, 'hourly')['count'],
+            'daily_count'  => $stats['count'],
+            'daily_amount' => (float) $stats['total_amount'],
+            'limits'       => [
+                'hourly_count'  => $velocityLimits['hourly']['count'],
+                'daily_count'   => $velocityLimits['daily']['count'],
+                'hourly_amount' => $velocityLimits['hourly']['limit'],
+                'daily_amount'  => $velocityLimits['daily']['limit'],
+            ],
+        ];
     }
 
     /**
@@ -179,7 +274,7 @@ class TransactionVerificationService
             }
 
             // Calculate risk score
-            $verificationResults['risk_score'] = $this->calculateRiskScore($verificationResults['checks']);
+            $verificationResults['risk_score'] = $this->calculateVerificationRiskScore($verificationResults['checks']);
             $verificationResults['risk_level'] = $this->determineRiskLevel($verificationResults['risk_score']);
 
             // Store verification result
@@ -646,7 +741,7 @@ class TransactionVerificationService
      * @param array<string, array<string, mixed>> $checks Verification check results
      * @return float Risk score (0-100)
      */
-    private function calculateRiskScore(array $checks): float
+    private function calculateVerificationRiskScore(array $checks): float
     {
         $baseScore = 0;
         $weights = $this->getRiskWeights();

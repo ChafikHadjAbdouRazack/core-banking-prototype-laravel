@@ -9,6 +9,13 @@ use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for agent-specific digital signature operations.
+ *
+ * Provides high-level signature operations for agent transactions, including
+ * signing transaction data, verifying agent signatures, and managing signature
+ * chains for audit trails. Integrates with SignatureService and EncryptionService.
+ */
 class DigitalSignatureService
 {
     public function __construct(

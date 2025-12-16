@@ -216,12 +216,12 @@ class EscrowService
                 throw new InvalidArgumentException("Cannot fund escrow in status: {$escrow->status}");
             }
 
-            // Hold funds in wallet
-            $this->walletService->holdFunds(
+            // Hold funds in wallet with new interface
+            $holdResult = $this->walletService->holdFunds(
                 walletId: $walletId,
                 amount: $amount,
-                reason: 'escrow_deposit',
-                metadata: ['escrow_id' => $escrowId]
+                currency: $escrow->currency,
+                reason: 'escrow_deposit'
             );
 
             // Update escrow aggregate
@@ -229,10 +229,11 @@ class EscrowService
             $aggregate->deposit($amount, $walletId);
             $aggregate->persist();
 
-            // Update read model
+            // Update read model with hold_id for later release
             $newFundedAmount = $escrow->funded_amount + $amount;
             $escrow->update([
                 'funded_amount' => $newFundedAmount,
+                'hold_id'       => $holdResult['hold_id'],
                 'status'        => $newFundedAmount >= $escrow->amount ? 'funded' : 'created',
             ]);
 
@@ -269,26 +270,25 @@ class EscrowService
                 throw new InvalidArgumentException("Cannot release escrow in status: {$escrow->status}");
             }
 
-            // Get sender's wallet to release held funds
+            // Get wallet IDs
             $senderWallet = $this->getSenderWallet($escrow->sender_agent_id);
+            $receiverWallet = $this->getReceiverWallet($escrow->receiver_agent_id);
 
-            // Release held funds from sender's wallet
-            $this->walletService->releaseFunds(
-                walletId: $senderWallet,
-                amount: $escrow->funded_amount,
-                reason: 'escrow_release',
-                metadata: ['escrow_id' => $escrowId]
-            );
+            // Release held funds using the stored hold_id
+            if ($escrow->hold_id) {
+                $this->walletService->releaseFunds(
+                    holdId: $escrow->hold_id
+                );
+            }
 
             // Transfer funds to receiver
-            $receiverWallet = $this->getReceiverWallet($escrow->receiver_agent_id);
             $this->walletService->transfer(
                 fromWalletId: $senderWallet,
                 toWalletId: $receiverWallet,
                 amount: $escrow->funded_amount,
                 currency: $escrow->currency,
-                type: 'escrow_release',
                 metadata: [
+                    'type'      => 'escrow_release',
                     'escrow_id' => $escrowId,
                     'reason'    => $reason,
                 ]
@@ -475,14 +475,10 @@ class EscrowService
                 $aggregate->expire();
                 $aggregate->persist();
 
-                // Return funds to sender
-                if ($escrow->funded_amount > 0) {
-                    $senderWallet = $this->getSenderWallet($escrow->sender_agent_id);
+                // Return funds to sender using stored hold_id
+                if ($escrow->funded_amount > 0 && $escrow->hold_id) {
                     $this->walletService->releaseFunds(
-                        walletId: $senderWallet,
-                        amount: $escrow->funded_amount,
-                        reason: 'escrow_expired',
-                        metadata: ['escrow_id' => $escrow->escrow_id]
+                        holdId: $escrow->hold_id
                     );
                 }
 
@@ -571,45 +567,42 @@ class EscrowService
         $senderWallet = $this->getSenderWallet($escrow->sender_agent_id);
         $receiverWallet = $this->getReceiverWallet($escrow->receiver_agent_id);
 
+        // First, release the held funds back to sender's available balance
+        if ($escrow->hold_id) {
+            $this->walletService->releaseFunds(holdId: $escrow->hold_id);
+        }
+
         switch ($resolutionType) {
             case 'release_to_receiver':
+                // Transfer full amount to receiver
                 $this->walletService->transfer(
                     fromWalletId: $senderWallet,
                     toWalletId: $receiverWallet,
                     amount: $escrow->funded_amount,
                     currency: $escrow->currency,
-                    type: 'dispute_resolution',
-                    metadata: ['resolution_type' => $resolutionType]
+                    metadata: [
+                        'type'            => 'dispute_resolution',
+                        'resolution_type' => $resolutionType,
+                    ]
                 );
                 break;
 
             case 'return_to_sender':
-                $this->walletService->releaseFunds(
-                    walletId: $senderWallet,
-                    amount: $escrow->funded_amount,
-                    reason: 'dispute_resolution',
-                    metadata: ['resolution_type' => $resolutionType]
-                );
+                // Funds already released to sender's available balance, nothing more to do
                 break;
 
             case 'split':
                 if (isset($resolutionAllocation['sender']) && isset($resolutionAllocation['receiver'])) {
-                    // Release sender's portion
-                    $this->walletService->releaseFunds(
-                        walletId: $senderWallet,
-                        amount: $resolutionAllocation['sender'],
-                        reason: 'dispute_resolution_split',
-                        metadata: ['resolution_type' => $resolutionType]
-                    );
-
-                    // Transfer receiver's portion
+                    // Funds already released to sender; transfer receiver's portion
                     $this->walletService->transfer(
                         fromWalletId: $senderWallet,
                         toWalletId: $receiverWallet,
                         amount: $resolutionAllocation['receiver'],
                         currency: $escrow->currency,
-                        type: 'dispute_resolution_split',
-                        metadata: ['resolution_type' => $resolutionType]
+                        metadata: [
+                            'type'            => 'dispute_resolution_split',
+                            'resolution_type' => $resolutionType,
+                        ]
                     );
                 }
                 break;

@@ -282,6 +282,7 @@ return [
         'structuring_count'        => env('FRAUD_STRUCTURING_COUNT', 5),
         'small_transaction_amount' => env('FRAUD_SMALL_TX_AMOUNT', 100),
         'large_transaction'        => env('FRAUD_LARGE_TRANSACTION', 50000),
+        'suspicious_user_agents'   => explode(',', (string) env('FRAUD_SUSPICIOUS_USER_AGENTS', 'bot,crawler,spider,scraper,curl,wget,python')),
     ],
 
     /*

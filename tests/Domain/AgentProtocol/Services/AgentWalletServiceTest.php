@@ -113,10 +113,12 @@ class AgentWalletServiceTest extends TestCase
         $balance = $this->service->getBalance($wallet->wallet_id);
 
         $this->assertEquals($wallet->wallet_id, $balance['wallet_id']);
-        $this->assertEquals('USD', $balance['currency']);
-        $this->assertEquals(1500.00, $balance['available']);
-        $this->assertEquals(0.00, $balance['held']);
-        $this->assertEquals(1500.00, $balance['total']);
+        $this->assertArrayHasKey('balances', $balance);
+        $this->assertArrayHasKey('available', $balance);
+        $this->assertArrayHasKey('held', $balance);
+        $this->assertEquals(1500.00, $balance['balances']['USD']);
+        $this->assertEquals(1500.00, $balance['available']['USD']);
+        $this->assertEquals(0.00, $balance['held']['USD']);
     }
 
     #[Test]
@@ -132,12 +134,14 @@ class AgentWalletServiceTest extends TestCase
 
         $balance = $this->service->getBalance($wallet->wallet_id, 'EUR');
 
-        $this->assertEquals('USD', $balance['currency']);
-        $this->assertEquals(1000.00, $balance['available']);
-        $this->assertArrayHasKey('converted', $balance);
-        $this->assertEquals('EUR', $balance['converted']['currency']);
-        $this->assertEquals(850.00, $balance['converted']['available']); // Based on mock rate
-        $this->assertEquals(0.85, $balance['converted']['exchange_rate']);
+        // Original currency
+        $this->assertEquals(1000.00, $balance['balances']['USD']);
+        $this->assertEquals(1000.00, $balance['available']['USD']);
+
+        // Converted currency (EUR)
+        $this->assertArrayHasKey('EUR', $balance['balances']);
+        $this->assertEquals(850.00, $balance['balances']['EUR']); // Based on 0.85 exchange rate
+        $this->assertEquals(850.00, $balance['available']['EUR']);
     }
 
     #[Test]
@@ -155,7 +159,7 @@ class AgentWalletServiceTest extends TestCase
             initialBalance: 500.00
         );
 
-        $transaction = $this->service->transfer(
+        $result = $this->service->transfer(
             fromWalletId: $wallet1->wallet_id,
             toWalletId: $wallet2->wallet_id,
             amount: 300.00,
@@ -163,12 +167,11 @@ class AgentWalletServiceTest extends TestCase
             metadata: ['description' => 'Test transfer']
         );
 
-        $this->assertInstanceOf(AgentTransaction::class, $transaction);
-        $this->assertEquals(300.00, $transaction->amount);
-        $this->assertEquals('USD', $transaction->currency);
-        $this->assertEquals('completed', $transaction->status);
-        $this->assertEquals('domestic', $transaction->fee_type);
-        $this->assertEquals(3.00, $transaction->fee_amount); // 1% domestic fee
+        $this->assertIsArray($result);
+        $this->assertTrue($result['success']);
+        $this->assertEquals(300.00, $result['amount']);
+        $this->assertEquals('USD', $result['currency']);
+        $this->assertEquals(3.00, $result['fee']); // 1% domestic fee
 
         // Check wallet balances
         $wallet1->refresh();
@@ -195,7 +198,7 @@ class AgentWalletServiceTest extends TestCase
             initialBalance: 500.00
         );
 
-        $transaction = $this->service->transfer(
+        $result = $this->service->transfer(
             fromWalletId: $wallet1->wallet_id,
             toWalletId: $wallet2->wallet_id,
             amount: 100.00,
@@ -203,15 +206,9 @@ class AgentWalletServiceTest extends TestCase
             metadata: ['description' => 'International transfer']
         );
 
-        $this->assertEquals('international', $transaction->fee_type);
-        $this->assertEquals(2.50, $transaction->fee_amount); // 2.5% international fee
-
-        // Check metadata contains conversion info
-        $metadata = $transaction->metadata;
-        $this->assertEquals('USD', $metadata['from_currency']);
-        $this->assertEquals('EUR', $metadata['to_currency']);
-        $this->assertEquals(100.00, $metadata['from_amount']);
-        $this->assertEquals(85.00, $metadata['to_amount']); // 100 USD * 0.85 = 85 EUR
+        $this->assertIsArray($result);
+        $this->assertTrue($result['success']);
+        $this->assertEquals(2.50, $result['fee']); // 2.5% international fee
 
         // Check wallet balances
         $wallet1->refresh();
@@ -257,12 +254,16 @@ class AgentWalletServiceTest extends TestCase
             initialBalance: 1000.00
         );
 
-        $this->service->holdFunds(
+        $holdResult = $this->service->holdFunds(
             walletId: $wallet->wallet_id,
             amount: 300.00,
-            reason: 'escrow_transaction',
-            metadata: ['escrow_id' => 'escrow_123']
+            currency: 'USD',
+            reason: 'escrow_transaction'
         );
+
+        $this->assertIsArray($holdResult);
+        $this->assertTrue($holdResult['success']);
+        $this->assertArrayHasKey('hold_id', $holdResult);
 
         $wallet->refresh();
         $this->assertEquals(700.00, $wallet->available_balance);
@@ -285,23 +286,24 @@ class AgentWalletServiceTest extends TestCase
         );
 
         // Hold funds first
-        $this->service->holdFunds(
+        $holdResult = $this->service->holdFunds(
             walletId: $wallet->wallet_id,
             amount: 400.00,
+            currency: 'USD',
             reason: 'escrow_transaction'
         );
 
-        // Release part of held funds
-        $this->service->releaseFunds(
-            walletId: $wallet->wallet_id,
-            amount: 250.00,
-            reason: 'escrow_completed',
-            metadata: ['escrow_id' => 'escrow_123']
+        // Release the held funds using the hold_id
+        $releaseResult = $this->service->releaseFunds(
+            holdId: $holdResult['hold_id']
         );
 
+        $this->assertIsArray($releaseResult);
+        $this->assertTrue($releaseResult['success']);
+
         $wallet->refresh();
-        $this->assertEquals(850.00, $wallet->available_balance); // 600 + 250
-        $this->assertEquals(150.00, $wallet->held_balance); // 400 - 250
+        $this->assertEquals(1000.00, $wallet->available_balance); // All funds returned
+        $this->assertEquals(0.00, $wallet->held_balance);
         $this->assertEquals(1000.00, $wallet->total_balance);
     }
 
@@ -320,32 +322,19 @@ class AgentWalletServiceTest extends TestCase
         $this->service->holdFunds(
             walletId: $wallet->wallet_id,
             amount: 600.00,
+            currency: 'USD',
             reason: 'escrow_transaction'
         );
     }
 
     #[Test]
-    public function it_rejects_release_with_insufficient_held_balance()
+    public function it_rejects_release_with_invalid_hold_id()
     {
-        $wallet = $this->service->createWallet(
-            agentId: $this->agentId1,
-            currency: 'USD',
-            initialBalance: 1000.00
-        );
-
-        $this->service->holdFunds(
-            walletId: $wallet->wallet_id,
-            amount: 200.00,
-            reason: 'escrow_transaction'
-        );
-
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Insufficient held balance to release');
+        $this->expectExceptionMessage('Hold not found');
 
         $this->service->releaseFunds(
-            walletId: $wallet->wallet_id,
-            amount: 300.00,
-            reason: 'escrow_completed'
+            holdId: 'invalid_hold_id'
         );
     }
 
@@ -467,16 +456,14 @@ class AgentWalletServiceTest extends TestCase
 
         // First call should cache the rate
         $balance1 = $this->service->getBalance($wallet->wallet_id, 'EUR');
-        $rate1 = $balance1['converted']['exchange_rate'];
+        $this->assertArrayHasKey('EUR', $balance1['balances']);
 
-        // Mock a change that won't affect cached value
+        // Mock a change that will affect future lookups
         Cache::put('exchange_rate:USD:EUR', 0.90, 300);
 
-        // Second call should use cached rate
+        // Second call should use our cached rate
         $balance2 = $this->service->getBalance($wallet->wallet_id, 'EUR');
-        $rate2 = $balance2['converted']['exchange_rate'];
-
-        $this->assertEquals(0.90, $rate2); // Should use our cached value
+        $this->assertEquals(900.00, $balance2['balances']['EUR']); // 1000 * 0.90
     }
 
     #[Test]
@@ -512,24 +499,24 @@ class AgentWalletServiceTest extends TestCase
         );
 
         // Domestic transfer (same currency)
-        $transaction1 = $this->service->transfer(
+        $result1 = $this->service->transfer(
             fromWalletId: $wallet1USD->wallet_id,
             toWalletId: $wallet2USD->wallet_id,
             amount: 100.00,
             currency: 'USD'
         );
-        $this->assertEquals('domestic', $transaction1->fee_type);
-        $this->assertEquals(1.00, $transaction1->fee_amount); // 1%
+        $this->assertTrue($result1['success']);
+        $this->assertEquals(1.00, $result1['fee']); // 1% domestic fee
 
         // International transfer (different currencies)
-        $transaction2 = $this->service->transfer(
+        $result2 = $this->service->transfer(
             fromWalletId: $wallet1USD->wallet_id,
             toWalletId: $wallet3EUR->wallet_id,
             amount: 100.00,
             currency: 'USD'
         );
-        $this->assertEquals('international', $transaction2->fee_type);
-        $this->assertEquals(2.50, $transaction2->fee_amount); // 2.5%
+        $this->assertTrue($result2['success']);
+        $this->assertEquals(2.50, $result2['fee']); // 2.5% international fee
     }
 
     #[Test]

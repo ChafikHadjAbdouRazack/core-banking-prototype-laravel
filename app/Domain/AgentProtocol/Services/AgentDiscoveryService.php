@@ -10,6 +10,13 @@ use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for external agent discovery and resolution.
+ *
+ * Handles discovery of agents outside the local registry, including external
+ * protocol resolution and agent verification. Uses HTTP-based discovery
+ * with caching for performance optimization.
+ */
 class AgentDiscoveryService
 {
     private Client $httpClient;

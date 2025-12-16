@@ -20,6 +20,7 @@ class Escrow extends Model
         'amount',
         'currency',
         'funded_amount',
+        'hold_id',
         'conditions',
         'expires_at',
         'status',
