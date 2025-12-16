@@ -283,6 +283,18 @@ return [
         'small_transaction_amount' => env('FRAUD_SMALL_TX_AMOUNT', 100),
         'large_transaction'        => env('FRAUD_LARGE_TRANSACTION', 50000),
         'suspicious_user_agents'   => explode(',', (string) env('FRAUD_SUSPICIOUS_USER_AGENTS', 'bot,crawler,spider,scraper,curl,wget,python')),
+        'scoring_adjustments'      => [
+            'z_score_multiplier'         => env('FRAUD_Z_SCORE_MULTIPLIER', 20),
+            'z_score_anomaly_threshold'  => env('FRAUD_Z_SCORE_THRESHOLD', 3),
+            'unknown_agent_risk'         => env('FRAUD_UNKNOWN_AGENT_RISK', 80),
+            'default_reputation'         => env('FRAUD_DEFAULT_REPUTATION', 50),
+            'new_country_score'          => env('FRAUD_GEO_NEW_COUNTRY', 40),
+            'impossible_travel_score'    => env('FRAUD_GEO_IMPOSSIBLE_TRAVEL', 60),
+            'unusual_time_score'         => env('FRAUD_TIME_UNUSUAL', 30),
+            'night_time_score'           => env('FRAUD_TIME_NIGHT', 20),
+            'weekend_no_history_score'   => env('FRAUD_TIME_WEEKEND', 15),
+            'typical_activity_min_count' => env('FRAUD_TYPICAL_ACTIVITY_MIN', 2),
+        ],
     ],
 
     /*

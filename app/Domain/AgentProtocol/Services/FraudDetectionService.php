@@ -131,6 +131,29 @@ class FraudDetectionService implements RiskScoringInterface
     }
 
     /**
+     * Get scoring adjustments from configuration.
+     *
+     * @return array<string, int|float>
+     */
+    private function getScoringAdjustments(): array
+    {
+        $adjustments = config('agent_protocol.fraud_detection.scoring_adjustments', []);
+
+        return [
+            'z_score_multiplier'         => (int) ($adjustments['z_score_multiplier'] ?? 20),
+            'z_score_anomaly_threshold'  => (float) ($adjustments['z_score_anomaly_threshold'] ?? 3),
+            'unknown_agent_risk'         => (float) ($adjustments['unknown_agent_risk'] ?? 80),
+            'default_reputation'         => (float) ($adjustments['default_reputation'] ?? 50),
+            'new_country_score'          => (int) ($adjustments['new_country_score'] ?? 40),
+            'impossible_travel_score'    => (int) ($adjustments['impossible_travel_score'] ?? 60),
+            'unusual_time_score'         => (int) ($adjustments['unusual_time_score'] ?? 30),
+            'night_time_score'           => (int) ($adjustments['night_time_score'] ?? 20),
+            'weekend_no_history_score'   => (int) ($adjustments['weekend_no_history_score'] ?? 15),
+            'typical_activity_min_count' => (int) ($adjustments['typical_activity_min_count'] ?? 2),
+        ];
+    }
+
+    /**
      * Get small transaction amount threshold from configuration.
      */
     private function getSmallTransactionAmount(): float
@@ -372,16 +395,17 @@ class FraudDetectionService implements RiskScoringInterface
 
         $mean = $stats['avg'];
         $stdDev = $stats['std_dev'];
+        $scoring = $this->getScoringAdjustments();
 
         // Calculate z-score
         $zScore = $stdDev > 0 ? abs($amount - $mean) / $stdDev : 0;
 
-        // Risk increases with deviation from normal
-        $anomalyScore = min(100, $zScore * 20);
+        // Risk increases with deviation from normal (using configurable multiplier)
+        $anomalyScore = min(100, $zScore * $scoring['z_score_multiplier']);
 
         return [
             'score'       => $anomalyScore,
-            'is_anomaly'  => $zScore > 3,
+            'is_anomaly'  => $zScore > $scoring['z_score_anomaly_threshold'],
             'z_score'     => round($zScore, 2),
             'mean_amount' => round($mean, 2),
             'std_dev'     => round($stdDev, 2),
@@ -394,21 +418,23 @@ class FraudDetectionService implements RiskScoringInterface
      */
     private function checkReputation(string $agentId): array
     {
+        $scoring = $this->getScoringAdjustments();
+
         try {
             // For now, get reputation from Agent model directly to avoid event sourcing issues
             $agent = Agent::where('agent_id', $agentId)->first();
 
             if (! $agent) {
-                // Unknown agent, high risk
+                // Unknown agent, use configurable high risk score
                 return [
-                    'score'            => 80.0,
+                    'score'            => $scoring['unknown_agent_risk'],
                     'reputation_score' => 0,
                     'trust_level'      => 'unknown',
                     'is_trusted'       => false,
                 ];
             }
 
-            $reputationScore = $agent->reputation_score ?? 50.0;
+            $reputationScore = $agent->reputation_score ?? $scoring['default_reputation'];
 
             // Invert reputation score for risk (low reputation = high risk)
             $riskScore = 100 - $reputationScore;
@@ -507,12 +533,14 @@ class FraudDetectionService implements RiskScoringInterface
         // Check for impossible travel
         $impossibleTravel = $this->checkImpossibleTravel($agentId, $location);
 
+        // Use configurable scoring adjustments
+        $scoring = $this->getScoringAdjustments();
         $geoScore = 0;
         if ($isNewCountry) {
-            $geoScore += 40;
+            $geoScore += $scoring['new_country_score'];
         }
         if ($impossibleTravel) {
-            $geoScore += 60;
+            $geoScore += $scoring['impossible_travel_score'];
         }
 
         return [
@@ -535,6 +563,7 @@ class FraudDetectionService implements RiskScoringInterface
         $currentHour = now()->hour;
         $isWeekend = now()->isWeekend();
         $suspiciousHours = $this->getSuspiciousHours();
+        $scoring = $this->getScoringAdjustments();
 
         $typicalHours = $this->getTypicalActivityHours($agentId);
 
@@ -543,13 +572,13 @@ class FraudDetectionService implements RiskScoringInterface
 
         $timeScore = 0;
         if ($isUnusualTime) {
-            $timeScore += 30;
+            $timeScore += $scoring['unusual_time_score'];
         }
         if ($isNightTime) {
-            $timeScore += 20;
+            $timeScore += $scoring['night_time_score'];
         }
         if ($isWeekend && ! $this->hasWeekendActivity($agentId)) {
-            $timeScore += 15;
+            $timeScore += $scoring['weekend_no_history_score'];
         }
 
         return [
@@ -745,9 +774,13 @@ class FraudDetectionService implements RiskScoringInterface
             $hourCounts[$hour]++;
         }
 
+        // Use configurable minimum count threshold for typical activity
+        $scoring = $this->getScoringAdjustments();
+        $minCount = $scoring['typical_activity_min_count'];
+
         $hours = [];
         foreach ($hourCounts as $hour => $count) {
-            if ($count > 2) {
+            if ($count > $minCount) {
                 $hours[] = $hour;
             }
         }
