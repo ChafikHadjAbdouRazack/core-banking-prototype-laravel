@@ -827,70 +827,88 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
         });
     });
 
-    // Protected endpoints (require authentication)
+    // User-authenticated endpoints (users manage their agents via sanctum)
     Route::middleware(['auth:sanctum', 'check.token.expiration', 'api.rate_limit:private'])->group(function () {
-        // Agent registration and management
+        // Agent registration (users create/own agents)
         Route::post('/agents/register', [AgentIdentityController::class, 'register'])->name('agents.register');
-        Route::put('/agents/{did}/capabilities', [AgentIdentityController::class, 'updateCapabilities'])->name('agents.capabilities');
 
-        // Payment endpoints
-        Route::prefix('agents/{did}/payments')->name('payments.')->group(function () {
-            Route::get('/', [AgentPaymentController::class, 'listPayments'])->name('list');
-            Route::post('/', [AgentPaymentController::class, 'initiatePayment'])
-                ->middleware('transaction.rate_limit:agent_payment')
-                ->name('initiate');
-            Route::get('/{transactionId}', [AgentPaymentController::class, 'getPaymentStatus'])->name('status');
-            Route::post('/{transactionId}/confirm', [AgentPaymentController::class, 'confirmPayment'])
-                ->middleware('transaction.rate_limit:agent_payment')
-                ->name('confirm');
-            Route::post('/{transactionId}/cancel', [AgentPaymentController::class, 'cancelPayment'])->name('cancel');
-        });
-
-        // Escrow endpoints
-        Route::prefix('escrow')->name('escrow.')->group(function () {
-            Route::post('/', [AgentEscrowController::class, 'create'])
-                ->middleware('transaction.rate_limit:agent_escrow')
-                ->name('create');
-            Route::get('/{escrowId}', [AgentEscrowController::class, 'show'])->name('show');
-            Route::post('/{escrowId}/fund', [AgentEscrowController::class, 'fund'])
-                ->middleware('transaction.rate_limit:agent_escrow')
-                ->name('fund');
-            Route::post('/{escrowId}/release', [AgentEscrowController::class, 'release'])
-                ->middleware('transaction.rate_limit:agent_escrow')
-                ->name('release');
-            Route::post('/{escrowId}/dispute', [AgentEscrowController::class, 'dispute'])->name('dispute');
-            Route::post('/{escrowId}/resolve', [AgentEscrowController::class, 'resolveDispute'])->name('resolve');
-        });
-
-        // Messaging endpoints (A2A)
-        Route::prefix('agents/{did}/messages')->name('messages.')->group(function () {
-            Route::get('/', [AgentMessageController::class, 'list'])->name('list');
-            Route::post('/', [AgentMessageController::class, 'send'])
-                ->middleware('transaction.rate_limit:agent_message')
-                ->name('send');
-            Route::get('/{messageId}', [AgentMessageController::class, 'show'])->name('show');
-            Route::post('/{messageId}/ack', [AgentMessageController::class, 'acknowledge'])->name('acknowledge');
-        });
-
-        // Reputation management endpoints
-        Route::post('/agents/{did}/reputation/feedback', [AgentReputationController::class, 'submitFeedback'])
-            ->name('reputation.feedback');
-        Route::get('/agents/{did}/reputation/history', [AgentReputationController::class, 'history'])
-            ->name('reputation.history');
-        Route::get('/agents/{agentA}/trust/{agentB}', [AgentReputationController::class, 'evaluateTrust'])
-            ->name('reputation.trust');
-
-        // API key management (protected - requires sanctum auth)
+        // API key management (users manage their agent's API keys)
         Route::prefix('agents/{did}/api-keys')->name('api-keys.')->group(function () {
             Route::get('/', [AgentAuthController::class, 'listApiKeys'])->name('list');
             Route::post('/', [AgentAuthController::class, 'generateApiKey'])->name('generate');
             Route::delete('/{keyId}', [AgentAuthController::class, 'revokeApiKey'])->name('revoke');
         });
 
-        // Session management (protected - requires sanctum auth)
+        // Session management (users manage their agent's sessions)
         Route::prefix('agents/{did}/sessions')->name('sessions.')->group(function () {
             Route::get('/', [AgentAuthController::class, 'listSessions'])->name('list');
             Route::delete('/', [AgentAuthController::class, 'revokeAllSessions'])->name('revoke-all');
+        });
+    });
+
+    // Agent-authenticated endpoints (agents authenticate via DID, API key, or session token)
+    Route::middleware(['auth.agent', 'api.rate_limit:private'])->group(function () {
+        // Agent profile management (agent updates own capabilities)
+        Route::put('/agents/{did}/capabilities', [AgentIdentityController::class, 'updateCapabilities'])
+            ->middleware('agent.capability:profile_management')
+            ->name('agents.capabilities');
+
+        // Payment endpoints (require payments capability and scope)
+        Route::prefix('agents/{did}/payments')->name('payments.')
+            ->middleware(['agent.capability:payments', 'agent.scope:payments:read,payments:write'])
+            ->group(function () {
+                Route::get('/', [AgentPaymentController::class, 'listPayments'])->name('list');
+                Route::post('/', [AgentPaymentController::class, 'initiatePayment'])
+                    ->middleware('transaction.rate_limit:agent_payment')
+                    ->name('initiate');
+                Route::get('/{transactionId}', [AgentPaymentController::class, 'getPaymentStatus'])->name('status');
+                Route::post('/{transactionId}/confirm', [AgentPaymentController::class, 'confirmPayment'])
+                    ->middleware('transaction.rate_limit:agent_payment')
+                    ->name('confirm');
+                Route::post('/{transactionId}/cancel', [AgentPaymentController::class, 'cancelPayment'])->name('cancel');
+            });
+
+        // Escrow endpoints (require escrow capability and scope)
+        Route::prefix('escrow')->name('escrow.')
+            ->middleware(['agent.capability:escrow', 'agent.scope:escrow:read,escrow:write'])
+            ->group(function () {
+                Route::post('/', [AgentEscrowController::class, 'create'])
+                    ->middleware('transaction.rate_limit:agent_escrow')
+                    ->name('create');
+                Route::get('/{escrowId}', [AgentEscrowController::class, 'show'])->name('show');
+                Route::post('/{escrowId}/fund', [AgentEscrowController::class, 'fund'])
+                    ->middleware('transaction.rate_limit:agent_escrow')
+                    ->name('fund');
+                Route::post('/{escrowId}/release', [AgentEscrowController::class, 'release'])
+                    ->middleware('transaction.rate_limit:agent_escrow')
+                    ->name('release');
+                Route::post('/{escrowId}/dispute', [AgentEscrowController::class, 'dispute'])->name('dispute');
+                Route::post('/{escrowId}/resolve', [AgentEscrowController::class, 'resolveDispute'])->name('resolve');
+            });
+
+        // Messaging endpoints - A2A (require messages capability and scope)
+        Route::prefix('agents/{did}/messages')->name('messages.')
+            ->middleware(['agent.capability:messages', 'agent.scope:messages:read,messages:write'])
+            ->group(function () {
+                Route::get('/', [AgentMessageController::class, 'list'])->name('list');
+                Route::post('/', [AgentMessageController::class, 'send'])
+                    ->middleware('transaction.rate_limit:agent_message')
+                    ->name('send');
+                Route::get('/{messageId}', [AgentMessageController::class, 'show'])->name('show');
+                Route::post('/{messageId}/ack', [AgentMessageController::class, 'acknowledge'])->name('acknowledge');
+            });
+
+        // Reputation management endpoints (require reputation capability)
+        Route::middleware('agent.capability:reputation')->group(function () {
+            Route::post('/agents/{did}/reputation/feedback', [AgentReputationController::class, 'submitFeedback'])
+                ->middleware('agent.scope:reputation:write')
+                ->name('reputation.feedback');
+            Route::get('/agents/{did}/reputation/history', [AgentReputationController::class, 'history'])
+                ->middleware('agent.scope:reputation:read')
+                ->name('reputation.history');
+            Route::get('/agents/{agentA}/trust/{agentB}', [AgentReputationController::class, 'evaluateTrust'])
+                ->middleware('agent.scope:reputation:read')
+                ->name('reputation.trust');
         });
     });
 });

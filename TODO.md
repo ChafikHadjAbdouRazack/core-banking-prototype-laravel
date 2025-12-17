@@ -1,6 +1,6 @@
 # TODO List - FinAegis Platform
 
-Last updated: 2025-12-14
+Last updated: 2025-12-17
 
 ## 🚨 TOP PRIORITY - Agent Protocols Implementation (AP2 & A2A)
 
@@ -151,14 +151,44 @@ Implement full compliance with Agent Payments Protocol (AP2) and Agent-to-Agent 
   - [x] Add version negotiation support
   - [ ] Build protocol fallback mechanism (pending)
 
-#### Agent Authentication 🔜 NEXT PHASE
-- [ ] **DID Authentication** (moved from Phase 1)
-  - [ ] Add DID authentication mechanism
-- [ ] **Agent-to-Agent Auth**
-  - [ ] Implement agent OAuth 2.0 flow
-  - [ ] Add agent API key management
-  - [ ] Create agent session handling
-  - [ ] Build permission scoping for agents
+#### Agent Authentication ✅ COMPLETED (December 17, 2025)
+- [x] **DID Authentication** ✅
+  - [x] Add DID authentication mechanism (AuthenticateAgentDID middleware)
+  - [x] DID signature verification with challenge/response
+  - [x] DID-based session token generation
+- [x] **Agent-to-Agent Auth** ✅
+  - [x] Implement agent API key authentication (AgentAuthenticationService)
+  - [x] Add agent API key management with scopes
+  - [x] Create agent session handling (session tokens with expiration)
+  - [x] Build permission scoping for agents (CheckAgentScope, CheckAgentCapability middleware)
+  - [x] Apply auth middleware to agent protocol routes
+  - [x] Create E2E integration tests (AgentAuthMiddlewareIntegrationTest)
+
+##### Implementation Files Created (Authentication)
+- **Middleware:**
+  - `app/Http/Middleware/AuthenticateAgentDID.php` - Main authentication middleware
+  - `app/Http/Middleware/CheckAgentScope.php` - API key scope validation
+  - `app/Http/Middleware/CheckAgentCapability.php` - Agent capability validation
+
+- **Services:**
+  - `app/Domain/AgentProtocol/Services/AgentAuthenticationService.php` - Core authentication logic
+  - `app/Domain/AgentProtocol/Services/DIDService.php` - DID operations
+
+- **Controllers:**
+  - `app/Http/Controllers/Api/AgentAuthController.php` - Auth API endpoints
+
+- **Models:**
+  - `app/Models/AgentApiKey.php` - API key storage with hashing
+
+- **Database:**
+  - `database/migrations/2025_12_14_000001_create_agent_api_keys_table.php`
+
+- **Tests:**
+  - `tests/Unit/AgentProtocol/Services/AgentAuthenticationServiceTest.php`
+  - `tests/Unit/AgentProtocol/Middleware/AuthenticateAgentDIDTest.php`
+  - `tests/Unit/AgentProtocol/Middleware/CheckAgentCapabilityTest.php`
+  - `tests/Feature/AgentProtocol/AgentAuthApiTest.php`
+  - `tests/Feature/AgentProtocol/AgentAuthMiddlewareIntegrationTest.php`
 
 ### Phase 4: Trust & Security (Week 4-5) ✅ COMPLETED (September 24, 2025)
 
