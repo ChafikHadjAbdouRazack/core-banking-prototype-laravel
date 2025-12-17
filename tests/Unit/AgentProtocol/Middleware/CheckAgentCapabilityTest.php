@@ -100,7 +100,7 @@ class CheckAgentCapabilityTest extends TestCase
 
         // Assert
         $this->assertEquals(403, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Forbidden', $data['error']);
         $this->assertStringContainsString('escrow', $data['message']);
     }
@@ -118,7 +118,7 @@ class CheckAgentCapabilityTest extends TestCase
 
         // Assert
         $this->assertEquals(401, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Unauthorized', $data['error']);
     }
 
@@ -140,7 +140,7 @@ class CheckAgentCapabilityTest extends TestCase
 
         // Assert
         $this->assertEquals(403, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertStringContainsString('escrow', $data['message']);
     }
 

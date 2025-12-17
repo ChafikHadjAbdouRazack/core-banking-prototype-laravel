@@ -22,16 +22,18 @@ class AgentAuthenticationServiceTest extends TestCase
     private AgentAuthenticationService $service;
 
     /** @var DIDService&MockInterface */
-    private DIDService $didService;
+    private DIDService|MockInterface $didService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->didService = Mockery::mock(DIDService::class);
+        /** @var DIDService&MockInterface $mock */
+        $mock = Mockery::mock(DIDService::class);
+        $this->didService = $mock;
 
         $this->service = new AgentAuthenticationService(
-            $this->didService
+            $this->didService // @phpstan-ignore argument.type
         );
 
         // Clear cache before each test

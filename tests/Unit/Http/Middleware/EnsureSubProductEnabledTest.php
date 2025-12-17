@@ -74,7 +74,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
 
         $this->assertEquals(403, $response->getStatusCode());
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Feature not available', $content['error']);
         $this->assertEquals('The lending sub-product is not enabled', $content['message']);
     }
@@ -119,7 +119,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
 
         $this->assertEquals(403, $response->getStatusCode());
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Feature not available', $content['error']);
         $this->assertEquals('The feature derivatives is not enabled for sub-product exchange', $content['message']);
     }
@@ -176,7 +176,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
 
         $this->assertEquals(403, $response->getStatusCode());
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Feature not available', $content['error']);
         $this->assertEquals('None of the required features [sme_loans, p2p_marketplace] are enabled for sub-product lending', $content['message']);
     }
@@ -194,7 +194,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $response = $this->middleware->handle($request, $next, '');
 
         $this->assertEquals(500, $response->getStatusCode());
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Configuration error', $content['error']);
         $this->assertEquals('Sub-product parameter is required', $content['message']);
     }
@@ -220,7 +220,7 @@ class EnsureSubProductEnabledTest extends UnitTestCase
         $this->assertEquals(403, $response->getStatusCode());
         $this->assertEquals('application/json', $response->headers->get('Content-Type'));
 
-        $content = json_decode($response->getContent(), true);
+        $content = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Feature not available', $content['error']);
         $this->assertEquals('The lending sub-product is not enabled', $content['message']);
     }

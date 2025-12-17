@@ -11,6 +11,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class AuthenticateAgentDIDTest extends TestCase
@@ -19,14 +20,19 @@ class AuthenticateAgentDIDTest extends TestCase
 
     private AuthenticateAgentDID $middleware;
 
-    private AgentAuthenticationService $authService;
+    /** @var AgentAuthenticationService&MockInterface */
+    private AgentAuthenticationService|MockInterface $authService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->authService = Mockery::mock(AgentAuthenticationService::class);
-        $this->middleware = new AuthenticateAgentDID($this->authService);
+        /** @var AgentAuthenticationService&MockInterface $mock */
+        $mock = Mockery::mock(AgentAuthenticationService::class);
+        $this->authService = $mock;
+        $this->middleware = new AuthenticateAgentDID(
+            $this->authService // @phpstan-ignore argument.type
+        );
 
         Cache::flush();
     }
@@ -145,7 +151,7 @@ class AuthenticateAgentDIDTest extends TestCase
 
         // Assert
         $this->assertEquals(401, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Unauthorized', $data['error']);
         $this->assertStringContainsString('No authentication credentials', $data['message']);
     }
@@ -199,7 +205,7 @@ class AuthenticateAgentDIDTest extends TestCase
 
         // Assert
         $this->assertEquals(401, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Invalid API key', $data['message']);
     }
 
@@ -227,7 +233,7 @@ class AuthenticateAgentDIDTest extends TestCase
 
         // Assert
         $this->assertEquals(403, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Forbidden', $data['error']);
         $this->assertEquals('Agent is not active', $data['message']);
     }
@@ -259,7 +265,7 @@ class AuthenticateAgentDIDTest extends TestCase
 
         // Assert
         $this->assertEquals(403, $response->getStatusCode());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertStringContainsString('Missing required scope', $data['message']);
     }
 
