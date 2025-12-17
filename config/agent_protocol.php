@@ -17,6 +17,69 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Authentication Settings
+    |--------------------------------------------------------------------------
+    */
+    'authentication' => [
+        'session_ttl_hours'   => env('AGENT_SESSION_TTL_HOURS', 24),
+        'api_key_length'      => env('AGENT_API_KEY_LENGTH', 64),
+        'nonce_ttl_minutes'   => env('AGENT_NONCE_TTL_MINUTES', 5),
+        'max_custom_fee_rate' => env('AGENT_MAX_CUSTOM_FEE_RATE', 0.10), // 10%
+        'scopes'              => [
+            // Payment scopes
+            'payments:read'   => 'View payment transactions and history',
+            'payments:create' => 'Create new payment transactions',
+            'payments:cancel' => 'Cancel pending payment transactions',
+            'payments:*'      => 'Full access to payment operations',
+
+            // Wallet scopes
+            'wallet:read'     => 'View wallet balance and transactions',
+            'wallet:transfer' => 'Transfer funds between wallets',
+            'wallet:withdraw' => 'Withdraw funds from wallet',
+            'wallet:*'        => 'Full access to wallet operations',
+
+            // Escrow scopes
+            'escrow:read'    => 'View escrow transactions',
+            'escrow:create'  => 'Create new escrow transactions',
+            'escrow:release' => 'Release escrow funds',
+            'escrow:dispute' => 'Dispute escrow transactions',
+            'escrow:*'       => 'Full access to escrow operations',
+
+            // Agent management scopes
+            'agent:read'     => 'View agent profile and capabilities',
+            'agent:update'   => 'Update agent profile',
+            'agent:keys'     => 'Manage API keys',
+            'agent:sessions' => 'Manage sessions',
+            'agent:*'        => 'Full access to agent management',
+
+            // Reputation scopes
+            'reputation:read'   => 'View reputation scores',
+            'reputation:review' => 'Submit reviews and ratings',
+            'reputation:*'      => 'Full access to reputation system',
+
+            // Compliance scopes
+            'compliance:read'   => 'View compliance status',
+            'compliance:verify' => 'Submit verification documents',
+            'compliance:*'      => 'Full access to compliance operations',
+
+            // Administrative scopes (restricted)
+            'admin:read'   => 'View administrative data',
+            'admin:manage' => 'Manage agents and transactions',
+            'admin:*'      => 'Full administrative access',
+
+            // Universal scope
+            '*' => 'Full access to all operations',
+        ],
+        'default_scopes' => [
+            'payments:read',
+            'wallet:read',
+            'agent:read',
+            'reputation:read',
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | DID (Decentralized Identifier) Settings
     |--------------------------------------------------------------------------
     */

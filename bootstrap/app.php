@@ -63,6 +63,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.blocked.ip' => \App\Http\Middleware\CheckBlockedIp::class,
             'ip.blocking' => \App\Http\Middleware\IpBlocking::class,
             'require.2fa.admin' => \App\Http\Middleware\RequireTwoFactorForAdmin::class,
+            // Agent Protocol authentication middleware
+            'auth.agent' => \App\Http\Middleware\AuthenticateAgentDID::class,
+            'agent.scope' => \App\Http\Middleware\CheckAgentScope::class,
+            'agent.capability' => \App\Http\Middleware\CheckAgentCapability::class,
         ]);
 
         // Prepend CORS middleware to handle it before other middleware
