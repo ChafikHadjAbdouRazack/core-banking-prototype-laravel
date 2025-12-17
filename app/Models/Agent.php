@@ -65,6 +65,8 @@ class Agent extends Model
         'limits_updated_at'         => 'datetime',
         'compliance_flags'          => 'array',
         'metadata'                  => 'array',
+        'endpoints'                 => 'array',
+        'capabilities'              => 'array',
         'daily_transaction_limit'   => 'decimal:2',
         'weekly_transaction_limit'  => 'decimal:2',
         'monthly_transaction_limit' => 'decimal:2',
