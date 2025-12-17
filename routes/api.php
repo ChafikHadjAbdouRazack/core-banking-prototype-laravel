@@ -785,6 +785,7 @@ Route::prefix('treasury')->name('api.treasury.')->group(function () {
 // =============================================================================
 // Agent Protocol (AP2/A2A) endpoints - Phase 5
 // =============================================================================
+use App\Http\Controllers\Api\AgentProtocol\AgentAuthController;
 use App\Http\Controllers\Api\AgentProtocol\AgentEscrowController;
 use App\Http\Controllers\Api\AgentProtocol\AgentIdentityController;
 use App\Http\Controllers\Api\AgentProtocol\AgentMessageController;
@@ -805,6 +806,25 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
         // Reputation queries (public)
         Route::get('/agents/{did}/reputation', [AgentReputationController::class, 'show'])->name('reputation.show');
         Route::get('/reputation/leaderboard', [AgentReputationController::class, 'leaderboard'])->name('reputation.leaderboard');
+
+        // Authentication endpoints (public - used to obtain authentication)
+        Route::prefix('auth')->name('auth.')->group(function () {
+            // DID authentication flow
+            Route::post('/challenge', [AgentAuthController::class, 'getChallenge'])->name('challenge');
+            Route::post('/did', [AgentAuthController::class, 'authenticateWithDID'])->name('did');
+
+            // API key authentication
+            Route::post('/api-key', [AgentAuthController::class, 'authenticateWithApiKey'])->name('api-key');
+
+            // Session validation (uses session token, not sanctum)
+            Route::post('/validate', [AgentAuthController::class, 'validateSession'])->name('validate');
+
+            // Session revocation (uses session token)
+            Route::post('/revoke', [AgentAuthController::class, 'revokeSession'])->name('revoke');
+
+            // List available scopes
+            Route::get('/scopes', [AgentAuthController::class, 'listScopes'])->name('scopes');
+        });
     });
 
     // Protected endpoints (require authentication)
@@ -859,5 +879,18 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
             ->name('reputation.history');
         Route::get('/agents/{agentA}/trust/{agentB}', [AgentReputationController::class, 'evaluateTrust'])
             ->name('reputation.trust');
+
+        // API key management (protected - requires sanctum auth)
+        Route::prefix('agents/{did}/api-keys')->name('api-keys.')->group(function () {
+            Route::get('/', [AgentAuthController::class, 'listApiKeys'])->name('list');
+            Route::post('/', [AgentAuthController::class, 'generateApiKey'])->name('generate');
+            Route::delete('/{keyId}', [AgentAuthController::class, 'revokeApiKey'])->name('revoke');
+        });
+
+        // Session management (protected - requires sanctum auth)
+        Route::prefix('agents/{did}/sessions')->name('sessions.')->group(function () {
+            Route::get('/', [AgentAuthController::class, 'listSessions'])->name('list');
+            Route::delete('/', [AgentAuthController::class, 'revokeAllSessions'])->name('revoke-all');
+        });
     });
 });
