@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Middleware;
 
+use App\Domain\AgentProtocol\Enums\AgentScope;
 use App\Models\Agent;
 use App\Models\AgentApiKey;
 use Closure;
@@ -15,13 +16,13 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Middleware for checking if an agent's API key has the required scopes.
  *
- * Scopes control API access permissions, defined in config/agent_protocol.php:
- * - payments:read, payments:create, payments:*, etc.
- * - wallet:read, wallet:transfer, wallet:*, etc.
- * - escrow:read, escrow:create, escrow:*, etc.
- * - agent:read, agent:update, agent:*, etc.
- * - admin:read, admin:manage, admin:*, etc.
- * - * (universal access)
+ * Uses AgentScope enum for type-safe scope validation with support for:
+ * - Exact match: "payments:read"
+ * - Category wildcard: "payments:*" (all payment scopes)
+ * - Universal scope: "*" (all access)
+ * - Empty scopes array means all allowed (backward compatibility)
+ *
+ * @see AgentScope for all available scopes and their descriptions
  */
 class CheckAgentScope
 {
@@ -51,10 +52,10 @@ class CheckAgentScope
             }
         }
 
-        // Check if any required scope is missing
+        // Check if any required scope is missing using AgentScope enum
         $missingScopes = [];
         foreach ($requiredScopes as $required) {
-            if (! $this->hasScope($apiKeyScopes, $required)) {
+            if (! AgentScope::hasScope($apiKeyScopes, $required)) {
                 $missingScopes[] = $required;
             }
         }
@@ -117,44 +118,6 @@ class CheckAgentScope
         }
 
         return [];
-    }
-
-    /**
-     * Check if the provided scopes include the required scope.
-     *
-     * Supports:
-     * - Exact match: "payments:read"
-     * - Wildcard: "*" (has all scopes)
-     * - Category wildcard: "payments:*" (all payment scopes)
-     * - Empty scopes array means all scopes allowed
-     */
-    private function hasScope(array $scopes, string $required): bool
-    {
-        // Empty scopes means all scopes allowed (for backward compatibility)
-        if (empty($scopes)) {
-            return true;
-        }
-
-        // Universal scope
-        if (in_array('*', $scopes, true)) {
-            return true;
-        }
-
-        // Exact match
-        if (in_array($required, $scopes, true)) {
-            return true;
-        }
-
-        // Check for category wildcard (e.g., "payments:*" covers "payments:create")
-        $requiredParts = explode(':', $required);
-        if (count($requiredParts) > 1) {
-            $wildcardScope = $requiredParts[0] . ':*';
-            if (in_array($wildcardScope, $scopes, true)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
