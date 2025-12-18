@@ -27,7 +27,6 @@ use App\Domain\AgentProtocol\Services\ReputationService;
 use App\Domain\AgentProtocol\Services\SignatureService;
 use App\Domain\AgentProtocol\Services\TransactionVerificationService;
 use App\Domain\Asset\Services\ExchangeRateService;
-use App\Domain\Compliance\Services\AlertManagementService;
 use App\Domain\Compliance\Services\AmlScreeningService;
 use App\Domain\Compliance\Services\ComplianceAlertService;
 use App\Domain\Compliance\Services\ComplianceService;
