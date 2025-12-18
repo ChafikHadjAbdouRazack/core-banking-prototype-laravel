@@ -1,300 +1,161 @@
 # Getting Started with FinAegis
 
-Welcome to FinAegis, the revolutionary multi-asset banking platform. This guide will help you get started with your account and explore the key features.
+This guide walks you through the FinAegis demo environment. Since this is a prototype, all transactions are simulated - perfect for exploring without risk.
 
-## Table of Contents
+## Quick Start
 
-1. [Creating Your Account](#creating-your-account)
-2. [Account Dashboard](#account-dashboard)
-3. [Managing Multiple Currencies](#managing-multiple-currencies)
-4. [Making Transfers](#making-transfers)
-5. [Global Currency Unit (GCU)](#global-currency-unit-gcu)
-6. [Security Features](#security-features)
+### Option 1: Use the Live Demo
 
-## Creating Your Account
+Visit [finaegis.org](https://finaegis.org) and log in with a demo account:
 
-### Step 1: Registration
+| Account | Email | Password |
+|---------|-------|----------|
+| Regular User | `demo.user@gcu.global` | `demo123` |
+| Business | `demo.business@gcu.global` | `demo123` |
+| Investor | `demo.investor@gcu.global` | `demo123` |
 
-1. Visit the FinAegis platform at `https://app.finaegis.org`
-2. Click **"Create Account"** on the homepage
-3. Enter your details:
-   - Full Name
-   - Email Address
-   - Strong Password (minimum 12 characters with special characters)
-   - Phone Number (for 2FA)
+### Option 2: Run Locally
 
-### Step 2: Identity Verification (KYC)
+```bash
+git clone https://github.com/finaegis/core-banking-prototype-laravel.git
+cd core-banking-prototype-laravel
+composer install
+cp .env.demo .env
+php artisan key:generate
+php artisan migrate --seed
+npm install && npm run build
+php artisan serve
+```
 
-For regulatory compliance, we need to verify your identity:
+Then visit `http://localhost:8000` and use the demo credentials above.
 
-1. **Basic Verification** (Tier 1 - up to €1,000/month)
-   - Upload government-issued ID
-   - Selfie verification
-   - Proof of address
+## Exploring the Dashboard
 
-2. **Enhanced Verification** (Tier 2 - up to €10,000/month)
-   - Additional documentation
-   - Source of funds declaration
-   - Enhanced due diligence
+Once logged in, you'll see:
 
-3. **Premium Verification** (Tier 3 - unlimited)
-   - Full compliance review
-   - Dedicated account manager
-   - Priority support
-
-### Step 3: Two-Factor Authentication
-
-Secure your account with 2FA:
-
-1. Download an authenticator app (Google Authenticator, Authy)
-2. Scan the QR code in your security settings
-3. Enter the 6-digit code to confirm setup
-4. Save your backup codes securely
-
-## Account Dashboard
-
-Your dashboard provides a comprehensive view of your finances:
-
-### Main Features
-
-- **Total Balance**: Combined value across all currencies
-- **Asset Breakdown**: Visual representation of your holdings
-- **Recent Transactions**: Last 10 transactions with quick filters
-- **Quick Actions**: One-click access to common operations
+- **Total Balance** - Combined value across all currencies
+- **Asset Breakdown** - Visual representation of holdings
+- **Recent Transactions** - Latest activity
+- **Quick Actions** - Common operations
 
 ### Navigation
 
-- **Accounts**: View and manage your multi-currency accounts
-- **Transfers**: Send money between accounts or to other users
-- **Exchange**: Convert between currencies at competitive rates
-- **GCU Wallet**: Manage your Global Currency Unit holdings
-- **Settings**: Account preferences and security options
+| Section | What You Can Do |
+|---------|-----------------|
+| **Accounts** | View multi-currency accounts |
+| **Transfers** | Send money between accounts |
+| **Exchange** | Convert between currencies |
+| **GCU Wallet** | Explore Global Currency Unit features |
 
-## Managing Multiple Currencies
+## Try These Features
 
-FinAegis supports multiple fiat currencies, cryptocurrencies, and commodities:
+### 1. Multi-Currency Support
 
-### Supported Assets
+FinAegis supports multiple asset types:
 
-**Fiat Currencies**
-- USD (US Dollar)
-- EUR (Euro)
-- GBP (British Pound)
-- CHF (Swiss Franc)
-- JPY (Japanese Yen)
+**Fiat**: USD, EUR, GBP, CHF, JPY
+**Crypto**: BTC, ETH
+**Commodities**: XAU (Gold), XAG (Silver)
+**Special**: GCU (Global Currency Unit)
 
-**Cryptocurrencies**
-- BTC (Bitcoin)
-- ETH (Ethereum)
+Try adding a new currency under **Accounts → Add Currency**.
 
-**Commodities**
-- XAU (Gold)
-- XAG (Silver)
+### 2. Currency Exchange
 
-**Special Assets**
-- GCU (Global Currency Unit)
-
-### Adding a New Currency
-
-1. Go to **Accounts** → **Add Currency**
-2. Select the currency you want to add
-3. The account will be created with zero balance
-4. Deposit funds via bank transfer or conversion
-
-### Currency Conversion
-
-1. Navigate to **Exchange**
+1. Go to **Exchange**
 2. Select source and target currencies
-3. Enter the amount to convert
-4. Review the exchange rate and fees
-5. Confirm the transaction
+3. Enter amount
+4. Review the rate and confirm
 
-**Note**: Exchange rates are updated in real-time with competitive spreads.
+Note: Exchange rates in demo mode are simulated but realistic.
 
-## Making Transfers
+### 3. Transfers
 
-### Internal Transfers (Between Your Accounts)
+**Internal Transfer** (between your accounts):
+1. **Transfers → Internal Transfer**
+2. Select source and destination
+3. Enter amount and confirm
 
-1. Go to **Transfers** → **Internal Transfer**
-2. Select source and destination accounts
-3. Enter amount and optional description
-4. Confirm the transfer (instant processing)
+**External Transfer** (to other users):
+1. **Transfers → Send Money**
+2. Enter recipient account UUID
+3. Complete the transfer
 
-### External Transfers (To Other Users)
+### 4. Global Currency Unit (GCU)
 
-1. Go to **Transfers** → **Send Money**
-2. Enter recipient details:
-   - Account UUID or email
-   - Verify recipient name
-3. Enter amount and reference
-4. Review fees (if applicable)
-5. Confirm with 2FA if required
+GCU is the flagship concept - a basket currency backed by multiple assets:
 
-### International Transfers
+- **Current Composition**: USD 35%, EUR 30%, GBP 20%, CHF 10%, JPY 3%, Gold 2%
+- **Bank Allocation**: Explore how funds could be distributed across banks
+- **Voting**: See how democratic governance could work
 
-For cross-border payments:
+Navigate to **GCU Wallet** to explore these features.
 
-1. Additional information required:
-   - Recipient bank details
-   - SWIFT/IBAN codes
-   - Purpose of transfer
-2. Compliance checks may delay processing (1-3 business days)
-3. Track status in **Transfers** → **History**
+## Admin Dashboard
 
-## Global Currency Unit (GCU)
+For a complete view of the platform:
 
-GCU is our revolutionary user-controlled currency backed by real bank deposits.
+1. Visit `/admin`
+2. Create an admin user: `php artisan make:filament-user`
+3. Explore account management, transactions, and analytics
 
-### What is GCU?
+## API Access
 
-- Basket currency backed by 6 major currencies and gold
-- Stable value through diversification
-- Democratic rebalancing through user voting
-- Full deposit insurance through partner banks
+Test the API at `/api/documentation` (OpenAPI/Swagger interface).
 
-### Getting Started with GCU
+**Authentication:**
+```bash
+# Get a token
+curl -X POST http://localhost:8000/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "demo.user@gcu.global", "password": "demo123"}'
 
-1. **Buy GCU**
-   - Go to **GCU Wallet**
-   - Click **Buy GCU**
-   - Choose source currency
-   - Enter amount
-   - Confirm purchase
+# Use the token
+curl http://localhost:8000/api/accounts \
+  -H "Authorization: Bearer {your-token}"
+```
 
-2. **Manage Bank Allocation**
-   - Select **Bank Preferences**
-   - Adjust allocation percentages (must total 100%)
-   - Choose primary bank
-   - Save preferences
+## What Works in Demo Mode
 
-3. **Participate in Voting**
-   - Monthly votes on currency composition
-   - Your voting power = your GCU holdings
-   - View upcoming polls in **Governance**
-   - Cast your vote before deadline
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Account management | Works | Full CRUD operations |
+| Transfers | Works | Instant (simulated) |
+| Currency exchange | Works | Simulated rates |
+| GCU basket | Works | Full functionality |
+| Voting system | Works | Demo votes |
+| Admin dashboard | Works | Full access |
+| API endpoints | Works | All documented endpoints |
+| Event sourcing | Works | Complete audit trails |
 
-### Current GCU Composition
+## What's Simulated
 
-The GCU basket is rebalanced monthly based on user votes:
-- USD: 35%
-- EUR: 30%
-- GBP: 20%
-- CHF: 10%
-- JPY: 3%
-- XAU (Gold): 2%
-
-## Security Features
-
-### Account Security
-
-1. **Two-Factor Authentication**: Required for sensitive operations
-2. **Device Management**: Track and manage authorized devices
-3. **Session Management**: Active session monitoring
-4. **Security Alerts**: Real-time notifications for account activity
-
-### Transaction Security
-
-1. **Transaction Limits**: Daily and monthly limits based on verification level
-2. **Withdrawal Whitelist**: Pre-approved addresses for large transfers
-3. **Cooling Period**: 24-hour delay for new payees (optional)
-4. **Transaction Approval**: Multi-signature for high-value transfers
-
-### Privacy Features
-
-1. **Data Encryption**: End-to-end encryption for sensitive data
-2. **Privacy Mode**: Hide balances on shared devices
-3. **Secure Communication**: Encrypted in-app messaging
-4. **GDPR Compliance**: Full data control and export options
-
-## Common Tasks
-
-### Checking Your Balance
-
-- Dashboard shows total across all currencies
-- Click any currency for detailed view
-- Use **Reports** for historical balances
-
-### Setting Up Recurring Transfers
-
-1. Go to **Transfers** → **Recurring**
-2. Set up transfer details
-3. Choose frequency (daily/weekly/monthly)
-4. Set start and end dates
-5. Confirm setup
-
-### Downloading Statements
-
-1. Navigate to **Reports**
-2. Select account and date range
-3. Choose format (PDF/CSV/Excel)
-4. Download or email statement
-
-### Managing Notifications
-
-1. Go to **Settings** → **Notifications**
-2. Configure preferences:
-   - Email notifications
-   - SMS alerts
-   - Push notifications
-   - Webhook integrations
-
-## Getting Help
-
-### Support Channels
-
-- **Help Center**: Comprehensive FAQ and guides
-- **Live Chat**: Available 24/7 for urgent issues
-- **Email Support**: support@finaegis.org
-- **Phone Support**: Premium accounts only
-
-### Troubleshooting
-
-**Can't log in?**
-- Check email/password
-- Ensure 2FA code is current
-- Try password reset
-- Contact support if locked out
-
-**Transaction failed?**
-- Check account balance
-- Verify recipient details
-- Review transaction limits
-- Check for compliance holds
-
-**Exchange rate seems wrong?**
-- Rates update every 30 seconds
-- Include spread in calculations
-- Compare with market rates
-- Report significant discrepancies
-
-## Best Practices
-
-1. **Security**
-   - Use unique, strong password
-   - Enable all security features
-   - Regularly review account activity
-   - Keep contact info updated
-
-2. **Compliance**
-   - Complete KYC promptly
-   - Keep documents current
-   - Report suspicious activity
-   - Understand tax obligations
-
-3. **Account Management**
-   - Set up balance alerts
-   - Review statements monthly
-   - Optimize currency allocation
-   - Participate in GCU voting
+- **Bank connections** - Mock implementations
+- **Blockchain transactions** - Simulated confirmations
+- **KYC verification** - Auto-approved in demo
+- **Payment processing** - Instant (no real money)
 
 ## Next Steps
 
-Now that you're familiar with the basics:
+- **Developers**: See [Development Guide](../06-DEVELOPMENT/DEVELOPMENT.md)
+- **API Integration**: See [API Reference](../04-API/REST_API_REFERENCE.md)
+- **Architecture**: See [Architecture Overview](../02-ARCHITECTURE/ARCHITECTURE.md)
 
-1. Complete your profile setup
-2. Add your preferred currencies
-3. Make your first transfer
-4. Explore GCU features
-5. Set up security preferences
+## Troubleshooting
 
-Welcome to the future of banking with FinAegis!
+**Can't log in?**
+- Check credentials match exactly (case-sensitive)
+- Try clearing browser cache
+- Verify the server is running
+
+**Missing features?**
+- Run `php artisan migrate --seed` to ensure demo data exists
+- Check `.env` has `APP_ENV=demo`
+
+**API errors?**
+- Ensure you have a valid token
+- Check `/api/documentation` for correct endpoints
+
+---
+
+Questions? [Open an issue](https://github.com/finaegis/core-banking-prototype-laravel/issues) on GitHub.
