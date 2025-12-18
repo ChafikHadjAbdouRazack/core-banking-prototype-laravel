@@ -39,7 +39,7 @@ class PaymentOrchestrationWorkflow extends Workflow
      * Execute the payment orchestration workflow.
      *
      * @param AgentPaymentRequest $request The payment request details
-     * @return Generator The payment result generator
+     * @return Generator<int, mixed, mixed, PaymentResult> The payment result
      * @throws Throwable If payment processing fails
      */
     public function execute(AgentPaymentRequest $request): Generator
@@ -184,7 +184,7 @@ class PaymentOrchestrationWorkflow extends Workflow
      * Handle split payments for multiple recipients.
      *
      * @param AgentPaymentRequest $request The payment request with splits
-     * @return Generator The aggregated payment result generator
+     * @return Generator<int, mixed, mixed, PaymentResult> The aggregated payment result
      */
     public function executeSplitPayment(AgentPaymentRequest $request): Generator
     {
@@ -253,7 +253,7 @@ class PaymentOrchestrationWorkflow extends Workflow
      *
      * @param AgentPaymentRequest $request The payment request
      * @param int $maxRetries Maximum retry attempts
-     * @return Generator The payment result generator
+     * @return Generator<int, mixed, mixed, PaymentResult> The payment result
      */
     public function executeWithRetry(
         AgentPaymentRequest $request,

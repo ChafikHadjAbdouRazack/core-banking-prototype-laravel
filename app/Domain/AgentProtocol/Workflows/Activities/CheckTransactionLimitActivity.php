@@ -10,29 +10,34 @@ use App\Models\AgentTransactionTotal;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 use Workflow\Activity;
 
 class CheckTransactionLimitActivity extends Activity
 {
     /**
      * Check if transaction is within agent's limits.
+     *
+     * @return stdClass Result with allowed, reason, and limit details
      */
     public function execute(
         string $agentId,
         float $amount,
         string $currency = 'USD'
-    ): array {
+    ): stdClass {
+        $result = new stdClass();
+
         try {
             // Get agent's current limits from the aggregate
             $aggregate = AgentComplianceAggregate::retrieve($agentId);
 
             // Check if agent is KYC verified
             if (! $aggregate->isKycVerified()) {
-                return [
-                    'allowed'   => false,
-                    'reason'    => 'Agent KYC verification required',
-                    'kycStatus' => $aggregate->getKycStatus()->value,
-                ];
+                $result->allowed = false;
+                $result->reason = 'Agent KYC verification required';
+                $result->kycStatus = $aggregate->getKycStatus()->value;
+
+                return $result;
             }
 
             // Get current transaction totals
@@ -47,15 +52,15 @@ class CheckTransactionLimitActivity extends Activity
                 $aggregate->recordLimitExceeded($amount, 'daily');
                 $aggregate->persist();
 
-                return [
-                    'allowed'         => false,
-                    'reason'          => 'Daily transaction limit exceeded',
-                    'limit'           => $dailyLimit,
-                    'currentTotal'    => $totals['daily'],
-                    'requestedAmount' => $amount,
-                    'wouldBeTotal'    => $newDailyTotal,
-                    'period'          => 'daily',
-                ];
+                $result->allowed = false;
+                $result->reason = 'Daily transaction limit exceeded';
+                $result->limit = $dailyLimit;
+                $result->currentTotal = $totals['daily'];
+                $result->requestedAmount = $amount;
+                $result->wouldBeTotal = $newDailyTotal;
+                $result->period = 'daily';
+
+                return $result;
             }
 
             // Check weekly limit
@@ -67,15 +72,15 @@ class CheckTransactionLimitActivity extends Activity
                 $aggregate->recordLimitExceeded($amount, 'weekly');
                 $aggregate->persist();
 
-                return [
-                    'allowed'         => false,
-                    'reason'          => 'Weekly transaction limit exceeded',
-                    'limit'           => $weeklyLimit,
-                    'currentTotal'    => $totals['weekly'],
-                    'requestedAmount' => $amount,
-                    'wouldBeTotal'    => $newWeeklyTotal,
-                    'period'          => 'weekly',
-                ];
+                $result->allowed = false;
+                $result->reason = 'Weekly transaction limit exceeded';
+                $result->limit = $weeklyLimit;
+                $result->currentTotal = $totals['weekly'];
+                $result->requestedAmount = $amount;
+                $result->wouldBeTotal = $newWeeklyTotal;
+                $result->period = 'weekly';
+
+                return $result;
             }
 
             // Check monthly limit
@@ -87,37 +92,37 @@ class CheckTransactionLimitActivity extends Activity
                 $aggregate->recordLimitExceeded($amount, 'monthly');
                 $aggregate->persist();
 
-                return [
-                    'allowed'         => false,
-                    'reason'          => 'Monthly transaction limit exceeded',
-                    'limit'           => $monthlyLimit,
-                    'currentTotal'    => $totals['monthly'],
-                    'requestedAmount' => $amount,
-                    'wouldBeTotal'    => $newMonthlyTotal,
-                    'period'          => 'monthly',
-                ];
+                $result->allowed = false;
+                $result->reason = 'Monthly transaction limit exceeded';
+                $result->limit = $monthlyLimit;
+                $result->currentTotal = $totals['monthly'];
+                $result->requestedAmount = $amount;
+                $result->wouldBeTotal = $newMonthlyTotal;
+                $result->period = 'monthly';
+
+                return $result;
             }
 
             // Update transaction totals (will be committed after successful payment)
             $this->updateTransactionTotals($agentId, $amount);
 
-            return [
-                'allowed'          => true,
-                'reason'           => 'Transaction within limits',
-                'dailyRemaining'   => $dailyLimit - $newDailyTotal,
-                'weeklyRemaining'  => $weeklyLimit - $newWeeklyTotal,
-                'monthlyRemaining' => $monthlyLimit - $newMonthlyTotal,
-                'limits'           => [
-                    'daily'   => $dailyLimit,
-                    'weekly'  => $weeklyLimit,
-                    'monthly' => $monthlyLimit,
-                ],
-                'currentTotals' => [
-                    'daily'   => $newDailyTotal,
-                    'weekly'  => $newWeeklyTotal,
-                    'monthly' => $newMonthlyTotal,
-                ],
+            $result->allowed = true;
+            $result->reason = 'Transaction within limits';
+            $result->dailyRemaining = $dailyLimit - $newDailyTotal;
+            $result->weeklyRemaining = $weeklyLimit - $newWeeklyTotal;
+            $result->monthlyRemaining = $monthlyLimit - $newMonthlyTotal;
+            $result->limits = (object) [
+                'daily'   => $dailyLimit,
+                'weekly'  => $weeklyLimit,
+                'monthly' => $monthlyLimit,
             ];
+            $result->currentTotals = (object) [
+                'daily'   => $newDailyTotal,
+                'weekly'  => $newWeeklyTotal,
+                'monthly' => $newMonthlyTotal,
+            ];
+
+            return $result;
         } catch (Exception $e) {
             logger()->error('Transaction limit check failed', [
                 'agent_id' => $agentId,
@@ -126,11 +131,11 @@ class CheckTransactionLimitActivity extends Activity
             ]);
 
             // Conservative approach - deny on error
-            return [
-                'allowed' => false,
-                'reason'  => 'Unable to verify transaction limits',
-                'error'   => $e->getMessage(),
-            ];
+            $result->allowed = false;
+            $result->reason = 'Unable to verify transaction limits';
+            $result->error = $e->getMessage();
+
+            return $result;
         }
     }
 
