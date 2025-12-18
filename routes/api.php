@@ -790,6 +790,7 @@ use App\Http\Controllers\Api\AgentProtocol\AgentEscrowController;
 use App\Http\Controllers\Api\AgentProtocol\AgentIdentityController;
 use App\Http\Controllers\Api\AgentProtocol\AgentMessageController;
 use App\Http\Controllers\Api\AgentProtocol\AgentPaymentController;
+use App\Http\Controllers\Api\AgentProtocol\AgentProtocolNegotiationController;
 use App\Http\Controllers\Api\AgentProtocol\AgentReputationController;
 
 // AP2 well-known configuration (public)
@@ -824,6 +825,13 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
 
             // List available scopes
             Route::get('/scopes', [AgentAuthController::class, 'listScopes'])->name('scopes');
+        });
+
+        // Protocol version information (public)
+        Route::prefix('protocol')->name('protocol.')->group(function () {
+            Route::get('/versions', [AgentProtocolNegotiationController::class, 'listVersions'])->name('versions');
+            Route::get('/versions/{version}/capabilities', [AgentProtocolNegotiationController::class, 'getVersionCapabilities'])
+                ->name('versions.capabilities');
         });
     });
 
@@ -910,5 +918,20 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
                 ->middleware('agent.scope:reputation:read')
                 ->name('reputation.trust');
         });
+
+        // Protocol negotiation endpoints (require messages capability for A2A negotiation)
+        Route::prefix('agents/{did}/protocol')->name('protocol.')
+            ->middleware(['agent.capability:messages', 'agent.scope:messages:read,messages:write'])
+            ->group(function () {
+                Route::post('/negotiate', [AgentProtocolNegotiationController::class, 'negotiate'])->name('negotiate');
+                Route::get('/agreements/{otherDid}', [AgentProtocolNegotiationController::class, 'getAgreement'])
+                    ->name('agreements.show');
+                Route::delete('/agreements/{otherDid}', [AgentProtocolNegotiationController::class, 'revokeAgreement'])
+                    ->name('agreements.revoke');
+                Route::post('/agreements/{otherDid}/refresh', [AgentProtocolNegotiationController::class, 'refreshAgreement'])
+                    ->name('agreements.refresh');
+                Route::get('/agreements/{otherDid}/check', [AgentProtocolNegotiationController::class, 'checkAgreement'])
+                    ->name('agreements.check');
+            });
     });
 });
