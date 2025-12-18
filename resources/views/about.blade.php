@@ -1,14 +1,14 @@
 @extends('layouts.public')
 
-@section('title', 'About FinAegis - Our Mission & Community')
+@section('title', 'About FinAegis - Open Source Core Banking')
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'About FinAegis - Our Mission & Community',
-        'description' => 'Learn about FinAegis - a community-driven prototype for transparent banking. Join our open-source movement to democratize finance through the Global Currency Unit.',
-        'keywords' => 'FinAegis about, mission, community, open source banking, transparent banking, democratic finance, prototype, GitHub community',
+        'title' => 'About FinAegis - Open Source Core Banking',
+        'description' => 'FinAegis is an open-source core banking prototype demonstrating event sourcing, CQRS, and the Global Currency Unit concept. Built for learning and exploration.',
+        'keywords' => 'FinAegis about, open source banking, core banking prototype, GCU, event sourcing, CQRS, Laravel banking',
     ])
-    
+
     {{-- Schema.org Markup --}}
     <x-schema type="organization" />
     <x-schema type="breadcrumb" :data="[
@@ -19,12 +19,6 @@
 
 @push('styles')
 <style>
-    .team-member {
-        transition: transform 0.3s ease;
-    }
-    .team-member:hover {
-        transform: translateY(-5px);
-    }
     .timeline-item {
         position: relative;
         padding-left: 30px;
@@ -59,29 +53,40 @@
     <section class="bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
+                <div class="inline-flex items-center bg-indigo-100 rounded-full px-4 py-2 mb-6">
+                    <svg class="w-5 h-5 mr-2 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Open Source Project
+                </div>
                 <h1 class="text-5xl font-bold text-gray-900 mb-6">About FinAegis</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    We're building the future of democratic banking, where financial services are transparent, accessible, and governed by the community.
+                    An open-source demonstration of modern core banking architecture—built to teach, explore, and inspire new thinking about financial systems.
                 </p>
             </div>
         </div>
     </section>
 
-    <!-- Mission Section -->
+    <!-- What It Is Section -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div>
-                    <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-6">What Is FinAegis?</h2>
                     <p class="text-lg text-gray-600 mb-4">
-                        At FinAegis, we believe that financial systems should serve everyone, not just the privileged few. Our mission is to democratize banking through technology, transparency, and community governance.
+                        FinAegis is a prototype core banking platform built with Laravel, designed to demonstrate how modern financial systems could work using event sourcing, CQRS, domain-driven design, and AI agent integration.
                     </p>
                     <p class="text-lg text-gray-600 mb-4">
-                        We're introducing the Global Currency Unit (GCU) - a revolutionary multi-asset currency basket that provides stability and democratic participation in financial governance.
+                        At its heart is the <strong>Global Currency Unit (GCU)</strong> concept—a thought experiment in democratic monetary policy where users vote on their currency's composition from a basket of global currencies.
                     </p>
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mt-6">
+                        <p class="text-amber-800">
+                            <strong>Important:</strong> This is a prototype for learning and demonstration purposes. All transactions are simulated. No real money is involved.
+                        </p>
+                    </div>
                     <div class="mt-8">
-                        <a href="{{ route('platform') }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700">
-                            Learn about our platform
+                        <a href="{{ route('features') }}" class="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700">
+                            Explore the features
                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
@@ -93,13 +98,13 @@
                         <svg class="w-full h-72" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <!-- Globe representing global reach -->
                             <circle cx="200" cy="150" r="70" fill="#E0E7FF" stroke="#4F46E5" stroke-width="2"/>
-                            
+
                             <!-- Continents simplified -->
                             <path d="M170 120C170 120 180 110 190 110C200 110 210 115 215 120C220 125 225 130 225 140C225 150 220 155 210 160C200 165 190 160 185 155C180 150 175 140 175 130C175 125 170 120 170 120Z" fill="#4F46E5" opacity="0.2"/>
                             <path d="M155 140C155 140 160 135 165 135C170 135 175 140 175 145C175 150 170 155 165 155C160 155 155 150 155 145V140Z" fill="#4F46E5" opacity="0.2"/>
                             <path d="M215 170C215 170 220 165 225 165C230 165 235 170 235 175C235 180 230 185 225 185C220 185 215 180 215 175V170Z" fill="#4F46E5" opacity="0.2"/>
-                            
-                            <!-- Network connections representing community -->
+
+                            <!-- Network connections representing architecture -->
                             <circle cx="200" cy="150" r="4" fill="#4F46E5"/>
                             <circle cx="160" cy="130" r="3" fill="#4F46E5"/>
                             <circle cx="240" cy="130" r="3" fill="#4F46E5"/>
@@ -107,7 +112,7 @@
                             <circle cx="240" cy="170" r="3" fill="#4F46E5"/>
                             <circle cx="200" cy="110" r="3" fill="#4F46E5"/>
                             <circle cx="200" cy="190" r="3" fill="#4F46E5"/>
-                            
+
                             <!-- Connecting lines -->
                             <line x1="200" y1="150" x2="160" y2="130" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
                             <line x1="200" y1="150" x2="240" y2="130" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
@@ -115,21 +120,21 @@
                             <line x1="200" y1="150" x2="240" y2="170" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
                             <line x1="200" y1="150" x2="200" y2="110" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
                             <line x1="200" y1="150" x2="200" y2="190" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
-                            
+
                             <!-- Currency symbols around the globe -->
                             <text x="140" y="100" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">$</text>
                             <text x="250" y="100" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">€</text>
                             <text x="120" y="150" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">¥</text>
                             <text x="270" y="150" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">£</text>
-                            <text x="140" y="200" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">₹</text>
-                            <text x="250" y="200" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">元</text>
-                            
-                            <!-- Orbit rings representing global reach -->
+                            <text x="140" y="200" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">CHF</text>
+                            <text x="250" y="200" font-family="Arial, sans-serif" font-size="14" fill="#4F46E5" opacity="0.6">Au</text>
+
+                            <!-- Orbit rings -->
                             <ellipse cx="200" cy="150" rx="90" ry="30" fill="none" stroke="#4F46E5" stroke-width="1" opacity="0.3" stroke-dasharray="5,5"/>
                             <ellipse cx="200" cy="150" rx="110" ry="40" fill="none" stroke="#4F46E5" stroke-width="1" opacity="0.2" stroke-dasharray="5,5"/>
-                            
-                            <!-- Star representing community -->
-                            <path d="M200 60L207 75H223L210 85L217 100L200 90L183 100L190 85L177 75H193L200 60Z" fill="#4F46E5" opacity="0.5"/>
+
+                            <!-- Code bracket representing open source -->
+                            <text x="185" y="250" font-family="monospace" font-size="20" fill="#4F46E5" opacity="0.7">&lt;/&gt;</text>
                         </svg>
                     </div>
                     <div class="absolute -bottom-10 -right-10 w-72 h-72 bg-indigo-100 rounded-full filter blur-3xl opacity-70"></div>
@@ -139,93 +144,93 @@
         </div>
     </section>
 
-    <!-- Values Section -->
+    <!-- Why It Exists Section -->
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-900">Our Core Values</h2>
-                <p class="mt-4 text-xl text-gray-600">The principles that guide everything we do</p>
+                <h2 class="text-4xl font-bold text-gray-900">Why Build This?</h2>
+                <p class="mt-4 text-xl text-gray-600">The ideas and questions driving this project</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white p-8 rounded-xl shadow-lg">
                     <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Transparency</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Education</h3>
                     <p class="text-gray-600">
-                        Every transaction, every decision, every vote is recorded on an immutable ledger. We believe in complete transparency as the foundation of trust.
+                        Core banking systems are rarely open. This project lets developers see how ledgers, transactions, and financial workflows actually work—without the black-box mystery.
                     </p>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-lg">
                     <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Democracy</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Experimentation</h3>
                     <p class="text-gray-600">
-                        One GCU, one vote. We're building a financial system where every participant has a voice in governance, not just the largest stakeholders.
+                        What if users could vote on their currency's composition? What if AI agents could autonomously transact? These questions need a playground to explore.
                     </p>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-lg">
                     <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
                         <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Security</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Architecture Patterns</h3>
                     <p class="text-gray-600">
-                        Bank-grade security meets blockchain immutability. Your assets are protected by the most advanced security measures in the industry.
+                        Event sourcing, CQRS, domain-driven design, saga patterns—real implementations of patterns that are often only discussed in theory.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Journey Section -->
+    <!-- What's Inside Section -->
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-900">Our Journey</h2>
-                <p class="mt-4 text-xl text-gray-600">Building the future of transparent banking</p>
+                <h2 class="text-4xl font-bold text-gray-900">What's Inside</h2>
+                <p class="mt-4 text-xl text-gray-600">Key concepts demonstrated in this prototype</p>
             </div>
             <div class="max-w-3xl mx-auto">
                 <div class="timeline-item mb-12">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">The Vision</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Global Currency Unit (GCU)</h3>
                     <p class="text-gray-600">
-                        Born from the belief that banking should be democratic, transparent, and accessible to all. A vision for a new financial paradigm where communities have control.
+                        A conceptual basket currency backed by USD, EUR, GBP, CHF, JPY, and gold. Users vote monthly on the composition. A thought experiment in democratic monetary governance.
                     </p>
                 </div>
                 <div class="timeline-item mb-12">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Prototype Development</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Event-Sourced Ledger</h3>
                     <p class="text-gray-600">
-                        Built a working prototype demonstrating core banking functionality, API integrations, and the revolutionary GCU (Global Currency Unit) concept. Open-sourced for transparency.
+                        Every transaction is stored as an immutable event. Complete audit trails, point-in-time reconstruction, and replay capability—built with Spatie Event Sourcing.
                     </p>
                 </div>
                 <div class="timeline-item mb-12">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Community Growth</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">AI Agent Protocol</h3>
                     <p class="text-gray-600">
-                        Gained support from developers and believers in transparent banking worldwide. Our GitHub stars represent a growing community committed to financial democracy.
+                        Implementation of Google's A2A protocol for AI agent commerce. Agents can register, negotiate, and execute transactions with escrow services and reputation tracking.
                     </p>
                 </div>
                 <div class="timeline-item">
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Current Stage: Seeking Investment</h3>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Banking API Patterns</h3>
                     <p class="text-gray-600">
-                        With a working prototype and community support, we're now seeking funding to transform this vision into a fully licensed, operational banking platform that serves millions.
+                        Mock connectors demonstrating Open Banking integration patterns. See how real banking APIs could connect to a core banking system.
                     </p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Community Section -->
+    <!-- Open Source Section -->
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-4xl font-bold text-gray-900">Our Community</h2>
-                <p class="mt-4 text-xl text-gray-600">Powered by believers in transparent banking</p>
+                <h2 class="text-4xl font-bold text-gray-900">Built in the Open</h2>
+                <p class="mt-4 text-xl text-gray-600">Transparency isn't just a feature—it's the foundation</p>
             </div>
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-xl shadow-lg p-8 mb-8">
@@ -234,46 +239,40 @@
                             <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-4">Open Source Community</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 text-center mb-4">MIT Licensed</h3>
                     <p class="text-lg text-gray-600 text-center mb-6">
-                        FinAegis is built in the open. Our code is transparent, our development is collaborative, and our community drives innovation.
+                        Fork it. Learn from it. Build on it. FinAegis is fully open source under the MIT license. Use the code however you like.
                     </p>
-                    <div class="grid grid-cols-3 gap-4 text-center mb-6">
-                        <div>
-                            <div class="text-3xl font-bold text-indigo-600">⭐</div>
-                            <div class="text-sm text-gray-600 mt-1">GitHub Stars</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold text-indigo-600">🔀</div>
-                            <div class="text-sm text-gray-600 mt-1">Contributors</div>
-                        </div>
-                        <div>
-                            <div class="text-3xl font-bold text-indigo-600">🌍</div>
-                            <div class="text-sm text-gray-600 mt-1">Global Reach</div>
-                        </div>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                            </svg>
+                            View on GitHub
+                        </a>
+                        <a href="{{ route('developers') }}" class="inline-flex items-center justify-center px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-lg font-semibold hover:bg-gray-100 transition">
+                            Read the Docs
+                        </a>
                     </div>
-                    <p class="text-gray-600 text-center">
-                        Join our GitHub community and help shape the future of transparent banking. Every contribution matters, from code to ideas to spreading the word.
-                    </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h4 class="text-xl font-bold text-gray-900 mb-3">Developers</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">For Developers</h4>
                         <p class="text-gray-600 mb-4">
-                            Contributing code, reviewing PRs, and building the technical foundation for democratic banking.
+                            Learn banking architecture, contribute code, report issues, or just explore how financial systems work under the hood.
                         </p>
-                        <a href="https://github.com/FinAegis" target="_blank" class="text-indigo-600 font-semibold hover:text-indigo-700">
-                            Join on GitHub →
+                        <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="text-indigo-600 font-semibold hover:text-indigo-700">
+                            Contribute on GitHub →
                         </a>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h4 class="text-xl font-bold text-gray-900 mb-3">Believers</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">For Researchers</h4>
                         <p class="text-gray-600 mb-4">
-                            Supporting the vision through stars, shares, and spreading awareness about transparent banking.
+                            Study the GCU concept, governance mechanisms, or use the codebase as a foundation for fintech research projects.
                         </p>
-                        <a href="{{ route('cgo') }}" class="text-indigo-600 font-semibold hover:text-indigo-700">
-                            Support the Project →
+                        <a href="{{ route('developers') }}" class="text-indigo-600 font-semibold hover:text-indigo-700">
+                            View Documentation →
                         </a>
                     </div>
                 </div>
@@ -281,19 +280,19 @@
         </div>
     </section>
 
-    <!-- Join Us Section -->
+    <!-- Try It Section -->
     <section class="py-20 bg-indigo-600">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl font-bold text-white mb-6">Join the Financial Revolution</h2>
+            <h2 class="text-4xl font-bold text-white mb-6">Explore the Demo</h2>
             <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
-                Be part of a global community that's reshaping banking for the better. Your voice matters in our democratic financial ecosystem.
+                See the concepts in action. Create a demo account to explore the GCU, governance voting, and the full banking interface—all simulated, all safe.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50">
-                    Get Started
+                    Try the Demo
                 </a>
-                <a href="{{ route('platform') }}" class="inline-flex items-center justify-center px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-indigo-700">
-                    Learn More
+                <a href="{{ route('features') }}" class="inline-flex items-center justify-center px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-indigo-700">
+                    See Features
                 </a>
             </div>
         </div>
