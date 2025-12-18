@@ -2,6 +2,7 @@
 
 return [
     App\Providers\AccountServiceProvider::class,
+    App\Providers\AgentProtocolServiceProvider::class,
     App\Providers\AIInfrastructureServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\BankIntegrationServiceProvider::class,
