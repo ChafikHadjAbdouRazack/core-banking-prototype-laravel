@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Shared\Contracts;
 
+use RuntimeException;
+
 /**
  * Interface for governance voting operations used by external domains.
  *
@@ -19,10 +21,15 @@ interface GovernanceVotingInterface
      * Proposal status constants.
      */
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_PASSED = 'passed';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_EXECUTED = 'executed';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     /**
@@ -61,8 +68,7 @@ interface GovernanceVotingInterface
      *     recorded_at: string
      * }
      *
-     * @throws \App\Domain\Governance\Exceptions\VotingClosedException
-     * @throws \App\Domain\Governance\Exceptions\AlreadyVotedException
+     * @throws RuntimeException When voting is closed or user has already voted
      */
     public function castVote(
         string $proposalId,
@@ -119,8 +125,7 @@ interface GovernanceVotingInterface
      *     result: array<string, mixed>
      * }
      *
-     * @throws \App\Domain\Governance\Exceptions\ProposalNotApprovedException
-     * @throws \App\Domain\Governance\Exceptions\AlreadyExecutedException
+     * @throws RuntimeException When proposal is not approved or already executed
      */
     public function executeProposal(string $proposalId): array;
 
