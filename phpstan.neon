@@ -81,6 +81,11 @@ parameters:
         - '#Unable to resolve the template type TKey in call to function collect#'
         - '#Unable to resolve the template type TValue in call to function collect#'
 
+        # Filament chart widgets return type issues (different across PHP versions)
+        - '#Method App\\Filament\\Admin\\Resources\\[a-zA-Z]+Resource\\Widgets\\[a-zA-Z]+Chart::getData\(\) return type has no value type specified in iterable type array#'
+        - '#Method App\\Filament\\Admin\\Resources\\[a-zA-Z]+Resource\\Widgets\\[a-zA-Z]+ChartWidget::getData\(\) return type has no value type specified in iterable type array#'
+        - '#Method App\\Filament\\Admin\\Widgets\\[a-zA-Z]+Chart::getData\(\) return type has no value type specified in iterable type array#'
+
         # Trait template type issues (context-dependent, can't be baselined)
         - '#Unable to resolve the template type TCallbackReturnType in call to .*Illuminate\\Database\\Connection::transaction\(\)#'
         - '#Unable to resolve the template type TReturn in call to method App\\Traits\\HandlesNestedTransactions::safeTransaction\(\)#'
