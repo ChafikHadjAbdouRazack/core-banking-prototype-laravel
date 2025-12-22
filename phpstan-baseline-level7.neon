@@ -1,0 +1,139 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Offset ''credit''\|''fraud'' might not exist on array\{\}\|array\{credit\?\: 0\.5, fraud\?\: 0\.5\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 2
+			path: app/Domain/AI/Sagas/RiskAssessmentSaga.php
+
+		-
+			message: '#^Cannot access offset ''key'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Domain/AgentProtocol/Services/SignatureService.php
+
+		-
+			message: '#^Offset float\|int\<\-1, max\> might not exist on list\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Compliance/Streaming/PatternDetectionEngine.php
+
+		-
+			message: '#^Offset float\|int\<0, max\> might not exist on list\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Compliance/Streaming/PatternDetectionEngine.php
+
+		-
+			message: '#^Possibly invalid array key type float\|int\<\-1, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/Domain/Compliance/Streaming/PatternDetectionEngine.php
+
+		-
+			message: '#^Possibly invalid array key type float\|int\<0, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/Domain/Compliance/Streaming/PatternDetectionEngine.php
+
+		-
+			message: '#^Offset ''shares'' might not exist on array\{pool_id\: string, operation\: ''removal'', shares\?\: string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Exchange/Activities/CalculatePoolSharesActivity.php
+
+		-
+			message: '#^Offset float\|int\<0, max\> might not exist on non\-empty\-list\<Brick\\Math\\BigDecimal\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
+
+		-
+			message: '#^Offset float\|int\<1, max\> might not exist on non\-empty\-list\<Brick\\Math\\BigDecimal\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
+
+		-
+			message: '#^Possibly invalid array key type float\|int\<0, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
+
+		-
+			message: '#^Possibly invalid array key type float\|int\<1, max\>\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
+
+		-
+			message: '#^Cannot access offset 0 on array\{float, float, float\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domain/Performance/Services/MetricsCollectorService.php
+
+		-
+			message: '#^Offset float\|int\<\-1, max\> might not exist on Illuminate\\Support\\Collection\<int, Brick\\Math\\BigDecimal\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Stablecoin/Services/OracleAggregator.php
+
+		-
+			message: '#^Offset float\|int\<0, max\> might not exist on Illuminate\\Support\\Collection\<int, Brick\\Math\\BigDecimal\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Stablecoin/Services/OracleAggregator.php
+
+		-
+			message: '#^Offset float\|int\<0, max\> might not exist on Illuminate\\Support\\Collection\<int, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Treasury/Services/PerformanceTrackingService.php
+
+		-
+			message: '#^Offset float\|int\<1, max\> might not exist on Illuminate\\Support\\Collection\<int, mixed\>\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Domain/Treasury/Services/PerformanceTrackingService.php
+
+		-
+			message: '#^Offset ''days'' might not exist on array\{days\: 1\|3, format\: ''M d''\}\|array\{hours\: 1, format\: ''H\:00''\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Filament/Admin/Resources/AccountResource/Widgets/AccountBalanceChart.php
+
+		-
+			message: '#^Offset ''hours'' might not exist on array\{days\: 1\|3, format\: ''M d''\}\|array\{hours\: 1, format\: ''H\:00''\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: app/Filament/Admin/Resources/AccountResource/Widgets/AccountBalanceChart.php
+
+		-
+			message: '#^Cannot access offset ''router'' on Illuminate\\Contracts\\Foundation\\Application\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Providers/TracingServiceProvider.php
+
+		-
+			message: '#^Cannot access offset 0 on array\{float, float, float\}\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Services/DynamicRateLimitService.php
+
+		-
+			message: '#^Cannot access offset ''md'' on array\<string, int\|string\|null\>\|int\|string\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Filament/Admin/Pages/DashboardTest.php
+
+		-
+			message: '#^Cannot access offset ''sm'' on array\<string, int\|string\|null\>\|int\|string\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Filament/Admin/Pages/DashboardTest.php
+
+		-
+			message: '#^Cannot access offset ''xl'' on array\<string, int\|string\|null\>\|int\|string\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Filament/Admin/Pages/DashboardTest.php
