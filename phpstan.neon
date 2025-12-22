@@ -80,9 +80,9 @@ parameters:
         # Filament chart widgets template type issues (PHP version dependent)
         - '#Unable to resolve the template type TKey in call to function collect#'
         - '#Unable to resolve the template type TValue in call to function collect#'
-        - '#Unable to resolve the template type TCallbackReturnType in call to static method Illuminate\\Database\\Connection::transaction\(\)#'
 
         # Trait template type issues (context-dependent, can't be baselined)
+        - '#Unable to resolve the template type TCallbackReturnType in call to .*Illuminate\\Database\\Connection::transaction\(\)#'
         - '#Unable to resolve the template type TReturn in call to method App\\Traits\\HandlesNestedTransactions::safeTransaction\(\)#'
         
         # Unknown parameter types
