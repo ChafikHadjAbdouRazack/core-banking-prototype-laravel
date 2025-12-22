@@ -3,9 +3,10 @@ includes:
     - phpstan-baseline.neon
     - phpstan-baseline-ai-tests.neon
     - phpstan-baseline-compliance-projector.neon
+    - phpstan-baseline-level6.neon
 
 parameters:
-    level: 5
+    level: 6
     paths:
         - app
         - tests
