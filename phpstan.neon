@@ -4,9 +4,10 @@ includes:
     - phpstan-baseline-ai-tests.neon
     - phpstan-baseline-compliance-projector.neon
     - phpstan-baseline-level6.neon
+    - phpstan-baseline-level7.neon
 
 parameters:
-    level: 6
+    level: 7
     paths:
         - app
         - tests
@@ -88,6 +89,9 @@ parameters:
         # Trait template type issues (context-dependent, can't be baselined)
         - '#Unable to resolve the template type TCallbackReturnType in call to .*Illuminate\\Database\\Connection::transaction\(\)#'
         - '#Unable to resolve the template type TReturn in call to method App\\Traits\\HandlesNestedTransactions::safeTransaction\(\)#'
+
+        # sys_getloadavg() return type varies between PHP versions (array{float,float,float}|false vs array|false)
+        - '#Cannot access offset 0 on array.*\|false#'
         
         # Unknown parameter types
         - '#has no type specified#'
