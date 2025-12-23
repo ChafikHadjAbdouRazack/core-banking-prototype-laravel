@@ -2281,62 +2281,8 @@ parameters:
 			path: app/Http/Controllers/Api/V2/BankIntegrationController.php
 
 		-
-			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 8
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Cannot access property \$kyc_level on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Cannot access property \$kyc_status on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
 			message: '#^Cannot access property \$status on App\\Domain\\Compliance\\Models\\KycVerification\|null\.$#'
 			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Cannot access property \$uuid on App\\Models\\User\|null\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Domain\\Compliance\\Services\\CustomerRiskService\:\:canPerformTransaction\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Domain\\Compliance\\Services\\CustomerRiskService\:\:createOrUpdateProfile\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Domain\\Compliance\\Services\\EnhancedKycService\:\:startVerification\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\V2\\ComplianceController\:\:checkAdditionalVerificationNeeded\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/V2/ComplianceController.php
-
-		-
-			message: '#^Parameter \#1 \$user of method App\\Http\\Controllers\\Api\\V2\\ComplianceController\:\:determineRequiredVerifications\(\) expects App\\Models\\User, App\\Models\\User\|null given\.$#'
-			identifier: argument.type
 			count: 1
 			path: app/Http/Controllers/Api/V2/ComplianceController.php
 

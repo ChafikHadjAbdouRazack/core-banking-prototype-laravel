@@ -38,6 +38,7 @@ class ComplianceController extends Controller
      */
     public function getKycStatus(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
 
         $verifications = KycVerification::where('user_id', $user->id)
@@ -84,6 +85,7 @@ class ComplianceController extends Controller
             ]
         );
 
+        /** @var User $user */
         $user = $request->user();
 
         try {
@@ -137,6 +139,7 @@ class ComplianceController extends Controller
             ]
         );
 
+        /** @var User $user */
         $user = $request->user();
         $verification = KycVerification::where('id', $verificationId)
             ->where('user_id', $user->id)
@@ -208,6 +211,7 @@ class ComplianceController extends Controller
             ]
         );
 
+        /** @var User $user */
         $user = $request->user();
         $verification = KycVerification::where('id', $verificationId)
             ->where('user_id', $user->id)
@@ -263,6 +267,7 @@ class ComplianceController extends Controller
      */
     public function getScreeningStatus(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
 
         $screenings = AmlScreening::where('entity_id', $user->uuid)
@@ -307,6 +312,7 @@ class ComplianceController extends Controller
             ]
         );
 
+        /** @var User $user */
         $user = $request->user();
 
         try {
@@ -352,6 +358,7 @@ class ComplianceController extends Controller
      */
     public function getRiskProfile(Request $request): JsonResponse
     {
+        /** @var User $user */
         $user = $request->user();
         $profile = CustomerRiskProfile::where('user_id', $user->id)->first();
 
@@ -397,6 +404,7 @@ class ComplianceController extends Controller
             ]
         );
 
+        /** @var User $user */
         $user = $request->user();
         $result = $this->riskService->canPerformTransaction(
             $user,
