@@ -52,7 +52,8 @@ it('getColumns returns responsive column configuration', function () {
     expect($columns)->toHaveKey('sm');
     expect($columns)->toHaveKey('md');
     expect($columns)->toHaveKey('xl');
-    expect($columns['sm'])->toBe(1);
-    expect($columns['md'])->toBe(2);
-    expect($columns['xl'])->toBe(4);
+    /** @var array<string, int|string|null> $columns */
+    expect($columns['sm'] ?? null)->toBe(1);
+    expect($columns['md'] ?? null)->toBe(2);
+    expect($columns['xl'] ?? null)->toBe(4);
 });

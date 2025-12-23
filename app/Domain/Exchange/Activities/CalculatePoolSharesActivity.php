@@ -36,7 +36,7 @@ class CalculatePoolSharesActivity extends Activity
         $$pool = PoolProjection::where()->firstOrFail();
 
         if ($input['operation'] === 'removal') {
-            return $this->calculateAmountsForRemoval($pool, $input['shares']);
+            return $this->calculateAmountsForRemoval($pool, $input['shares'] ?? '0');
         } elseif ($input['operation'] === 'state') {
             return $this->getPoolState($pool);
         }

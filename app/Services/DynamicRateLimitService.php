@@ -144,6 +144,9 @@ class DynamicRateLimitService
     {
         if (function_exists('sys_getloadavg')) {
             $load = sys_getloadavg();
+            if ($load === false) {
+                return 0.5;
+            }
             $cpuCount = $this->getCpuCount();
 
             return $cpuCount > 0 ? $load[0] / $cpuCount : 0.5;

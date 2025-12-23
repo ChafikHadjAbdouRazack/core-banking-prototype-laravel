@@ -146,6 +146,9 @@ class SignatureService
             $privateKey = '';
             openssl_pkey_export($resource, $privateKey);
             $publicKeyDetails = openssl_pkey_get_details($resource);
+            if ($publicKeyDetails === false) {
+                throw new Exception('Failed to get RSA public key details');
+            }
             $publicKey = $publicKeyDetails['key'];
 
             return [
@@ -169,6 +172,9 @@ class SignatureService
             $privateKey = '';
             openssl_pkey_export($resource, $privateKey);
             $publicKeyDetails = openssl_pkey_get_details($resource);
+            if ($publicKeyDetails === false) {
+                throw new Exception('Failed to get ECDSA public key details');
+            }
             $publicKey = $publicKeyDetails['key'];
 
             return [

@@ -272,12 +272,13 @@ class RiskAssessmentSaga extends Workflow
         }
 
         // Calculate weighted average
-        $totalScore = 0;
-        $totalWeight = 0;
+        $totalScore = 0.0;
+        $totalWeight = 0.0;
 
         foreach ($scores as $type => $score) {
-            $totalScore += $score * $weights[$type];
-            $totalWeight += $weights[$type];
+            $weight = $weights[$type] ?? 0.5;
+            $totalScore += $score * $weight;
+            $totalWeight += $weight;
         }
 
         return $totalWeight > 0 ? round($totalScore / $totalWeight, 2) : 0;
