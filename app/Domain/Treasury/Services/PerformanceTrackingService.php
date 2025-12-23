@@ -512,10 +512,12 @@ class PerformanceTrackingService
         }
 
         if ($count % 2 === 0) {
-            return ($sorted[$count / 2 - 1] + $sorted[$count / 2]) / 2;
+            $midIndex = (int) ($count / 2);
+
+            return ($sorted[$midIndex - 1] + $sorted[$midIndex]) / 2;
         }
 
-        return $sorted[intval($count / 2)];
+        return $sorted[(int) ($count / 2)];
     }
 
     private function getDefaultReturnsStructure(string $period, float $currentValue): array

@@ -689,7 +689,8 @@ class PatternDetectionEngine
         usort($transactions, fn ($a, $b) => $a['timestamp'] <=> $b['timestamp']);
 
         $diffs = [];
-        for ($i = 1; $i < count($transactions); $i++) {
+        $count = count($transactions);
+        for ($i = 1; $i < $count; $i++) {
             $diffs[] = $transactions[$i]['timestamp'] - $transactions[$i - 1]['timestamp'];
         }
 
@@ -1036,7 +1037,9 @@ class PatternDetectionEngine
         $count = count($values);
 
         if ($count % 2 === 0) {
-            return ($values[$count / 2 - 1] + $values[$count / 2]) / 2;
+            $midIndex = (int) ($count / 2);
+
+            return ($values[$midIndex - 1] + $values[$midIndex]) / 2;
         }
 
         return $values[(int) floor($count / 2)];
