@@ -40,17 +40,17 @@ class ReleaseCollateralActivityTest extends DomainTestCase
         $parameters = $method->getParameters();
 
         $this->assertEquals('accountUuid', $parameters[0]->getName());
-        $this->assertEquals(AccountUuid::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(AccountUuid::class, $parameters[0]->getType()?->getName());
 
         $this->assertEquals('positionUuid', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('collateralAssetCode', $parameters[2]->getName());
         $this->assertTrue($parameters[2]->allowsNull());
         $this->assertTrue($parameters[2]->isOptional() || $parameters[2]->allowsNull());
 
         $this->assertEquals('amount', $parameters[3]->getName());
-        $this->assertEquals('int', $parameters[3]->getType()->getName());
+        $this->assertEquals('int', $parameters[3]->getType()?->getName());
     }
 
     #[Test]
@@ -59,7 +59,7 @@ class ReleaseCollateralActivityTest extends DomainTestCase
         $reflection = new ReflectionClass(ReleaseCollateralActivity::class);
         $method = $reflection->getMethod('execute');
 
-        $this->assertEquals('bool', $method->getReturnType()->getName());
+        $this->assertEquals('bool', $method->getReturnType()?->getName());
     }
 
     #[Test]

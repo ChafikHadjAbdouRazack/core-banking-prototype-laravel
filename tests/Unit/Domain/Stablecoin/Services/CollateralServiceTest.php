@@ -48,7 +48,7 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $constructor->getParameters()[0];
         $this->assertEquals('exchangeRateService', $parameter->getName());
-        $this->assertEquals(ExchangeRateService::class, $parameter->getType()->getName());
+        $this->assertEquals(ExchangeRateService::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -82,15 +82,15 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameters = $reflection->getParameters();
         $this->assertEquals('fromAsset', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $this->assertEquals('string', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('amount', $parameters[1]->getName());
-        $this->assertEquals('float', $parameters[1]->getType()->getName());
+        $this->assertEquals('float', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('pegAsset', $parameters[2]->getName());
-        $this->assertEquals('string', $parameters[2]->getType()->getName());
+        $this->assertEquals('string', $parameters[2]->getType()?->getName());
 
-        $this->assertEquals('float', $reflection->getReturnType()->getName());
+        $this->assertEquals('float', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -103,9 +103,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('stablecoinCode', $parameter->getName());
-        $this->assertEquals('string', $parameter->getType()->getName());
+        $this->assertEquals('string', $parameter->getType()?->getName());
 
-        $this->assertEquals('float', $reflection->getReturnType()->getName());
+        $this->assertEquals('float', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -118,11 +118,11 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('bufferRatio', $parameter->getName());
-        $this->assertEquals('float', $parameter->getType()->getName());
+        $this->assertEquals('float', $parameter->getType()?->getName());
         $this->assertTrue($parameter->isDefaultValueAvailable());
         $this->assertEquals(0.05, $parameter->getDefaultValue());
 
-        $this->assertEquals(Collection::class, $reflection->getReturnType()->getName());
+        $this->assertEquals(Collection::class, $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -132,7 +132,7 @@ class CollateralServiceTest extends ServiceTestCase
 
         $this->assertEquals(0, $reflection->getNumberOfParameters());
         $this->assertTrue($reflection->isPublic());
-        $this->assertEquals(Collection::class, $reflection->getReturnType()->getName());
+        $this->assertEquals(Collection::class, $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -145,9 +145,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('position', $parameter->getName());
-        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()?->getName());
 
-        $this->assertEquals('void', $reflection->getReturnType()->getName());
+        $this->assertEquals('void', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -160,9 +160,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('position', $parameter->getName());
-        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()?->getName());
 
-        $this->assertEquals('float', $reflection->getReturnType()->getName());
+        $this->assertEquals('float', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -175,9 +175,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('stablecoinCode', $parameter->getName());
-        $this->assertEquals('string', $parameter->getType()->getName());
+        $this->assertEquals('string', $parameter->getType()?->getName());
 
-        $this->assertEquals('array', $reflection->getReturnType()->getName());
+        $this->assertEquals('array', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -187,7 +187,7 @@ class CollateralServiceTest extends ServiceTestCase
 
         $this->assertEquals(0, $reflection->getNumberOfParameters());
         $this->assertTrue($reflection->isPublic());
-        $this->assertEquals('array', $reflection->getReturnType()->getName());
+        $this->assertEquals('array', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -200,9 +200,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('position', $parameter->getName());
-        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()?->getName());
 
-        $this->assertEquals('float', $reflection->getReturnType()->getName());
+        $this->assertEquals('float', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -215,9 +215,9 @@ class CollateralServiceTest extends ServiceTestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('position', $parameter->getName());
-        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $parameter->getType()?->getName());
 
-        $this->assertEquals('array', $reflection->getReturnType()->getName());
+        $this->assertEquals('array', $reflection->getReturnType()?->getName());
     }
 
     #[Test]

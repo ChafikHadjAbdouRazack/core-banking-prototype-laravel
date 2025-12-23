@@ -67,7 +67,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralPositionCreated::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralPositionCreated::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -80,7 +80,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralLocked::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralLocked::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -93,7 +93,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(StablecoinMinted::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinMinted::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -106,7 +106,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(StablecoinBurned::class, $parameter->getType()->getName());
+        $this->assertEquals(StablecoinBurned::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -119,7 +119,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralReleased::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralReleased::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -132,7 +132,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralPositionUpdated::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralPositionUpdated::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -145,7 +145,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralPositionClosed::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralPositionClosed::class, $parameter->getType()?->getName());
     }
 
     #[Test]
@@ -158,7 +158,7 @@ class StablecoinProjectorTest extends TestCase
 
         $parameter = $method->getParameters()[0];
         $this->assertEquals('event', $parameter->getName());
-        $this->assertEquals(CollateralPositionLiquidated::class, $parameter->getType()->getName());
+        $this->assertEquals(CollateralPositionLiquidated::class, $parameter->getType()?->getName());
     }
 
     #[Test]

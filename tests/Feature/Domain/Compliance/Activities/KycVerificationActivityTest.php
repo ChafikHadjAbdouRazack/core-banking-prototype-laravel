@@ -87,6 +87,6 @@ class KycVerificationActivityTest extends TestCase
         $parameters = $executeMethod->getParameters();
         $this->assertCount(1, $parameters);
         $this->assertEquals('input', $parameters[0]->getName());
-        $this->assertEquals('array', $parameters[0]->getType()->getName());
+        $this->assertEquals('array', $parameters[0]->getType()?->getName());
     }
 }

@@ -32,7 +32,7 @@ it('execute method returns array', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     $method = $reflection->getMethod('execute');
 
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('has proper type hints for parameters', function () {
@@ -40,9 +40,9 @@ it('has proper type hints for parameters', function () {
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
 
-    expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
-    expect($parameters[1]->getType()->getName())->toBe('array');
-    expect($parameters[2]->getType()->getName())->toBe('string');
+    expect($parameters[0]->getType()?->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
+    expect($parameters[1]->getType()?->getName())->toBe('array');
+    expect($parameters[2]->getType()?->getName())->toBe('string');
     expect($parameters[2]->allowsNull())->toBeTrue();
 });
 
@@ -92,7 +92,7 @@ it('validation methods return arrays', function () {
 
     foreach ($methods as $methodName) {
         $method = $reflection->getMethod($methodName);
-        expect($method->getReturnType()->getName())->toBe('array');
+        expect($method->getReturnType()?->getName())->toBe('array');
     }
 });
 
@@ -103,7 +103,7 @@ it('can access execute method through reflection', function () {
 
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(3);
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('validates all required validation methods exist', function () {

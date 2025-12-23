@@ -42,7 +42,7 @@ class StablecoinEventRepositoryTest extends DomainTestCase
 
         $parameter = $constructor->getParameters()[0];
         $this->assertEquals('storedEventModel', $parameter->getName());
-        $this->assertEquals('string', $parameter->getType()->getName());
+        $this->assertEquals('string', $parameter->getType()?->getName());
         $this->assertTrue($parameter->isDefaultValueAvailable());
         $this->assertEquals(StablecoinEvent::class, $parameter->getDefaultValue());
     }
@@ -54,7 +54,7 @@ class StablecoinEventRepositoryTest extends DomainTestCase
         $property = $reflection->getProperty('storedEventModel');
 
         $this->assertTrue($property->isProtected());
-        $this->assertEquals('string', $property->getType()->getName());
+        $this->assertEquals('string', $property->getType()?->getName());
     }
 
     #[Test]

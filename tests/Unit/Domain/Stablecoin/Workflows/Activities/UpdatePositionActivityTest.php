@@ -39,7 +39,7 @@ class UpdatePositionActivityTest extends DomainTestCase
         $parameters = $method->getParameters();
 
         $this->assertEquals('positionUuid', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $this->assertEquals('string', $parameters[0]->getType()?->getName());
     }
 
     #[Test]
@@ -48,7 +48,7 @@ class UpdatePositionActivityTest extends DomainTestCase
         $reflection = new ReflectionClass(UpdatePositionActivity::class);
         $method = $reflection->getMethod('execute');
 
-        $this->assertEquals('bool', $method->getReturnType()->getName());
+        $this->assertEquals('bool', $method->getReturnType()?->getName());
     }
 
     #[Test]

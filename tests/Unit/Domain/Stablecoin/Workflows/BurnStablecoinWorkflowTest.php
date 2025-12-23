@@ -39,22 +39,22 @@ class BurnStablecoinWorkflowTest extends DomainTestCase
         $parameters = $method->getParameters();
 
         $this->assertEquals('accountUuid', $parameters[0]->getName());
-        $this->assertEquals('App\Domain\Account\DataObjects\AccountUuid', $parameters[0]->getType()->getName());
+        $this->assertEquals('App\Domain\Account\DataObjects\AccountUuid', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('positionUuid', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('stablecoinCode', $parameters[2]->getName());
-        $this->assertEquals('string', $parameters[2]->getType()->getName());
+        $this->assertEquals('string', $parameters[2]->getType()?->getName());
 
         $this->assertEquals('burnAmount', $parameters[3]->getName());
-        $this->assertEquals('int', $parameters[3]->getType()->getName());
+        $this->assertEquals('int', $parameters[3]->getType()?->getName());
 
         $this->assertEquals('collateralReleaseAmount', $parameters[4]->getName());
-        $this->assertEquals('int', $parameters[4]->getType()->getName());
+        $this->assertEquals('int', $parameters[4]->getType()?->getName());
 
         $this->assertEquals('closePosition', $parameters[5]->getName());
-        $this->assertEquals('bool', $parameters[5]->getType()->getName());
+        $this->assertEquals('bool', $parameters[5]->getType()?->getName());
         $this->assertTrue($parameters[5]->isDefaultValueAvailable());
         $this->assertFalse($parameters[5]->getDefaultValue());
     }
@@ -65,7 +65,7 @@ class BurnStablecoinWorkflowTest extends DomainTestCase
         $reflection = new ReflectionClass(BurnStablecoinWorkflow::class);
         $method = $reflection->getMethod('execute');
 
-        $this->assertEquals('Generator', $method->getReturnType()->getName());
+        $this->assertEquals('Generator', $method->getReturnType()?->getName());
     }
 
     #[Test]

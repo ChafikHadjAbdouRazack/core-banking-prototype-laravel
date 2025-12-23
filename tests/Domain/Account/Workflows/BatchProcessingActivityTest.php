@@ -30,7 +30,7 @@ it('execute method returns array', function () {
     $reflection = new ReflectionClass(BatchProcessingActivity::class);
     $method = $reflection->getMethod('execute');
 
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('has proper type hints for parameters', function () {
@@ -38,8 +38,8 @@ it('has proper type hints for parameters', function () {
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
 
-    expect($parameters[0]->getType()->getName())->toBe('array');
-    expect($parameters[1]->getType()->getName())->toBe('string');
+    expect($parameters[0]->getType()?->getName())->toBe('array');
+    expect($parameters[1]->getType()?->getName())->toBe('string');
 });
 
 it('has batch operation methods', function () {
@@ -91,7 +91,7 @@ it('batch operation methods return arrays', function () {
 
     foreach ($methods as $methodName) {
         $method = $reflection->getMethod($methodName);
-        expect($method->getReturnType()->getName())->toBe('array');
+        expect($method->getReturnType()?->getName())->toBe('array');
     }
 });
 
@@ -101,7 +101,7 @@ it('supports all expected batch operations', function () {
 
     // This test verifies the method exists and can handle the switch cases
     expect($performOperationMethod->isPrivate())->toBeTrue();
-    expect($performOperationMethod->getReturnType()->getName())->toBe('array');
+    expect($performOperationMethod->getReturnType()?->getName())->toBe('array');
 });
 
 // Coverage tests - test method accessibility and parameter validation
@@ -111,7 +111,7 @@ it('can access execute method through reflection', function () {
 
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(2);
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('validates all batch processing methods exist', function () {
