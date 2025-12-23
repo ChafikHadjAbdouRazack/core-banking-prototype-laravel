@@ -24,12 +24,12 @@ it('execute method has correct signature', function () {
 
     $parameters = $method->getParameters();
     expect($parameters[0]->getName())->toBe('withdrawal');
-    expect($parameters[0]->getType()->getName())->toBe(BankWithdrawal::class);
+    expect($parameters[0]->getType()?->getName())->toBe(BankWithdrawal::class);
 });
 
 it('execute method returns array', function () {
     $reflection = new ReflectionClass(ValidateWithdrawalActivity::class);
     $method = $reflection->getMethod('execute');
 
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });

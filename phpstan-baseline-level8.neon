@@ -2899,66 +2899,6 @@ parameters:
 			path: tests/Domain/Account/Repositories/TransferRepositoryTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Domain/Account/Workflows/AccountValidationActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Domain/Account/Workflows/BalanceInquiryActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Domain/Account/Workflows/BatchProcessingActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Domain/Account/Workflows/DepositAccountActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Domain/Account/Workflows/DepositAccountWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Domain/Account/Workflows/DestroyAccountWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 8
-			path: tests/Domain/Account/Workflows/TransactionReversalActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Domain/Account/Workflows/UnfreezeAccountWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Domain/Account/Workflows/WithdrawAccountActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Domain/Account/Workflows/WithdrawAccountWorkflowTest.php
-
-		-
 			message: '#^Cannot access property \$from_asset_code on App\\Domain\\Asset\\Models\\ExchangeRate\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -3001,24 +2941,6 @@ parameters:
 			path: tests/Domain/Asset/Services/ExchangeRateServiceTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Asset/Workflows/AssetDepositWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Domain/Asset/Workflows/AssetTransferWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Asset/Workflows/AssetWithdrawWorkflowTest.php
-
-		-
 			message: '#^Cannot access property \$code on App\\Domain\\Basket\\Models\\BasketAsset\|null\.$#'
 			identifier: property.nonObject
 			count: 1
@@ -3049,64 +2971,16 @@ parameters:
 			path: tests/Domain/Basket/Models/BasketAssetTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Basket/Workflows/DecomposeBasketWorkflowTest.php
-
-		-
 			message: '#^Offset ''error'' might not exist on array\|null\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: tests/Domain/Custodian/Connectors/MockBankConnectorTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Domain/Custodian/Workflows/CustodianTransferWorkflowTest.php
-
-		-
 			message: '#^Offset ''source'' might not exist on array\|null\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
 			path: tests/Domain/Exchange/Providers/MockExchangeRateProviderTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Payment/Activities/CreditAccountActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Payment/Activities/DebitAccountActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Domain/Payment/Activities/InitiateBankTransferActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Domain/Payment/Activities/PublishDepositCompletedActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Domain/Payment/Activities/PublishWithdrawalRequestedActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Domain/Payment/Activities/ValidateWithdrawalActivityTest.php
 
 		-
 			message: '#^Cannot access property \$account_uuid on App\\Domain\\Payment\\Models\\PaymentTransaction\|null\.$#'
@@ -3685,18 +3559,6 @@ parameters:
 			path: tests/Feature/Domain/AI/MCPServerTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Feature/Domain/Basket/Activities/ComposeBasketActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Feature/Domain/Basket/Activities/DecomposeBasketActivityTest.php
-
-		-
 			message: '#^Cannot access property \$activeComponents on App\\Domain\\Basket\\Models\\BasketAsset\|null\.$#'
 			identifier: property.nonObject
 			count: 3
@@ -3761,18 +3623,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Domain/Basket/Services/BasketValueCalculationServiceTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Domain/Compliance/Activities/KycSubmissionActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Domain/Compliance/Activities/KycVerificationActivityTest.php
 
 		-
 			message: '#^Offset 0 might not exist on array\|null\.$#'
@@ -4681,12 +4531,6 @@ parameters:
 			path: tests/Unit/Domain/Product/ProductCatalogTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Unit/Domain/Stablecoin/Events/CollateralLockedTest.php
-
-		-
 			message: '#^Offset ''high'' might not exist on array\|null\.$#'
 			identifier: offsetAccess.notFound
 			count: 1
@@ -4777,12 +4621,6 @@ parameters:
 			path: tests/Unit/Domain/Stablecoin/Oracles/InternalAMMOracleTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 8
-			path: tests/Unit/Domain/Stablecoin/Projectors/StablecoinProjectorTest.php
-
-		-
 			message: '#^Cannot call method getDocComment\(\) on ReflectionMethod\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -4790,12 +4628,6 @@ parameters:
 
 		-
 			message: '#^Cannot call method getEndLine\(\) on ReflectionMethod\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Stablecoin/Repositories/StablecoinEventRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
 			identifier: method.nonObject
 			count: 2
 			path: tests/Unit/Domain/Stablecoin/Repositories/StablecoinEventRepositoryTest.php
@@ -4819,22 +4651,10 @@ parameters:
 			path: tests/Unit/Domain/Stablecoin/Repositories/StablecoinSnapshotRepositoryTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Stablecoin/Repositories/StablecoinSnapshotRepositoryTest.php
-
-		-
 			message: '#^Cannot call method getStartLine\(\) on ReflectionMethod\|null\.$#'
 			identifier: method.nonObject
 			count: 2
 			path: tests/Unit/Domain/Stablecoin/Repositories/StablecoinSnapshotRepositoryTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 21
-			path: tests/Unit/Domain/Stablecoin/Services/CollateralServiceTest.php
 
 		-
 			message: '#^Cannot access property \$debt_amount on App\\Domain\\Stablecoin\\Models\\StablecoinCollateralPosition\|null\.$#'
@@ -4855,21 +4675,9 @@ parameters:
 			path: tests/Unit/Domain/Stablecoin/Services/DemoStablecoinServiceTest.php
 
 		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Unit/Domain/Stablecoin/Services/LiquidationServiceTest.php
-
-		-
 			message: '#^Cannot call method getEndLine\(\) on ReflectionMethod\|null\.$#'
 			identifier: method.nonObject
 			count: 1
-			path: tests/Unit/Domain/Stablecoin/Services/OracleAggregatorTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 8
 			path: tests/Unit/Domain/Stablecoin/Services/OracleAggregatorTest.php
 
 		-
@@ -4877,18 +4685,6 @@ parameters:
 			identifier: method.nonObject
 			count: 1
 			path: tests/Unit/Domain/Stablecoin/Services/OracleAggregatorTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Unit/Domain/Stablecoin/Services/StabilityMechanismServiceTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 9
-			path: tests/Unit/Domain/Stablecoin/Services/StablecoinIssuanceServiceTest.php
 
 		-
 			message: '#^Offset ''quality_scores'' might not exist on array\|null\.$#'
@@ -4913,72 +4709,6 @@ parameters:
 			identifier: offsetAccess.notFound
 			count: 1
 			path: tests/Unit/Domain/Stablecoin/ValueObjects/PriceDataTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/BurnStablecoinActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/ClosePositionActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/CreatePositionActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/LockCollateralActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/MintStablecoinActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/ReleaseCollateralActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Stablecoin/Workflows/Activities/UpdatePositionActivityTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Unit/Domain/Stablecoin/Workflows/AddCollateralWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Unit/Domain/Stablecoin/Workflows/BurnStablecoinWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Unit/Domain/Stablecoin/Workflows/MintStablecoinWorkflowTest.php
-
-		-
-			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/Domain/Stablecoin/Workflows/ReserveManagementWorkflowTest.php
 
 		-
 			message: '#^Offset ''currency'' might not exist on array\|null\.$#'

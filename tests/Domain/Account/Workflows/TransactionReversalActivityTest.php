@@ -36,7 +36,7 @@ it('execute method returns array', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     $method = $reflection->getMethod('execute');
 
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('has proper type hints for parameters', function () {
@@ -44,13 +44,13 @@ it('has proper type hints for parameters', function () {
     $method = $reflection->getMethod('execute');
     $parameters = $method->getParameters();
 
-    expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
-    expect($parameters[1]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');
-    expect($parameters[2]->getType()->getName())->toBe('string');
-    expect($parameters[3]->getType()->getName())->toBe('string');
-    expect($parameters[4]->getType()->getName())->toBe('string');
+    expect($parameters[0]->getType()?->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
+    expect($parameters[1]->getType()?->getName())->toBe('App\Domain\Account\DataObjects\Money');
+    expect($parameters[2]->getType()?->getName())->toBe('string');
+    expect($parameters[3]->getType()?->getName())->toBe('string');
+    expect($parameters[4]->getType()?->getName())->toBe('string');
     expect($parameters[4]->allowsNull())->toBeTrue();
-    expect($parameters[5]->getType()->getName())->toBe('App\Domain\Account\Aggregates\TransactionAggregate');
+    expect($parameters[5]->getType()?->getName())->toBe('App\Domain\Account\Aggregates\TransactionAggregate');
 });
 
 it('has logReversal method', function () {
@@ -67,7 +67,7 @@ it('can access execute method through reflection', function () {
 
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(6);
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('validates transaction reversal has private logReversal method', function () {
