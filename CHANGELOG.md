@@ -7,54 +7,107 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Planned for v1.1.0 - Quality & Completeness Release
+---
 
-#### Code Quality Improvements
-- **PHPStan Baseline Reduction**
-  - Target: Reduce total baseline lines by 50%+
-  - Fix event sourcing aggregate return types (use `static` instead of concrete classes)
-  - Add null-safe operators in AI/MCP services
-  - Resolve factory return type mismatches
+## [1.1.0] - 2026-01-11
 
-- **TODO/FIXME Resolution**
-  - Complete or document all 12 TODO items in production code
-  - Implement LoanDisbursementSaga
-  - Complete YieldOptimizationController functionality
-  - Finish AgentProtocol notification implementation
+### 🔧 Foundation Hardening Release
 
-- **Static Method Consolidation**
-  - Convert high-value static helpers to injectable services
-  - Target: Reduce from 394 to <250 static methods
+This release focuses on **code quality**, **test coverage expansion**, and **CI/CD hardening** - laying a solid foundation for future feature development.
 
-#### Test Coverage Expansion
-- **Domain Test Coverage**
-  - Banking Domain: Add 30+ tests (currently 0)
-  - Governance Domain: Add 25+ tests (currently 0)
-  - Regulatory Domain: Add 15+ tests
-  - Product Domain: Add 10+ tests
+### Highlights
 
-- **E2E/Behavioral Tests**
-  - Expand from 1 to 10+ Behat feature files
-  - Add critical path coverage for all major domains
+| Metric | v1.0.0 | v1.1.0 | Improvement |
+|--------|--------|--------|-------------|
+| PHPStan Level | 5 | **8** | +3 levels |
+| PHPStan Baseline | 54,632 lines | **9,007 lines** | **83% reduction** |
+| Test Files | 458 | **499** | +41 files |
+| Behat Features | 1 | **22** | +21 features |
 
-- **Coverage Reporting**
-  - Enable PCOV-based coverage in CI
-  - Target: 60% coverage (up from ~50%)
+### Added
 
-#### Feature Completion
-- **Phase 6 Integration** (Agent Protocol)
-  - Connect agent wallets to main payment system
-  - Integrate with existing KYC/AML workflows
-  - Link to AI Agent framework
+#### Comprehensive Domain Test Suites
+- **Banking Domain** (40 tests)
+  - BankingConnectorTest - Multi-bank routing
+  - BankRoutingServiceTest - Intelligent bank selection
+  - BankHealthMonitorTest - Health monitoring
+- **Governance Domain** (55 tests)
+  - VotingPowerCalculatorTest - Voting weight calculations
+  - ProposalStatusTest - Proposal lifecycle
+  - VoteTypeTest - Vote type behaviors
+  - GovernanceExceptionTest - Exception handling
+- **User Domain** (64 tests)
+  - NotificationPreferencesTest - Email/SMS/push settings
+  - PrivacySettingsTest - Privacy controls
+  - UserPreferencesTest - Language/timezone/currency
+  - UserRolesTest - Role-based access
+  - UserProfileExceptionTest - Exception factory
+- **Compliance Domain** (34 tests)
+  - AlertStatusTest - Alert lifecycle management
+  - AlertSeverityTest - Severity levels and priorities
+- **Treasury Domain** (53 tests)
+  - RiskProfileTest - Risk levels and exposure limits
+  - AllocationStrategyTest - Portfolio allocation
+  - LiquidityMetricsTest - Basel III regulatory metrics
+- **Lending Domain** (59 tests)
+  - LoanPurposeTest - Loan purposes and interest rates
+  - CollateralTypeTest - Collateral and LTV ratios
+  - CreditScoreTest - Credit score validation
+  - RiskRatingTest - Risk ratings and multipliers
 
-- **Treasury Yield Optimization**
-  - Complete YieldOptimizationService
-  - Implement portfolio optimization algorithms
+#### PHPStan Level 8 Achievement
+- Upgraded from level 5 → 6 → 7 → **8**
+- Fixed event sourcing aggregate return types
+- Added null-safe operators in AI/MCP services
+- Corrected reflection method null-safety in tests
+- Added User type annotations to ComplianceController
+
+### Changed
 
 #### CI/CD Hardening
-- Enforce security audit (fail on critical/high vulnerabilities)
-- Add N+1 query detection in tests
-- Remove backup files and consolidate workflows
+- **Security Audit Enforcement**: CI now fails on critical/high vulnerabilities
+- Removed obsolete backup files from `bin/` directory
+- Enhanced pre-commit checks for better local validation
+
+### Fixed
+
+- PHPStan baseline errors across all domains
+- Null-safety issues in AI service implementations
+- Reflection method null-pointer exceptions in tests
+- Type annotations for Eloquent factory return types
+
+### Developer Experience
+
+#### Pre-Commit Quality Checks
+```bash
+./bin/pre-commit-check.sh --fix  # Auto-fix issues
+```
+
+#### Test Commands
+```bash
+./vendor/bin/pest --parallel                    # Run all tests
+./vendor/bin/pest tests/Domain/Banking/         # Run domain tests
+```
+
+### Upgrade Notes
+
+This is a quality-focused release with no breaking changes.
+
+1. Pull the latest changes:
+   ```bash
+   git pull origin main
+   composer install
+   ```
+
+2. Verify PHPStan compliance:
+   ```bash
+   XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
+   ```
+
+3. Run the test suite:
+   ```bash
+   ./vendor/bin/pest --parallel
+   ```
 
 ---
 
@@ -276,7 +329,8 @@ This release marks the transformation of FinAegis from a proprietary platform to
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **1.0.0** | **2024-12-21** | **🎉 Open Source Release** |
+| **1.1.0** | **2026-01-11** | **🔧 Foundation Hardening** |
+| 1.0.0 | 2024-12-21 | 🎉 Open Source Release |
 | 0.9.0 | 2024-12-18 | Agent Protocol (AP2/A2A) |
 | 0.8.0 | 2024-12-01 | Treasury Management, Enhanced Compliance |
 | 0.7.0 | 2024-11-15 | AI Framework, Distributed Tracing |
@@ -308,7 +362,8 @@ This is a documentation-focused release with no breaking changes.
 - Run `php artisan migrate` for AI Framework tables
 - Configure AI providers in `config/ai.php`
 
-[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v0.9.0...v1.0.0
 [0.9.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v0.7.0...v0.8.0
