@@ -7,7 +7,6 @@ namespace Tests\Domain\Banking\Services;
 use App\Domain\Banking\Services\BankHealthMonitor;
 use App\Domain\Banking\Services\BankRoutingService;
 use App\Models\User;
-use Mockery\LegacyMockInterface;
 use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\MockInterface;

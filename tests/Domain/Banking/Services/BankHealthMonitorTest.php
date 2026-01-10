@@ -8,6 +8,7 @@ use App\Domain\Banking\Contracts\IBankConnector;
 use App\Domain\Banking\Events\BankHealthChanged;
 use App\Domain\Banking\Models\BankCapabilities;
 use App\Domain\Banking\Services\BankHealthMonitor;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Mockery;
@@ -104,7 +105,7 @@ class BankHealthMonitorTest extends UnitTestCase
     {
         $connector = $this->createMockConnector('PAYSERA');
         // @phpstan-ignore method.notFound
-        $connector->shouldReceive('isAvailable')->andThrow(new \Exception('Connection failed'));
+        $connector->shouldReceive('isAvailable')->andThrow(new Exception('Connection failed'));
 
         $this->monitor->registerBank('PAYSERA', $connector);
 
