@@ -8,6 +8,7 @@ use App\Domain\Banking\Contracts\IBankConnector;
 use App\Domain\Banking\Events\BankHealthChanged;
 use App\Domain\Banking\Models\BankCapabilities;
 use App\Domain\Banking\Services\BankHealthMonitor;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Mockery;
@@ -103,7 +104,8 @@ class BankHealthMonitorTest extends UnitTestCase
     public function it_returns_error_status_on_exception(): void
     {
         $connector = $this->createMockConnector('PAYSERA');
-        $connector->shouldReceive('isAvailable')->andThrow(new \Exception('Connection failed'));
+        // @phpstan-ignore method.notFound
+        $connector->shouldReceive('isAvailable')->andThrow(new Exception('Connection failed'));
 
         $this->monitor->registerBank('PAYSERA', $connector);
 
@@ -138,6 +140,7 @@ class BankHealthMonitorTest extends UnitTestCase
     public function it_measures_response_time_in_milliseconds(): void
     {
         $connector = $this->createMockConnector('PAYSERA');
+        // @phpstan-ignore method.notFound
         $connector->shouldReceive('isAvailable')->andReturnUsing(function () {
             usleep(10000); // 10ms delay
 
@@ -318,8 +321,12 @@ class BankHealthMonitorTest extends UnitTestCase
     // Helper Methods
     // ===========================================
 
-    private function createMockConnector(string $bankCode): MockInterface
+    /**
+     * @return IBankConnector&MockInterface
+     */
+    private function createMockConnector(string $bankCode): IBankConnector
     {
+        /** @var IBankConnector&MockInterface $connector */
         $connector = Mockery::mock(IBankConnector::class);
         $connector->shouldReceive('getBankCode')->andReturn($bankCode);
         $connector->shouldReceive('getBankName')->andReturn("{$bankCode} Bank");

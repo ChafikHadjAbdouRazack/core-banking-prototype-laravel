@@ -7,7 +7,6 @@ namespace Tests\Domain\Banking\Services;
 use App\Domain\Banking\Services\BankHealthMonitor;
 use App\Domain\Banking\Services\BankRoutingService;
 use App\Models\User;
-use Mockery\LegacyMockInterface;
 use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\MockInterface;
@@ -17,13 +16,16 @@ class BankRoutingServiceTest extends UnitTestCase
 {
     private BankRoutingService $service;
 
-    private MockInterface $healthMonitor;
+    /** @var BankHealthMonitor&MockInterface */
+    private BankHealthMonitor $healthMonitor;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->healthMonitor = Mockery::mock(BankHealthMonitor::class);
+        /** @var BankHealthMonitor&MockInterface $healthMonitor */
+        $healthMonitor = Mockery::mock(BankHealthMonitor::class);
+        $this->healthMonitor = $healthMonitor;
         $this->service = new BankRoutingService($this->healthMonitor);
     }
 
@@ -100,7 +102,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_returns_bank_with_highest_score(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         // Create mock connections
         $connection1 = $this->createMockConnection('PAYSERA', true);
@@ -150,7 +152,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_skips_inactive_connections(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         // Create mock connections - one inactive
         $connection1 = $this->createMockConnection('PAYSERA', false);  // inactive
@@ -183,7 +185,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_prefers_healthy_bank_over_unhealthy(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $connection1 = $this->createMockConnection('PAYSERA', true);
         $connection2 = $this->createMockConnection('REVOLUT', true);
@@ -218,7 +220,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_filters_recommended_banks_by_currency(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $this->healthMonitor->shouldReceive('checkAllBanks')
             ->once()
@@ -252,7 +254,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_filters_recommended_banks_by_features(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $this->healthMonitor->shouldReceive('checkAllBanks')
             ->once()
@@ -285,7 +287,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_excludes_unhealthy_banks_from_recommendations(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $this->healthMonitor->shouldReceive('checkAllBanks')
             ->once()
@@ -312,7 +314,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_sorts_recommendations_by_score(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $this->healthMonitor->shouldReceive('checkAllBanks')
             ->once()
@@ -354,7 +356,7 @@ class BankRoutingServiceTest extends UnitTestCase
     #[\PHPUnit\Framework\Attributes\Test]
     public function it_filters_recommended_banks_by_countries(): void
     {
-        $user = Mockery::mock(User::class);
+        $user = $this->createMockUser();
 
         $this->healthMonitor->shouldReceive('checkAllBanks')
             ->once()
@@ -385,9 +387,20 @@ class BankRoutingServiceTest extends UnitTestCase
     // Helper Methods
     // ===========================================
 
+    /**
+     * @return User&MockInterface
+     */
+    private function createMockUser(): User
+    {
+        /** @var User&MockInterface $user */
+        $user = Mockery::mock(User::class);
+
+        return $user;
+    }
+
     private function createMockConnection(string $bankCode, bool $isActive): object
     {
-        return new class($bankCode, $isActive) {
+        return new class ($bankCode, $isActive) {
             public function __construct(
                 public string $bankCode,
                 private bool $active
