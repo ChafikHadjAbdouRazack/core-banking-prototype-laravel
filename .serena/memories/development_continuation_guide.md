@@ -1,94 +1,139 @@
 # FinAegis Development Continuation Guide
 
-> **Purpose**: Master handoff document for session continuity. Read this FIRST when resuming development.
-
-## Current State (Last Updated: January 11, 2026)
-
-### Version Status
-| Version | Status | Theme |
-|---------|--------|-------|
-| **v1.1.0** | RELEASED | Foundation Hardening |
-| **v1.2.0** | IN PROGRESS | Feature Completion |
-| v1.3.0 | Planned Q2 2026 | Platform Modularity |
-| v2.0.0 | Planned Q3-Q4 2026 | Major Evolution |
-
-### v1.2.0 Progress
-- Agent Protocol bridges: ALREADY COMPLETE (discovered existing implementation)
-- YieldOptimizationController: IMPLEMENTED (wired to existing service)
-- NotifyReputationChangeActivity: FIXED (using real Laravel notifications)
-- Remaining: Observability dashboards, additional TODO fixes
-
-### Key Metrics (v1.1.0 Achievements)
-- PHPStan: Level 5 → **Level 8**
-- Baseline: 54,632 → **9,007 lines** (83% reduction)
-- Tests: 458 → **499 files** (+41)
-- Behat: 1 → **22 features** (+21)
-- Total Tests: **5,073**
-
-### Platform Maturity: 85-90%
-- 29 bounded contexts
-- 15+ domains fully implemented
-- Event sourcing across all major domains
+> **Purpose**: Master handoff document for session continuity. **READ THIS FIRST** when resuming development.
+> **Last Updated**: January 11, 2026 (Post-v1.1.0, v1.2.0 in progress)
 
 ---
 
-## Immediate Priorities (v1.2.0)
+## Quick Recovery Protocol
 
-### COMPLETED (v1.2.0 Session 1)
-1. **Agent Protocol Bridges** - ALREADY EXISTED
-   - AgentPaymentIntegrationService: Full implementation
-   - AgentKycIntegrationService: Full implementation
-   - AIAgentProtocolBridgeService: Full implementation
-   - MCP Tools: AgentPaymentTool, AgentEscrowTool, AgentReputationTool
+### First 3 Things to Do When Resuming
+```bash
+# 1. Check git state and open PRs
+git status && git log --oneline -5
+gh pr list --state open
 
-2. **Treasury Yield Optimization** - DONE
-   - YieldOptimizationController now wired to YieldOptimizationService
-   - Portfolio management endpoints added (summary, rebalance-check)
+# 2. Check current branch
+git branch --show-current
 
-3. **Agent Reputation Notifications** - DONE
-   - Created AgentReputationChanged notification class
-   - Updated NotifyReputationChangeActivity to use real notifications
-
-### HIGH VALUE - Still Needed
-4. **Grafana Dashboards** - Production observability
-   - Create dashboard configs in `infrastructure/grafana/`
-
-5. **Enhanced Due Diligence** - Advanced compliance
-   - EDD workflows for high-risk customers
-
-### MEDIUM VALUE - Still Needed
-6. Batch processing completion
-7. Alerting rules configuration
-8. Paysera integration (if needed)
-
----
-
-## Known Technical Debt
-
-### TODO/FIXME Items (14 remaining)
-```
-app/Providers/DomainServiceProvider.php           - LoanDisbursementSaga
-app/Http/Controllers/PayseraDepositController.php - Integration stub
-app/Http/Controllers/Api/YieldOptimizationController.php - Not implemented
-app/Http/Controllers/Api/BatchProcessingController.php - Scheduling incomplete
-app/Domain/AgentProtocol/.../NotifyReputationChangeActivity.php - Logs only
-app/Domain/Basket/Services/BasketService.php     - Query service refactor
-app/Domain/Exchange/Services/ExchangeService.php - Pool fund management
-app/Domain/Exchange/Workflows/Policies/LiquidityRetryPolicy.php - Blocked
-app/Domain/Stablecoin/Repositories/StablecoinAggregateRepository.php - Reserves
-app/Jobs/ProcessCustodianWebhook.php             - Business logic needed
+# 3. Run quick health check
+./vendor/bin/pest --parallel --stop-on-failure
 ```
 
+### Current Session State (Update After Each Session)
+| Item | Status |
+|------|--------|
+| Current Branch | `main` (PR #326 pending merge) |
+| Open PRs | #326 - TODO cleanup |
+| Last Action | Created LoanDisbursementSaga, pushed PR #326 |
+| Next Action | Merge PR #326, then Grafana dashboards or EDD |
+
 ---
 
-## Quick Reference Commands
+## Version Status
+
+| Version | Status | Theme | Key Items |
+|---------|--------|-------|-----------|
+| **v1.1.0** | ✅ RELEASED | Foundation Hardening | PHPStan L8, 5073 tests, 22 Behat |
+| **v1.2.0** | 🔄 IN PROGRESS | Feature Completion | Observability, remaining TODOs |
+| v1.3.0 | 📅 Q2 2026 | Platform Modularity | Plugin system, multi-tenancy |
+| v2.0.0 | 📅 Q3-Q4 2026 | Major Evolution | GraphQL, microservices prep |
+
+### v1.2.0 Completed Items
+- ✅ Agent Protocol bridges (discovered existing implementation)
+- ✅ YieldOptimizationController (wired to existing service)
+- ✅ NotifyReputationChangeActivity (real Laravel notifications)
+- ✅ BatchProcessingController (scheduling + cancellation + compensation)
+- ✅ ProcessCustodianWebhook (wired to WebhookProcessorService)
+- ✅ LoanDisbursementSaga (multi-step orchestration)
+
+### v1.2.0 Remaining Items
+- ⏳ Grafana dashboards (`infrastructure/grafana/`)
+- ⏳ Enhanced Due Diligence (EDD workflows)
+- ⏳ Alerting rules configuration
+- 🚫 Blocked TODOs (see Technical Debt section)
+
+---
+
+## Critical Codebase Discoveries
+
+> **Why This Matters**: Avoid reinventing existing services. Check these before implementing new features.
+
+### Already-Implemented Services (DON'T RECREATE)
+
+| Need | Existing Service | Location |
+|------|------------------|----------|
+| Webhook Processing | `WebhookProcessorService` | `app/Domain/Custodian/Services/` |
+| Agent Payments | `AgentPaymentIntegrationService` | `app/Domain/AgentProtocol/Services/` |
+| Agent KYC | `AgentKycIntegrationService` | `app/Domain/AgentProtocol/Services/` |
+| AI Protocol Bridge | `AIAgentProtocolBridgeService` | `app/Domain/AI/Services/` |
+| Yield Optimization | `YieldOptimizationService` | `app/Domain/Treasury/Services/` |
+| Portfolio Management | `PortfolioManagementService` | `app/Domain/Treasury/Services/` |
+| Agent Notifications | `AgentNotificationService` | `app/Domain/AgentProtocol/Services/` |
+
+### MCP Tools (Already Exist)
+- `AgentPaymentTool` - Payment operations
+- `AgentEscrowTool` - Escrow management
+- `AgentReputationTool` - Reputation queries
+
+### Saga Pattern Examples
+| Saga | Location | Pattern |
+|------|----------|---------|
+| `OrderFulfillmentSaga` | `app/Domain/Exchange/Sagas/` | Multi-domain with compensation |
+| `StablecoinIssuanceSaga` | `app/Domain/Stablecoin/Sagas/` | Token lifecycle |
+| `LoanDisbursementSaga` | `app/Domain/Lending/Sagas/` | Loan orchestration (NEW) |
+
+### Common Patterns to Follow
+1. **Workflows extend** `Workflow\Workflow` from laravel-workflow
+2. **Sagas use** `$this->registerCompensation()` for rollback
+3. **Models use** `$fillable` not `$guarded` (PHPStan requirement)
+4. **Controllers** inject services via constructor DI
+5. **Demo services** implement same interface as production
+
+### PHPStan Gotchas
+```php
+// Use PHPDoc for array types
+/** @var array<string, mixed> $input */
+
+// Use instanceof for model checks after find()
+/** @var Model|null $model */
+$model = Model::find($id);
+if (! $model instanceof Model) { ... }
+
+// User model uses 'uuid' not 'id' in most batch contexts
+'user_uuid' => $user->uuid  // NOT 'user_id'
+```
+
+---
+
+## Technical Debt (Remaining TODOs)
+
+### Blocked (Cannot Fix Now)
+| File | Issue | Blocked On |
+|------|-------|------------|
+| `LiquidityRetryPolicy.php` | RetryOptions not available | laravel-workflow package |
+| `StablecoinAggregateRepository.php` | Reserves implementation | StablecoinReserve model |
+
+### Intentional Stubs
+| File | Reason |
+|------|--------|
+| `PayseraDepositController.php` | Future Paysera integration |
+
+### Low Priority
+| File | Issue |
+|------|-------|
+| `BasketService.php` | Query service refactor |
+
+---
+
+## Commands Quick Reference
 
 ### Pre-Commit (ALWAYS RUN)
 ```bash
 ./bin/pre-commit-check.sh --fix
 ```
 
-### Individual Checks
+### Individual Tools
 ```bash
 # Tests
 ./vendor/bin/pest --parallel
@@ -103,54 +148,53 @@ XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
 
 ### Git Workflow
 ```bash
-# Create feature branch
+# Feature branch
 git checkout -b feature/[name]
 
-# After work, create PR
+# Create PR
 gh pr create --title "feat: [description]"
 
-# Always merge PRs for phase consistency
+# Check PR status
+gh pr checks [number]
 ```
 
 ---
 
-## Key Documentation Files
+## Key Files Reference
 
-| File | Purpose |
-|------|---------|
-| `CHANGELOG.md` | Version history, what's in each release |
-| `docs/VERSION_ROADMAP.md` | Strategic plans v1.2.0 - v2.0.0+ |
-| `docs/ARCHITECTURAL_ROADMAP.md` | Architecture vision |
-| `docs/RELEASE_PLAN_v1.1.0.md` | v1.1.0 detailed scope (reference) |
-| `CLAUDE.md` | Development guidelines, commands |
+| Purpose | File |
+|---------|------|
+| Version History | `CHANGELOG.md` |
+| Strategic Roadmap | `docs/VERSION_ROADMAP.md` |
+| Dev Guidelines | `CLAUDE.md` |
+| Architecture | `docs/ARCHITECTURAL_ROADMAP.md` |
 
 ---
 
-## Architecture Reminders
+## Architecture Quick Reference
 
 ### Domain Structure
 ```
 app/Domain/
-├── Account/        # Core - Account management
-├── AgentProtocol/  # AI Agent payment protocol (AP2)
-├── Banking/        # Bank connectors (SEPA, SWIFT)
-├── Basket/         # GCU basket currency
+├── Account/        # Core accounts
+├── AgentProtocol/  # AI agent payments (AP2)
+├── Banking/        # SEPA, SWIFT connectors
 ├── Compliance/     # KYC/AML
+├── Custodian/      # Bank integrations, webhooks
 ├── Exchange/       # Trading engine
-├── Governance/     # Voting system
-├── Lending/        # P2P lending
+├── Lending/        # P2P lending (has new saga!)
 ├── Stablecoin/     # Token lifecycle
-├── Treasury/       # Portfolio management
+├── Treasury/       # Portfolio, yield optimization
 └── Wallet/         # Blockchain wallets
 ```
 
-### Patterns in Use
-- **Event Sourcing**: Spatie Event Sourcing v7.7+
-- **CQRS**: Custom Command/Query Bus
-- **Saga**: Laravel Workflow with compensation
+### Patterns
+- **Event Sourcing**: Spatie v7.7+ with domain-specific tables
+- **CQRS**: Custom bus in `app/Infrastructure/`
+- **Sagas**: Laravel Workflow with compensation
 - **DDD**: Aggregates, Value Objects, Domain Events
 
-### Tech Stack
+### Stack
 - PHP 8.4+ / Laravel 12
 - MySQL 8.0 / Redis
 - Pest PHP / PHPStan Level 8
@@ -158,35 +202,23 @@ app/Domain/
 
 ---
 
-## Session Handoff Notes
+## Memory Hierarchy
 
-### Last Session (January 11, 2026)
-- Released v1.1.0 (Foundation Hardening)
-- Created VERSION_ROADMAP.md
-- PR #324 created for roadmap documentation
+### Tier 1: Read First (This Document)
+- `development_continuation_guide` ← YOU ARE HERE
 
-### Next Session Should
-1. Merge PR #324 if approved
-2. Start v1.2.0 work - Agent bridges are priority
-3. Consider creating feature branches for each bridge
-
-### Open PRs to Check
-```bash
-gh pr list --state open
-```
-
----
-
-## Memory Maintenance
-
-### Related Memories
-- `todo_fixme_analysis_v110` - Detailed TODO analysis
+### Tier 2: Reference When Needed
+- `project_architecture_overview` - Deep architecture
 - `task_completion_checklist` - Quality workflow
-- `project_architecture_overview` - Architecture details
-- `project_structure` - Directory structure
+- `version_roadmap_decisions` - Strategic rationale
+
+### Tier 3: Historical (Feature-Specific)
+- `ai-framework-*` memories - AI implementation history
+- `treasury_management_implementation` - Treasury history
+- Date-specific memories - Point-in-time fixes
 
 ### When to Update This Memory
-- After each version release
-- When priorities change significantly
-- When major features complete
-- At start of new development phase
+- ✅ After each session (update "Current Session State")
+- ✅ After completing major features
+- ✅ After discovering reusable patterns
+- ✅ After version releases
