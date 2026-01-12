@@ -150,8 +150,7 @@ class DomainServiceProvider extends ServiceProvider
         $this->app->tag([
             \App\Domain\Exchange\Sagas\OrderFulfillmentSaga::class,
             \App\Domain\Stablecoin\Sagas\StablecoinIssuanceSaga::class,
-            // TODO: Create LoanDisbursementSaga
-            // \App\Domain\Lending\Sagas\LoanDisbursementSaga::class,
+            \App\Domain\Lending\Sagas\LoanDisbursementSaga::class,
         ], 'sagas');
     }
 

@@ -2,6 +2,46 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+---
+
+## 🚀 Session Recovery (READ FIRST)
+
+### When Starting a New Session
+```bash
+# 1. Check current state
+git status && git branch --show-current
+gh pr list --state open
+
+# 2. Read the development guide memory (Serena)
+# Use: mcp__serena__read_memory with "development_continuation_guide"
+
+# 3. Quick health check
+./vendor/bin/pest --parallel --stop-on-failure
+```
+
+### Current Version Status
+| Version | Status | Notes |
+|---------|--------|-------|
+| **v1.1.0** | ✅ Released | Foundation Hardening complete |
+| **v1.2.0** | 🔄 In Progress | Feature Completion - check memory for details |
+
+### Key Services (DON'T RECREATE)
+Before implementing new features, check if these exist:
+
+| Need | Existing Service |
+|------|------------------|
+| Webhook Processing | `WebhookProcessorService` in Custodian domain |
+| Agent Payments | `AgentPaymentIntegrationService` in AgentProtocol domain |
+| Yield Optimization | `YieldOptimizationService` in Treasury domain |
+| Agent Notifications | `AgentNotificationService` in AgentProtocol domain |
+
+### Memory Hierarchy (Serena)
+1. **Read first**: `development_continuation_guide` - Master handoff document
+2. **Reference**: `project_architecture_overview`, `todo_fixme_analysis_v120`
+3. **Historical**: Feature-specific memories (ai-framework-*, etc.)
+
+---
+
 ## CI/CD Troubleshooting Guide
 
 ### Pre-Commit Checks (ALWAYS RUN BEFORE PUSHING)
@@ -20,7 +60,7 @@ XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
 #### 1. PHPStan Errors
 ```bash
 # Fix type errors and undefined methods
-XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G --level=5
+XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
 
 # Common issues:
 # - Cast return types: (int), (string), (float)
@@ -118,7 +158,7 @@ gh run view <RUN_ID> --log-failed
 ./vendor/bin/phpcs --standard=PSR12 app/        # Check compliance
 ./vendor/bin/phpcbf --standard=PSR12 app/       # Auto-fix issues
 
-# 3. PHPStan - Static analysis (Level 5)
+# 3. PHPStan - Static analysis (Level 8)
 XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
 
 # 4. Tests - Run in parallel
@@ -721,14 +761,21 @@ Before marking any task complete:
 
 ## Current Development Focus
 
-The platform has completed implementation through **Phase 8** (Unified Platform Features):
-- Exchange & Trading Engine with order matching
-- P2P Lending Platform with risk management
-- Stablecoin Infrastructure with multi-collateral support
-- Liquidity Pool Management with automated market making
-- Blockchain Wallet Infrastructure with multi-chain support
+**Current Version**: v1.2.0 (Feature Completion)
+**Platform Maturity**: 85-90% complete
 
-See `TODO.md` for current task list and priorities.
+The platform has completed v1.1.0 (Foundation Hardening) and is working on v1.2.0:
+- ✅ PHPStan Level 8 with 83% baseline reduction
+- ✅ 5,073 tests across 499 test files
+- ✅ 22 Behat features for E2E testing
+- ✅ 29 bounded contexts with 15+ domains
+
+**v1.2.0 Focus Areas**:
+- Observability dashboards (Grafana)
+- Enhanced Due Diligence (EDD)
+- Remaining TODO cleanup
+
+See Serena memory `development_continuation_guide` for current session state.
 
 ## Notes
 
@@ -762,7 +809,7 @@ See `TODO.md` for current task list and priorities.
 **Testing & Quality Assurance:**
 - **Testing Framework**: Pest PHP v3.0+ with parallel execution and Laravel plugins
 - **Test Coverage**: Minimum 50% with comprehensive domain/feature/unit test separation
-- **Static Analysis**: PHPStan Level 5+ with Larastan and custom baselines
+- **Static Analysis**: PHPStan Level 8 with Larastan and custom baselines
 - **Code Style**: PHP-CS-Fixer with PSR-12 + custom rules, PHPCS for compliance
 - **Behavioral Testing**: Behat with Chrome extension for E2E scenarios
 - **Performance Testing**: Custom benchmark commands and load testing
@@ -985,7 +1032,7 @@ See `TODO.md` for current task list and priorities.
 
 **Mandatory Quality Checks:**
 1. **Code Style**: PHP-CS-Fixer + PHPCS (PSR-12 compliance)
-2. **Static Analysis**: PHPStan Level 5+ with zero errors
+2. **Static Analysis**: PHPStan Level 8 with zero errors
 3. **Testing**: Pest PHP with minimum 50% coverage
 4. **Security**: No security vulnerabilities in dependencies
 5. **Performance**: No N+1 queries or inefficient database operations

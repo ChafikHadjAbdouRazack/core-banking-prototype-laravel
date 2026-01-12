@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class YieldOptimizationController extends Controller
 {
@@ -130,7 +131,7 @@ class YieldOptimizationController extends Controller
                 'message' => 'Portfolio retrieved successfully',
                 'data'    => $portfolio,
             ]);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             Log::warning('Portfolio not found', [
                 'treasury_id' => $treasuryId,
                 'error'       => $e->getMessage(),
@@ -241,7 +242,7 @@ class YieldOptimizationController extends Controller
                     'treasury_id'       => $treasuryId,
                 ],
             ]);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             return response()->json([
                 'message' => 'Portfolio not found',
                 'data'    => [

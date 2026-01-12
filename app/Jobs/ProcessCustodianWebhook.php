@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Domain\Custodian\Models\CustodianWebhook;
+use App\Domain\Custodian\Services\WebhookProcessorService;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
 class ProcessCustodianWebhook implements ShouldQueue
 {
@@ -31,7 +33,7 @@ class ProcessCustodianWebhook implements ShouldQueue
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(WebhookProcessorService $webhookProcessor): void
     {
         $webhook = CustodianWebhook::where('uuid', $this->webhookUuid)->first();
 
@@ -42,21 +44,28 @@ class ProcessCustodianWebhook implements ShouldQueue
         }
 
         try {
-            // Process the webhook based on custodian and event type
+            // Mark webhook as processing
+            $webhook->markAsProcessing();
+
             Log::info('Processing custodian webhook', [
-                'custodian'  => $webhook->custodian,
+                'custodian'  => $webhook->custodian_name,
                 'event_type' => $webhook->event_type,
                 'webhook_id' => $webhook->id,
             ]);
 
-            // TODO: Implement actual webhook processing logic based on custodian and event type
-            // This is a placeholder implementation
+            // Delegate to the webhook processor service for actual business logic
+            $webhookProcessor->process($webhook);
 
             // Mark webhook as processed
-            $webhook->update([
-                'status'       => 'processed',
-                'processed_at' => now(),
+            $webhook->markAsProcessed();
+        } catch (InvalidArgumentException $e) {
+            // Unknown custodian or event type - mark as ignored
+            Log::warning('Webhook processing skipped', [
+                'webhook_id' => $webhook->id,
+                'reason'     => $e->getMessage(),
             ]);
+
+            $webhook->markAsIgnored($e->getMessage());
         } catch (Exception $e) {
             Log::error('Failed to process webhook', [
                 'webhook_id' => $webhook->id,
@@ -64,10 +73,7 @@ class ProcessCustodianWebhook implements ShouldQueue
             ]);
 
             // Mark webhook as failed
-            $webhook->update([
-                'status'        => 'failed',
-                'error_message' => $e->getMessage(),
-            ]);
+            $webhook->markAsFailed($e->getMessage());
 
             // Re-throw to trigger retry
             throw $e;
