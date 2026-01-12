@@ -25,8 +25,8 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | Merged PR #327 (StablecoinReserve + Paysera integration) |
-| Next Action | v1.2.0 release preparation |
+| Last Action | Released v1.2.0 (Feature Completion) |
+| Next Action | Begin v1.3.0 planning (Platform Modularity) |
 
 ---
 
@@ -35,7 +35,7 @@ git branch --show-current
 | Version | Status | Theme | Key Items |
 |---------|--------|-------|-----------|
 | **v1.1.0** | ✅ RELEASED | Foundation Hardening | PHPStan L8, 5073 tests, 22 Behat |
-| **v1.2.0** | ✅ FEATURE COMPLETE | Feature Completion | All targets met (5 blocked TODOs external) |
+| **v1.2.0** | ✅ RELEASED | Feature Completion | Released Jan 13, 2026 |
 | v1.3.0 | 📅 Q2 2026 | Platform Modularity | Plugin system, multi-tenancy |
 | v2.0.0 | 📅 Q3-Q4 2026 | Major Evolution | GraphQL, microservices prep |
 
