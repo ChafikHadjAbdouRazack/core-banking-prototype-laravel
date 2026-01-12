@@ -25,8 +25,8 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | Completed v1.2.0 feature work, merged PR #326 |
-| Next Action | Review v1.2.0 for release readiness |
+| Last Action | Merged PR #327 (StablecoinReserve + Paysera integration) |
+| Next Action | v1.2.0 release preparation |
 
 ---
 
@@ -50,9 +50,12 @@ git branch --show-current
 - ✅ EnhancedDueDiligenceService (EDD workflow management)
 - ✅ Grafana dashboards (10 domain dashboards in `infrastructure/observability/grafana/`)
 - ✅ Prometheus alerting rules (comprehensive critical/warning rules)
+- ✅ StablecoinReserve model with projector (PR #327)
+- ✅ Paysera deposit integration with demo mode (PR #327)
 
 ### v1.2.0 Remaining Items
-- 🚫 5 Blocked TODOs (see Technical Debt section - external dependencies)
+- 🚫 1 Blocked TODO (LiquidityRetryPolicy - laravel-workflow package)
+- 📉 1 Low Priority (BasketService query refactor - deferred to v1.3.0)
 
 ---
 
@@ -113,17 +116,15 @@ if (! $model instanceof Model) { ... }
 | File | Issue | Blocked On |
 |------|-------|------------|
 | `LiquidityRetryPolicy.php` | RetryOptions not available | laravel-workflow package |
-| `StablecoinAggregateRepository.php` | Reserves implementation | StablecoinReserve model |
 
-### Intentional Stubs
-| File | Reason |
-|------|--------|
-| `PayseraDepositController.php` | Future Paysera integration |
-
-### Low Priority
+### Low Priority (Deferred to v1.3.0)
 | File | Issue |
 |------|-------|
 | `BasketService.php` | Query service refactor |
+
+### Resolved in v1.2.0 (PR #327)
+- ✅ `StablecoinAggregateRepository.php` - StablecoinReserve model created
+- ✅ `PayseraDepositController.php` - Full Paysera integration with demo mode
 
 ---
 
