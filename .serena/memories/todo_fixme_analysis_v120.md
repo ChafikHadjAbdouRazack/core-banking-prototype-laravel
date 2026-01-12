@@ -7,10 +7,11 @@
 
 | Category | Count | Status |
 |----------|-------|--------|
-| Resolved in v1.2.0 | 8 | ✅ Complete |
-| Blocked | 2 | 🚫 Cannot fix |
-| Intentional Stubs | 1 | ⏸️ By design |
+| Resolved in v1.2.0 | 10 | ✅ Complete |
+| Blocked | 1 | 🚫 Cannot fix |
 | Low Priority | 1 | 📉 Deferred |
+
+**Final PR #327 merged January 12, 2026**
 
 ## Resolved in v1.2.0
 
@@ -25,27 +26,14 @@
 6. **ProcessCustodianWebhook** - Wired to WebhookProcessorService
 7. **DomainServiceProvider** - Created LoanDisbursementSaga
 
-## Remaining (4 Total)
+## Remaining (2 Total)
 
-### Blocked (2)
+### Blocked (1)
 ```
 app/Domain/Exchange/Workflows/Policies/LiquidityRetryPolicy.php:8
   - TODO: Implement RetryOptions when available in laravel-workflow package
   - Reason: Package doesn't expose RetryOptions yet
   - Resolution: Wait for laravel-workflow update
-
-app/Domain/Stablecoin/Repositories/StablecoinAggregateRepository.php:155
-  - TODO: Implement reserves when StablecoinReserve model is created
-  - Reason: StablecoinReserve model doesn't exist
-  - Resolution: Create model first (v1.3.0 candidate)
-```
-
-### Intentional Stub (1)
-```
-app/Http/Controllers/PayseraDepositController.php:11,17
-  - TODO: Implement Paysera integration
-  - Reason: Placeholder for future Paysera banking connector
-  - Resolution: Implement when Paysera integration is prioritized
 ```
 
 ### Low Priority (1)
@@ -54,6 +42,20 @@ app/Domain/Basket/Services/BasketService.php:109
   - TODO: Consider moving this to a dedicated query service
   - Reason: Refactoring suggestion, not blocking
   - Resolution: Address during v1.3.0 modularity work
+```
+
+## Resolved in v1.2.0 (Session 3 - PR #327)
+```
+app/Domain/Stablecoin/Repositories/StablecoinAggregateRepository.php:155
+  - ✅ Created StablecoinReserve and StablecoinReserveAuditLog models
+  - ✅ Implemented StablecoinReserveProjector for event projection
+  - ✅ Updated getReserveStatistics() to use real data
+
+app/Http/Controllers/PayseraDepositController.php:11,17
+  - ✅ Created PayseraDepositServiceInterface contract
+  - ✅ Implemented PayseraDepositService for production
+  - ✅ Implemented DemoPayseraDepositService for demo mode
+  - ✅ Updated controller with proper DI and validation
 ```
 
 ## Search Command
