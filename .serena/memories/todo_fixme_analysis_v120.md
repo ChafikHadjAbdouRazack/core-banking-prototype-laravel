@@ -1,6 +1,6 @@
 # TODO/FIXME Analysis v1.2.0
 
-> **Status**: Updated January 11, 2026
+> **Status**: Updated January 13, 2026 (v1.2.0 RELEASED)
 > **Previous Version**: v1.1.0 analysis is now obsolete
 
 ## Summary

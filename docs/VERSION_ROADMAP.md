@@ -683,6 +683,7 @@ main ─────────●─────────●─────
 
 ---
 
-*Document Version: 1.0*
+*Document Version: 1.1*
 *Created: January 11, 2026*
-*Next Review: After v1.2.0 Release*
+*Updated: January 13, 2026 (v1.2.0 Released)*
+*Next Review: After v1.3.0 Release*
