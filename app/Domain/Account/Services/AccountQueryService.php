@@ -272,7 +272,7 @@ class AccountQueryService implements AccountQueryInterface
             'reference'      => $tx->reference ?? '',
             'metadata'       => $tx->metadata ?? [],
             // @phpstan-ignore nullsafe.neverNull (created_at can be null for unsaved models)
-            'created_at'     => $tx->created_at?->toIso8601String() ?? '',
+            'created_at' => $tx->created_at?->toIso8601String() ?? '',
         ];
     }
 

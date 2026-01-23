@@ -1,6 +1,7 @@
 <?php
 
 return [
+    App\Infrastructure\Domain\DomainServiceProvider::class,
     App\Providers\AccountServiceProvider::class,
     App\Providers\AgentProtocolServiceProvider::class,
     App\Providers\AIInfrastructureServiceProvider::class,

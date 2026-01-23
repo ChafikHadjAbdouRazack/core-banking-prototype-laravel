@@ -1,0 +1,32 @@
+{
+    "$schema": "https://finaegis.io/schemas/module.json",
+    "name": "finaegis/financial-institution",
+    "version": "1.3.0",
+    "description": "Financial institution management and regulatory entity tracking",
+    "type": "optional",
+    "dependencies": {
+        "required": {
+            "finaegis/shared": "^1.0",
+            "finaegis/compliance": "^1.0"
+        },
+        "optional": {
+            "finaegis/banking": "^1.0"
+        }
+    },
+    "provides": {
+        "interfaces": [],
+        "events": [
+            "InstitutionRegistered",
+            "InstitutionVerified",
+            "InstitutionSuspended"
+        ],
+        "commands": [
+            "RegisterInstitutionCommand",
+            "VerifyInstitutionCommand"
+        ]
+    },
+    "paths": {
+        "migrations": "Database/Migrations",
+        "tests": "Tests"
+    }
+}
