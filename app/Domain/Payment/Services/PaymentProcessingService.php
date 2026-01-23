@@ -13,18 +13,18 @@ use App\Domain\Payment\Exceptions\PaymentProcessingException;
 use App\Domain\Payment\Exceptions\RefundNotAllowedException;
 use App\Domain\Shared\Contracts\AccountOperationsInterface;
 use App\Domain\Shared\Contracts\PaymentProcessingInterface;
+use App\Domain\Shared\Logging\AuditLogger;
+use App\Domain\Shared\Validation\FinancialInputValidator;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
-/**
- * Implementation of PaymentProcessingInterface for domain decoupling.
- *
- * This service bridges the shared interface with the Payment domain
- * implementation, enabling other domains to depend on the abstraction.
- */
 class PaymentProcessingService implements PaymentProcessingInterface
 {
+    use FinancialInputValidator;
+    use AuditLogger;
+
     private const PAYMENT_PREFIX = 'payment:';
 
     private const PAYMENT_TTL = 86400 * 30; // 30 days
@@ -54,7 +54,20 @@ class PaymentProcessingService implements PaymentProcessingInterface
         string $reference = '',
         array $metadata = []
     ): array {
-        $this->validatePaymentMethod($paymentMethod);
+        // Input validation
+        $this->validateUuid($accountId, 'account ID');
+        $this->validatePositiveIntegerAmount($amount);
+        $this->validateCurrencyCode($currency);
+        $this->validatePaymentMethodInput($paymentMethod);
+        $this->validateReference($reference);
+        $this->validateMetadata($metadata);
+
+        $this->auditOperationStart('payment_deposit', [
+            'account_id'     => $accountId,
+            'amount'         => $amount,
+            'currency'       => $currency,
+            'payment_method' => $paymentMethod,
+        ]);
 
         $paymentId = (string) Str::uuid();
 
@@ -94,11 +107,22 @@ class PaymentProcessingService implements PaymentProcessingInterface
                 'created_at'         => now()->toIso8601String(),
             ];
 
-            // Store payment record
-            Cache::put(self::PAYMENT_PREFIX . $paymentId, $payment, self::PAYMENT_TTL);
+            // Store payment record with encryption
+            Cache::put(self::PAYMENT_PREFIX . $paymentId, encrypt($payment), self::PAYMENT_TTL);
+
+            $this->auditOperationSuccess('payment_deposit', [
+                'payment_id' => $paymentId,
+                'account_id' => $accountId,
+                'amount'     => $amount,
+                'currency'   => $currency,
+            ]);
 
             return $payment;
         } catch (Exception $e) {
+            $this->auditOperationFailure('payment_deposit', $e->getMessage(), [
+                'account_id'     => $accountId,
+                'payment_method' => $paymentMethod,
+            ]);
             throw new PaymentProcessingException($paymentMethod, $paymentId, $e->getMessage());
         }
     }
@@ -115,11 +139,29 @@ class PaymentProcessingService implements PaymentProcessingInterface
         string $reference = '',
         array $metadata = []
     ): array {
-        $this->validatePaymentMethod($paymentMethod);
+        // Input validation
+        $this->validateUuid($accountId, 'account ID');
+        $this->validatePositiveIntegerAmount($amount);
+        $this->validateCurrencyCode($currency);
+        $this->validatePaymentMethodInput($paymentMethod);
+        $this->validateReference($reference);
+        $this->validateMetadata($metadata);
+
+        $this->auditOperationStart('payment_withdrawal', [
+            'account_id'     => $accountId,
+            'amount'         => $amount,
+            'currency'       => $currency,
+            'payment_method' => $paymentMethod,
+        ]);
 
         // Check sufficient balance
         $balance = (int) $this->accountOperations->getBalance($accountId, $currency);
         if ($balance < $amount) {
+            $this->auditOperationFailure('payment_withdrawal', 'Insufficient funds', [
+                'account_id' => $accountId,
+                'required'   => $amount,
+                'available'  => $balance,
+            ]);
             throw new InsufficientFundsException($accountId, $amount, $balance, $currency);
         }
 
@@ -157,10 +199,21 @@ class PaymentProcessingService implements PaymentProcessingInterface
                 'created_at'         => now()->toIso8601String(),
             ];
 
-            Cache::put(self::PAYMENT_PREFIX . $paymentId, $payment, self::PAYMENT_TTL);
+            Cache::put(self::PAYMENT_PREFIX . $paymentId, encrypt($payment), self::PAYMENT_TTL);
+
+            $this->auditOperationSuccess('payment_withdrawal', [
+                'payment_id' => $paymentId,
+                'account_id' => $accountId,
+                'amount'     => $amount,
+                'currency'   => $currency,
+            ]);
 
             return $payment;
         } catch (Exception $e) {
+            $this->auditOperationFailure('payment_withdrawal', $e->getMessage(), [
+                'account_id'     => $accountId,
+                'payment_method' => $paymentMethod,
+            ]);
             throw new PaymentProcessingException($paymentMethod, $paymentId, $e->getMessage());
         }
     }
@@ -170,11 +223,15 @@ class PaymentProcessingService implements PaymentProcessingInterface
      */
     public function getPaymentStatus(string $paymentId): ?array
     {
-        $payment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+        $this->validateUuid($paymentId, 'payment ID');
 
-        if (! $payment) {
+        $encryptedPayment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+
+        if (! $encryptedPayment) {
             return null;
         }
+
+        $payment = decrypt($encryptedPayment);
 
         return [
             'payment_id'         => $payment['payment_id'],
@@ -201,17 +258,44 @@ class PaymentProcessingService implements PaymentProcessingInterface
         string $reason = '',
         array $metadata = []
     ): array {
-        $payment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+        $this->validateUuid($paymentId, 'payment ID');
 
-        if (! $payment) {
+        if ($amount !== null) {
+            $this->validatePositiveIntegerAmount($amount);
+        }
+
+        $this->validateReference($reason, 'reason');
+        $this->validateMetadata($metadata);
+
+        $this->auditOperationStart('payment_refund', [
+            'payment_id' => $paymentId,
+            'amount'     => $amount,
+        ]);
+
+        $encryptedPayment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+
+        if (! $encryptedPayment) {
+            $this->auditOperationFailure('payment_refund', 'Payment not found', [
+                'payment_id' => $paymentId,
+            ]);
             throw new PaymentNotFoundException($paymentId);
         }
 
+        $payment = decrypt($encryptedPayment);
+
         if ($payment['type'] !== 'deposit') {
+            $this->auditOperationFailure('payment_refund', 'Only deposits can be refunded', [
+                'payment_id'   => $paymentId,
+                'payment_type' => $payment['type'],
+            ]);
             throw new RefundNotAllowedException($paymentId, 'Only deposits can be refunded');
         }
 
         if ($payment['status'] !== 'completed') {
+            $this->auditOperationFailure('payment_refund', 'Payment not completed', [
+                'payment_id'     => $paymentId,
+                'payment_status' => $payment['status'],
+            ]);
             throw new RefundNotAllowedException($paymentId, 'Payment must be completed to refund');
         }
 
@@ -230,7 +314,13 @@ class PaymentProcessingService implements PaymentProcessingInterface
         // Update original payment
         $payment['status'] = $refundAmount >= $payment['amount'] ? 'refunded' : 'partially_refunded';
         $payment['updated_at'] = now()->toIso8601String();
-        Cache::put(self::PAYMENT_PREFIX . $paymentId, $payment, self::PAYMENT_TTL);
+        Cache::put(self::PAYMENT_PREFIX . $paymentId, encrypt($payment), self::PAYMENT_TTL);
+
+        $this->auditOperationSuccess('payment_refund', [
+            'refund_id'     => $refundId,
+            'payment_id'    => $paymentId,
+            'refund_amount' => $refundAmount,
+        ]);
 
         return $refund;
     }
@@ -248,12 +338,21 @@ class PaymentProcessingService implements PaymentProcessingInterface
         $errors = [];
         $warnings = [];
 
+        // Validate payment method
         if (! in_array($paymentMethod, self::VALID_PAYMENT_METHODS, true)) {
             $errors[] = "Invalid payment method: {$paymentMethod}";
         }
 
+        // Validate amount
         if ($amount <= 0) {
             $errors[] = 'Amount must be greater than 0';
+        }
+
+        // Validate currency
+        try {
+            $this->validateCurrencyCode($currency);
+        } catch (InvalidArgumentException $e) {
+            $errors[] = $e->getMessage();
         }
 
         $limits = $this->getPaymentLimits($paymentMethod, $type);
@@ -279,6 +378,8 @@ class PaymentProcessingService implements PaymentProcessingInterface
      */
     public function getAvailablePaymentMethods(string $accountId, string $type = 'all'): array
     {
+        $this->validateUuid($accountId, 'account ID');
+
         $methods = [
             [
                 'id'         => 'stripe',
@@ -332,6 +433,9 @@ class PaymentProcessingService implements PaymentProcessingInterface
         string $paymentMethod,
         string $type
     ): array {
+        $this->validatePositiveIntegerAmount($amount);
+        $this->validateCurrencyCode($currency);
+
         $fees = match ($paymentMethod) {
             'stripe'        => ['fixed' => 30, 'percentage' => 2.9],
             'open_banking'  => ['fixed' => 0, 'percentage' => 0.1],
@@ -359,11 +463,15 @@ class PaymentProcessingService implements PaymentProcessingInterface
      */
     public function canCancelPayment(string $paymentId): bool
     {
-        $payment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+        $this->validateUuid($paymentId, 'payment ID');
 
-        if (! $payment) {
+        $encryptedPayment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+
+        if (! $encryptedPayment) {
             return false;
         }
+
+        $payment = decrypt($encryptedPayment);
 
         return in_array($payment['status'], ['pending', 'processing'], true);
     }
@@ -373,13 +481,27 @@ class PaymentProcessingService implements PaymentProcessingInterface
      */
     public function cancelPayment(string $paymentId, string $reason = ''): bool
     {
-        $payment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+        $this->validateUuid($paymentId, 'payment ID');
+        $this->validateReference($reason, 'reason');
 
-        if (! $payment) {
+        $this->auditOperationStart('payment_cancel', ['payment_id' => $paymentId]);
+
+        $encryptedPayment = Cache::get(self::PAYMENT_PREFIX . $paymentId);
+
+        if (! $encryptedPayment) {
+            $this->auditOperationFailure('payment_cancel', 'Payment not found', [
+                'payment_id' => $paymentId,
+            ]);
             throw new PaymentNotFoundException($paymentId);
         }
 
+        $payment = decrypt($encryptedPayment);
+
         if (! $this->canCancelPayment($paymentId)) {
+            $this->auditOperationFailure('payment_cancel', 'Cannot cancel payment', [
+                'payment_id'     => $paymentId,
+                'payment_status' => $payment['status'],
+            ]);
             throw new PaymentCancellationException(
                 $paymentId,
                 "Payment in status '{$payment['status']}' cannot be cancelled"
@@ -390,7 +512,9 @@ class PaymentProcessingService implements PaymentProcessingInterface
         $payment['updated_at'] = now()->toIso8601String();
         $payment['failure_reason'] = $reason ?: 'Cancelled by user';
 
-        Cache::put(self::PAYMENT_PREFIX . $paymentId, $payment, self::PAYMENT_TTL);
+        Cache::put(self::PAYMENT_PREFIX . $paymentId, encrypt($payment), self::PAYMENT_TTL);
+
+        $this->auditOperationSuccess('payment_cancel', ['payment_id' => $paymentId]);
 
         return true;
     }
@@ -404,6 +528,12 @@ class PaymentProcessingService implements PaymentProcessingInterface
         int $limit = 50,
         int $offset = 0
     ): array {
+        $this->validateUuid($accountId, 'account ID');
+
+        // Validate and sanitize pagination
+        $limit = max(1, min(100, $limit)); // Limit between 1-100
+        $offset = max(0, $offset);
+
         // Note: In production, this would query a database
         // For now, return empty as payments are stored in cache
         return [
@@ -416,7 +546,7 @@ class PaymentProcessingService implements PaymentProcessingInterface
     /**
      * Validate payment method.
      */
-    private function validatePaymentMethod(string $paymentMethod): void
+    private function validatePaymentMethodInput(string $paymentMethod): void
     {
         if (! in_array($paymentMethod, self::VALID_PAYMENT_METHODS, true)) {
             throw new InvalidPaymentMethodException($paymentMethod);

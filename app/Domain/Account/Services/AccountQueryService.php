@@ -8,20 +8,19 @@ use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\AccountBalance;
 use App\Domain\Account\Models\Transaction;
 use App\Domain\Shared\Contracts\AccountQueryInterface;
+use App\Domain\Shared\Validation\FinancialInputValidator;
 
-/**
- * Implementation of AccountQueryInterface for read-only account queries.
- *
- * This service provides CQRS read-side operations, enabling other domains
- * to query account data without tight coupling to the Account domain.
- */
 class AccountQueryService implements AccountQueryInterface
 {
+    use FinancialInputValidator;
+
     /**
      * {@inheritDoc}
      */
     public function getAccountDetails(string $accountId): ?array
     {
+        $this->validateUuid($accountId, 'account ID');
+
         $account = Account::where('uuid', $accountId)->first();
 
         if (! $account) {
@@ -46,6 +45,9 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function getBalance(string $accountId, string $assetCode): string
     {
+        $this->validateUuid($accountId, 'account ID');
+        $this->validateAssetCode($assetCode);
+
         $account = Account::where('uuid', $accountId)->first();
 
         if (! $account) {
@@ -60,6 +62,8 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function getAllBalances(string $accountId): array
     {
+        $this->validateUuid($accountId, 'account ID');
+
         $account = Account::where('uuid', $accountId)->first();
 
         if (! $account) {
@@ -102,6 +106,9 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function getLockedBalance(string $accountId, string $assetCode): string
     {
+        $this->validateUuid($accountId, 'account ID');
+        $this->validateAssetCode($assetCode);
+
         $account = Account::where('uuid', $accountId)->first();
 
         if (! $account) {
@@ -120,6 +127,10 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function hasSufficientBalance(string $accountId, string $assetCode, string $amount): bool
     {
+        $this->validateUuid($accountId, 'account ID');
+        $this->validateAssetCode($assetCode);
+        $this->validateNonNegativeAmount($amount);
+
         $balance = $this->getBalance($accountId, $assetCode);
 
         /** @var numeric-string $a */
@@ -135,6 +146,8 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function accountExists(string $accountId): bool
     {
+        $this->validateUuid($accountId, 'account ID');
+
         return Account::where('uuid', $accountId)->exists();
     }
 
@@ -143,6 +156,8 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function isAccountActive(string $accountId): bool
     {
+        $this->validateUuid($accountId, 'account ID');
+
         return Account::where('uuid', $accountId)
             ->where('status', 'active')
             ->exists();
@@ -185,9 +200,16 @@ class AccountQueryService implements AccountQueryInterface
         int $limit = 50,
         int $offset = 0
     ): array {
+        $this->validateUuid($accountId, 'account ID');
+
+        // Validate and sanitize pagination
+        $limit = max(1, min(100, $limit)); // Limit between 1-100
+        $offset = max(0, $offset);
+
         $query = Transaction::where('account_uuid', $accountId);
 
         if (isset($filters['asset_code'])) {
+            $this->validateAssetCode($filters['asset_code']);
             $query->where('asset_code', $filters['asset_code']);
         }
 
@@ -249,6 +271,7 @@ class AccountQueryService implements AccountQueryInterface
             'balance_after'  => (string) ($tx->balance_after ?? 0),
             'reference'      => $tx->reference ?? '',
             'metadata'       => $tx->metadata ?? [],
+            // @phpstan-ignore nullsafe.neverNull (created_at can be null for unsaved models)
             'created_at'     => $tx->created_at?->toIso8601String() ?? '',
         ];
     }
@@ -258,6 +281,12 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function getActiveLocks(string $accountId, ?string $assetCode = null): array
     {
+        $this->validateUuid($accountId, 'account ID');
+
+        if ($assetCode !== null) {
+            $this->validateAssetCode($assetCode);
+        }
+
         // Note: In this implementation, locks are stored in cache
         // A production implementation would query a database table
         return [];
@@ -268,6 +297,8 @@ class AccountQueryService implements AccountQueryInterface
      */
     public function getAccountSummary(string $accountId): ?array
     {
+        $this->validateUuid($accountId, 'account ID');
+
         $account = Account::where('uuid', $accountId)->first();
 
         if (! $account) {
@@ -301,6 +332,10 @@ class AccountQueryService implements AccountQueryInterface
         int $limit = 50,
         int $offset = 0
     ): array {
+        // Validate and sanitize pagination
+        $limit = max(1, min(100, $limit)); // Limit between 1-100
+        $offset = max(0, $offset);
+
         $query = Account::query();
 
         if (isset($criteria['owner_id'])) {
@@ -308,10 +343,12 @@ class AccountQueryService implements AccountQueryInterface
         }
 
         if (isset($criteria['type'])) {
+            // @phpstan-ignore argument.type (type column exists in database)
             $query->where('type', $criteria['type']);
         }
 
         if (isset($criteria['status'])) {
+            // @phpstan-ignore argument.type (status column exists in database)
             $query->where('status', $criteria['status']);
         }
 
