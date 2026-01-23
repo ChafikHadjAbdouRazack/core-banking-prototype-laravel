@@ -102,6 +102,76 @@ interface GovernanceVotingInterface
 }
 ```
 
+### WalletOperationsInterface (v1.3.0)
+
+For domains that need wallet operations (deposits, withdrawals, fund locking).
+
+**Used by**: Exchange, Stablecoin, Basket, Custodian, AgentProtocol
+
+```php
+interface WalletOperationsInterface
+{
+    public function deposit(string $walletId, string $assetCode, string $amount, string $reference = '', array $metadata = []): string;
+    public function withdraw(string $walletId, string $assetCode, string $amount, string $reference = '', array $metadata = []): string;
+    public function getBalance(string $walletId, string $assetCode): string;
+    public function lockFunds(string $walletId, string $assetCode, string $amount, string $reason, array $metadata = []): string;
+    public function unlockFunds(string $lockId): bool;
+    public function transfer(string $fromWalletId, string $toWalletId, string $assetCode, string $amount, string $reference = '', array $metadata = []): string;
+}
+```
+
+### AssetTransferInterface (v1.3.0)
+
+For domains that need asset transfer operations (cross-account, cross-asset conversions).
+
+**Used by**: Exchange, Stablecoin, AI, AgentProtocol, Treasury
+
+```php
+interface AssetTransferInterface
+{
+    public function transfer(string $fromAccountId, string $toAccountId, string $assetCode, string $amount, string $reference = '', array $metadata = []): string;
+    public function convertAndTransfer(string $fromAccountId, string $toAccountId, string $fromAssetCode, string $toAssetCode, string $fromAmount, ?string $exchangeRate = null, string $reference = '', array $metadata = []): array;
+    public function getAssetDetails(string $assetCode): ?array;
+    public function getExchangeRate(string $fromAssetCode, string $toAssetCode): ?string;
+    public function isConversionSupported(string $fromAssetCode, string $toAssetCode): bool;
+}
+```
+
+### PaymentProcessingInterface (v1.3.0)
+
+For domains that need payment processing (deposits, withdrawals, refunds).
+
+**Used by**: AgentProtocol, Exchange, Stablecoin, Banking
+
+```php
+interface PaymentProcessingInterface
+{
+    public function processDeposit(string $accountId, int $amount, string $currency, string $paymentMethod, string $reference = '', array $metadata = []): array;
+    public function processWithdrawal(string $accountId, int $amount, string $currency, string $paymentMethod, array $destination, string $reference = '', array $metadata = []): array;
+    public function getPaymentStatus(string $paymentId): ?array;
+    public function refundPayment(string $paymentId, ?int $amount = null, string $reason = '', array $metadata = []): array;
+    public function validatePaymentRequest(string $type, int $amount, string $currency, string $paymentMethod, array $context = []): array;
+}
+```
+
+### AccountQueryInterface (v1.3.0)
+
+For read-only account queries (balances, transaction history). Separates reads from writes for better caching and CQRS support.
+
+**Used by**: Exchange, Lending, Treasury, Basket, AI, AgentProtocol
+
+```php
+interface AccountQueryInterface
+{
+    public function getAccountDetails(string $accountId): ?array;
+    public function getBalance(string $accountId, string $assetCode): string;
+    public function getAllBalances(string $accountId): array;
+    public function hasSufficientBalance(string $accountId, string $assetCode, string $amount): bool;
+    public function accountExists(string $accountId): bool;
+    public function getTransactionHistory(string $accountId, array $filters = [], int $limit = 50, int $offset = 0): array;
+}
+```
+
 ## Binding Interfaces
 
 Interfaces are bound to implementations in service providers:
