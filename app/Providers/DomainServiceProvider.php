@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Domain\Account\Services\AccountOperationsAdapter;
+use App\Domain\Account\Services\AccountQueryService;
+use App\Domain\Asset\Services\AssetTransferService;
 use App\Domain\Compliance\Projectors\ComplianceAlertProjector;
 // Repository Interfaces and Implementations
 use App\Domain\Compliance\Projectors\TransactionMonitoringProjector;
@@ -15,15 +17,21 @@ use App\Domain\Exchange\Contracts\LiquidityPoolRepositoryInterface;
 use App\Domain\Exchange\Contracts\OrderRepositoryInterface;
 use App\Domain\Exchange\Repositories\LiquidityPoolRepository;
 use App\Domain\Exchange\Repositories\OrderRepository;
-// CQRS Infrastructure
+use App\Domain\Payment\Services\PaymentProcessingService;
 use App\Domain\Shared\Contracts\AccountOperationsInterface;
-use App\Domain\Shared\CQRS\CommandBus;
+use App\Domain\Shared\Contracts\AccountQueryInterface;
+// CQRS Infrastructure
+use App\Domain\Shared\Contracts\AssetTransferInterface;
+use App\Domain\Shared\Contracts\PaymentProcessingInterface;
 // Compliance domain repositories (Spatie Event Sourcing)
+use App\Domain\Shared\Contracts\WalletOperationsInterface;
+use App\Domain\Shared\CQRS\CommandBus;
+// Compliance projectors
 use App\Domain\Shared\CQRS\QueryBus;
 use App\Domain\Shared\Events\DomainEventBus;
-// Compliance projectors
 use App\Domain\Stablecoin\Contracts\StablecoinAggregateRepositoryInterface;
 use App\Domain\Stablecoin\Repositories\StablecoinAggregateRepository;
+use App\Domain\Wallet\Services\WalletOperationsService;
 use App\Infrastructure\CQRS\LaravelCommandBus;
 use App\Infrastructure\CQRS\LaravelQueryBus;
 // Domain Event Bus
@@ -62,6 +70,18 @@ class DomainServiceProvider extends ServiceProvider
     {
         // Account operations - used by 17+ domains
         $this->app->bind(AccountOperationsInterface::class, AccountOperationsAdapter::class);
+
+        // Wallet operations - used by Exchange, Stablecoin, Basket, Custodian, AgentProtocol
+        $this->app->bind(WalletOperationsInterface::class, WalletOperationsService::class);
+
+        // Asset transfer operations - used by Exchange, Stablecoin, AI, AgentProtocol, Treasury
+        $this->app->bind(AssetTransferInterface::class, AssetTransferService::class);
+
+        // Payment processing - used by AgentProtocol, Exchange, Stablecoin, Banking
+        $this->app->bind(PaymentProcessingInterface::class, PaymentProcessingService::class);
+
+        // Account queries (read-only) - used by Exchange, Lending, Treasury, Basket, AI
+        $this->app->bind(AccountQueryInterface::class, AccountQueryService::class);
 
         // Additional contracts can be bound here as implementations are created:
         // $this->app->bind(ComplianceCheckInterface::class, ComplianceCheckAdapter::class);
