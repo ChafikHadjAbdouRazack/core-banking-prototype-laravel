@@ -1,7 +1,7 @@
 # FinAegis Core Banking Platform
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
@@ -105,6 +105,34 @@ php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
 ```
 
 **Requirements**: PHP 8.4+, MySQL 8.0+/PostgreSQL 13+, Redis 6.0+, Node.js 18+
+
+### Modular Installation (v1.3.0+)
+
+Install only the domains you need:
+
+```bash
+# List available domains
+php artisan domain:list
+
+# Install specific domains
+php artisan domain:install exchange
+php artisan domain:install lending
+
+# Check dependencies
+php artisan domain:dependencies exchange
+
+# Verify domain health
+php artisan domain:verify
+```
+
+| Domain Type | Examples | Installation |
+|-------------|----------|--------------|
+| **Core** (always installed) | `account`, `user`, `compliance`, `shared` | Automatic |
+| **Financial** | `exchange`, `lending`, `treasury`, `wallet` | `domain:install` |
+| **AI/Agent** | `ai`, `agent-protocol`, `governance` | `domain:install` |
+| **Infrastructure** | `monitoring`, `fraud`, `batch` | `domain:install` |
+
+See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for details.
 
 ---
 

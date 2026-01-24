@@ -9,6 +9,106 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.3.0] - 2026-01-25
+
+### 🔧 Platform Modularity Release
+
+Transform FinAegis from a monolithic domain structure to a **modular architecture** where domains can be installed independently. This enables faster onboarding, customized deployments, and better maintainability.
+
+### Highlights
+
+| Category | Deliverables |
+|----------|--------------|
+| Shared Interfaces | 4 new domain contracts for loose coupling |
+| Security | Input validation and audit logging across shared services |
+| Module Manifests | 29 domain manifests with dependency declarations |
+| Domain Commands | 5 Artisan commands for domain management |
+| Infrastructure | DependencyResolver, DomainManager services |
+
+### Added
+
+#### Phase 1: Shared Domain Interfaces
+- **WalletOperationsInterface** - Wallet funds management contract
+  - `depositFunds()`, `withdrawFunds()`, `getBalance()`
+  - `lockFunds()`, `unlockFunds()`, `transferBetweenWallets()`
+- **AssetTransferInterface** - Cross-domain asset operations
+  - `transfer()`, `getAssetDetails()`, `validateTransfer()`
+  - `convertAsset()`, `getTransferStatus()`
+- **PaymentProcessingInterface** - Payment gateway abstraction
+  - `processDeposit()`, `processWithdrawal()`, `getPaymentStatus()`
+  - `refundPayment()`, `validatePaymentRequest()`
+- **AccountQueryInterface** - Read-only account operations
+  - `getAccountDetails()`, `getBalance()`, `getTransactionHistory()`
+  - `accountExists()`, `getAccountsByOwner()`
+
+#### Phase 2: Security Implementation
+- **FinancialInputValidator** trait - Consistent input validation
+  - UUID validation for all identifiers
+  - Amount validation (positive, precision limits)
+  - Currency/asset code validation (ISO 4217)
+  - Reference and metadata sanitization
+- **AuditLogger** trait - Financial operation audit trail
+  - Automatic sensitive data redaction
+  - Request ID tracking for correlation
+  - Operation timing and outcome logging
+- **Encrypted Cache Storage** - Secure wallet locks and payment records
+- **Reduced Lock TTL** - From 24h to 1h for security
+
+#### Phase 3: Module Manifest System
+- **ModuleManifest** value object - Parses `module.json` files
+- **DependencyResolver** service - Builds dependency trees, detects cycles
+- **DomainManager** service - Central domain operations management
+- **29 module.json files** - One per domain with:
+  - Version and description metadata
+  - Required and optional dependencies
+  - Provided interfaces, events, and commands
+  - Path configuration (routes, migrations, config)
+
+#### Phase 4: Domain Installation Commands
+- `php artisan domain:list` - List all domains with status and dependencies
+  - Filter by type (`--type=core`) or status (`--status=installed`)
+  - JSON output support (`--json`)
+- `php artisan domain:install {domain}` - Install a domain
+  - Automatic dependency resolution
+  - Migration execution
+  - Config publishing
+- `php artisan domain:remove {domain}` - Safe domain removal
+  - Dependent checking (prevents breaking changes)
+  - Migration rollback
+  - Force option for overrides
+- `php artisan domain:dependencies {domain}` - Show dependency tree
+  - Visual tree rendering
+  - Flat list option (`--flat`)
+  - Unsatisfied dependency warnings
+- `php artisan domain:verify {domain?}` - Verify domain health
+  - Manifest validation
+  - Dependency satisfaction
+  - Interface implementation checks
+
+#### Domain Classification
+- **Core Domains** (always required): `shared`, `account`, `user`, `compliance`
+- **Optional Financial**: `exchange`, `lending`, `treasury`, `wallet`, `payment`, `banking`, `asset`, `stablecoin`
+- **Optional AI/Agent**: `ai`, `agent-protocol`, `governance`
+- **Optional Infrastructure**: `monitoring`, `performance`, `fraud`, `batch`, `webhook`
+
+### Changed
+- Service locator anti-pattern removed from WalletOperationsService
+- Value objects (AccountUuid, Money) used consistently in AssetTransferService
+
+### Security
+- Input validation added to all shared service implementations
+- Audit logging for compliance and security monitoring
+- Encrypted cache storage for sensitive operation data
+- 365-day retention for audit and security logs
+
+### Developer Experience
+- Domain discovery via `domain:list` command
+- Dependency visualization via `domain:dependencies`
+- Health verification via `domain:verify`
+- JSON output for CI/CD integration
+
+---
+
 ## [1.2.0] - 2026-01-13
 
 ### 🚀 Feature Completion Release
