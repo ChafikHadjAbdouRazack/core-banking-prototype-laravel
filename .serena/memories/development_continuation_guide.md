@@ -25,8 +25,8 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | v1.4.0: Added domain:create command, Fraud and Wallet tests |
-| Next Action | Add tests for Regulatory, Stablecoin domains |
+| Last Action | v1.4.0: Added tests for Fraud, Wallet, Regulatory, Stablecoin (92 total) |
+| Next Action | Add tests for AI, Batch domains; security hardening |
 | Session Date | January 25, 2026 |
 
 ### v1.4.0 Progress
@@ -36,8 +36,11 @@ git branch --show-current
 | domain:create command | ✅ Complete |
 | Fraud domain tests (18) | ✅ Complete |
 | Wallet domain tests (37) | ✅ Complete |
-| Regulatory domain tests | 🔲 Pending |
-| Stablecoin domain tests | 🔲 Pending |
+| Regulatory domain tests (13) | ✅ Complete |
+| Stablecoin domain tests (24) | ✅ Complete |
+| AI domain tests | 🔲 Pending |
+| Batch domain tests | 🔲 Pending |
+| Security hardening | 🔲 Pending |
 
 ---
 
