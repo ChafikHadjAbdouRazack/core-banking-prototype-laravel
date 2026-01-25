@@ -95,6 +95,15 @@ Comprehensive test coverage for previously untested domain services and value ob
 - Test isolation issues with Eloquent model mocking
 - Type safety for financial calculations in value objects
 
+### Security
+
+- **Rate limiting threshold** - Reduced auth attempts from 5 to 3 (brute force protection)
+- **Session limit** - Reduced max concurrent sessions from 5 to 3 (session hijacking protection)
+- **Token expiration enforcement** - All auth controllers now use `createTokenWithScopes()` for proper token expiration
+  - Fixed: LoginController, PasswordController, SocialAuthController, TwoFactorAuthController
+- **API scope bypass fix** - Removed backward compatibility bypass in `CheckApiScope` middleware
+- **Agent scope bypass fix** - `AgentScope::hasScope()` now returns false for empty scopes (was returning true)
+
 ### Developer Experience
 
 - Anonymous class test doubles pattern documented

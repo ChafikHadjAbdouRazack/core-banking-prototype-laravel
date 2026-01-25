@@ -294,9 +294,9 @@ enum AgentScope: string
      */
     public static function hasScope(array $available, AgentScope|string $required): bool
     {
-        // Empty scopes means all allowed (backward compatibility)
+        // Empty scopes means no access (security hardening)
         if (empty($available)) {
-            return true;
+            return false;
         }
 
         $requiredValue = $required instanceof AgentScope ? $required->value : $required;

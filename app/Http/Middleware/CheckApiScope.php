@@ -6,7 +6,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckApiScope
@@ -26,50 +25,10 @@ class CheckApiScope
             return $next($request);
         }
 
-        // In testing environment, handle Sanctum::actingAs tokens specially
-        if (app()->environment('testing')) {
-            $token = $request->user()->currentAccessToken();
-
-            if ($token) {
-                // Check if the user's token has any of the required scopes
-                foreach ($scopes as $scope) {
-                    $canScope = $request->user()->tokenCan($scope);
-                    // Debug output for testing
-                    if (in_array('treasury', $scopes)) {
-                        Log::debug("CheckApiScope: Checking scope '$scope', result: " . ($canScope ? 'true' : 'false'));
-                    }
-                    if ($canScope) {
-                        return $next($request);
-                    }
-                }
-
-                // For backward compatibility with existing tests:
-                // If no abilities match and this is a test token with NO abilities at all,
-                // allow through for standard read/write operations but not for special scopes
-                $hasAnyAbility = $request->user()->tokenCan('read') ||
-                                 $request->user()->tokenCan('write') ||
-                                 $request->user()->tokenCan('delete') ||
-                                 $request->user()->tokenCan('treasury') ||
-                                 $request->user()->tokenCan('admin');
-
-                if (! $hasAnyAbility) {
-                    // This is a test token with no explicit abilities (empty array passed to Sanctum::actingAs)
-                    // For backward compatibility, allow through ONLY if requesting standard read/write scopes
-                    $standardScopes = ['read', 'write'];
-                    $isStandardScope = count(array_intersect($scopes, $standardScopes)) > 0;
-                    $hasSpecialScope = count(array_diff($scopes, $standardScopes)) > 0;
-
-                    if ($isStandardScope && ! $hasSpecialScope) {
-                        return $next($request);
-                    }
-                }
-            }
-        } else {
-            // Production: Standard scope checking
-            foreach ($scopes as $scope) {
-                if ($request->user()->tokenCan($scope)) {
-                    return $next($request);
-                }
+        // Standard scope checking for all environments (security hardening)
+        foreach ($scopes as $scope) {
+            if ($request->user()->tokenCan($scope)) {
+                return $next($request);
             }
         }
 

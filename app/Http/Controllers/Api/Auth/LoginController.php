@@ -116,9 +116,8 @@ class LoginController extends Controller
             $request->session()->regenerate();
         }
 
-        // Create token with abilities based on user role
-        $abilities = $this->getDefaultScopesForUser($user);
-        $token = $user->createToken($request->device_name ?? 'web', $abilities);
+        // Create token with abilities and proper expiration
+        $plainToken = $this->createTokenWithScopes($user, $request->device_name ?? 'web');
 
         // Check and enforce concurrent session limits
         $this->enforceSessionLimits($user);
@@ -126,7 +125,7 @@ class LoginController extends Controller
         return response()->json(
             [
                 'user'         => $user,
-                'access_token' => $token->plainTextToken,
+                'access_token' => $plainToken,
                 'token_type'   => 'Bearer',
                 'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
             ]
