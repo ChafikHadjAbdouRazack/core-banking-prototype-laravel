@@ -25,9 +25,19 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | v1.3.0 RELEASED (tag: v1.3.0) |
-| Next Action | Begin v1.4.0 planning or maintenance |
+| Last Action | v1.4.0: Added domain:create command, Fraud and Wallet tests |
+| Next Action | Add tests for Regulatory, Stablecoin domains |
 | Session Date | January 25, 2026 |
+
+### v1.4.0 Progress
+| Task | Status |
+|------|--------|
+| PHPStan errors fixed | ✅ Complete |
+| domain:create command | ✅ Complete |
+| Fraud domain tests (18) | ✅ Complete |
+| Wallet domain tests (37) | ✅ Complete |
+| Regulatory domain tests | 🔲 Pending |
+| Stablecoin domain tests | 🔲 Pending |
 
 ---
 
