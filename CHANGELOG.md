@@ -5,7 +5,84 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased] - v1.4.0
+
+### 🧪 Test Coverage Expansion Release
+
+Comprehensive test coverage for previously untested domain services and value objects, plus code quality improvements through shared test utilities.
+
+### Highlights
+
+| Category | Deliverables |
+|----------|--------------|
+| Fraud Domain | 18 unit tests for FraudDetectionService |
+| Wallet Domain | 37 unit tests (KeyManagementService + Value Objects) |
+| Regulatory Domain | 13 unit tests for ReportGeneratorService |
+| Stablecoin Domain | 24 unit tests for Value Objects |
+| Test Utilities | InvokesPrivateMethods helper trait |
+| Code Quality | PHPStan Level 8 fixes in AccountQueryService |
+
+### Added
+
+#### Domain Test Suites
+
+- **Fraud Domain Tests** (18 tests)
+  - `FraudDetectionServiceTest` - Pattern detection, risk scoring
+  - Tests high-value, velocity, geographic, time-based, and round amount patterns
+  - Aggregation logic and risk multiplier calculations
+  - Uses anonymous class test doubles for Eloquent models
+
+- **Wallet Domain Tests** (37 tests)
+  - `KeyManagementServiceTest` (23 tests)
+    - BIP39 mnemonic generation and validation
+    - Key derivation (BIP32/BIP44)
+    - Multi-blockchain address generation (Ethereum, Bitcoin, Solana, etc.)
+    - Signature operations and key storage
+  - `WalletValueObjectsTest` (14 tests)
+    - `WalletAddress` value object (address, blockchain, label)
+    - `TransactionResult` value object (hash, status, gas, logs)
+    - Status helpers (isSuccess, isPending, isFailed)
+
+- **Regulatory Domain Tests** (13 tests)
+  - `ReportGeneratorServiceTest` - Report generation utilities
+  - CSV header extraction (CTR, SAR, KYC report types)
+  - Certification statements for regulatory compliance
+  - Filename generation with proper formatting
+  - XML conversion for nested data structures
+
+- **Stablecoin Domain Tests** (24 tests)
+  - `StablecoinValueObjectsTest` - Financial value objects
+  - `LiquidationThreshold` - Collateral health levels (safe/margin call/liquidation)
+  - `CollateralRatio` - Ratio calculations with BigDecimal precision
+  - `PriceData` - Price feeds with staleness detection
+
+#### Test Utilities
+
+- **InvokesPrivateMethods Trait** (`tests/Traits/`)
+  - `invokeMethod()` - Invoke private/protected methods via reflection
+  - `getPrivateProperty()` - Read private property values
+  - `setPrivateProperty()` - Set private property values
+  - Reduces code duplication across test files (DRY improvement)
+
+#### Domain Commands
+
+- **DomainCreateCommand** (`php artisan domain:create`)
+  - Scaffold new domain structure with all required files
+  - Creates Models, Services, Events, Repositories directories
+  - Generates ServiceProvider template
+  - Creates module.json manifest
+
+### Fixed
+
+- PHPStan Level 8 errors in `AccountQueryService`
+- Test isolation issues with Eloquent model mocking
+- Type safety for financial calculations in value objects
+
+### Developer Experience
+
+- Anonymous class test doubles pattern documented
+- Test utilities centralized for reuse
+- Pure unit tests (no database dependencies)
 
 ---
 
@@ -583,7 +660,9 @@ This release marks the transformation of FinAegis from a proprietary platform to
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **1.2.0** | **2026-01-13** | **🚀 Feature Completion** |
+| **1.4.0** | **In Progress** | **🧪 Test Coverage Expansion** |
+| 1.3.0 | 2026-01-25 | 🔧 Platform Modularity |
+| 1.2.0 | 2026-01-13 | 🚀 Feature Completion |
 | 1.1.0 | 2026-01-11 | 🔧 Foundation Hardening |
 | 1.0.0 | 2024-12-21 | 🎉 Open Source Release |
 | 0.9.0 | 2024-12-18 | Agent Protocol (AP2/A2A) |
@@ -617,7 +696,8 @@ This is a documentation-focused release with no breaking changes.
 - Run `php artisan migrate` for AI Framework tables
 - Configure AI providers in `config/ai.php`
 
-[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v0.9.0...v1.0.0

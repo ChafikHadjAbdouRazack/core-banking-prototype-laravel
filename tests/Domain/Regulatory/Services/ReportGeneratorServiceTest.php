@@ -8,12 +8,16 @@ use App\Domain\Regulatory\Models\RegulatoryReport;
 use App\Domain\Regulatory\Services\ReportGeneratorService;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
+use SimpleXMLElement;
+use Tests\Traits\InvokesPrivateMethods;
 
 /**
  * Unit tests for ReportGeneratorService.
  */
 class ReportGeneratorServiceTest extends TestCase
 {
+    use InvokesPrivateMethods;
+
     private ReportGeneratorService $service;
 
     protected function setUp(): void
@@ -30,7 +34,7 @@ class ReportGeneratorServiceTest extends TestCase
         $endDate = $periodEnd ?? Carbon::now();
         $id = $reportId ?? 'RPT-' . uniqid();
 
-        return new class($type, $endDate, $id) extends RegulatoryReport {
+        return new class ($type, $endDate, $id) extends RegulatoryReport {
             public string $report_type;
 
             public Carbon $reporting_period_end;
@@ -48,10 +52,10 @@ class ReportGeneratorServiceTest extends TestCase
             public function __get($key)
             {
                 return match ($key) {
-                    'report_type' => $this->report_type,
+                    'report_type'          => $this->report_type,
                     'reporting_period_end' => $this->reporting_period_end,
-                    'report_id' => $this->report_id,
-                    default => null,
+                    'report_id'            => $this->report_id,
+                    default                => null,
                 };
             }
         };
@@ -61,11 +65,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_CTR);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractCsvHeaders');
-        $method->setAccessible(true);
-
-        $headers = $method->invoke($this->service, $report);
+        $headers = $this->invokeMethod($this->service, 'extractCsvHeaders', [$report]);
 
         $this->assertContains('Transaction ID', $headers);
         $this->assertContains('Amount', $headers);
@@ -78,11 +78,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_SAR);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractCsvHeaders');
-        $method->setAccessible(true);
-
-        $headers = $method->invoke($this->service, $report);
+        $headers = $this->invokeMethod($this->service, 'extractCsvHeaders', [$report]);
 
         $this->assertContains('Activity ID', $headers);
         $this->assertContains('Risk Score', $headers);
@@ -94,11 +90,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_KYC);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractCsvHeaders');
-        $method->setAccessible(true);
-
-        $headers = $method->invoke($this->service, $report);
+        $headers = $this->invokeMethod($this->service, 'extractCsvHeaders', [$report]);
 
         $this->assertContains('Customer ID', $headers);
         $this->assertContains('KYC Status', $headers);
@@ -111,11 +103,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble('UNKNOWN_TYPE');
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractCsvHeaders');
-        $method->setAccessible(true);
-
-        $headers = $method->invoke($this->service, $report);
+        $headers = $this->invokeMethod($this->service, 'extractCsvHeaders', [$report]);
 
         $this->assertContains('ID', $headers);
         $this->assertContains('Date', $headers);
@@ -129,11 +117,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_CTR);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getCertificationStatement');
-        $method->setAccessible(true);
-
-        $statement = $method->invoke($this->service, $report);
+        $statement = $this->invokeMethod($this->service, 'getCertificationStatement', [$report]);
 
         $this->assertStringContainsString('Currency Transaction Report', $statement);
         $this->assertStringContainsString('complete and accurate', $statement);
@@ -143,11 +127,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_SAR);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getCertificationStatement');
-        $method->setAccessible(true);
-
-        $statement = $method->invoke($this->service, $report);
+        $statement = $this->invokeMethod($this->service, 'getCertificationStatement', [$report]);
 
         $this->assertStringContainsString('Suspicious Activity Report', $statement);
         $this->assertStringContainsString('all known information', $statement);
@@ -157,11 +137,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble(RegulatoryReport::TYPE_BSA);
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getCertificationStatement');
-        $method->setAccessible(true);
-
-        $statement = $method->invoke($this->service, $report);
+        $statement = $this->invokeMethod($this->service, 'getCertificationStatement', [$report]);
 
         $this->assertStringContainsString('Bank Secrecy Act', $statement);
     }
@@ -170,11 +146,7 @@ class ReportGeneratorServiceTest extends TestCase
     {
         $report = $this->createReportDouble('CUSTOM');
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getCertificationStatement');
-        $method->setAccessible(true);
-
-        $statement = $method->invoke($this->service, $report);
+        $statement = $this->invokeMethod($this->service, 'getCertificationStatement', [$report]);
 
         $this->assertEquals('I certify that this report is complete and accurate.', $statement);
     }
@@ -184,11 +156,7 @@ class ReportGeneratorServiceTest extends TestCase
         $report = $this->createReportDouble(RegulatoryReport::TYPE_CTR, Carbon::parse('2026-01-25'));
         $report->report_id = 'RPT-12345';
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getFilename');
-        $method->setAccessible(true);
-
-        $filename = $method->invoke($this->service, $report, 'json');
+        $filename = $this->invokeMethod($this->service, 'getFilename', [$report, 'json']);
 
         $this->assertStringContainsString('regulatory/', $filename);
         $this->assertStringContainsString('ctr/', $filename);
@@ -202,13 +170,9 @@ class ReportGeneratorServiceTest extends TestCase
         $report = $this->createReportDouble(RegulatoryReport::TYPE_SAR, Carbon::parse('2026-01-25'));
         $report->report_id = 'RPT-67890';
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getFilename');
-        $method->setAccessible(true);
-
-        $csvFilename = $method->invoke($this->service, $report, 'csv');
-        $xmlFilename = $method->invoke($this->service, $report, 'xml');
-        $pdfFilename = $method->invoke($this->service, $report, 'pdf');
+        $csvFilename = $this->invokeMethod($this->service, 'getFilename', [$report, 'csv']);
+        $xmlFilename = $this->invokeMethod($this->service, 'getFilename', [$report, 'xml']);
+        $pdfFilename = $this->invokeMethod($this->service, 'getFilename', [$report, 'pdf']);
 
         $this->assertStringEndsWith('.csv', $csvFilename);
         $this->assertStringEndsWith('.xml', $xmlFilename);
@@ -223,12 +187,8 @@ class ReportGeneratorServiceTest extends TestCase
             'count'  => 42,
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('arrayToXml');
-        $method->setAccessible(true);
-
-        $xml = new \SimpleXMLElement('<root/>');
-        $method->invoke($this->service, $data, $xml);
+        $xml = new SimpleXMLElement('<root/>');
+        $this->invokeMethod($this->service, 'arrayToXml', [$data, $xml]);
 
         $this->assertEquals('Test Report', (string) $xml->name);
         $this->assertEquals('pending', (string) $xml->status);
@@ -245,12 +205,8 @@ class ReportGeneratorServiceTest extends TestCase
             ],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('arrayToXml');
-        $method->setAccessible(true);
-
-        $xml = new \SimpleXMLElement('<root/>');
-        $method->invoke($this->service, $data, $xml);
+        $xml = new SimpleXMLElement('<root/>');
+        $this->invokeMethod($this->service, 'arrayToXml', [$data, $xml]);
 
         $this->assertEquals('CTR', (string) $xml->report);
         $this->assertEquals('10000', (string) $xml->details->amount);
@@ -266,12 +222,8 @@ class ReportGeneratorServiceTest extends TestCase
             ],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('arrayToXml');
-        $method->setAccessible(true);
-
-        $xml = new \SimpleXMLElement('<root/>');
-        $method->invoke($this->service, $data, $xml);
+        $xml = new SimpleXMLElement('<root/>');
+        $this->invokeMethod($this->service, 'arrayToXml', [$data, $xml]);
 
         // Indexed arrays are converted to item elements
         $this->assertNotEmpty($xml->transactions);

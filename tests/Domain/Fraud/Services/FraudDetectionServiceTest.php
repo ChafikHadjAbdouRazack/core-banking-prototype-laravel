@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
+use Tests\Traits\InvokesPrivateMethods;
 
 /**
  * Unit tests for FraudDetectionService.
@@ -25,6 +26,8 @@ use PHPUnit\Framework\TestCase;
  */
 class FraudDetectionServiceTest extends TestCase
 {
+    use InvokesPrivateMethods;
+
     private FraudDetectionService $service;
 
     private MockInterface $ruleEngine;
@@ -69,16 +72,10 @@ class FraudDetectionServiceTest extends TestCase
         $deviceResults = ['risk_score' => 30];
         $mlResults = ['score' => 60];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('calculateTotalScore');
-        $method->setAccessible(true);
-
-        $score = $method->invoke(
+        $score = $this->invokeMethod(
             $this->service,
-            $ruleResults,
-            $behavioralResults,
-            $deviceResults,
-            $mlResults
+            'calculateTotalScore',
+            [$ruleResults, $behavioralResults, $deviceResults, $mlResults]
         );
 
         // Expected: (50 * 0.35) + (40 * 0.25) + (30 * 0.20) + (60 * 0.20)
@@ -92,16 +89,10 @@ class FraudDetectionServiceTest extends TestCase
         $behavioralResults = ['risk_score' => 40];
         $deviceResults = ['risk_score' => 30];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('calculateTotalScore');
-        $method->setAccessible(true);
-
-        $score = $method->invoke(
+        $score = $this->invokeMethod(
             $this->service,
-            $ruleResults,
-            $behavioralResults,
-            $deviceResults,
-            null
+            'calculateTotalScore',
+            [$ruleResults, $behavioralResults, $deviceResults, null]
         );
 
         // Without ML, scores are redistributed
@@ -112,15 +103,11 @@ class FraudDetectionServiceTest extends TestCase
     public function test_make_decision_returns_block_for_blocking_rules(): void
     {
         $ruleResults = [
-            'blocking_rules' => ['BLACKLIST_MATCH'],
+            'blocking_rules'  => ['BLACKLIST_MATCH'],
             'triggered_rules' => ['BLACKLIST_MATCH'],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('makeDecision');
-        $method->setAccessible(true);
-
-        $decision = $method->invoke($this->service, 50.0, 'medium', $ruleResults);
+        $decision = $this->invokeMethod($this->service, 'makeDecision', [50.0, 'medium', $ruleResults]);
 
         $this->assertEquals(FraudScore::DECISION_BLOCK, $decision);
     }
@@ -129,11 +116,7 @@ class FraudDetectionServiceTest extends TestCase
     {
         $ruleResults = ['triggered_rules' => []];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('makeDecision');
-        $method->setAccessible(true);
-
-        $decision = $method->invoke($this->service, 85.0, 'critical', $ruleResults);
+        $decision = $this->invokeMethod($this->service, 'makeDecision', [85.0, 'critical', $ruleResults]);
 
         $this->assertEquals(FraudScore::DECISION_BLOCK, $decision);
     }
@@ -142,11 +125,7 @@ class FraudDetectionServiceTest extends TestCase
     {
         $ruleResults = ['triggered_rules' => []];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('makeDecision');
-        $method->setAccessible(true);
-
-        $decision = $method->invoke($this->service, 65.0, 'high', $ruleResults);
+        $decision = $this->invokeMethod($this->service, 'makeDecision', [65.0, 'high', $ruleResults]);
 
         $this->assertEquals(FraudScore::DECISION_REVIEW, $decision);
     }
@@ -155,11 +134,7 @@ class FraudDetectionServiceTest extends TestCase
     {
         $ruleResults = ['triggered_rules' => []];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('makeDecision');
-        $method->setAccessible(true);
-
-        $decision = $method->invoke($this->service, 45.0, 'medium', $ruleResults);
+        $decision = $this->invokeMethod($this->service, 'makeDecision', [45.0, 'medium', $ruleResults]);
 
         $this->assertEquals(FraudScore::DECISION_CHALLENGE, $decision);
     }
@@ -168,11 +143,7 @@ class FraudDetectionServiceTest extends TestCase
     {
         $ruleResults = ['triggered_rules' => []];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('makeDecision');
-        $method->setAccessible(true);
-
-        $decision = $method->invoke($this->service, 25.0, 'low', $ruleResults);
+        $decision = $this->invokeMethod($this->service, 'makeDecision', [25.0, 'low', $ruleResults]);
 
         $this->assertEquals(FraudScore::DECISION_ALLOW, $decision);
     }
@@ -180,35 +151,29 @@ class FraudDetectionServiceTest extends TestCase
     public function test_create_score_breakdown_includes_all_components(): void
     {
         $ruleResults = [
-            'rule_scores' => ['VELOCITY_CHECK' => 20, 'AMOUNT_CHECK' => 15],
+            'rule_scores'  => ['VELOCITY_CHECK' => 20, 'AMOUNT_CHECK' => 15],
             'rule_details' => [
                 'VELOCITY_CHECK' => ['severity' => 'high'],
-                'AMOUNT_CHECK' => ['severity' => 'medium'],
+                'AMOUNT_CHECK'   => ['severity' => 'medium'],
             ],
         ];
         $behavioralResults = [
-            'risk_score' => 30,
+            'risk_score'   => 30,
             'risk_factors' => ['unusual_timing'],
         ];
         $deviceResults = [
-            'risk_score' => 25,
+            'risk_score'   => 25,
             'risk_factors' => ['new_device'],
         ];
         $mlResults = [
-            'score' => 40,
+            'score'      => 40,
             'confidence' => 0.85,
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('createScoreBreakdown');
-        $method->setAccessible(true);
-
-        $breakdown = $method->invoke(
+        $breakdown = $this->invokeMethod(
             $this->service,
-            $ruleResults,
-            $behavioralResults,
-            $deviceResults,
-            $mlResults
+            'createScoreBreakdown',
+            [$ruleResults, $behavioralResults, $deviceResults, $mlResults]
         );
 
         $this->assertCount(5, $breakdown); // 2 rules + behavioral + device + ml
@@ -235,18 +200,14 @@ class FraudDetectionServiceTest extends TestCase
         $context = [
             'ip_address' => '192.168.1.1',
             'ip_country' => 'US',
-            'ip_region' => 'California',
-            'isp' => 'Comcast',
-            'is_vpn' => true,
-            'is_proxy' => false,
-            'is_tor' => false,
+            'ip_region'  => 'California',
+            'isp'        => 'Comcast',
+            'is_vpn'     => true,
+            'is_proxy'   => false,
+            'is_tor'     => false,
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractNetworkFactors');
-        $method->setAccessible(true);
-
-        $factors = $method->invoke($this->service, $context);
+        $factors = $this->invokeMethod($this->service, 'extractNetworkFactors', [$context]);
 
         $this->assertEquals('192.168.1.1', $factors['ip_address']);
         $this->assertEquals('US', $factors['ip_country']);
@@ -265,11 +226,7 @@ class FraudDetectionServiceTest extends TestCase
             ['created_at' => date('Y-m-d H:i:s', $baseTime - 480), 'amount' => 250],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('analyzeTransactionPatterns');
-        $method->setAccessible(true);
-
-        $score = $method->invoke($this->service, $transactions);
+        $score = $this->invokeMethod($this->service, 'analyzeTransactionPatterns', [$transactions]);
 
         // Should detect rapid transactions (4 rapid ones > 3 threshold)
         $this->assertGreaterThan(0, $score);
@@ -286,11 +243,7 @@ class FraudDetectionServiceTest extends TestCase
             ['created_at' => date('Y-m-d H:i:s', $baseTime - 28800), 'amount' => 3000],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('analyzeTransactionPatterns');
-        $method->setAccessible(true);
-
-        $score = $method->invoke($this->service, $transactions);
+        $score = $this->invokeMethod($this->service, 'analyzeTransactionPatterns', [$transactions]);
 
         // Should detect round amounts (100% are round)
         $this->assertGreaterThan(0, $score);
@@ -299,7 +252,7 @@ class FraudDetectionServiceTest extends TestCase
     public function test_get_transaction_indicators_detects_high_value(): void
     {
         // Create a minimal transaction double for testing
-        $transaction = new class extends Transaction {
+        $transaction = new class () extends Transaction {
             public array $event_properties = ['amount' => 15000];
 
             public function __construct()
@@ -317,11 +270,7 @@ class FraudDetectionServiceTest extends TestCase
             }
         };
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getTransactionIndicators');
-        $method->setAccessible(true);
-
-        $indicators = $method->invoke($this->service, $transaction);
+        $indicators = $this->invokeMethod($this->service, 'getTransactionIndicators', [$transaction]);
 
         $this->assertContains('high_value_transaction', $indicators);
     }
@@ -329,7 +278,7 @@ class FraudDetectionServiceTest extends TestCase
     public function test_get_transaction_indicators_detects_round_amount(): void
     {
         // Create a minimal transaction double for testing
-        $transaction = new class extends Transaction {
+        $transaction = new class () extends Transaction {
             public array $event_properties = ['amount' => 20000];
 
             public function __construct()
@@ -347,11 +296,7 @@ class FraudDetectionServiceTest extends TestCase
             }
         };
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getTransactionIndicators');
-        $method->setAccessible(true);
-
-        $indicators = $method->invoke($this->service, $transaction);
+        $indicators = $this->invokeMethod($this->service, 'getTransactionIndicators', [$transaction]);
 
         $this->assertContains('round_amount', $indicators);
         $this->assertContains('high_value_transaction', $indicators);
@@ -375,11 +320,7 @@ class FraudDetectionServiceTest extends TestCase
             ->with('kyc_level')
             ->andReturn('verified');
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getUserIndicators');
-        $method->setAccessible(true);
-
-        $indicators = $method->invoke($this->service, $user);
+        $indicators = $this->invokeMethod($this->service, 'getUserIndicators', [$user]);
 
         $this->assertContains('new_account', $indicators);
         $this->assertNotContains('no_kyc', $indicators);
@@ -403,11 +344,7 @@ class FraudDetectionServiceTest extends TestCase
             ->with('kyc_level')
             ->andReturn('none');
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('getUserIndicators');
-        $method->setAccessible(true);
-
-        $indicators = $method->invoke($this->service, $user);
+        $indicators = $this->invokeMethod($this->service, 'getUserIndicators', [$user]);
 
         $this->assertContains('no_kyc', $indicators);
         $this->assertNotContains('new_account', $indicators);
@@ -417,19 +354,15 @@ class FraudDetectionServiceTest extends TestCase
     {
         $ruleResults = [
             'triggered_rules' => ['rule1', 'rule2', 'rule3'],
-            'blocking_rules' => ['rule1'],
-            'rule_scores' => [
+            'blocking_rules'  => ['rule1'],
+            'rule_scores'     => [
                 'rule1' => 30,
                 'rule2' => 20,
                 'rule3' => 10,
             ],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('extractDecisionFactors');
-        $method->setAccessible(true);
-
-        $factors = $method->invoke($this->service, 75.0, $ruleResults);
+        $factors = $this->invokeMethod($this->service, 'extractDecisionFactors', [75.0, $ruleResults]);
 
         $this->assertEquals(75.0, $factors['total_score']);
         $this->assertEquals(3, $factors['rules_triggered']);
@@ -440,15 +373,11 @@ class FraudDetectionServiceTest extends TestCase
     public function test_identify_risk_indicators(): void
     {
         $behavioralData = [
-            'unusual_patterns' => ['pattern1', 'pattern2'],
+            'unusual_patterns'  => ['pattern1', 'pattern2'],
             'transaction_count' => 75,
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('identifyRiskIndicators');
-        $method->setAccessible(true);
-
-        $indicators = $method->invoke($this->service, $behavioralData);
+        $indicators = $this->invokeMethod($this->service, 'identifyRiskIndicators', [$behavioralData]);
 
         $this->assertContains('unusual_patterns_detected', $indicators);
         $this->assertContains('high_transaction_volume', $indicators);
@@ -460,11 +389,7 @@ class FraudDetectionServiceTest extends TestCase
             'unusual_patterns' => ['suspicious_timing'],
         ];
 
-        $reflection = new \ReflectionClass($this->service);
-        $method = $reflection->getMethod('generateRecommendations');
-        $method->setAccessible(true);
-
-        $recommendations = $method->invoke($this->service, $behavioralData);
+        $recommendations = $this->invokeMethod($this->service, 'generateRecommendations', [$behavioralData]);
 
         $this->assertContains('Review account for suspicious activity', $recommendations);
     }
