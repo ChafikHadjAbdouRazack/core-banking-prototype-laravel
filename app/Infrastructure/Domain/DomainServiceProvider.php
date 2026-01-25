@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Domain;
 
+use App\Infrastructure\Domain\Commands\DomainCreateCommand;
 use App\Infrastructure\Domain\Commands\DomainDependenciesCommand;
 use App\Infrastructure\Domain\Commands\DomainInstallCommand;
 use App\Infrastructure\Domain\Commands\DomainListCommand;
@@ -25,6 +26,7 @@ class DomainServiceProvider extends ServiceProvider
      * @var array<class-string>
      */
     protected array $commands = [
+        DomainCreateCommand::class,
         DomainListCommand::class,
         DomainInstallCommand::class,
         DomainRemoveCommand::class,
