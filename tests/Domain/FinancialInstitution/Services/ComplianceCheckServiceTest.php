@@ -16,13 +16,17 @@ use PHPUnit\Framework\TestCase;
  */
 class ComplianceCheckServiceTest extends TestCase
 {
-    private object $service;
+    /**
+     * @var ComplianceCheckService&object{checkJurisdictionTest: callable(object): array<string, mixed>}
+     */
+    private ComplianceCheckService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         // Create a testable subclass that exposes private methods
+        // @phpstan-ignore-next-line
         $this->service = new class () extends ComplianceCheckService {
             public function __construct()
             {
@@ -31,16 +35,24 @@ class ComplianceCheckServiceTest extends TestCase
 
             /**
              * Test wrapper for checkJurisdiction.
+             *
+             * @return array<string, mixed>
              */
             public function checkJurisdictionTest(object $application): array
             {
                 $score = 100;
+                /** @var list<string> */
                 $issues = [];
+                /** @var list<string> */
                 $compatible = [];
+                /** @var list<string> */
                 $incompatible = [];
 
+                /** @var list<string> */
                 $tier1 = ['US', 'GB', 'DE', 'FR', 'CH', 'NL', 'SE', 'NO', 'DK', 'FI', 'AU', 'CA', 'JP', 'SG'];
+                /** @var list<string> */
                 $tier2 = ['ES', 'IT', 'BE', 'AT', 'IE', 'LU', 'PT', 'NZ', 'HK'];
+                /** @var list<string> */
                 $tier3 = ['PL', 'CZ', 'HU', 'RO', 'BG', 'HR', 'SI', 'SK', 'LT', 'LV', 'EE', 'MT', 'CY'];
 
                 if (in_array($application->country, $tier1)) {
@@ -56,10 +68,13 @@ class ComplianceCheckServiceTest extends TestCase
                     $issues[] = 'Jurisdiction requires enhanced due diligence';
                 }
 
+                /** @var list<string> $targetMarkets */
                 $targetMarkets = $application->target_markets ?? [];
+                /** @var list<string> */
                 $restrictedMarkets = ['AF', 'YE', 'MM', 'LA', 'UG', 'KH'];
 
-                $problematicMarkets = array_intersect($targetMarkets, $restrictedMarkets);
+                /** @var list<string> $problematicMarkets */
+                $problematicMarkets = array_values(array_intersect($targetMarkets, $restrictedMarkets));
                 if (! empty($problematicMarkets)) {
                     $score -= 20;
                     $incompatible = array_merge($incompatible, $problematicMarkets);
@@ -384,14 +399,20 @@ class ComplianceCheckServiceTest extends TestCase
 
     /**
      * Create a mock application object for testing.
+     *
+     * @param array<string, mixed> $data
      */
     private function createMockApplication(array $data): object
     {
         return new class ($data) {
             public ?string $country;
 
+            /** @var list<string>|null */
             public ?array $target_markets;
 
+            /**
+             * @param array<string, mixed> $data
+             */
             public function __construct(array $data)
             {
                 $this->country = $data['country'] ?? null;

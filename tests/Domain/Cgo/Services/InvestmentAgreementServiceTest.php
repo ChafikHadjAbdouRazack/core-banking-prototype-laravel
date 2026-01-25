@@ -19,7 +19,13 @@ class InvestmentAgreementServiceTest extends TestCase
 {
     use InvokesPrivateMethods;
 
-    private object $service;
+    /**
+     * @var InvestmentAgreementService&object{
+     *     getInvestmentTermsTest: callable(object): array<string, string>,
+     *     generateFilenameTest: callable(object): string
+     * }
+     */
+    private InvestmentAgreementService $service;
 
     protected function setUp(): void
     {
@@ -27,6 +33,7 @@ class InvestmentAgreementServiceTest extends TestCase
 
         // Create a partial mock that bypasses constructor dependencies
         // and allows testing with mock investment objects
+        // @phpstan-ignore-next-line
         $this->service = new class () extends InvestmentAgreementService {
             public function __construct()
             {
@@ -36,6 +43,8 @@ class InvestmentAgreementServiceTest extends TestCase
             /**
              * Override to accept any object for testing purposes.
              * This tests the exact same logic as the parent method.
+             *
+             * @return array<string, string>
              */
             public function getInvestmentTermsTest(object $investment): array
             {

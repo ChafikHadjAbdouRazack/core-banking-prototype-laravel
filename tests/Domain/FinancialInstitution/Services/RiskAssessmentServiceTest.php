@@ -13,16 +13,28 @@ use PHPUnit\Framework\TestCase;
  * We create an anonymous subclass that exposes private methods
  * and accepts any object, allowing us to test the logic without needing
  * a full FinancialInstitutionApplication model.
+ *
+ * @phpstan-type RiskResult array{score: int, factors: list<string>, high_risk_exposures?: list<string>, risky_products?: list<string>, monthly_volume?: float|int, monthly_transactions?: int, assets_under_management?: float|int}
  */
 class RiskAssessmentServiceTest extends TestCase
 {
-    private object $service;
+    /**
+     * @var RiskAssessmentService&object{
+     *     assessGeographicRiskTest: callable(object): array<string, mixed>,
+     *     assessBusinessModelRiskTest: callable(object): array<string, mixed>,
+     *     assessVolumeRiskTest: callable(object): array<string, mixed>,
+     *     assessFinancialRiskTest: callable(object): array<string, mixed>,
+     *     getRiskRatingTest: callable(float): string
+     * }
+     */
+    private RiskAssessmentService $service;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         // Create a testable subclass that exposes private methods
+        // @phpstan-ignore-next-line
         $this->service = new class () extends RiskAssessmentService {
             public function __construct()
             {
@@ -31,14 +43,19 @@ class RiskAssessmentServiceTest extends TestCase
 
             /**
              * Test wrapper for assessGeographicRisk.
+             *
+             * @return array<string, mixed>
              */
             public function assessGeographicRiskTest(object $application): array
             {
                 $riskScore = 0;
                 $factors = [];
 
+                /** @var list<string> */
                 $highRiskCountries = ['AF', 'IR', 'KP', 'MM', 'SY', 'YE', 'SO', 'LY', 'VE'];
+                /** @var list<string> */
                 $mediumRiskCountries = ['RU', 'UA', 'BY', 'TR', 'EG', 'NG', 'KE', 'PK', 'BD'];
+                /** @var list<string> */
                 $lowRiskCountries = ['US', 'GB', 'DE', 'FR', 'CH', 'NL', 'SE', 'NO', 'DK', 'FI', 'AU', 'CA', 'JP', 'SG'];
 
                 if (in_array($application->country, $highRiskCountries)) {
@@ -55,8 +72,10 @@ class RiskAssessmentServiceTest extends TestCase
                     $factors[] = 'Standard-risk jurisdiction';
                 }
 
+                /** @var list<string> $targetMarkets */
                 $targetMarkets = $application->target_markets ?? [];
-                $highRiskMarkets = array_intersect($targetMarkets, $highRiskCountries);
+                /** @var list<string> $highRiskMarkets */
+                $highRiskMarkets = array_values(array_intersect($targetMarkets, $highRiskCountries));
 
                 if (count($highRiskMarkets) > 0) {
                     $riskScore += min(20 * count($highRiskMarkets), 40);
@@ -77,12 +96,15 @@ class RiskAssessmentServiceTest extends TestCase
 
             /**
              * Test wrapper for assessBusinessModelRisk.
+             *
+             * @return array<string, mixed>
              */
             public function assessBusinessModelRiskTest(object $application): array
             {
                 $riskScore = 0;
                 $factors = [];
 
+                /** @var array<string, int> */
                 $typeRisks = [
                     'bank'              => 20,
                     'credit_union'      => 15,
@@ -98,9 +120,12 @@ class RiskAssessmentServiceTest extends TestCase
                 $riskScore += $typeRisks[$application->institution_type] ?? 50;
                 $factors[] = ucfirst($application->institution_type) . ' business model';
 
+                /** @var list<string> $products */
                 $products = $application->product_offerings ?? [];
+                /** @var list<string> */
                 $highRiskProducts = ['crypto', 'derivatives', 'forex', 'binary_options', 'crowdfunding'];
-                $riskyProducts = array_intersect($products, $highRiskProducts);
+                /** @var list<string> $riskyProducts */
+                $riskyProducts = array_values(array_intersect($products, $highRiskProducts));
 
                 if (! empty($riskyProducts)) {
                     $riskScore += min(15 * count($riskyProducts), 30);
@@ -126,13 +151,17 @@ class RiskAssessmentServiceTest extends TestCase
 
             /**
              * Test wrapper for assessVolumeRisk.
+             *
+             * @return array<string, mixed>
              */
             public function assessVolumeRiskTest(object $application): array
             {
                 $riskScore = 0;
                 $factors = [];
 
+                /** @var float|int $monthlyVolume */
                 $monthlyVolume = $application->expected_monthly_volume ?? 0;
+                /** @var int $monthlyTransactions */
                 $monthlyTransactions = $application->expected_monthly_transactions ?? 0;
 
                 if ($monthlyVolume > 100000000) {
@@ -181,12 +210,15 @@ class RiskAssessmentServiceTest extends TestCase
 
             /**
              * Test wrapper for assessFinancialRisk.
+             *
+             * @return array<string, mixed>
              */
             public function assessFinancialRiskTest(object $application): array
             {
                 $riskScore = 0;
                 $factors = [];
 
+                /** @var float|int $aum */
                 $aum = $application->assets_under_management ?? 0;
 
                 if ($aum < 1000000) {
@@ -735,6 +767,8 @@ class RiskAssessmentServiceTest extends TestCase
 
     /**
      * Create a mock application object for testing.
+     *
+     * @param array<string, mixed> $data
      */
     private function createMockApplication(array $data): object
     {
@@ -743,8 +777,10 @@ class RiskAssessmentServiceTest extends TestCase
 
             public ?string $institution_type;
 
+            /** @var list<string>|null */
             public ?array $target_markets;
 
+            /** @var list<string>|null */
             public ?array $product_offerings;
 
             public ?float $expected_monthly_volume;
@@ -753,6 +789,9 @@ class RiskAssessmentServiceTest extends TestCase
 
             public ?float $assets_under_management;
 
+            /**
+             * @param array<string, mixed> $data
+             */
             public function __construct(array $data)
             {
                 $this->country = $data['country'] ?? null;

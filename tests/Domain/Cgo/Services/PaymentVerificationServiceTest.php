@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Domain\Cgo\Services;
 
-use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Cgo\Services\PaymentVerificationService;
 use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +20,10 @@ class PaymentVerificationServiceTest extends TestCase
 {
     use InvokesPrivateMethods;
 
-    private object $service;
+    /**
+     * @var PaymentVerificationService&object{isPaymentExpiredTest: callable(object): bool}
+     */
+    private PaymentVerificationService $service;
 
     protected function setUp(): void
     {
@@ -29,6 +31,7 @@ class PaymentVerificationServiceTest extends TestCase
 
         // Create a partial mock that bypasses constructor dependencies
         // and allows testing with mock investment objects
+        // @phpstan-ignore-next-line
         $this->service = new class () extends PaymentVerificationService {
             public function __construct()
             {

@@ -22,6 +22,7 @@ class CgoKycServiceTest extends TestCase
         parent::setUp();
 
         // Create a partial mock that bypasses constructor dependencies
+        // @phpstan-ignore-next-line
         $this->service = new class () extends CgoKycService {
             public function __construct()
             {

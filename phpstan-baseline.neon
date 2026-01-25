@@ -31,46 +31,10 @@ parameters:
 			path: app/Console/Commands/BenchmarkTransferPerformance.php
 
 		-
-			message: '#^Call to an undefined method App\\Domain\\Account\\Aggregates\\LedgerAggregate\:\:addMoney\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/DemoDepositCommand.php
-
-		-
 			message: '#^Parameter \#2 \$method of method App\\Console\\Commands\\PerformSystemHealthChecks\:\:performCheck\(\) expects callable\(\)\: mixed, array\{\$this\(App\\Console\\Commands\\PerformSystemHealthChecks\), non\-falsy\-string\} given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/PerformSystemHealthChecks.php
-
-		-
-			message: '#^Call to an undefined method App\\Domain\\Account\\Events\\HasMoney\:\:aggregateRootUuid\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Account/Actions/UpdateTurnover.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Domain\\Account\\Aggregates\\AssetTransactionAggregate is not subtype of native type static\(App\\Domain\\Account\\Aggregates\\AssetTransactionAggregate\)\.$#'
-			identifier: return.phpDocType
-			count: 3
-			path: app/Domain/Account/Aggregates/AssetTransactionAggregate.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Domain\\Account\\Aggregates\\AssetTransferAggregate is not subtype of native type static\(App\\Domain\\Account\\Aggregates\\AssetTransferAggregate\)\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: app/Domain/Account/Aggregates/AssetTransferAggregate.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Domain\\Account\\Aggregates\\TransactionAggregate is not subtype of native type static\(App\\Domain\\Account\\Aggregates\\TransactionAggregate\)\.$#'
-			identifier: return.phpDocType
-			count: 3
-			path: app/Domain/Account/Aggregates/TransactionAggregate.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Domain\\Account\\Aggregates\\TransferAggregate is not subtype of native type static\(App\\Domain\\Account\\Aggregates\\TransferAggregate\)\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: app/Domain/Account/Aggregates/TransferAggregate.php
 
 		-
 			message: '#^Method App\\Domain\\Account\\DataObjects\\AccountUuid\:\:getUuid\(\) never returns null so it can be removed from the return type\.$#'
@@ -85,21 +49,9 @@ parameters:
 			path: app/Domain/Account/Helpers/objects.php
 
 		-
-			message: '#^Call to method aggregateRootUuid\(\) on an unknown class App\\Domain\\Account\\Events\\AccountDestroyed\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Listeners/WebhookEventListener.php
-
-		-
 			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
 			identifier: varTag.noVariable
 			count: 5
-			path: app/Domain/Account/Listeners/WebhookEventListener.php
-
-		-
-			message: '#^Parameter \$event of method App\\Domain\\Account\\Listeners\\WebhookEventListener\:\:onAccountDestroyed\(\) has invalid type App\\Domain\\Account\\Events\\AccountDestroyed\.$#'
-			identifier: class.notFound
-			count: 1
 			path: app/Domain/Account/Listeners/WebhookEventListener.php
 
 		-
@@ -107,102 +59,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Domain/Account/Models/AccountBalance.php
-
-		-
-			message: '#^Access to property \$accountUuid on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$accountUuid on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$amount on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$amount on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$assetCode on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$assetCode on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$description on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$description on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$paymentMethod on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$paymentMethod on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$paymentReference on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Access to property \$paymentReference on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Call to method aggregateRootUuid\(\) on an unknown class App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Call to method aggregateRootUuid\(\) on an unknown class App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Parameter \$event of method App\\Domain\\Account\\Projectors\\TransactionProjector\:\:onPaymentDepositCreated\(\) has invalid type App\\Domain\\Payment\\Events\\PaymentDepositCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
-
-		-
-			message: '#^Parameter \$event of method App\\Domain\\Account\\Projectors\\TransactionProjector\:\:onPaymentWithdrawalCreated\(\) has invalid type App\\Domain\\Payment\\Events\\PaymentWithdrawalCreated\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Projectors/TransactionProjector.php
 
 		-
 			message: '#^Call to an undefined method DateTimeInterface\:\:toDateString\(\)\.$#'
@@ -269,12 +125,6 @@ parameters:
 			identifier: argument.type
 			count: 6
 			path: app/Domain/Account/Workflows/BatchProcessingActivity.php
-
-		-
-			message: '#^Class App\\Domain\\Account\\Workflows\\DeleteAccountActivity not found\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Account/Workflows/CreateAccountWorkflow.php
 
 		-
 			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\TransactionProjection\>\:\:orWhere\(\) expects array\<int\|model property of App\\Domain\\Account\\Models\\TransactionProjection, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\TransactionProjection\>\)\: Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\TransactionProjection\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Account\\Models\\TransactionProjection\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Account\\Models\\TransactionProjection, ''archived'' given\.$#'
@@ -399,7 +249,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Domain\\Account\\DataObjects\\AccountUuid\:\:toString\(\)\.$#'
 			identifier: method.notFound
-			count: 19
+			count: 17
 			path: app/Domain/Asset/Projectors/AssetTransferProjector.php
 
 		-
@@ -429,7 +279,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method App\\Domain\\Account\\DataObjects\\AccountUuid\:\:toString\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 1
 			path: app/Domain/Asset/Workflows/Activities/InitiateAssetTransferActivity.php
 
 		-
@@ -1033,12 +883,6 @@ parameters:
 			path: app/Domain/Cgo/Services/RefundProcessingService.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, string\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Domain/Cgo/Services/RefundProcessingService.php
-
-		-
 			message: '#^Parameter \#2 \$amount of method Illuminate\\Database\\Eloquent\\Model\:\:decrement\(\) expects float\|int, string given\.$#'
 			identifier: argument.type
 			count: 2
@@ -1147,12 +991,6 @@ parameters:
 			path: app/Domain/Compliance/Services/EnhancedKycService.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, Carbon\\Carbon\|string\|null\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Domain/Compliance/Services/EnhancedKycService.php
-
-		-
 			message: '#^Property App\\Domain\\Compliance\\Services\\IdentityVerificationService\:\:\$providers is never read, only written\.$#'
 			identifier: property.onlyWritten
 			count: 1
@@ -1174,12 +1012,6 @@ parameters:
 			message: '#^Cannot call method count\(\) on \(int\|string\)\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: app/Domain/Compliance/Services/RegulatoryReportingService.php
-
-		-
-			message: '#^Cannot call method diffInHours\(\) on string\.$#'
-			identifier: method.nonObject
-			count: 1
 			path: app/Domain/Compliance/Services/RegulatoryReportingService.php
 
 		-
@@ -1421,12 +1253,6 @@ parameters:
 			identifier: nullCoalesce.expr
 			count: 1
 			path: app/Domain/Custodian/Services/MultiCustodianTransferService.php
-
-		-
-			message: '#^Cannot access property \$custodian_name on array\<mixed\>\|object\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Domain/Custodian/Services/SettlementService.php
 
 		-
 			message: '#^Property App\\Domain\\Custodian\\Services\\WebhookProcessorService\:\:\$custodianRegistry is never read, only written\.$#'
@@ -1843,42 +1669,6 @@ parameters:
 			path: app/Domain/Exchange/Providers/FixerIoProvider.php
 
 		-
-			message: '#^Access to an undefined property Brick\\Math\\BigDecimal\:\:\$ask\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Access to an undefined property Brick\\Math\\BigDecimal\:\:\$bid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Access to an undefined property Brick\\Math\\BigDecimal\:\:\$metadata\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Access to an undefined property Brick\\Math\\BigDecimal\:\:\$rate\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Call to an undefined method Brick\\Math\\BigDecimal\:\:getSpread\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
-			message: '#^Call to an undefined method Brick\\Math\\BigDecimal\:\:getSpreadPercentage\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/EnhancedExchangeRateService.php
-
-		-
 			message: '#^Method App\\Domain\\Exchange\\Services\\EnhancedExchangeRateService\:\:getRateWithFallback\(\) should return float but returns App\\Domain\\Asset\\Models\\ExchangeRate\|null\.$#'
 			identifier: return.type
 			count: 1
@@ -1923,12 +1713,6 @@ parameters:
 		-
 			message: '#^Method App\\Domain\\Exchange\\Services\\ExchangeRateProviderRegistry\:\:getDefault\(\) has invalid return type App\\Domain\\Exchange\\Contracts\\ExchangeRateProviderInterface\.$#'
 			identifier: class.notFound
-			count: 1
-			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
-
-		-
-			message: '#^Offset float does not exist on non\-empty\-list\<Brick\\Math\\BigDecimal\>\.$#'
-			identifier: offsetAccess.notFound
 			count: 1
 			path: app/Domain/Exchange/Services/ExchangeRateProviderRegistry.php
 
@@ -2641,12 +2425,6 @@ parameters:
 			path: app/Domain/Lending/Models/Loan.php
 
 		-
-			message: '#^Parameter \#2 \$amount of method App\\Domain\\Lending\\Models\\Loan\:\:increment\(\) expects float\|int, string given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Domain/Lending/Projectors/LoanProjector.php
-
-		-
 			message: '#^Parameter \#1 \$num of function number_format expects float, float\|int\|string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2758,12 +2536,6 @@ parameters:
 			message: '#^Parameter \#4 \$source of method App\\Domain\\Newsletter\\Services\\SubscriberEmailService\:\:sendNewsletter\(\) expects string\|null, array\|bool\|string\|null given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Domain/Newsletter/Console/Commands/SendNewsletter.php
-
-		-
-			message: '#^Part \$subject \(array\|bool\|string\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 2
 			path: app/Domain/Newsletter/Console/Commands/SendNewsletter.php
 
 		-
@@ -2935,21 +2707,9 @@ parameters:
 			path: app/Domain/Regulatory/Console/Commands/RegulatoryManagement.php
 
 		-
-			message: '#^Part \$action \(array\|bool\|string\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
-			count: 1
-			path: app/Domain/Regulatory/Console/Commands/RegulatoryManagement.php
-
-		-
 			message: '#^Call to static method raw\(\) on an unknown class App\\Domain\\Regulatory\\Models\\DB\.$#'
 			identifier: class.notFound
 			count: 1
-			path: app/Domain/Regulatory/Models/RegulatoryFilingRecord.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, string\> given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Domain/Regulatory/Models/RegulatoryFilingRecord.php
 
 		-
@@ -3451,12 +3211,6 @@ parameters:
 			path: app/Domain/Stablecoin/Workflows/ReserveManagementWorkflow.php
 
 		-
-			message: '#^Access to property \$eth on an unknown class Web3\\Web3\.$#'
-			identifier: class.notFound
-			count: 11
-			path: app/Domain/Wallet/Connectors/EthereumConnector.php
-
-		-
 			message: '#^Parameter \#1 \$num of function dechex expects int, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3509,12 +3263,6 @@ parameters:
 			identifier: class.notFound
 			count: 1
 			path: app/Domain/Wallet/Connectors/EthereumConnector.php
-
-		-
-			message: '#^Access to property \$eth on an unknown class Web3\\Web3\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domain/Wallet/Connectors/PolygonConnector.php
 
 		-
 			message: '#^Method App\\Domain\\Wallet\\Connectors\\PolygonConnector\:\:getCurrentBlockNumber\(\) should return int but returns float\|int\|null\.$#'
@@ -4033,18 +3781,6 @@ parameters:
 			path: app/Filament/Admin/Resources/ExchangeRateResource/Pages/ViewExchangeRate.php
 
 		-
-			message: '#^Cannot access property \$order_id on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Filament/Admin/Resources/OrderResource/Pages/ViewOrder.php
-
-		-
-			message: '#^Cannot call method canBeCancelled\(\) on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Filament/Admin/Resources/OrderResource/Pages/ViewOrder.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\:\:active\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -4291,12 +4027,6 @@ parameters:
 			path: app/Filament/Resources/CgoInvestmentResource/Widgets/CgoInvestmentStats.php
 
 		-
-			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
-			identifier: property.nonObject
-			count: 1
-			path: app/Filament/Resources/CgoPricingRoundResource/Pages/EditCgoPricingRound.php
-
-		-
 			message: '#^Parameter \#1 \$uuid of static method Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:retrieve\(\) expects string, int given\.$#'
 			identifier: argument.type
 			count: 3
@@ -4435,6 +4165,18 @@ parameters:
 			path: app/Http/Controllers/Api/Auth/EmailVerificationController.php
 
 		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\PasswordController\:\:createTokenWithScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/PasswordController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\PasswordController\:\:resolveScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/PasswordController.php
+
+		-
 			message: '#^Parameter \#1 \$input of method App\\Actions\\Fortify\\CreateNewUser\:\:create\(\) expects array\<string, string\>, array\<string, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4445,6 +4187,30 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: app/Http/Controllers/Api/Auth/SocialAuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\SocialAuthController\:\:createTokenWithScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/SocialAuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\SocialAuthController\:\:resolveScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/SocialAuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\TwoFactorAuthController\:\:createTokenWithScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/TwoFactorAuthController.php
+
+		-
+			message: '#^Method App\\Http\\Controllers\\Api\\Auth\\TwoFactorAuthController\:\:resolveScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Http/Controllers/Api/Auth/TwoFactorAuthController.php
 
 		-
 			message: '#^Property App\\Http\\Controllers\\Api\\BIAN\\CurrentAccountController\:\:\$accountService is never read, only written\.$#'
@@ -4529,12 +4295,6 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: app/Http/Controllers/Api/EnhancedRegulatoryController.php
-
-		-
-			message: '#^Call to an undefined method Brick\\Math\\BigDecimal\:\:toArray\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Http/Controllers/Api/ExchangeRateProviderController.php
 
 		-
 			message: '#^Call to method getRate\(\) on an unknown class App\\Domain\\Exchange\\Contracts\\ExchangeRateProviderInterface\.$#'
@@ -6079,6 +5839,24 @@ parameters:
 			path: tests/Console/Commands/CreateSnapshotTest.php
 
 		-
+			message: '#^Method Tests\\Domain\\AI\\MCP\\ToolRegistryTest\:\:createMockTool\(\) has parameter \$capabilities with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Domain/AI/MCP/ToolRegistryTest.php
+
+		-
+			message: '#^Method Tests\\Domain\\AI\\MCP\\ToolRegistryTest\:\:createMockTool\(\) should return App\\Domain\\AI\\Contracts\\MCPToolInterface&Mockery\\MockInterface but returns Mockery\\MockInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Domain/AI/MCP/ToolRegistryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Domain/AI/Services/AIAgentServiceTest.php
+
+		-
 			message: '#^Call to function is_callable\(\) with App\\Domain\\Account\\Actions\\FreezeAccount will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -6511,6 +6289,30 @@ parameters:
 			path: tests/Domain/Basket/Workflows/DecomposeBasketWorkflowTest.php
 
 		-
+			message: '#^Call to an undefined method App\\Domain\\Batch\\Activities\\ProcessBatchItemActivity\:\:calculateConversion\(\)\.$#'
+			identifier: method.notFound
+			count: 12
+			path: tests/Domain/Batch/Activities/ProcessBatchItemActivityTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Domain\\Batch\\Activities\\ProcessBatchItemActivity\:\:getConversionRates\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: tests/Domain/Batch/Activities/ProcessBatchItemActivityTest.php
+
+		-
+			message: '#^Method App\\Domain\\Batch\\Activities\\ProcessBatchItemActivity@anonymous/tests/Domain/Batch/Activities/ProcessBatchItemActivityTest\.php\:27\:\:calculateConversion\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Domain/Batch/Activities/ProcessBatchItemActivityTest.php
+
+		-
+			message: '#^Method App\\Domain\\Batch\\Activities\\ProcessBatchItemActivity@anonymous/tests/Domain/Batch/Activities/ProcessBatchItemActivityTest\.php\:27\:\:getConversionRates\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Domain/Batch/Activities/ProcessBatchItemActivityTest.php
+
+		-
 			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$alertingService\.$#'
 			identifier: property.notFound
 			count: 7
@@ -6605,6 +6407,48 @@ parameters:
 			identifier: property.notFound
 			count: 46
 			path: tests/Domain/Exchange/Services/ExchangeRateProviderRegistryTest.php
+
+		-
+			message: '#^Parameter \#1 \$ruleEngine of class App\\Domain\\Fraud\\Services\\FraudDetectionService constructor expects App\\Domain\\Fraud\\Services\\RuleEngineService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$behavioralAnalysis of class App\\Domain\\Fraud\\Services\\FraudDetectionService constructor expects App\\Domain\\Fraud\\Services\\BehavioralAnalysisService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Parameter \#3 \$deviceService of class App\\Domain\\Fraud\\Services\\FraudDetectionService constructor expects App\\Domain\\Fraud\\Services\\DeviceFingerprintService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Parameter \#4 \$mlService of class App\\Domain\\Fraud\\Services\\FraudDetectionService constructor expects App\\Domain\\Fraud\\Services\\MachineLearningService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Parameter \#5 \$caseService of class App\\Domain\\Fraud\\Services\\FraudDetectionService constructor expects App\\Domain\\Fraud\\Services\\FraudCaseService, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Property App\\Domain\\Account\\Models\\Transaction@anonymous/tests/Domain/Fraud/Services/FraudDetectionServiceTest\.php\:255\:\:\$event_properties type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
+
+		-
+			message: '#^Property App\\Domain\\Account\\Models\\Transaction@anonymous/tests/Domain/Fraud/Services/FraudDetectionServiceTest\.php\:281\:\:\$event_properties type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: tests/Domain/Fraud/Services/FraudDetectionServiceTest.php
 
 		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
@@ -6881,12 +6725,6 @@ parameters:
 			identifier: argument.type
 			count: 3
 			path: tests/Feature/Basket/BasketRebalancingServiceTest.php
-
-		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, false\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/Basket/BasketValueCalculationServiceTest.php
 
 		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, float\|string\> given\.$#'
@@ -7423,30 +7261,6 @@ parameters:
 			path: tests/Feature/Models/BasketAssetTest.php
 
 		-
-			message: '#^Access to an undefined property App\\Domain\\Basket\\Models\\BasketComponent\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domain\\Basket\\Models\\BasketComponent\>\:\:\$is_active\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Models/BasketComponentTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Domain\\Basket\\Models\\BasketComponent\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domain\\Basket\\Models\\BasketComponent\>\:\:\$max_weight\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Models/BasketComponentTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Domain\\Basket\\Models\\BasketComponent\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domain\\Basket\\Models\\BasketComponent\>\:\:\$min_weight\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Models/BasketComponentTest.php
-
-		-
-			message: '#^Access to an undefined property App\\Domain\\Basket\\Models\\BasketComponent\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Domain\\Basket\\Models\\BasketComponent\>\:\:\$weight\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Models/BasketComponentTest.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\HasMany\:\:active\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -7819,18 +7633,6 @@ parameters:
 			path: tests/Unit/Domain/Account/Aggregates/TransferAggregateTest.php
 
 		-
-			message: '#^Assign to protected\(set\) property App\\Domain\\Account\\Events\\AssetBalanceAdded\:\:\$assetCode\.$#'
-			identifier: assign.propertyProtectedSet
-			count: 1
-			path: tests/Unit/Domain/Account/Events/AssetBalanceAddedTest.php
-
-		-
-			message: '#^Assign to protected\(set\) property App\\Domain\\Account\\Events\\AssetBalanceSubtracted\:\:\$amount\.$#'
-			identifier: assign.propertyProtectedSet
-			count: 1
-			path: tests/Unit/Domain/Account/Events/AssetBalanceSubtractedTest.php
-
-		-
 			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:completeScreening\(\)\.$#'
 			identifier: method.notFound
 			count: 2
@@ -8063,18 +7865,6 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 6
 			path: tests/Unit/Domain/Lending/Aggregates/LoanApplicationTest.php
-
-		-
-			message: '#^Assign to protected\(set\) property App\\Domain\\Lending\\ValueObjects\\CreditScore\:\:\$score\.$#'
-			identifier: assign.propertyProtectedSet
-			count: 1
-			path: tests/Unit/Domain/Lending/ValueObjects/CreditScoreTest.php
-
-		-
-			message: '#^Assign to protected\(set\) property App\\Domain\\Lending\\ValueObjects\\RiskRating\:\:\$rating\.$#'
-			identifier: assign.propertyProtectedSet
-			count: 1
-			path: tests/Unit/Domain/Lending/ValueObjects/RiskRatingTest.php
 
 		-
 			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
@@ -8803,12 +8593,6 @@ parameters:
 			path: tests/Unit/Filament/AccountExporterTest.php
 
 		-
-			message: '#^Call to an undefined method ReflectionType\:\:getName\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Helpers/FakerHelperTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsFloat\(\) with float will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -8863,22 +8647,10 @@ parameters:
 			path: tests/Unit/Helpers/SyntaxHighlighterTest.php
 
 		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 5
-			path: tests/Unit/Http/Middleware/EnsureSubProductEnabledTest.php
-
-		-
 			message: '#^Parameter \#1 \$subProductService of class App\\Http\\Middleware\\EnsureSubProductEnabled constructor expects App\\Domain\\Product\\Services\\SubProductService, Mockery\\MockInterface given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Http/Middleware/EnsureSubProductEnabledTest.php
-
-		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
-			identifier: argument.type
-			count: 4
-			path: tests/Unit/Http/Middleware/ValidateKeyAccessTest.php
 
 		-
 			message: '#^Argument of an invalid type array\|Illuminate\\Contracts\\Support\\Arrayable\|JsonSerializable supplied for foreach, only iterables are supported\.$#'
@@ -8993,15 +8765,3 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Unit/Testing/Support/EventWithPrivateProperties.php
-
-		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 5
-			path: app/Domain/AgentProtocol/Services/FraudDetectionService.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: app/Domain/AgentProtocol/Services/FraudDetectionService.php

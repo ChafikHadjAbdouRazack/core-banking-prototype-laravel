@@ -34,9 +34,9 @@ trait InvokesPrivateMethods
     /**
      * Invoke a private or protected method on an object.
      *
-     * @param  object  $object      The object instance
-     * @param  string  $methodName  The method name to invoke
-     * @param  array   $arguments   Arguments to pass to the method
+     * @param  object        $object      The object instance
+     * @param  string        $methodName  The method name to invoke
+     * @param  array<mixed>  $arguments   Arguments to pass to the method
      * @return mixed The method's return value
      *
      * @throws ReflectionException If method doesn't exist
