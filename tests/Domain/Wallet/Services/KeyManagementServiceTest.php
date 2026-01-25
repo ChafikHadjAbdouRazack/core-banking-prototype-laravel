@@ -6,7 +6,6 @@ namespace Tests\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Services\KeyManagementService;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 /**
  * Unit tests for KeyManagementService.
@@ -22,7 +21,7 @@ class KeyManagementServiceTest extends TestCase
         parent::setUp();
 
         // Create service without Laravel dependencies
-        $this->service = new class extends KeyManagementService {
+        $this->service = new class () extends KeyManagementService {
             public function __construct()
             {
                 // Skip parent constructor to avoid config() call

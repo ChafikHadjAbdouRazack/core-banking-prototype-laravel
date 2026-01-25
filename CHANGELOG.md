@@ -15,16 +15,33 @@ Comprehensive test coverage for previously untested domain services and value ob
 
 | Category | Deliverables |
 |----------|--------------|
+| AI Domain | 55 unit tests (ConsensusBuilder, AIAgentService, ToolRegistry) |
+| Batch Domain | 37 unit tests (ProcessBatchItemActivity, BatchJobData) |
 | Fraud Domain | 18 unit tests for FraudDetectionService |
 | Wallet Domain | 37 unit tests (KeyManagementService + Value Objects) |
 | Regulatory Domain | 13 unit tests for ReportGeneratorService |
 | Stablecoin Domain | 24 unit tests for Value Objects |
 | Test Utilities | InvokesPrivateMethods helper trait |
 | Code Quality | PHPStan Level 8 fixes in AccountQueryService |
+| **Total** | **184 new domain tests** |
 
 ### Added
 
 #### Domain Test Suites
+
+- **AI Domain Tests** (55 tests)
+  - `ConsensusBuilderTest` (7 tests) - Consensus building algorithm
+  - `AIAgentServiceTest` (24 tests) - Chat responses, keyword matching, feedback
+  - `ToolRegistryTest` (24 tests) - Tool registration, search, schema export
+
+- **Batch Domain Tests** (37 tests)
+  - `ProcessBatchItemActivityTest` (24 tests)
+    - Currency conversion rates (USD, EUR, GBP, PHP)
+    - Conversion calculations with various amounts
+    - Edge cases (zero, small, large amounts)
+  - `BatchJobDataTest` (13 tests)
+    - Data object creation and validation
+    - UUID generation, type handling, metadata
 
 - **Fraud Domain Tests** (18 tests)
   - `FraudDetectionServiceTest` - Pattern detection, risk scoring
