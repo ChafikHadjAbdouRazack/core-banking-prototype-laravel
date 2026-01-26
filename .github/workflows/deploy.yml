@@ -80,10 +80,11 @@ jobs:
       - name: Run Critical Tests
         if: ${{ !inputs.skip-tests }}
         env:
-          APP_KEY: base64:testkeytestkeytestkeytestkeytes=
+          APP_KEY: base64:dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=
           APP_ENV: testing
         run: |
           cp .env.example .env || true
+          echo "APP_KEY=$APP_KEY" >> .env
           composer install --prefer-dist --no-progress --optimize-autoloader
           ./vendor/bin/pest tests/Unit --stop-on-failure
 
