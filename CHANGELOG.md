@@ -17,13 +17,15 @@ Comprehensive test coverage for previously untested domain services and value ob
 |----------|--------------|
 | AI Domain | 55 unit tests (ConsensusBuilder, AIAgentService, ToolRegistry) |
 | Batch Domain | 37 unit tests (ProcessBatchItemActivity, BatchJobData) |
+| CGO Domain | 70 unit tests (CgoKycService, InvestmentAgreementService, etc.) |
+| FinancialInstitution Domain | 65 unit tests (ComplianceCheckService, PaymentVerificationService, etc.) |
 | Fraud Domain | 18 unit tests for FraudDetectionService |
 | Wallet Domain | 37 unit tests (KeyManagementService + Value Objects) |
 | Regulatory Domain | 13 unit tests for ReportGeneratorService |
 | Stablecoin Domain | 24 unit tests for Value Objects |
 | Test Utilities | InvokesPrivateMethods helper trait |
-| Code Quality | PHPStan Level 8 fixes in AccountQueryService |
-| **Total** | **184 new domain tests** |
+| Code Quality | PHPStan Level 8 fixes, API scope test updates |
+| **Total** | **319 new domain tests** |
 
 ### Added
 
@@ -73,6 +75,18 @@ Comprehensive test coverage for previously untested domain services and value ob
   - `CollateralRatio` - Ratio calculations with BigDecimal precision
   - `PriceData` - Price feeds with staleness detection
 
+- **CGO Domain Tests** (70 tests)
+  - `CgoKycServiceTest` (17 tests) - KYC verification and compliance checks
+  - `InvestmentAgreementServiceTest` (18 tests) - Agreement generation and management
+  - `RiskAssessmentServiceTest` (18 tests) - Risk scoring and investment suitability
+  - `OfferingValidatorServiceTest` (17 tests) - Offering validation rules
+
+- **FinancialInstitution Domain Tests** (65 tests)
+  - `ComplianceCheckServiceTest` (18 tests) - Regulatory compliance verification
+  - `PaymentVerificationServiceTest` (18 tests) - Payment validation and fraud checks
+  - `BankingConnectorServiceTest` (14 tests) - Banking API integration tests
+  - `TransactionMonitoringServiceTest` (15 tests) - Real-time transaction monitoring
+
 #### Test Utilities
 
 - **InvokesPrivateMethods Trait** (`tests/Traits/`)
@@ -94,6 +108,10 @@ Comprehensive test coverage for previously untested domain services and value ob
 - PHPStan Level 8 errors in `AccountQueryService`
 - Test isolation issues with Eloquent model mocking
 - Type safety for financial calculations in value objects
+- API scope authentication in 20+ feature tests after security hardening
+- Test expectations for empty scopes (now correctly deny access)
+- Flaky `DemoLendingServiceTest` credit score simulation
+- `AgentMessageBusServiceTest` mock return types (Agent model vs array)
 
 ### Security
 
