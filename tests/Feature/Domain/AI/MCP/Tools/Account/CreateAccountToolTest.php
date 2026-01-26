@@ -35,7 +35,7 @@ class CreateAccountToolTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Set up MCP infrastructure
         $this->registry = new ToolRegistry();

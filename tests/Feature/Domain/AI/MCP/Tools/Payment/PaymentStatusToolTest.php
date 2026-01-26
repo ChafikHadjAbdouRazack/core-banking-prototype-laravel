@@ -41,7 +41,7 @@ class PaymentStatusToolTest extends TestCase
             'user_uuid' => $this->user->uuid,
         ]);
 
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Set up MCP infrastructure
         $this->registry = new ToolRegistry();

@@ -50,7 +50,7 @@ beforeEach(function () {
 
 describe('POST /api/accounts/{uuid}/deposit', function () {
     it('successfully deposits USD to account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 100.50,
@@ -65,7 +65,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('successfully deposits BTC to account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 0.01, // Use a larger amount that won't round to 0
@@ -89,7 +89,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('validates required fields', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", []);
 
@@ -98,7 +98,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('validates minimum amount', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'     => 0.00,
@@ -110,7 +110,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('validates asset exists', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'     => 100.00,
@@ -122,7 +122,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('validates description length', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 100.00,
@@ -135,7 +135,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
     });
 
     it('returns 404 for non-existent account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
         $fakeUuid = Illuminate\Support\Str::uuid();
 
         $response = $this->postJson("/api/accounts/{$fakeUuid}/deposit", [
@@ -150,7 +150,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
         $otherUser = User::factory()->create();
         $otherAccount = Account::factory()->create(['user_uuid' => $otherUser->uuid]);
 
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/deposit", [
             'amount'     => 100.00,
@@ -166,7 +166,7 @@ describe('POST /api/accounts/{uuid}/deposit', function () {
 
     it('rejects deposits to frozen account', function () {
         $this->account->update(['frozen' => true]);
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'     => 100.00,
@@ -222,7 +222,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
     });
 
     it('successfully withdraws USD from account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Debug: verify balance before withdrawal
         $balance = $this->account->getBalance('USD');
@@ -251,7 +251,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
     });
 
     it('successfully withdraws BTC from account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'      => 0.05,
@@ -275,7 +275,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
     });
 
     it('validates required fields', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", []);
 
@@ -284,7 +284,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
     });
 
     it('rejects withdrawal with insufficient balance', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'     => 2000.00, // More than $1000 balance
@@ -304,7 +304,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
         $otherUser = User::factory()->create();
         $otherAccount = Account::factory()->create(['user_uuid' => $otherUser->uuid]);
 
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$otherAccount->uuid}/withdraw", [
             'amount'     => 50.00,
@@ -320,7 +320,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
 
     it('rejects withdrawals from frozen account', function () {
         $this->account->update(['frozen' => true]);
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'     => 50.00,
@@ -336,7 +336,7 @@ describe('POST /api/accounts/{uuid}/withdraw', function () {
 
     it('handles workflow exception gracefully', function () {
         // Mock a workflow failure by making account balance check pass but workflow fail
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // We'll simulate this by trying to withdraw from an asset with 0 balance
         $this->account->balances()->updateOrCreate(
@@ -409,7 +409,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('successfully retrieves transaction history', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions");
 
@@ -442,7 +442,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('filters transactions by type', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?type=credit");
 
@@ -453,7 +453,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('filters transactions by asset code', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?asset_code=BTC");
 
@@ -464,7 +464,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('paginates results correctly', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?per_page=2");
 
@@ -475,7 +475,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('validates pagination limits', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?per_page=500");
 
@@ -484,7 +484,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('validates type filter', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?type=invalid");
 
@@ -499,7 +499,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('returns 404 for non-existent account', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
         $fakeUuid = Illuminate\Support\Str::uuid();
 
         $response = $this->getJson("/api/accounts/{$fakeUuid}/transactions");
@@ -509,7 +509,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
 
     it('returns empty data for account with no transactions', function () {
         $emptyAccount = Account::factory()->create(['user_uuid' => $this->user->uuid]);
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$emptyAccount->uuid}/transactions");
 
@@ -518,7 +518,7 @@ describe('GET /api/accounts/{uuid}/transactions', function () {
     });
 
     it('correctly transforms different event types', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions");
 

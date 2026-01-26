@@ -142,7 +142,7 @@ class AgentAuthApiTest extends TestCase
     /** @test */
     public function it_generates_api_key_for_authenticated_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/agent-protocol/agents/{$this->agent->did}/api-keys", [
             'name'   => 'Test Key',
@@ -172,7 +172,7 @@ class AgentAuthApiTest extends TestCase
     /** @test */
     public function it_lists_api_keys_for_authenticated_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create some API keys
         AgentApiKey::create([
@@ -215,7 +215,7 @@ class AgentAuthApiTest extends TestCase
     /** @test */
     public function it_revokes_api_key_for_authenticated_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $apiKey = AgentApiKey::create([
             'key_id'     => 'ak_' . Str::random(16),
@@ -246,7 +246,7 @@ class AgentAuthApiTest extends TestCase
     /** @test */
     public function it_lists_active_sessions_for_authenticated_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/agent-protocol/agents/{$this->agent->did}/sessions");
 
@@ -261,7 +261,7 @@ class AgentAuthApiTest extends TestCase
     /** @test */
     public function it_revokes_all_sessions_for_authenticated_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->deleteJson("/api/agent-protocol/agents/{$this->agent->did}/sessions");
 

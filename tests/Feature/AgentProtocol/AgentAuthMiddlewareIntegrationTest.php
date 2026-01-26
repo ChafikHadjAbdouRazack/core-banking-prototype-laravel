@@ -244,7 +244,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
     /** @test */
     public function user_authenticated_routes_accept_sanctum_token(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/agent-protocol/agents/{$this->agent->did}/api-keys");
 
@@ -266,7 +266,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
     /** @test */
     public function agent_registration_accepts_sanctum_token(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/agent-protocol/agents/register', [
             'did'          => 'did:agent:test:new_' . Str::random(16),
@@ -359,7 +359,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
     public function full_authentication_flow_works_end_to_end(): void
     {
         // 1. Register agent (user auth required)
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $newDid = 'did:agent:test:e2e_' . Str::random(16);
         $registerResponse = $this->postJson('/api/agent-protocol/agents/register', [

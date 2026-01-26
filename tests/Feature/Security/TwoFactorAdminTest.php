@@ -95,7 +95,7 @@ class TwoFactorAdminTest extends TestCase
     {
         $user = User::factory()->create();
 
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/auth/user');
 

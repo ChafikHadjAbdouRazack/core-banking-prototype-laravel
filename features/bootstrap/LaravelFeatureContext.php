@@ -161,7 +161,7 @@ class LaravelFeatureContext implements Context
         
         $this->currentUser = $user;
         self::$sharedUser = $user; // Share with other contexts
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['read', 'write', 'delete']);
     }
 
     /**
@@ -238,7 +238,7 @@ class LaravelFeatureContext implements Context
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
         
         if ($this->currentUser) {
-            $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+            $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
             $headers['Authorization'] = 'Bearer ' . $token;
         }
         
@@ -279,7 +279,7 @@ class LaravelFeatureContext implements Context
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
         
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
-        $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+        $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
         $body = json_encode([
@@ -309,7 +309,7 @@ class LaravelFeatureContext implements Context
                    Account::where('user_uuid', $this->currentUser->uuid)->first();
         
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
-        $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+        $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
         $body = json_encode([
@@ -349,7 +349,7 @@ class LaravelFeatureContext implements Context
         $amountInCents = (int) ($amount * 100);
         
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
-        $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+        $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
         $request = \Illuminate\Http\Request::create(
@@ -567,7 +567,7 @@ class LaravelFeatureContext implements Context
                    Account::where('user_uuid', $this->currentUser->uuid)->orderBy('created_at', 'desc')->first();
         
         $headers = ['Accept' => 'application/json'];
-        $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+        $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
         $request = \Illuminate\Http\Request::create(
@@ -647,7 +647,7 @@ class LaravelFeatureContext implements Context
         }
         
         $headers = ['Accept' => 'application/json', 'Content-Type' => 'application/json'];
-        $token = $this->currentUser->createToken('behat-test')->plainTextToken;
+        $token = $this->currentUser->createToken('behat-test', ['read', 'write', 'delete'])->plainTextToken;
         $headers['Authorization'] = 'Bearer ' . $token;
         
         $request = \Illuminate\Http\Request::create(

@@ -18,7 +18,7 @@ class ScopeDebugTest extends TestCase
         $user = User::factory()->create();
 
         // Test with no abilities
-        Sanctum::actingAs($user);
+        Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
         echo "\n=== Test 1: Sanctum::actingAs without abilities ===\n";
         $canRead = $user->tokenCan('read');

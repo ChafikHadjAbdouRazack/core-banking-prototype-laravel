@@ -126,7 +126,8 @@ class DemoLendingServiceTest extends TestCase
         ]);
 
         // Mock poor credit score by setting config temporarily
-        Config::set('demo.domains.lending.default_credit_score', 550);
+        // Base score of 500 ensures max score with +100 variation is 600, still below 650 threshold
+        Config::set('demo.domains.lending.default_credit_score', 500);
 
         $this->service->processApplication($application);
         $application->refresh();
