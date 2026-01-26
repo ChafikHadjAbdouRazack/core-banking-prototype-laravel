@@ -150,7 +150,7 @@ class CheckAgentScopeTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function test_allows_empty_scopes_for_backward_compatibility(): void
+    public function test_denies_empty_scopes_for_security(): void
     {
         // Arrange
         $agent = Agent::factory()->create(['status' => 'active']);
@@ -161,8 +161,8 @@ class CheckAgentScopeTest extends TestCase
             return response()->json(['success' => true]);
         }, 'payments:read');
 
-        // Assert - Empty scopes means all allowed for backward compatibility
-        $this->assertEquals(200, $response->getStatusCode());
+        // Assert - Empty scopes means nothing allowed (security hardening v1.4.0)
+        $this->assertEquals(403, $response->getStatusCode());
     }
 
     public function test_validates_payment_scopes(): void

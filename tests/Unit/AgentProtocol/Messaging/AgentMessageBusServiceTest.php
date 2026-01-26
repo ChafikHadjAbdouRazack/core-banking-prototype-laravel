@@ -9,6 +9,7 @@ use App\Domain\AgentProtocol\Enums\MessageStatus;
 use App\Domain\AgentProtocol\Enums\MessageType;
 use App\Domain\AgentProtocol\Messaging\A2AMessageEnvelope;
 use App\Domain\AgentProtocol\Messaging\AgentMessageBusService;
+use App\Domain\AgentProtocol\Models\Agent;
 use App\Domain\AgentProtocol\Services\AgentRegistryService;
 use App\Domain\AgentProtocol\Services\DigitalSignatureService;
 use DateTimeImmutable;
@@ -16,12 +17,19 @@ use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Queue\Factory as QueueFactory;
 use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
+use Tests\CreatesApplication;
 
-class AgentMessageBusServiceTest extends TestCase
+/**
+ * Unit test for AgentMessageBusService using mocks.
+ * Uses BaseTestCase without RefreshDatabase for pure unit testing.
+ */
+class AgentMessageBusServiceTest extends BaseTestCase
 {
+    use CreatesApplication;
+
     private AgentMessageBusService $service;
 
     /** @var AgentRegistryService&MockInterface */
@@ -78,6 +86,16 @@ class AgentMessageBusServiceTest extends TestCase
         parent::tearDown();
     }
 
+    private function createMockAgent(string $did): Agent
+    {
+        $agent = new Agent();
+        $agent->agent_id = $did;
+        $agent->name = 'Test Agent';
+        $agent->status = 'active';
+
+        return $agent;
+    }
+
     public function test_sends_message_successfully(): void
     {
         $envelope = A2AMessageEnvelope::create(
@@ -92,13 +110,13 @@ class AgentMessageBusServiceTest extends TestCase
             ->shouldReceive('getAgent')
             ->with('did:finaegis:key:sender123')
             ->once()
-            ->andReturn(['did' => 'did:finaegis:key:sender123']);
+            ->andReturn($this->createMockAgent('did:finaegis:key:sender123'));
 
         $this->registryService
             ->shouldReceive('getAgent')
             ->with('did:finaegis:key:recipient456')
             ->once()
-            ->andReturn(['did' => 'did:finaegis:key:recipient456']);
+            ->andReturn($this->createMockAgent('did:finaegis:key:recipient456'));
 
         // Mock signature
         $this->signatureService
@@ -164,7 +182,7 @@ class AgentMessageBusServiceTest extends TestCase
             ->shouldReceive('getAgent')
             ->with('did:finaegis:key:sender123')
             ->once()
-            ->andReturn(['did' => 'did:finaegis:key:sender123']);
+            ->andReturn($this->createMockAgent('did:finaegis:key:sender123'));
 
         $this->registryService
             ->shouldReceive('getAgent')
@@ -218,10 +236,10 @@ class AgentMessageBusServiceTest extends TestCase
 
         $this->cache
             ->shouldReceive('put')
-            ->times(2); // processed marker and status
+            ->times(3); // processed marker, status, and response
 
         // Mock events
-        $this->events->shouldReceive('dispatch')->once();
+        $this->events->shouldReceive('dispatch')->twice(); // received and processed
 
         $result = $this->service->receive($envelope);
 
@@ -380,7 +398,7 @@ class AgentMessageBusServiceTest extends TestCase
         // Setup mocks for all sends
         $this->registryService
             ->shouldReceive('getAgent')
-            ->andReturn(['did' => 'did:test']);
+            ->andReturn($this->createMockAgent('did:test'));
 
         $this->signatureService
             ->shouldReceive('signAgentTransaction')
@@ -433,7 +451,7 @@ class AgentMessageBusServiceTest extends TestCase
         // Setup mocks
         $this->registryService
             ->shouldReceive('getAgent')
-            ->andReturn(['did' => 'did:test']);
+            ->andReturn($this->createMockAgent('did:test'));
 
         $this->signatureService
             ->shouldReceive('signAgentTransaction')

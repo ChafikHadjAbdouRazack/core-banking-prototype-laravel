@@ -151,9 +151,9 @@ class AgentScopeTest extends TestCase
 
     public function test_checks_scope_membership_with_empty_array(): void
     {
-        // Empty scopes means all allowed (backward compatibility)
-        $this->assertTrue(AgentScope::hasScope([], AgentScope::PAYMENTS_READ));
-        $this->assertTrue(AgentScope::hasScope([], 'any:scope'));
+        // Empty scopes means nothing allowed (security hardening - v1.4.0)
+        $this->assertFalse(AgentScope::hasScope([], AgentScope::PAYMENTS_READ));
+        $this->assertFalse(AgentScope::hasScope([], 'any:scope'));
     }
 
     public function test_checks_scope_membership_with_universal(): void
