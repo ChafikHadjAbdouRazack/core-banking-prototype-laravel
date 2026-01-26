@@ -229,7 +229,7 @@ class ExchangeRateProviderControllerTest extends ControllerTestCase
     #[Test]
     public function test_refresh_rates_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Accept 400 status as the controller wraps all exceptions
         $response = $this->postJson('/api/v1/exchange-providers/refresh', [

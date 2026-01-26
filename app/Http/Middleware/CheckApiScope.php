@@ -25,7 +25,13 @@ class CheckApiScope
             return $next($request);
         }
 
-        // Standard scope checking for all environments (security hardening)
+        // If user is authenticated via web session (no API token), allow access
+        // Web sessions are protected by CSRF and session-based auth
+        if (! $request->user()->currentAccessToken()) {
+            return $next($request);
+        }
+
+        // Standard scope checking for API token-based authentication (security hardening)
         foreach ($scopes as $scope) {
             if ($request->user()->tokenCan($scope)) {
                 return $next($request);

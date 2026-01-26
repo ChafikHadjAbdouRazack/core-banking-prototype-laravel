@@ -215,7 +215,7 @@ class ExternalExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_arbitrage_opportunities_returns_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Setup liquidity service to return arbitrage opportunities
         /** @var Mockery\Expectation $expectation */
@@ -250,7 +250,7 @@ class ExternalExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_arbitrage_opportunities_returns_error_for_invalid_pair(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Setup liquidity service to return empty opportunities
         /** @var Mockery\Expectation $expectation */

@@ -24,7 +24,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_user_risk_profile_returns_risk_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-123';
         $response = $this->getJson("/api/risk/users/{$userId}/profile");
@@ -57,7 +57,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_analyze_transaction_returns_risk_analysis(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $transactionId = 'txn-456';
         $response = $this->getJson("/api/risk/transactions/{$transactionId}/analyze");
@@ -90,7 +90,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_calculate_risk_score_with_basic_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/calculate', [
             'amount'           => 1000.00,
@@ -117,7 +117,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_calculate_risk_score_with_full_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/calculate', [
             'amount'              => 50000.00,
@@ -156,7 +156,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_risk_factors_returns_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/risk/factors');
 
@@ -180,7 +180,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_risk_models_returns_available_models(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/risk/models');
 
@@ -204,7 +204,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_risk_history_returns_user_history(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-789';
         $response = $this->getJson("/api/risk/users/{$userId}/history");
@@ -227,7 +227,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_risk_history_with_filters(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-789';
         $response = $this->getJson("/api/risk/users/{$userId}/history?start_date=2024-01-01&end_date=2024-01-31");
@@ -251,7 +251,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_device_fingerprint_saves_device_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/device-fingerprint', [
             'fingerprint'          => 'unique-fingerprint-123',
@@ -276,7 +276,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_device_fingerprint_with_minimal_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/device-fingerprint', [
             'fingerprint' => 'minimal-fingerprint-456',
@@ -302,7 +302,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_device_history_returns_user_devices(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-999';
         $response = $this->getJson("/api/risk/users/{$userId}/devices");
@@ -333,7 +333,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_calculate_risk_score_with_high_risk_indicators(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/calculate', [
             'amount'              => 100000.00,
@@ -361,7 +361,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_analyze_transaction_with_context(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $transactionId = 'txn-complex-123';
         $response = $this->postJson("/api/risk/transactions/{$transactionId}/analyze", [
@@ -383,7 +383,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_risk_history_with_pagination(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-paginated';
         $response = $this->getJson("/api/risk/users/{$userId}/history?page=2&per_page=20");
@@ -400,7 +400,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_device_history_with_suspicious_filter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-devices';
         $response = $this->getJson("/api/risk/users/{$userId}/devices?suspicious_only=true");
@@ -417,7 +417,7 @@ class RiskAnalysisControllerTest extends ControllerTestCase
     #[Test]
     public function test_calculate_risk_score_for_merchant_transaction(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/risk/calculate', [
             'amount'              => 250.00,

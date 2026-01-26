@@ -121,7 +121,7 @@ describe('metrics endpoint', function () {
     });
 
     it('returns JSON metrics with authentication', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Set some cache metrics
         Cache::put('metrics:http:requests:total', 100);
@@ -148,7 +148,7 @@ describe('traces endpoint', function () {
     });
 
     it('returns trace data', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Set up test trace data using the correct cache keys
         $traceId = 'trace-123';
@@ -179,7 +179,7 @@ describe('alerts endpoint', function () {
     });
 
     it('returns active alerts', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create test alerts
         DB::table('monitoring_alerts')->insert([
@@ -224,7 +224,7 @@ describe('alerts endpoint', function () {
     });
 
     it('filters alerts by severity', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create alerts with different severities
         DB::table('monitoring_alerts')->insert([
@@ -255,7 +255,7 @@ describe('alerts endpoint', function () {
     });
 
     it('excludes acknowledged alerts by default', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create acknowledged and unacknowledged alerts
         DB::table('monitoring_alerts')->insert([
@@ -296,7 +296,7 @@ describe('acknowledge alert endpoint', function () {
     });
 
     it('acknowledges an alert', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create an alert
         $alertId = DB::table('monitoring_alerts')->insertGetId([
@@ -326,7 +326,7 @@ describe('acknowledge alert endpoint', function () {
     });
 
     it('returns 404 for non-existent alert', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->putJson('/api/monitoring/alerts/999/acknowledge');
 
@@ -344,7 +344,7 @@ describe('start monitoring session endpoint', function () {
     });
 
     it('starts a new monitoring session', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/monitoring/sessions/start', [
             'metadata' => [
@@ -374,7 +374,7 @@ describe('record metric endpoint', function () {
     });
 
     it('records a metric', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/monitoring/metrics/record', [
             'name'   => 'api_requests',
@@ -403,7 +403,7 @@ describe('record metric endpoint', function () {
     });
 
     it('validates metric type', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/monitoring/metrics/record', [
             'name'  => 'test_metric',
@@ -424,7 +424,7 @@ describe('performance snapshot endpoint', function () {
     });
 
     it('returns performance snapshot', function () {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/monitoring/performance');
 

@@ -78,7 +78,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_all_account_balances(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create balances for the account
         AccountBalance::create([
@@ -132,7 +132,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_filters_by_asset_code(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -156,7 +156,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_filters_positive_balances_only(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -188,7 +188,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid/balances');
 
@@ -202,7 +202,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_formats_balances_correctly(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -231,7 +231,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_calculates_usd_equivalent(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -262,7 +262,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_all_balances(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create multiple accounts with balances
         $account2 = Account::factory()->create();
@@ -313,7 +313,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_filters_by_asset(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -337,7 +337,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_filters_by_minimum_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         AccountBalance::create([
             'account_uuid' => $this->account->uuid,
@@ -361,7 +361,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_filters_by_user_uuid(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $otherUser = User::factory()->create();
         $otherAccount = Account::factory()->create(['user_uuid' => $otherUser->uuid]);
@@ -388,7 +388,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_respects_limit_parameter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create 5 balances
         for ($i = 1; $i <= 5; $i++) {
@@ -409,7 +409,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_orders_by_balance_descending(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account1 = Account::factory()->create();
         $account2 = Account::factory()->create();
@@ -444,7 +444,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_calculates_asset_totals(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account1 = Account::factory()->create();
         $account2 = Account::factory()->create();
@@ -479,7 +479,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_validates_input_parameters(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Test invalid asset code (too long)
         $response = $this->getJson('/api/balances?asset=INVALID');
@@ -513,7 +513,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_handles_account_with_no_balances(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $emptyAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -531,7 +531,7 @@ class AccountBalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_includes_metadata_counts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create 3 accounts
         $account1 = Account::factory()->create();

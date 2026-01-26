@@ -76,7 +76,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_usd_to_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 250.50, // 250.50 USD
@@ -93,7 +93,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_eur_to_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 100.00, // 100.00 EUR
@@ -110,7 +110,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_validates_required_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", []);
 
@@ -121,7 +121,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_validates_minimum_amount(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'     => 0,
@@ -135,7 +135,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_validates_asset_exists(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'     => 100,
@@ -149,7 +149,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_prevents_access_to_other_users_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->otherAccount->uuid}/deposit", [
             'amount'     => 100,
@@ -166,7 +166,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_prevents_deposit_to_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -188,7 +188,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/deposit', [
             'amount'     => 100,
@@ -212,7 +212,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_usd_from_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'      => 100.00, // 100.00 USD
@@ -229,7 +229,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_validates_required_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", []);
 
@@ -240,7 +240,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_validates_minimum_amount(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'     => 0,
@@ -254,7 +254,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_prevents_insufficient_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'     => 2000.00, // More than balance
@@ -273,7 +273,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_prevents_access_to_other_users_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->otherAccount->uuid}/withdraw", [
             'amount'     => 100,
@@ -290,7 +290,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_prevents_withdrawal_from_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -313,7 +313,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/withdraw', [
             'amount'     => 100,
@@ -337,7 +337,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_returns_transaction_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions");
 
@@ -369,7 +369,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_filters_by_transaction_type(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?type=credit");
 
@@ -384,7 +384,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_filters_by_asset_code(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?asset_code=EUR");
 
@@ -399,7 +399,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_paginates_results(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?per_page=10");
 
@@ -410,7 +410,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_validates_per_page_limits(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?per_page=101");
 
@@ -421,7 +421,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_validates_type_parameter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/transactions?type=invalid");
 
@@ -432,7 +432,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid/transactions');
 
@@ -450,7 +450,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_deposit_with_long_description(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/deposit", [
             'amount'      => 100,
@@ -465,7 +465,7 @@ class TransactionControllerTest extends ControllerTestCase
     #[Test]
     public function test_withdraw_with_valid_description(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson("/api/accounts/{$this->account->uuid}/withdraw", [
             'amount'      => 50.00,

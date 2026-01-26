@@ -39,7 +39,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_status_returns_user_kyc_status(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/kyc/status');
 
@@ -72,7 +72,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_requirements_returns_kyc_requirements_for_level(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->kycService->shouldReceive('getRequirements')
             ->with('enhanced')
@@ -112,7 +112,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_requirements_validates_level_parameter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/kyc/requirements?level=invalid');
 
@@ -123,7 +123,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_requirements_requires_level_parameter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/kyc/requirements');
 
@@ -134,7 +134,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_submit_documents_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->kycService->shouldReceive('submitKyc')
             ->once()
@@ -192,7 +192,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_submit_validates_document_type(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $file = UploadedFile::fake()->image('document.jpg');
 
@@ -212,7 +212,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_submit_validates_file_format(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $file = UploadedFile::fake()->create('document.exe', 100);
 
@@ -232,7 +232,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_submit_validates_file_size(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create a file larger than 10MB
         $file = UploadedFile::fake()->image('large.jpg')->size(11000); // 11MB
@@ -261,7 +261,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_submit_handles_service_exception(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->kycService->shouldReceive('submitKyc')
             ->once()
@@ -287,7 +287,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_upload_single_document_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $file = UploadedFile::fake()->image('passport.jpg', 800, 600)->size(1000);
 
@@ -312,7 +312,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_upload_validates_document_file(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/compliance/kyc/documents', [
             'type' => 'passport',
@@ -325,7 +325,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_upload_validates_document_type(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $file = UploadedFile::fake()->image('document.jpg');
 
@@ -357,7 +357,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_download_document_returns_404_for_non_existent_document(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/kyc/documents/999/download');
 
@@ -367,7 +367,7 @@ class KycControllerTest extends ControllerTestCase
     #[Test]
     public function test_requirements_accepts_all_valid_levels(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $levels = ['basic', 'enhanced', 'full'];
 

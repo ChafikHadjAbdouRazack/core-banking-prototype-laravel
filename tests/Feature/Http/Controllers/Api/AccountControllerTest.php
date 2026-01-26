@@ -29,7 +29,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_user_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create accounts for the authenticated user
         $account1 = Account::factory()->create([
@@ -91,7 +91,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_empty_array_when_no_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts');
 
@@ -110,7 +110,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_creates_account_with_initial_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts', [
             'name'            => 'New Account',
@@ -149,7 +149,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_creates_account_without_initial_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts', [
             'name' => 'Zero Balance Account',
@@ -168,7 +168,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_required_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts', []);
 
@@ -179,7 +179,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_input_formats(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts', [
             'name'            => str_repeat('a', 256), // Too long
@@ -203,7 +203,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_account_details(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -245,7 +245,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid');
 
@@ -265,7 +265,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_prevents_access_to_other_users_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $otherAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
@@ -396,7 +396,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_freezes_unfrozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -417,7 +417,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_prevents_freezing_already_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -438,7 +438,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_requires_reason(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -454,7 +454,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_validates_input_length(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create();
 
@@ -470,7 +470,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/freeze', [
             'reason' => 'Test reason',
@@ -494,7 +494,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_freeze_prevents_freezing_other_users_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $otherAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
@@ -511,7 +511,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_unfreeze_unfreezes_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -532,7 +532,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_unfreeze_prevents_unfreezing_not_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -553,7 +553,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_unfreeze_requires_reason(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $account = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -569,7 +569,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_unfreeze_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/accounts/non-existent-uuid/unfreeze', [
             'reason' => 'Test reason',
@@ -593,7 +593,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_unfreeze_prevents_unfreezing_other_users_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $otherAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
@@ -610,7 +610,7 @@ class AccountControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_orders_accounts_by_created_at_desc(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $oldAccount = Account::factory()->create([
             'user_uuid'  => $this->user->uuid,

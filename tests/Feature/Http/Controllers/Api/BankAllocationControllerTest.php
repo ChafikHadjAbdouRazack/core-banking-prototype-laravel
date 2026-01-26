@@ -44,7 +44,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_default_allocations_when_none_exist(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/bank-allocations');
 
@@ -79,7 +79,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_existing_allocations(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create bank preferences
         UserBankPreference::create([
@@ -125,7 +125,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_allocations_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Setup initial allocations
         $this->bankAllocationService->setupDefaultAllocations($this->user);
@@ -156,7 +156,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_allocations_validates_percentages(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->putJson('/api/bank-allocations', [
             'allocations' => [
@@ -171,7 +171,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_allocations_validates_bank_codes(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->putJson('/api/bank-allocations', [
             'allocations' => [
@@ -187,7 +187,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_add_bank_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Setup initial allocations with room for adding another bank
         $this->user->bankPreferences()->create([
@@ -225,7 +225,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_add_bank_validates_input(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Test invalid bank code
         $response = $this->postJson('/api/bank-allocations/banks', [
@@ -249,7 +249,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_remove_bank_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create bank preferences with 3 banks so removing one still leaves 100%
         UserBankPreference::create([
@@ -301,7 +301,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_cannot_remove_primary_bank(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         UserBankPreference::create([
             'user_uuid'             => $this->user->uuid,
@@ -322,7 +322,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_set_primary_bank_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create bank preferences
         UserBankPreference::create([
@@ -365,7 +365,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_cannot_set_non_existent_bank_as_primary(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->putJson('/api/bank-allocations/primary/NON_EXISTENT');
 
@@ -375,7 +375,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_available_banks_returns_all_banks(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/bank-allocations/available-banks');
 
@@ -401,7 +401,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_preview_distribution_calculates_correctly(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create bank preferences with specific allocations
         UserBankPreference::create([
@@ -482,7 +482,7 @@ class BankAllocationControllerTest extends ControllerTestCase
     #[Test]
     public function test_preview_distribution_validates_input(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Test invalid amount
         $response = $this->postJson('/api/bank-allocations/distribution-preview', [

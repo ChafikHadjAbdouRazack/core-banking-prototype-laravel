@@ -65,7 +65,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_account_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
 
@@ -91,7 +91,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_turnover_data_when_exists(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create turnover data
         $turnover = Turnover::create([
@@ -125,7 +125,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_null_turnover_when_none_exists(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance");
 
@@ -136,7 +136,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_uses_cached_balance_when_available(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Set a different cached balance
         $this->accountCache->updateBalance($this->account->uuid, 75000);
@@ -150,7 +150,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid/balance');
 
@@ -160,7 +160,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_handles_frozen_accounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -193,7 +193,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_returns_detailed_balance_statistics(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create some turnover data for the last 3 months
         for ($i = 0; $i < 3; $i++) {
@@ -236,7 +236,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_calculates_statistics_correctly(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create turnover data
         Turnover::create([
@@ -286,7 +286,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_handles_no_turnover_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->account->uuid}/balance/summary");
 
@@ -300,7 +300,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid/balance/summary');
 
@@ -318,7 +318,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_formats_monthly_turnover_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create specific turnover data with a known date
         $testDate = Carbon::create(2024, 3, 15);
@@ -350,7 +350,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_balance_with_zero_balance(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $zeroBalanceAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -368,7 +368,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_summary_handles_large_turnover_volumes(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create 12 months of turnover data
         for ($i = 0; $i < 12; $i++) {
@@ -394,7 +394,7 @@ class BalanceControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_uses_account_balance_when_cache_unavailable(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Mock cache to return null
         $mockAccountCache = Mockery::mock(AccountCacheService::class)->makePartial();

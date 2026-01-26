@@ -22,7 +22,7 @@ class ComplianceCaseControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
     }
 
     public function test_can_list_compliance_cases(): void
