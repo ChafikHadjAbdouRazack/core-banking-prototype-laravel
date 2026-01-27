@@ -5,6 +5,31 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-01-27
+
+### 🐛 Database Cache Connection Fix
+
+Fixes a critical issue where `php artisan optimize` fails with "Access denied for user 'root'@'localhost'" in production environments.
+
+### Fixed
+
+- **Cache Configuration** - Fixed database cache driver using incorrect credentials during optimization
+  - `config/cache.php` now properly defaults `DB_CACHE_CONNECTION` to the configured `DB_CONNECTION`
+  - Also fixed `lock_connection` to inherit from `DB_CONNECTION` when not explicitly set
+  - Resolves issue where Laravel would fall back to hardcoded 'root' credentials during `php artisan optimize`
+
+### Changed
+
+- **Environment Configuration** - Added documentation for `DB_CACHE_CONNECTION` in `.env.example`
+  - Commented example showing how to explicitly set cache database connection
+  - Helpful for environments requiring separate cache database credentials
+
+### Root Cause Analysis
+
+The `laravel-data` caching step during `php artisan optimize` uses the database cache driver. When `DB_CACHE_CONNECTION` was null (not set in .env), Laravel's cache driver would not properly inherit the application's configured database credentials, instead falling back to the hardcoded MySQL defaults (`root` with empty password) defined in `config/database.php`.
+
+---
+
 ## [1.4.0] - 2026-01-27
 
 ### 🧪 Test Coverage Expansion Release

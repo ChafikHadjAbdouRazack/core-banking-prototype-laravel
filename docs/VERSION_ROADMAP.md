@@ -195,6 +195,33 @@ Warning Alerts:
 
 ---
 
+## Version 1.4.1 - Cache Configuration Fix (COMPLETED)
+
+**Release Date**: January 27, 2026
+**Theme**: Production Stability Patch
+
+### Summary
+
+Fixes a critical issue where `php artisan optimize` fails in production with "Access denied for user 'root'@'localhost'" error during the `laravel-data` caching step.
+
+### Root Cause
+
+When `DB_CACHE_CONNECTION` was not set in the environment file, Laravel's database cache driver would not properly inherit the configured database credentials, instead falling back to hardcoded MySQL defaults (`root` with empty password).
+
+### Fix Applied
+
+| File | Change |
+|------|--------|
+| `config/cache.php` | `DB_CACHE_CONNECTION` now defaults to `DB_CONNECTION` value |
+| `config/cache.php` | `lock_connection` also inherits from `DB_CONNECTION` |
+| `.env.example` | Added documentation for `DB_CACHE_CONNECTION` option |
+
+### Upgrade Notes
+
+No action required. The fix automatically uses your configured `DB_CONNECTION` for cache operations when `DB_CACHE_CONNECTION` is not explicitly set.
+
+---
+
 ## Version 1.4.0 - Test Coverage Expansion (COMPLETED)
 
 **Release Date**: January 27, 2026
