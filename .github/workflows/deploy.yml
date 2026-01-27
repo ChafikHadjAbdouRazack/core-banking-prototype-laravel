@@ -137,7 +137,15 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           
+      - name: Setup Build Environment
+        run: |
+          cp .env.example .env || true
+          echo "APP_KEY=base64:dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=" >> .env
+          echo "APP_ENV=production" >> .env
+
       - name: Install PHP Dependencies (Production)
+        env:
+          APP_KEY: base64:dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=
         run: |
           composer install --prefer-dist --no-progress --no-dev --optimize-autoloader
           composer dump-autoload --optimize --no-dev
@@ -151,6 +159,8 @@ jobs:
           rm -rf node_modules
           
       - name: Optimize Laravel
+        env:
+          APP_KEY: base64:dGVzdGtleXRlc3RrZXl0ZXN0a2V5dGVzdGtleXRlc3Q=
         run: |
           php artisan config:cache
           php artisan route:cache
