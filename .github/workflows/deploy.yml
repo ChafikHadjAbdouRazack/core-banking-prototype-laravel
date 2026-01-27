@@ -169,7 +169,10 @@ jobs:
           
       - name: Create Deployment Package
         run: |
+          # tar exits with 1 for "file changed as we read it" warning, which is harmless
+          # Use --warning=no-file-changed to suppress this warning
           tar -czf deploy-${{ needs.pre-deployment-checks.outputs.deploy-version }}.tar.gz \
+            --warning=no-file-changed \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='tests' \
@@ -181,7 +184,8 @@ jobs:
             --exclude='storage/framework/cache/*' \
             --exclude='storage/framework/sessions/*' \
             --exclude='storage/framework/views/*' \
-            .
+            --exclude='bootstrap/cache/*' \
+            . || [[ $? -eq 1 ]]
             
       - name: Upload Deployment Package
         uses: actions/upload-artifact@v4
