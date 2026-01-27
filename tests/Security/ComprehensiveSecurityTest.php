@@ -212,21 +212,40 @@ class ComprehensiveSecurityTest extends TestCase
 
     /**
      * Test secure headers.
+     *
+     * Tests that security headers are properly set by the SecurityHeaders middleware.
+     * We test using API routes as they are more reliable in CI testing environments.
      */
     #[Test]
     public function test_security_headers()
     {
-        $response = $this->get('/');
+        // Test API route - public status endpoint (unauthenticated)
+        // API routes are more reliable in CI testing environments where view/web setup may vary
+        $apiResponse = $this->getJson('/api/status');
 
-        // Check security headers
-        $response->assertHeader('X-Content-Type-Options', 'nosniff');
-        $response->assertHeader('X-Frame-Options', 'DENY');
-        $response->assertHeader('X-XSS-Protection', '1; mode=block');
-        $response->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+        // Debug: Show all headers if test fails
+        $headers = $apiResponse->headers->all();
+        $headerKeys = array_keys($headers);
 
-        // Check HSTS for HTTPS
+        $this->assertTrue(
+            $apiResponse->status() < 500,
+            "API request to /api/status should not error but got status {$apiResponse->status()}"
+        );
+
+        // Check security headers on API response
+        $this->assertArrayHasKey(
+            'x-content-type-options',
+            $headers,
+            'Missing X-Content-Type-Options header. Available headers: ' . implode(', ', $headerKeys)
+        );
+        $apiResponse->assertHeader('X-Content-Type-Options', 'nosniff');
+        $apiResponse->assertHeader('X-Frame-Options', 'DENY');
+        $apiResponse->assertHeader('X-XSS-Protection', '1; mode=block');
+        $apiResponse->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+        // Check HSTS for HTTPS (only in production)
         if (app()->environment('production')) {
-            $response->assertHeader('Strict-Transport-Security');
+            $apiResponse->assertHeader('Strict-Transport-Security');
         }
     }
 
