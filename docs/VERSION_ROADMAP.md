@@ -195,9 +195,48 @@ Warning Alerts:
 
 ---
 
-## Version 1.3.0 - Platform Modularity
+## Version 1.4.0 - Test Coverage Expansion (COMPLETED)
 
-**Target**: Q2 2026
+**Release Date**: January 27, 2026
+**Theme**: Comprehensive Domain Test Coverage
+
+### Achievements
+
+| Category | Deliverables |
+|----------|--------------|
+| AI Domain | 55 unit tests (ConsensusBuilder, AIAgentService, ToolRegistry) |
+| Batch Domain | 37 unit tests (ProcessBatchItemActivity, BatchJobData) |
+| CGO Domain | 70 unit tests (CgoKycService, InvestmentAgreementService, etc.) |
+| FinancialInstitution Domain | 65 unit tests (ComplianceCheckService, PaymentVerificationService, etc.) |
+| Fraud Domain | 18 unit tests for FraudDetectionService |
+| Wallet Domain | 37 unit tests (KeyManagementService + Value Objects) |
+| Regulatory Domain | 13 unit tests for ReportGeneratorService |
+| Stablecoin Domain | 24 unit tests for Value Objects |
+| Test Utilities | InvokesPrivateMethods helper trait |
+| **Total** | **319 new domain tests** |
+
+### Security Hardening
+
+| Fix | Impact |
+|-----|--------|
+| Rate limiting threshold | Reduced auth attempts from 5 to 3 (brute force protection) |
+| Session limit | Reduced max concurrent sessions from 5 to 3 |
+| Token expiration | All auth controllers now use `createTokenWithScopes()` |
+| API scope bypass | Removed backward compatibility bypass in `CheckApiScope` |
+| Agent scope bypass | `AgentScope::hasScope()` returns false for empty scopes |
+
+### CI/CD Improvements
+
+- Deploy workflow improvements with proper skip handling
+- Redis service for pre-deployment tests
+- Fixed tar file changed warning
+- APP_KEY environment variable for build artifacts
+
+---
+
+## Version 1.3.0 - Platform Modularity (COMPLETED)
+
+**Release Date**: January 25, 2026
 **Theme**: Pick-and-Choose Domain Installation
 
 ### Architecture Vision
