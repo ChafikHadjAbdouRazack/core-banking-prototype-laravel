@@ -112,6 +112,18 @@ Comprehensive test coverage for previously untested domain services and value ob
 - Test expectations for empty scopes (now correctly deny access)
 - Flaky `DemoLendingServiceTest` credit score simulation
 - `AgentMessageBusServiceTest` mock return types (Agent model vs array)
+- `MetricsMiddlewareTest` timing-sensitive assertion (now uses assertNotNull)
+
+### CI/CD
+
+- **Deploy Workflow Improvements**
+  - Added Redis service container for pre-deployment tests
+  - Added APP_KEY environment variable to build-artifacts job
+  - Fixed tar "file changed as we read it" error with `--warning=no-file-changed`
+  - Excluded `bootstrap/cache/*` from deployment package
+  - Properly skip deployment steps when server credentials not configured
+  - Added step outputs for conditional deployment execution
+  - Improved notification messages for skipped vs failed deployments
 
 ### Security
 
