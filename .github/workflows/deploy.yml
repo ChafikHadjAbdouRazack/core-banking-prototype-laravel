@@ -41,7 +41,18 @@ jobs:
     timeout-minutes: 20
     outputs:
       deploy-version: ${{ steps.version.outputs.version }}
-      
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -84,18 +95,20 @@ jobs:
           APP_ENV: testing
           DB_CONNECTION: sqlite
           DB_DATABASE: ":memory:"
-          CACHE_DRIVER: array
-          SESSION_DRIVER: array
+          CACHE_DRIVER: redis
+          SESSION_DRIVER: redis
           QUEUE_CONNECTION: sync
           MAIL_MAILER: array
           BROADCAST_DRIVER: log
+          REDIS_HOST: 127.0.0.1
+          REDIS_PORT: 6379
         run: |
           cp .env.example .env || true
           echo "APP_KEY=$APP_KEY" >> .env
           echo "DB_CONNECTION=sqlite" >> .env
           echo "DB_DATABASE=:memory:" >> .env
-          echo "CACHE_DRIVER=array" >> .env
-          echo "SESSION_DRIVER=array" >> .env
+          echo "REDIS_HOST=127.0.0.1" >> .env
+          echo "REDIS_PORT=6379" >> .env
           echo "QUEUE_CONNECTION=sync" >> .env
           composer install --prefer-dist --no-progress --optimize-autoloader
           ./vendor/bin/pest tests/Unit --stop-on-failure
