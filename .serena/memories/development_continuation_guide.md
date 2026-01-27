@@ -25,8 +25,8 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | v1.4.0: All CI/CD workflows passing, deploy workflow fixed |
-| Next Action | Tag and release v1.4.0 |
+| Last Action | v1.4.0: Released (tag: v1.4.0) |
+| Next Action | Plan v1.5.0 or v2.0.0 features |
 | Session Date | January 27, 2026 |
 
 ### v1.4.0 Progress
@@ -58,6 +58,7 @@ git branch --show-current
 | **v1.1.0** | ✅ RELEASED | Foundation Hardening | PHPStan L8, 5073 tests, 22 Behat |
 | **v1.2.0** | ✅ RELEASED | Feature Completion | Released Jan 13, 2026, AWS SDK fix |
 | **v1.3.0** | ✅ RELEASED | Platform Modularity | Released Jan 25, 2026 (tag: v1.3.0) |
+| **v1.4.0** | ✅ RELEASED | Test Coverage Expansion | Released Jan 27, 2026 (tag: v1.4.0) |
 | v2.0.0 | 📅 Q3-Q4 2026 | Major Evolution | GraphQL, microservices prep |
 
 ### v1.2.0 Completed Items
