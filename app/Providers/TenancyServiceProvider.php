@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Http\Middleware\InitializeTenancyByTeam;
 use App\Resolvers\TeamTenantResolver;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -108,10 +109,40 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureTenantConnection();
         $this->bootEvents();
         $this->mapRoutes();
 
         $this->makeTenancyMiddlewareHighestPriority();
+    }
+
+    /**
+     * Configure the tenant database connection to mirror the default connection.
+     *
+     * When tenancy is not initialized (e.g., during testing), the 'tenant' connection
+     * should point to the same database as the default connection.
+     *
+     * Note: For in-memory SQLite testing, the UsesTenantConnection trait has
+     * been modified to return null (use default connection) in testing mode.
+     * This is simpler and more reliable than trying to share PDO connections.
+     *
+     * Once stancl/tenancy initializes a tenant, it will override the 'tenant' connection
+     * to point to the tenant's specific database.
+     */
+    protected function configureTenantConnection(): void
+    {
+        // Get the default connection name and its configuration
+        $defaultConnection = Config::get('database.default');
+        $defaultConfig = Config::get("database.connections.{$defaultConnection}");
+
+        if (! $defaultConfig) {
+            return;
+        }
+
+        // Copy the default config to tenant connection
+        // This ensures 'tenant' is a valid connection name even when
+        // the UsesTenantConnection trait falls back to the default connection
+        Config::set('database.connections.tenant', $defaultConfig);
     }
 
     protected function bootEvents(): void
