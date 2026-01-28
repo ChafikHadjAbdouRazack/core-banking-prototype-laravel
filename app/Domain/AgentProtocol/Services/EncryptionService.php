@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
+/**
+ * Service for data encryption within the Agent Protocol.
+ *
+ * Handles encryption, decryption, and key management for secure data exchange.
+ * Supports multiple cipher methods including AES-256-GCM, AES-256-CBC, and ChaCha20.
+ *
+ * Configuration from config/agent_protocol.php:
+ * - encryption.default_cipher: Default cipher method
+ * - encryption.key_rotation_days: Days between key rotations
+ * - encryption.key_cache_ttl: Cache duration for encryption keys
+ */
 class EncryptionService
 {
     private const CIPHER_METHODS = [

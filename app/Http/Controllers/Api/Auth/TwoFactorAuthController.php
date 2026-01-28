@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Traits\HasApiScopes;
 use Illuminate\Http\Request;
 use Laravel\Fortify\Actions\DisableTwoFactorAuthentication;
 use Laravel\Fortify\Actions\EnableTwoFactorAuthentication;
@@ -11,6 +13,8 @@ use Laravel\Fortify\RecoveryCode;
 
 class TwoFactorAuthController extends Controller
 {
+    use HasApiScopes;
+
     /**
      * Enable two-factor authentication for the user.
      *
@@ -228,6 +232,11 @@ class TwoFactorAuthController extends Controller
 
         $user = $request->user();
 
+        // Type assertion for PHPStan
+        if (! $user instanceof User) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         if ($request->has('recovery_code')) {
             $codes = $user->recoveryCodes();
 
@@ -252,8 +261,8 @@ class TwoFactorAuthController extends Controller
             }
         }
 
-        // Generate new token after successful 2FA
-        $token = $user->createToken('api-token')->plainTextToken;
+        // Generate new token with proper expiration after successful 2FA
+        $token = $this->createTokenWithScopes($user, '2fa-verified-token');
 
         return response()->json(
             [

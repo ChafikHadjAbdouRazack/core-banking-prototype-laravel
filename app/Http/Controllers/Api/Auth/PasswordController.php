@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Traits\HasApiScopes;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +13,8 @@ use Illuminate\Validation\ValidationException;
 
 class PasswordController extends Controller
 {
+    use HasApiScopes;
+
     /**
      * Change the authenticated user's password.
      *
@@ -67,6 +71,11 @@ class PasswordController extends Controller
 
         $user = $request->user();
 
+        // Type assertion for PHPStan
+        if (! $user instanceof User) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
         // Verify current password
         if (! Hash::check($validated['current_password'], $user->password)) {
             throw ValidationException::withMessages([
@@ -82,8 +91,8 @@ class PasswordController extends Controller
         // Revoke all existing tokens for this user
         $user->tokens()->delete();
 
-        // Create a new token for the user
-        $newToken = $user->createToken($request->header('User-Agent', 'Unknown Device'))->plainTextToken;
+        // Create a new token with proper expiration
+        $newToken = $this->createTokenWithScopes($user, $request->header('User-Agent', 'Unknown Device'));
 
         return response()->json([
             'message'   => 'Password changed successfully',

@@ -84,7 +84,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_creates_transfer_with_valid_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -124,7 +124,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_supports_legacy_field_names(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account' => $this->fromAccount->uuid,
@@ -141,7 +141,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_required_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', []);
 
@@ -152,7 +152,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_requires_both_account_uuids(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -172,7 +172,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_minimum_amount(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -188,7 +188,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_prevents_self_transfer(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -204,7 +204,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_asset_exists(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -220,7 +220,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_prevents_transfer_from_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->user->uuid,
@@ -252,7 +252,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_prevents_transfer_to_frozen_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $frozenAccount = Account::factory()->create([
             'user_uuid' => $this->otherUser->uuid,
@@ -276,7 +276,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_prevents_insufficient_funds(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -299,7 +299,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_account_exists(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => 'non-existent-uuid',
@@ -328,7 +328,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_404_for_non_existent_transfer(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/transfers/non-existent-uuid');
 
@@ -346,7 +346,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_returns_transfer_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson("/api/accounts/{$this->fromAccount->uuid}/transfers");
 
@@ -374,7 +374,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_history_returns_404_for_non_existent_account(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/accounts/non-existent-uuid/transfers');
 
@@ -392,7 +392,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_with_reference_field(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -409,7 +409,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_validates_field_lengths(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/transfers', [
             'from_account_uuid' => $this->fromAccount->uuid,
@@ -427,7 +427,7 @@ class TransferControllerTest extends ControllerTestCase
     #[Test]
     public function test_store_with_eur_transfer(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create an account with EUR balance
         $eurAccount = Account::factory()->create([

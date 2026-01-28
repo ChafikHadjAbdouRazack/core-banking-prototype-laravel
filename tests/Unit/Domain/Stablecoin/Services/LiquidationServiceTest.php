@@ -72,13 +72,13 @@ class LiquidationServiceTest extends ServiceTestCase
         $parameters = $constructor->getParameters();
 
         $this->assertEquals('exchangeRateService', $parameters[0]->getName());
-        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()?->getName());
 
         $this->assertEquals('collateralService', $parameters[1]->getName());
-        $this->assertEquals(CollateralService::class, $parameters[1]->getType()->getName());
+        $this->assertEquals(CollateralService::class, $parameters[1]->getType()?->getName());
 
         $this->assertEquals('walletService', $parameters[2]->getName());
-        $this->assertEquals(WalletService::class, $parameters[2]->getType()->getName());
+        $this->assertEquals(WalletService::class, $parameters[2]->getType()?->getName());
     }
 
     #[Test]
@@ -98,16 +98,16 @@ class LiquidationServiceTest extends ServiceTestCase
         $parameters = $reflection->getParameters();
 
         $this->assertEquals('position', $parameters[0]->getName());
-        $this->assertEquals(StablecoinCollateralPosition::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $parameters[0]->getType()?->getName());
         $this->assertFalse($parameters[0]->allowsNull());
 
         $this->assertEquals('liquidator', $parameters[1]->getName());
-        $this->assertEquals(Account::class, $parameters[1]->getType()->getName());
+        $this->assertEquals(Account::class, $parameters[1]->getType()?->getName());
         $this->assertTrue($parameters[1]->allowsNull());
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
         $this->assertNull($parameters[1]->getDefaultValue());
 
-        $this->assertEquals('array', $reflection->getReturnType()->getName());
+        $this->assertEquals('array', $reflection->getReturnType()?->getName());
     }
 
     #[Test]

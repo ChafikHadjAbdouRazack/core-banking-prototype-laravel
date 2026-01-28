@@ -39,10 +39,10 @@ class ClosePositionActivityTest extends DomainTestCase
         $parameters = $method->getParameters();
 
         $this->assertEquals('positionUuid', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $this->assertEquals('string', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('reason', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
         $this->assertTrue($parameters[1]->isDefaultValueAvailable());
         $this->assertEquals('user_closed', $parameters[1]->getDefaultValue());
     }
@@ -53,7 +53,7 @@ class ClosePositionActivityTest extends DomainTestCase
         $reflection = new ReflectionClass(ClosePositionActivity::class);
         $method = $reflection->getMethod('execute');
 
-        $this->assertEquals('bool', $method->getReturnType()->getName());
+        $this->assertEquals('bool', $method->getReturnType()?->getName());
     }
 
     #[Test]

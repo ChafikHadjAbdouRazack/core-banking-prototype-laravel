@@ -42,6 +42,77 @@ return [
             'synchronous'             => null,
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Multi-Tenancy Connections (v2.0.0)
+        |--------------------------------------------------------------------------
+        |
+        | Central database stores tenants, users, teams, and global reference data.
+        | Tenant template is used by stancl/tenancy to create per-tenant databases.
+        |
+        */
+
+        'central' => [
+            'driver'                  => 'sqlite',
+            'url'                     => env('DB_URL'),
+            'database'                => env('DB_DATABASE', database_path('database.sqlite')),
+            'prefix'                  => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'busy_timeout'            => null,
+            'journal_mode'            => null,
+            'synchronous'             => null,
+        ],
+
+        'tenant_template' => [
+            'driver'                  => 'sqlite',
+            'url'                     => env('DB_URL'),
+            'database'                => null, // Set dynamically by stancl/tenancy
+            'prefix'                  => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'busy_timeout'            => null,
+            'journal_mode'            => null,
+            'synchronous'             => null,
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Tenant Connection Fallback
+        |--------------------------------------------------------------------------
+        |
+        | This connection is used as a fallback when tenancy is not initialized.
+        | stancl/tenancy will override this connection when a tenant is active.
+        | For testing without tenancy, this mirrors the default connection.
+        |
+        | Note: This is a union config supporting both SQLite and MySQL. Each driver
+        | uses only the fields relevant to it and ignores the others.
+        |
+        */
+        'tenant' => [
+            'driver' => env('DB_CONNECTION', 'sqlite'),
+            'url'    => env('DB_URL'),
+            // SQLite fields - use shared cache for in-memory databases
+            'database'                => env('DB_DATABASE', database_path('database.sqlite')),
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+            'busy_timeout'            => null,
+            'journal_mode'            => null,
+            'synchronous'             => null,
+            // MySQL/MariaDB/PostgreSQL fields
+            'host'           => env('DB_HOST', '127.0.0.1'),
+            'port'           => env('DB_PORT', '3306'),
+            'username'       => env('DB_USERNAME', 'root'),
+            'password'       => env('DB_PASSWORD', ''),
+            'unix_socket'    => env('DB_SOCKET', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'engine'         => null,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'mysql' => [
             'driver'         => 'mysql',
             'url'            => env('DB_URL'),

@@ -8,6 +8,13 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 
+/**
+ * Service for cryptographic signature operations in the Agent Protocol.
+ *
+ * Handles digital signature creation, verification, and key management
+ * for secure agent-to-agent communication. Supports multiple signature
+ * algorithms including RSA (RS256/384/512) and ECDSA (ES256/384/512).
+ */
 class SignatureService
 {
     private const SIGNATURE_ALGORITHMS = [
@@ -139,6 +146,9 @@ class SignatureService
             $privateKey = '';
             openssl_pkey_export($resource, $privateKey);
             $publicKeyDetails = openssl_pkey_get_details($resource);
+            if ($publicKeyDetails === false) {
+                throw new Exception('Failed to get RSA public key details');
+            }
             $publicKey = $publicKeyDetails['key'];
 
             return [
@@ -162,6 +172,9 @@ class SignatureService
             $privateKey = '';
             openssl_pkey_export($resource, $privateKey);
             $publicKeyDetails = openssl_pkey_get_details($resource);
+            if ($publicKeyDetails === false) {
+                throw new Exception('Failed to get ECDSA public key details');
+            }
             $publicKey = $publicKeyDetails['key'];
 
             return [

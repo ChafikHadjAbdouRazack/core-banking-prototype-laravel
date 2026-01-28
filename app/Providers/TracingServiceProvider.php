@@ -97,6 +97,8 @@ class TracingServiceProvider extends ServiceProvider
         ], 'monitoring-config');
 
         // Register middleware alias
-        $this->app['router']->aliasMiddleware('tracing', TracingMiddleware::class);
+        /** @var \Illuminate\Routing\Router $router */
+        $router = $this->app->make('router');
+        $router->aliasMiddleware('tracing', TracingMiddleware::class);
     }
 }

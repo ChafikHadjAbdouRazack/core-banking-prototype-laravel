@@ -10,6 +10,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Service for managing the agent registry within the Agent Protocol.
+ *
+ * Handles agent registration, lookup, capability management, and status tracking.
+ * Maintains a central registry of all agents participating in the protocol.
+ *
+ * Configuration from config/agent_protocol.php:
+ * - registry.cache_ttl: Cache duration for registry lookups
+ * - registry.info_cache_ttl: Cache duration for agent info
+ * - registry.max_capabilities: Maximum capabilities per agent
+ */
 class AgentRegistryService
 {
     private const CACHE_TTL = 3600; // 1 hour

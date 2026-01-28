@@ -48,15 +48,15 @@ class OracleAggregatorTest extends TestCase
 
         $oraclesProperty = $reflection->getProperty('oracles');
         $this->assertTrue($oraclesProperty->isPrivate());
-        $this->assertEquals(Collection::class, $oraclesProperty->getType()->getName());
+        $this->assertEquals(Collection::class, $oraclesProperty->getType()?->getName());
 
         $minOraclesProperty = $reflection->getProperty('minOracles');
         $this->assertTrue($minOraclesProperty->isPrivate());
-        $this->assertEquals('int', $minOraclesProperty->getType()->getName());
+        $this->assertEquals('int', $minOraclesProperty->getType()?->getName());
 
         $maxDeviationProperty = $reflection->getProperty('maxDeviation');
         $this->assertTrue($maxDeviationProperty->isPrivate());
-        $this->assertEquals('float', $maxDeviationProperty->getType()->getName());
+        $this->assertEquals('float', $maxDeviationProperty->getType()?->getName());
     }
 
     #[Test]
@@ -89,9 +89,9 @@ class OracleAggregatorTest extends TestCase
 
         $parameter = $reflection->getParameters()[0];
         $this->assertEquals('oracle', $parameter->getName());
-        $this->assertEquals(OracleConnector::class, $parameter->getType()->getName());
+        $this->assertEquals(OracleConnector::class, $parameter->getType()?->getName());
 
-        $this->assertEquals('self', $reflection->getReturnType()->getName());
+        $this->assertEquals('self', $reflection->getReturnType()?->getName());
     }
 
     #[Test]
@@ -111,12 +111,12 @@ class OracleAggregatorTest extends TestCase
         $parameters = $reflection->getParameters();
 
         $this->assertEquals('base', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $this->assertEquals('string', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('quote', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
-        $this->assertEquals(AggregatedPrice::class, $reflection->getReturnType()->getName());
+        $this->assertEquals(AggregatedPrice::class, $reflection->getReturnType()?->getName());
     }
 
     #[Test]

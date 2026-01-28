@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property int $id
+ * @property string $id
  * @property string $report_type
  * @property string|null $agent_id
  * @property array $report_data
@@ -25,11 +26,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class RegulatoryReport extends Model
 {
     use HasFactory;
+    use HasUuids;
 
     protected $table = 'regulatory_reports';
 
+    /**
+     * The "type" of the primary key ID.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
     protected $fillable = [
+        'report_id',
         'report_type',
+        'jurisdiction',
+        'reporting_period_start',
+        'reporting_period_end',
+        'file_format',
         'agent_id',
         'report_data',
         'status',

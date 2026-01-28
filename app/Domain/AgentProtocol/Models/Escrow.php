@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Models;
 
+use App\Domain\Shared\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Escrow extends Model
 {
+    use UsesTenantConnection;
+
     protected $table = 'escrows';
 
     protected $fillable = [
@@ -20,6 +23,7 @@ class Escrow extends Model
         'amount',
         'currency',
         'funded_amount',
+        'hold_id',
         'conditions',
         'expires_at',
         'status',

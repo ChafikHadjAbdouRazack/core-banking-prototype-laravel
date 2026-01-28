@@ -42,7 +42,7 @@ it('can access execute method through reflection', function () {
 
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(3);
-    expect($method->getReturnType()->getName())->toBe('array');
+    expect($method->getReturnType()?->getName())->toBe('array');
 });
 
 it('validates balance inquiry has private logInquiry method', function () {

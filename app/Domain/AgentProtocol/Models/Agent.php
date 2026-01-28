@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Models;
 
+use App\Domain\Shared\Traits\UsesTenantConnection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,15 +12,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Agent extends Model
 {
+    use UsesTenantConnection;
     use HasFactory;
     use SoftDeletes;
 
     /**
      * Create a new factory instance for the model.
+     *
+     * Uses the domain-specific factory to ensure proper field mapping.
      */
     protected static function newFactory()
     {
-        return \Database\Factories\AgentFactory::new();
+        return \Database\Factories\Domain\AgentProtocol\AgentProtocolAgentFactory::new();
     }
 
     protected $table = 'agents';

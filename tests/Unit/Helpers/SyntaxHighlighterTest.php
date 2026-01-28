@@ -124,7 +124,7 @@ class SyntaxHighlighterTest extends TestCase
 
         // Verify exception handling
         $this->assertStringContainsString('try {', $source);
-        $this->assertStringContainsString('} catch (\Exception $e)', $source);
+        $this->assertStringContainsString('} catch (Exception $e)', $source);
         $this->assertStringContainsString('htmlspecialchars($code)', $source);
     }
 

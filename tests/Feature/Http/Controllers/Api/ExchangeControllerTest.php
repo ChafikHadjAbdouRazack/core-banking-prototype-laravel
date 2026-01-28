@@ -44,7 +44,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_with_valid_market_order(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->exchangeService->shouldReceive('placeOrder')
             ->once()
@@ -84,7 +84,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_with_valid_limit_order(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->exchangeService->shouldReceive('placeOrder')
             ->once()
@@ -124,7 +124,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_with_stop_price(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->exchangeService->shouldReceive('placeOrder')
             ->once()
@@ -158,7 +158,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_validates_required_fields(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/exchange/orders', []);
 
@@ -169,7 +169,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_validates_limit_order_requires_price(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/exchange/orders', [
             'type'           => 'buy',
@@ -187,7 +187,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_validates_currency_format(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/exchange/orders', [
             'type'           => 'buy',
@@ -226,7 +226,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_place_order_handles_service_exception(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->exchangeService->shouldReceive('placeOrder')
             ->once()
@@ -264,7 +264,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_cancel_order_successfully(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create an order for the user
         $order = Order::create([
@@ -300,7 +300,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_cancel_order_returns_404_for_non_existent_order(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->deleteJson('/api/exchange/orders/non-existent-order');
 
@@ -314,7 +314,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_cancel_order_prevents_cancelling_other_users_orders(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create an order for another user
         $otherAccount = Account::factory()->create();
@@ -350,7 +350,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_orders_returns_user_orders(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create some orders
         Order::create([
@@ -406,7 +406,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_orders_filters_by_status(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create orders with different statuses
         Order::create([
@@ -446,7 +446,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_orders_filters_by_trading_pair(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Order::create([
             'order_id'       => 'btc-eur-order',
@@ -494,7 +494,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_trades_returns_user_trades(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create some trades
         Trade::create([
@@ -540,7 +540,7 @@ class ExchangeControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_trades_filters_by_trading_pair(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Trade::create([
             'trade_id'          => 'btc-trade',

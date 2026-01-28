@@ -9,7 +9,7 @@ use Laravel\Sanctum\Sanctum;
 
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
     $payerAccount = Account::factory()->withBalance(100)->create();
     $payeeAccount = Account::factory()->create();
@@ -28,7 +28,7 @@ it('rejects payment with insufficient funds', function () {
 
 it('can schedule a future payment', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
     $payerAccount = Account::factory()->withBalance(1000)->create();
     $payeeAccount = Account::factory()->create();
@@ -48,7 +48,7 @@ it('can schedule a future payment', function () {
 
 it('can update a payment transaction', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $crReferenceId = Str::uuid()->toString();
 
     $response = $this->putJson("/api/bian/payment-initiation/{$crReferenceId}/update", [
@@ -63,7 +63,7 @@ it('can update a payment transaction', function () {
 
 it('can execute a payment transaction', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $crReferenceId = Str::uuid()->toString();
 
     $response = $this->postJson("/api/bian/payment-initiation/{$crReferenceId}/execute", [
@@ -84,7 +84,7 @@ it('can execute a payment transaction', function () {
 
 it('can request payment status', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $crReferenceId = Str::uuid()->toString();
 
     $response = $this->postJson("/api/bian/payment-initiation/{$crReferenceId}/payment-status/request");
@@ -103,7 +103,7 @@ it('can request payment status', function () {
 
 it('can retrieve payment history', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->create();
 
     $response = $this->getJson("/api/bian/payment-initiation/{$account->uuid}/payment-history/retrieve");
@@ -126,7 +126,7 @@ it('can retrieve payment history', function () {
 
 it('validates required fields for payment initiation', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
     $response = $this->postJson('/api/bian/payment-initiation/initiate', []);
 
@@ -136,7 +136,7 @@ it('validates required fields for payment initiation', function () {
 
 it('prevents payment to same account', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->withBalance(1000)->create();
 
     $response = $this->postJson('/api/bian/payment-initiation/initiate', [

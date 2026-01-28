@@ -244,12 +244,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
-                    <h3 class="text-xl font-semibold mb-3">Bank Integration</h3>
+                    <h3 class="text-xl font-semibold mb-3">Bank Integration Patterns</h3>
                     <p class="text-gray-600 mb-4">
-                        Direct integration with major banks including Paysera, Deutsche Bank, and Santander for seamless operations.
+                        Mock connectors demonstrating Open Banking integration patterns. Explore how banking APIs could connect.
                     </p>
                     <a href="{{ route('features.show', 'bank-integration') }}" class="text-red-600 font-medium hover:text-red-700">
-                        View partners →
+                        Explore patterns →
                     </a>
                 </div>
 
@@ -357,16 +357,16 @@
     <!-- CTA Section -->
     <section class="py-20 gradient-bg text-white">
         <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-            <h2 class="text-4xl font-bold mb-6">Experience the Future of Banking</h2>
+            <h2 class="text-4xl font-bold mb-6">Explore the Demo</h2>
             <p class="text-xl mb-8 text-purple-100">
-                Join thousands of users who have already made the switch to democratic banking.
+                See these features in action. Try the demo or explore the source code on GitHub.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition">
-                    Get Started Free
+                    Try the Demo
                 </a>
-                <a href="{{ route('support.contact') }}" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
-                    Talk to Sales
+                <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
+                    View Source
                 </a>
             </div>
         </div>

@@ -62,13 +62,13 @@ class StablecoinIssuanceServiceTest extends ServiceTestCase
         $parameters = $constructor->getParameters();
 
         $this->assertEquals('exchangeRateService', $parameters[0]->getName());
-        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()?->getName());
 
         $this->assertEquals('collateralService', $parameters[1]->getName());
-        $this->assertEquals(CollateralService::class, $parameters[1]->getType()->getName());
+        $this->assertEquals(CollateralService::class, $parameters[1]->getType()?->getName());
 
         $this->assertEquals('walletService', $parameters[2]->getName());
-        $this->assertEquals(WalletService::class, $parameters[2]->getType()->getName());
+        $this->assertEquals(WalletService::class, $parameters[2]->getType()?->getName());
     }
 
     #[Test]
@@ -88,21 +88,21 @@ class StablecoinIssuanceServiceTest extends ServiceTestCase
         $parameters = $reflection->getParameters();
 
         $this->assertEquals('account', $parameters[0]->getName());
-        $this->assertEquals(Account::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(Account::class, $parameters[0]->getType()?->getName());
 
         $this->assertEquals('stablecoinCode', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('collateralAssetCode', $parameters[2]->getName());
-        $this->assertEquals('string', $parameters[2]->getType()->getName());
+        $this->assertEquals('string', $parameters[2]->getType()?->getName());
 
         $this->assertEquals('collateralAmount', $parameters[3]->getName());
-        $this->assertEquals('int', $parameters[3]->getType()->getName());
+        $this->assertEquals('int', $parameters[3]->getType()?->getName());
 
         $this->assertEquals('mintAmount', $parameters[4]->getName());
-        $this->assertEquals('int', $parameters[4]->getType()->getName());
+        $this->assertEquals('int', $parameters[4]->getType()?->getName());
 
-        $this->assertEquals(StablecoinCollateralPosition::class, $reflection->getReturnType()->getName());
+        $this->assertEquals(StablecoinCollateralPosition::class, $reflection->getReturnType()?->getName());
     }
 
     #[Test]

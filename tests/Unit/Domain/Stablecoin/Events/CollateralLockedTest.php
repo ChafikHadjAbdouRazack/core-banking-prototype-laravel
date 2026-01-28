@@ -36,19 +36,19 @@ class CollateralLockedTest extends DomainTestCase
         $parameters = $constructor->getParameters();
 
         $this->assertEquals('position_uuid', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()->getName());
+        $this->assertEquals('string', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('account_uuid', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('collateral_asset_code', $parameters[2]->getName());
-        $this->assertEquals('string', $parameters[2]->getType()->getName());
+        $this->assertEquals('string', $parameters[2]->getType()?->getName());
 
         $this->assertEquals('amount', $parameters[3]->getName());
-        $this->assertEquals('float', $parameters[3]->getType()->getName());
+        $this->assertEquals('float', $parameters[3]->getType()?->getName());
 
         $this->assertEquals('metadata', $parameters[4]->getName());
-        $this->assertEquals('array', $parameters[4]->getType()->getName());
+        $this->assertEquals('array', $parameters[4]->getType()?->getName());
         $this->assertTrue($parameters[4]->isDefaultValueAvailable());
         $this->assertEquals([], $parameters[4]->getDefaultValue());
     }

@@ -10,26 +10,28 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $agent_id
- * @property string $agent_did
- * @property string $agent_name
- * @property string $agent_type
+ * @property string $did
+ * @property string $name
+ * @property string $type
  * @property string $status
  * @property string $kyc_status
- * @property string $kyc_verification_level
+ * @property string|null $kyc_verification_level
  * @property \Carbon\Carbon|null $kyc_verified_at
  * @property \Carbon\Carbon|null $kyc_expires_at
  * @property int $risk_score
- * @property array $compliance_flags
+ * @property array|null $compliance_flags
  * @property int $reputation_score
  * @property int $total_transactions
  * @property float $total_transaction_volume
- * @property float $daily_transaction_limit
- * @property float $weekly_transaction_limit
- * @property float $monthly_transaction_limit
+ * @property float|null $daily_transaction_limit
+ * @property float|null $weekly_transaction_limit
+ * @property float|null $monthly_transaction_limit
  * @property string $limit_currency
  * @property \Carbon\Carbon|null $limits_updated_at
- * @property string $country_code
- * @property array $metadata
+ * @property string|null $country_code
+ * @property array|null $metadata
+ * @property array|null $capabilities
+ * @property array|null $endpoints
  */
 class Agent extends Model
 {
@@ -37,10 +39,14 @@ class Agent extends Model
 
     protected $fillable = [
         'agent_id',
-        'agent_did',
-        'agent_name',
-        'agent_type',
+        'did',
+        'name',
+        'type',
         'status',
+        'network_id',
+        'organization',
+        'endpoints',
+        'capabilities',
         'kyc_status',
         'kyc_verification_level',
         'kyc_verified_at',
@@ -65,6 +71,8 @@ class Agent extends Model
         'limits_updated_at'         => 'datetime',
         'compliance_flags'          => 'array',
         'metadata'                  => 'array',
+        'endpoints'                 => 'array',
+        'capabilities'              => 'array',
         'daily_transaction_limit'   => 'decimal:2',
         'weekly_transaction_limit'  => 'decimal:2',
         'monthly_transaction_limit' => 'decimal:2',

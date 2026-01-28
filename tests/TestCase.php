@@ -14,6 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\ParallelTesting;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\Sanctum;
 use Mockery;
 use ReflectionClass;
 use Throwable;
@@ -199,5 +200,20 @@ abstract class TestCase extends BaseTestCase
             Filament::setCurrentPanel($panel);
             Filament::setServingStatus(true);
         }
+    }
+
+    /**
+     * Authenticate a user with API scopes for testing.
+     *
+     * This method wraps Sanctum::actingAs and provides default scopes
+     * needed for API endpoint testing after security hardening.
+     *
+     * @param  User  $user  The user to authenticate
+     * @param  array<string>  $scopes  The scopes to grant (defaults to read, write, delete)
+     * @return void
+     */
+    protected function actingAsWithScopes(User $user, array $scopes = ['read', 'write', 'delete']): void
+    {
+        Sanctum::actingAs($user, $scopes);
     }
 }

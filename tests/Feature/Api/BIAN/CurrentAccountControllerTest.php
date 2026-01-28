@@ -10,7 +10,7 @@ use Laravel\Sanctum\Sanctum;
 it('can initiate a current account', function () {
 
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
     $response = $this->postJson('/api/bian/current-account/initiate', [
         'customerReference' => $user->uuid,
@@ -44,7 +44,7 @@ it('can initiate a current account', function () {
 
 it('can retrieve current account details', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->create();
 
     // Create account balance
@@ -74,7 +74,7 @@ it('can retrieve current account details', function () {
 
 it('can update current account', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->create(['name' => 'Old Name']);
 
     $response = $this->putJson("/api/bian/current-account/{$account->uuid}/update", [
@@ -88,7 +88,7 @@ it('can update current account', function () {
 
 it('can control current account (freeze)', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->create();
 
     $response = $this->putJson("/api/bian/current-account/{$account->uuid}/control", [
@@ -115,7 +115,7 @@ it('can control current account (freeze)', function () {
 
 it('rejects payment with insufficient funds', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->withBalance(100)->create();
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/payment/execute", [
@@ -130,7 +130,7 @@ it('rejects payment with insufficient funds', function () {
 
 it('can execute deposit to current account', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->withBalance(500)->create();
 
     $response = $this->postJson("/api/bian/current-account/{$account->uuid}/deposit/execute", [
@@ -157,7 +157,7 @@ it('can execute deposit to current account', function () {
 
 it('can retrieve account balance', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->withBalance(3500)->create();
 
     $response = $this->getJson("/api/bian/current-account/{$account->uuid}/account-balance/retrieve");
@@ -179,7 +179,7 @@ it('can retrieve account balance', function () {
 
 it('can retrieve transaction report', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
     $account = Account::factory()->create();
 
     $response = $this->getJson("/api/bian/current-account/{$account->uuid}/transaction-report/retrieve");
@@ -202,7 +202,7 @@ it('can retrieve transaction report', function () {
 
 it('validates required fields for initiation', function () {
     $user = User::factory()->create();
-    Sanctum::actingAs($user);
+    Sanctum::actingAs($user, ['read', 'write', 'delete']);
 
     $response = $this->postJson('/api/bian/current-account/initiate', []);
 

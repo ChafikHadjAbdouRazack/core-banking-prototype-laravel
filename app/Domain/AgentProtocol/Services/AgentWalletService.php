@@ -6,6 +6,7 @@ namespace App\Domain\AgentProtocol\Services;
 
 use App\Domain\AgentProtocol\Aggregates\AgentTransactionAggregate;
 use App\Domain\AgentProtocol\Aggregates\AgentWalletAggregate;
+use App\Domain\AgentProtocol\Contracts\WalletOperationInterface;
 use App\Domain\AgentProtocol\Models\AgentTransaction;
 use App\Domain\AgentProtocol\Models\AgentWallet;
 use Exception;
@@ -15,24 +16,69 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
-class AgentWalletService
+/**
+ * Service for managing agent wallets with multi-currency support.
+ *
+ * Configuration is loaded from config/agent_protocol.php:
+ * - wallet.supported_currencies: List of supported currency codes
+ * - wallet.exchange_rate_cache_ttl: Cache duration for exchange rates
+ * - wallet.transaction_fees: Fee rates by transaction type
+ * - wallet.crypto_currencies: List of cryptocurrency codes
+ */
+class AgentWalletService implements WalletOperationInterface
 {
-    // Supported currencies
-    private const SUPPORTED_CURRENCIES = ['USD', 'EUR', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'NZD'];
+    /**
+     * Get supported currencies from configuration.
+     *
+     * @return array<string>
+     */
+    private function getSupportedCurrencies(): array
+    {
+        return config('agent_protocol.wallet.supported_currencies', ['USD', 'EUR', 'GBP']);
+    }
 
-    // Exchange rate cache duration (seconds)
-    private const EXCHANGE_RATE_CACHE_TTL = 300; // 5 minutes
+    /**
+     * Get exchange rate cache TTL from configuration.
+     */
+    private function getExchangeRateCacheTtl(): int
+    {
+        return (int) config('agent_protocol.wallet.exchange_rate_cache_ttl', 300);
+    }
 
-    // Transaction fee rates
-    private const FEE_RATES = [
-        'domestic'      => 0.01,      // 1%
-        'international' => 0.025, // 2.5%
-        'crypto'        => 0.005,       // 0.5%
-        'escrow'        => 0.02,        // 2%
-    ];
+    /**
+     * Get transaction fee rates from configuration.
+     *
+     * @return array<string, float>
+     */
+    private function getTransactionFeeRates(): array
+    {
+        return config('agent_protocol.wallet.transaction_fees', [
+            'domestic'      => 0.01,
+            'international' => 0.025,
+            'crypto'        => 0.005,
+            'escrow'        => 0.02,
+        ]);
+    }
+
+    /**
+     * Get crypto currencies from configuration.
+     *
+     * @return array<string>
+     */
+    private function getCryptoCurrencies(): array
+    {
+        return config('agent_protocol.wallet.crypto_currencies', ['BTC', 'ETH', 'USDT']);
+    }
 
     /**
      * Create a new wallet for an agent.
+     *
+     * @param string $agentId The agent's DID
+     * @param string $currency The wallet currency (default: USD)
+     * @param float $initialBalance Initial balance to set
+     * @param array<string, mixed> $metadata Additional wallet metadata
+     * @return AgentWallet The created wallet
+     * @throws InvalidArgumentException If currency is not supported
      */
     public function createWallet(
         string $agentId,
@@ -40,8 +86,9 @@ class AgentWalletService
         float $initialBalance = 0.0,
         array $metadata = []
     ): AgentWallet {
-        if (! $this->isCurrencySupported($currency)) {
-            throw new InvalidArgumentException("Unsupported currency: {$currency}");
+        $supportedCurrencies = $this->getSupportedCurrencies();
+        if (! in_array(strtoupper($currency), $supportedCurrencies, true)) {
+            throw new InvalidArgumentException("Unsupported currency: {$currency}. Supported: " . implode(', ', $supportedCurrencies));
         }
 
         $walletId = 'wallet_' . Str::uuid()->toString();
@@ -70,46 +117,48 @@ class AgentWalletService
     }
 
     /**
-     * Get wallet balance with multi-currency support.
+     * Get the current balance for a wallet.
+     *
+     * {@inheritDoc}
      */
-    public function getBalance(string $walletId, ?string $targetCurrency = null): array
+    public function getBalance(string $walletId, ?string $currency = null): array
     {
         $wallet = AgentWallet::where('wallet_id', $walletId)->firstOrFail();
 
-        $balance = [
-            'wallet_id' => $walletId,
-            'currency'  => $wallet->currency,
-            'available' => $wallet->available_balance,
-            'held'      => $wallet->held_balance,
-            'total'     => $wallet->total_balance,
-        ];
+        // Build balances array (per currency)
+        $balances = [$wallet->currency => $wallet->total_balance];
+        $available = [$wallet->currency => $wallet->available_balance];
+        $held = [$wallet->currency => $wallet->held_balance];
 
         // Convert to target currency if requested
-        if ($targetCurrency && $targetCurrency !== $wallet->currency) {
-            $rate = $this->getExchangeRate($wallet->currency, $targetCurrency);
-            $balance['converted'] = [
-                'currency'      => $targetCurrency,
-                'available'     => round($wallet->available_balance * $rate, 2),
-                'held'          => round($wallet->held_balance * $rate, 2),
-                'total'         => round($wallet->total_balance * $rate, 2),
-                'exchange_rate' => $rate,
-            ];
+        if ($currency && $currency !== $wallet->currency) {
+            $rate = $this->getExchangeRate($wallet->currency, $currency);
+            $balances[$currency] = round($wallet->total_balance * $rate, 2);
+            $available[$currency] = round($wallet->available_balance * $rate, 2);
+            $held[$currency] = round($wallet->held_balance * $rate, 2);
         }
 
-        return $balance;
+        return [
+            'wallet_id'  => $walletId,
+            'balances'   => $balances,
+            'available'  => $available,
+            'held'       => $held,
+            'updated_at' => $wallet->updated_at?->toIso8601String() ?? now()->toIso8601String(),
+        ];
     }
 
     /**
-     * Transfer funds between agent wallets with multi-currency support.
+     * Transfer funds between wallets.
+     *
+     * {@inheritDoc}
      */
     public function transfer(
         string $fromWalletId,
         string $toWalletId,
         float $amount,
         string $currency,
-        string $type = 'transfer',
         array $metadata = []
-    ): AgentTransaction {
+    ): array {
         DB::beginTransaction();
 
         try {
@@ -139,12 +188,14 @@ class AgentWalletService
                 throw new InvalidArgumentException('Insufficient balance for transfer');
             }
 
-            // Calculate fees
+            // Calculate fees using config-based rates
             $feeType = $this->determineFeeType($fromWallet->currency, $toWallet->currency);
-            $feeAmount = round($amount * self::FEE_RATES[$feeType], 2);
+            $feeRates = $this->getTransactionFeeRates();
+            $feeAmount = round($amount * ($feeRates[$feeType] ?? 0.01), 2);
 
             // Create transaction aggregate
             $transactionId = 'trans_' . Str::uuid()->toString();
+            $type = $metadata['type'] ?? 'transfer';
             $aggregate = AgentTransactionAggregate::initiate(
                 transactionId: $transactionId,
                 fromAgentId: $fromWallet->agent_id,
@@ -165,7 +216,7 @@ class AgentWalletService
             $this->updateWalletBalance($toWalletId, $toAmount);
 
             // Create transaction record
-            $transaction = AgentTransaction::create([
+            AgentTransaction::create([
                 'transaction_id' => $transactionId,
                 'from_agent_id'  => $fromWallet->agent_id,
                 'to_agent_id'    => $toWallet->agent_id,
@@ -193,7 +244,16 @@ class AgentWalletService
                 'currency'       => $currency,
             ]);
 
-            return $transaction;
+            return [
+                'success'        => true,
+                'transaction_id' => $transactionId,
+                'from_wallet'    => $fromWalletId,
+                'to_wallet'      => $toWalletId,
+                'amount'         => $amount,
+                'currency'       => $currency,
+                'fee'            => $feeAmount,
+                'timestamp'      => now()->toIso8601String(),
+            ];
         } catch (Exception $e) {
             DB::rollBack();
             Log::error('Agent wallet transfer failed', [
@@ -206,10 +266,17 @@ class AgentWalletService
     }
 
     /**
-     * Hold funds for escrow or pending transactions.
+     * Hold funds in a wallet for escrow or pending transactions.
+     *
+     * {@inheritDoc}
      */
-    public function holdFunds(string $walletId, float $amount, string $reason, array $metadata = []): void
-    {
+    public function holdFunds(
+        string $walletId,
+        float $amount,
+        string $currency,
+        string $reason,
+        ?int $expiresInSeconds = null
+    ): array {
         $wallet = AgentWallet::where('wallet_id', $walletId)
             ->lockForUpdate()
             ->firstOrFail();
@@ -218,8 +285,15 @@ class AgentWalletService
             throw new InvalidArgumentException('Insufficient available balance to hold');
         }
 
+        // Generate hold ID
+        $holdId = 'hold_' . Str::uuid()->toString();
+
         $aggregate = AgentWalletAggregate::retrieve($walletId);
-        $aggregate->holdFunds($amount, $reason, $metadata);
+        $aggregate->holdFunds($amount, $reason, [
+            'hold_id'    => $holdId,
+            'currency'   => $currency,
+            'expires_at' => $expiresInSeconds ? now()->addSeconds($expiresInSeconds)->toIso8601String() : null,
+        ]);
         $aggregate->persist();
 
         // Update read model
@@ -227,13 +301,47 @@ class AgentWalletService
             'available_balance' => $wallet->available_balance - $amount,
             'held_balance'      => $wallet->held_balance + $amount,
         ]);
+
+        // Store hold details in cache for release lookup
+        $expiresAt = $expiresInSeconds ? now()->addSeconds($expiresInSeconds) : now()->addDays(30);
+        Cache::put("wallet_hold:{$holdId}", [
+            'wallet_id' => $walletId,
+            'amount'    => $amount,
+            'currency'  => $currency,
+            'reason'    => $reason,
+        ], $expiresAt);
+
+        return [
+            'success'    => true,
+            'hold_id'    => $holdId,
+            'wallet_id'  => $walletId,
+            'amount'     => $amount,
+            'currency'   => $currency,
+            'reason'     => $reason,
+            'expires_at' => $expiresInSeconds ? $expiresAt->toIso8601String() : null,
+        ];
     }
 
     /**
-     * Release held funds.
+     * Release previously held funds.
+     *
+     * {@inheritDoc}
      */
-    public function releaseFunds(string $walletId, float $amount, string $reason, array $metadata = []): void
+    public function releaseFunds(string $holdId, ?string $releaseToWalletId = null): array
     {
+        // Retrieve hold details from cache
+        $holdDetails = Cache::get("wallet_hold:{$holdId}");
+
+        if (! $holdDetails) {
+            throw new InvalidArgumentException("Hold not found: {$holdId}");
+        }
+
+        $walletId = $holdDetails['wallet_id'];
+        $amount = $holdDetails['amount'];
+        $currency = $holdDetails['currency'];
+
+        $targetWalletId = $releaseToWalletId ?? $walletId;
+
         $wallet = AgentWallet::where('wallet_id', $walletId)
             ->lockForUpdate()
             ->firstOrFail();
@@ -243,7 +351,7 @@ class AgentWalletService
         }
 
         $aggregate = AgentWalletAggregate::retrieve($walletId);
-        $aggregate->releaseFunds($amount, $reason, $metadata);
+        $aggregate->releaseFunds($amount, 'hold_release', ['hold_id' => $holdId]);
         $aggregate->persist();
 
         // Update read model
@@ -251,26 +359,88 @@ class AgentWalletService
             'available_balance' => $wallet->available_balance + $amount,
             'held_balance'      => $wallet->held_balance - $amount,
         ]);
+
+        // If releasing to a different wallet, transfer the funds
+        if ($releaseToWalletId && $releaseToWalletId !== $walletId) {
+            $this->transfer($walletId, $releaseToWalletId, $amount, $currency, [
+                'type'    => 'hold_release',
+                'hold_id' => $holdId,
+            ]);
+        }
+
+        // Remove hold from cache
+        Cache::forget("wallet_hold:{$holdId}");
+
+        return [
+            'success'         => true,
+            'hold_id'         => $holdId,
+            'released_amount' => $amount,
+            'currency'        => $currency,
+            'released_to'     => $targetWalletId,
+        ];
     }
 
     /**
-     * Get supported currencies.
+     * Check if a wallet has sufficient balance for an operation.
+     *
+     * {@inheritDoc}
      */
-    public function getSupportedCurrencies(): array
-    {
-        return self::SUPPORTED_CURRENCIES;
+    public function hasSufficientBalance(
+        string $walletId,
+        float $amount,
+        string $currency,
+        bool $includeHeld = false
+    ): bool {
+        $wallet = AgentWallet::where('wallet_id', $walletId)->first();
+
+        if (! $wallet) {
+            return false;
+        }
+
+        // Convert amount if currencies don't match
+        $requiredAmount = $amount;
+        if ($wallet->currency !== $currency) {
+            $rate = $this->getExchangeRate($currency, $wallet->currency);
+            $requiredAmount = round($amount * $rate, 2);
+        }
+
+        $availableBalance = $includeHeld
+            ? $wallet->total_balance
+            : $wallet->available_balance;
+
+        return $availableBalance >= $requiredAmount;
     }
 
     /**
-     * Check if currency is supported.
+     * Get list of supported currencies.
+     *
+     * @return array<string> List of currency codes
+     */
+    public function listSupportedCurrencies(): array
+    {
+        return $this->getSupportedCurrencies();
+    }
+
+    /**
+     * Check if a currency is supported.
+     *
+     * @param string $currency Currency code to check
+     * @return bool True if currency is supported
      */
     public function isCurrencySupported(string $currency): bool
     {
-        return in_array(strtoupper($currency), self::SUPPORTED_CURRENCIES, true);
+        return in_array(strtoupper($currency), $this->getSupportedCurrencies(), true);
     }
 
     /**
-     * Get exchange rate between currencies (mock implementation).
+     * Get exchange rate between currencies.
+     *
+     * Note: This is a mock implementation. In production, integrate with
+     * a real exchange rate API service.
+     *
+     * @param string $fromCurrency Source currency code
+     * @param string $toCurrency Target currency code
+     * @return float Exchange rate (1.0 if same currency or rate not found)
      */
     private function getExchangeRate(string $fromCurrency, string $toCurrency): float
     {
@@ -279,8 +449,9 @@ class AgentWalletService
         }
 
         $cacheKey = "exchange_rate:{$fromCurrency}:{$toCurrency}";
+        $cacheTtl = $this->getExchangeRateCacheTtl();
 
-        $rate = Cache::remember($cacheKey, self::EXCHANGE_RATE_CACHE_TTL, function () use ($fromCurrency, $toCurrency): float {
+        $rate = Cache::remember($cacheKey, $cacheTtl, function () use ($fromCurrency, $toCurrency): float {
             // Mock exchange rates (in production, use real exchange rate API)
             $rates = [
                 'USD' => ['EUR' => 0.85, 'GBP' => 0.73, 'JPY' => 110.0, 'CHF' => 0.92, 'CAD' => 1.25, 'AUD' => 1.35, 'NZD' => 1.45],
@@ -288,7 +459,18 @@ class AgentWalletService
                 'GBP' => ['USD' => 1.37, 'EUR' => 1.16, 'JPY' => 150.0, 'CHF' => 1.26, 'CAD' => 1.71, 'AUD' => 1.85, 'NZD' => 1.99],
             ];
 
-            return (float) ($rates[$fromCurrency][$toCurrency] ?? 1.0);
+            $rate = $rates[$fromCurrency][$toCurrency] ?? null;
+
+            if ($rate === null) {
+                Log::warning('Exchange rate not found, using fallback', [
+                    'from' => $fromCurrency,
+                    'to'   => $toCurrency,
+                ]);
+
+                return 1.0;
+            }
+
+            return (float) $rate;
         });
 
         return (float) $rate;
@@ -296,6 +478,10 @@ class AgentWalletService
 
     /**
      * Determine fee type based on currencies.
+     *
+     * @param string $fromCurrency Source currency code
+     * @param string $toCurrency Target currency code
+     * @return string Fee type (domestic, international, or crypto)
      */
     private function determineFeeType(string $fromCurrency, string $toCurrency): string
     {
@@ -303,8 +489,9 @@ class AgentWalletService
             return 'domestic';
         }
 
-        // Check if crypto (simplified check)
-        if (in_array($fromCurrency, ['BTC', 'ETH', 'USDT']) || in_array($toCurrency, ['BTC', 'ETH', 'USDT'])) {
+        // Check if crypto using config-based list
+        $cryptoCurrencies = $this->getCryptoCurrencies();
+        if (in_array($fromCurrency, $cryptoCurrencies, true) || in_array($toCurrency, $cryptoCurrencies, true)) {
             return 'crypto';
         }
 

@@ -9,6 +9,17 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+/**
+ * Service for managing Decentralized Identifiers (DIDs) within the Agent Protocol.
+ *
+ * Handles DID generation, resolution, and verification for agent identities.
+ * Supports multiple DID methods including key-based and web-based identifiers.
+ *
+ * Configuration from config/agent_protocol.php:
+ * - did.verification_enabled: Whether DID verification is active
+ * - did.signature_algorithm: Algorithm for DID signatures (default: RS256)
+ * - did.cache_ttl: Cache duration for resolved DIDs
+ */
 class DIDService
 {
     private const DID_PREFIX = 'did:finaegis:';

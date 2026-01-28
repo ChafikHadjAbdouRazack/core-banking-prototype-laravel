@@ -24,7 +24,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_dashboard_returns_compliance_metrics(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/dashboard');
 
@@ -56,7 +56,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_violations_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/violations');
 
@@ -78,7 +78,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_violation_details_returns_null(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/violations/123');
 
@@ -100,7 +100,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_resolve_violation_returns_success(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/compliance/violations/123/resolve');
 
@@ -122,7 +122,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_compliance_rules_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/rules');
 
@@ -144,7 +144,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_rules_by_jurisdiction_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/rules/EU');
 
@@ -166,7 +166,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_compliance_checks_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/checks');
 
@@ -188,7 +188,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_run_compliance_check_returns_success(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/compliance/checks/run', [
             'check_type' => 'aml',
@@ -213,7 +213,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_certifications_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/certifications');
 
@@ -235,7 +235,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_renew_certification_returns_success(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/compliance/certifications/renew', [
             'certification_id' => 'cert-123',
@@ -259,7 +259,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_policies_returns_empty_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/compliance/policies');
 
@@ -281,7 +281,7 @@ class ComplianceControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_policy_returns_success(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->putJson('/api/compliance/policies/123', [
             'name'    => 'Updated Policy',

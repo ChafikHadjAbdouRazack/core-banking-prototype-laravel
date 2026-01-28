@@ -41,7 +41,7 @@ class ReserveManagementWorkflowTest extends DomainTestCase
         $parameters = $method->getParameters();
 
         $this->assertEquals('data', $parameters[0]->getName());
-        $this->assertEquals('App\Domain\Stablecoin\Workflows\Data\ReserveDepositData', $parameters[0]->getType()->getName());
+        $this->assertEquals('App\Domain\Stablecoin\Workflows\Data\ReserveDepositData', $parameters[0]->getType()?->getName());
     }
 
     #[Test]
@@ -52,7 +52,7 @@ class ReserveManagementWorkflowTest extends DomainTestCase
         $methods = ['depositReserve', 'withdrawReserve', 'rebalanceReserves'];
         foreach ($methods as $methodName) {
             $method = $reflection->getMethod($methodName);
-            $this->assertEquals('Generator', $method->getReturnType()->getName());
+            $this->assertEquals('Generator', $method->getReturnType()?->getName());
         }
     }
 

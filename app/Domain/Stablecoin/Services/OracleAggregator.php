@@ -149,11 +149,12 @@ class OracleAggregator
 
         // Calculate median
         if ($count % 2 === 0) {
-            $median = $values[$count / 2 - 1]
-                ->plus($values[$count / 2])
+            $midIndex = (int) ($count / 2);
+            $median = $values[$midIndex - 1]
+                ->plus($values[$midIndex])
                 ->dividedBy(2, 18, RoundingMode::HALF_UP);
         } else {
-            $median = $values[intval($count / 2)];
+            $median = $values[(int) ($count / 2)];
         }
 
         return new AggregatedPrice(

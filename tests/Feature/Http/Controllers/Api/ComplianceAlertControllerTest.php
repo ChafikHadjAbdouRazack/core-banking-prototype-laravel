@@ -25,7 +25,7 @@ class ComplianceAlertControllerTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->account = Account::factory()->create(['user_id' => $this->user->id]);
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
     }
 
     public function test_can_list_compliance_alerts(): void

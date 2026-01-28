@@ -17,6 +17,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Service for regulatory reporting within the Agent Protocol.
+ *
+ * Generates compliance reports, handles CTR/SAR filings, and manages
+ * regulatory submissions. Integrates with ComplianceAlertService for
+ * suspicious activity monitoring and alert generation.
+ *
+ * Supports various reporting requirements including AML, KYC verification,
+ * and transaction limit monitoring.
+ */
 class RegulatoryReportingService
 {
     private ComplianceAlertService $complianceAlertService;
@@ -35,7 +45,8 @@ class RegulatoryReportingService
             $threshold = $this->getCTRThreshold();
 
             // Get transactions exceeding threshold
-            $transactions = AgentTransaction::where('agent_id', $agentId)
+            // agent_transactions uses from_agent_id/to_agent_id, not agent_id
+            $transactions = AgentTransaction::where('from_agent_id', $agentId)
                 ->where('amount', '>=', $threshold)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->get();
@@ -314,12 +325,24 @@ class RegulatoryReportingService
      */
     private function storeReport(string $type, ?string $agentId, array $data): RegulatoryReport
     {
+        // Generate unique report ID
+        $reportId = 'REG-' . now()->format('Y') . '-' . str_pad((string) random_int(1, 99999), 5, '0', STR_PAD_LEFT);
+
+        // Extract period from data if available
+        $periodStart = $data['reporting_period']['start'] ?? $data['period']['start'] ?? now()->subMonth()->toDateString();
+        $periodEnd = $data['reporting_period']['end'] ?? $data['period']['end'] ?? now()->toDateString();
+
         return RegulatoryReport::create([
-            'report_type'  => $type,
-            'agent_id'     => $agentId,
-            'report_data'  => $data,
-            'status'       => 'generated',
-            'generated_at' => now(),
+            'report_id'              => $reportId,
+            'report_type'            => $type,
+            'jurisdiction'           => config('agent_protocol.regulatory.jurisdiction', 'US'),
+            'reporting_period_start' => $periodStart,
+            'reporting_period_end'   => $periodEnd,
+            'file_format'            => 'json',
+            'agent_id'               => $agentId,
+            'report_data'            => $data,
+            'status'                 => 'generated',
+            'generated_at'           => now(),
         ]);
     }
 

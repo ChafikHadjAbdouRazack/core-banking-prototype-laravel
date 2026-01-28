@@ -30,7 +30,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_active_assets_by_default(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create assets using firstOrCreate to avoid conflicts
         $usd = Asset::firstOrCreate(
@@ -100,7 +100,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_includes_inactive_assets_when_requested(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
         Asset::firstOrCreate(['code' => 'EUR'], ['name' => 'Euro', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -115,7 +115,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_filters_by_asset_type(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
         Asset::firstOrCreate(['code' => 'BTC'], ['name' => 'Bitcoin', 'type' => 'crypto', 'precision' => 8, 'is_active' => true]);
@@ -131,7 +131,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_searches_by_code_and_name(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -174,7 +174,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_combines_filters(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -216,7 +216,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_orders_assets_by_code(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(['code' => 'ZAR'], ['name' => 'South African Rand', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
         Asset::firstOrCreate(['code' => 'AUD'], ['name' => 'Australian Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -235,7 +235,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_returns_empty_array_when_no_assets(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/v1/assets');
 
@@ -265,7 +265,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_asset_details(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $asset = Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -320,7 +320,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_includes_statistics(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $asset = Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -352,7 +352,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_handles_case_insensitive_codes(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -373,7 +373,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_returns_404_for_non_existent_asset(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/v1/assets/INVALID');
 
@@ -387,7 +387,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_excludes_inactive_assets_by_default(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(
             ['code' => 'USD'],
@@ -407,7 +407,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_includes_inactive_assets_when_requested(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Force create a new inactive asset
         $asset = Asset::create([
@@ -438,7 +438,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_handles_multiple_asset_types_correctly(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Create fiat assets
         Asset::firstOrCreate(['code' => 'USD'], ['name' => 'US Dollar', 'type' => 'fiat', 'precision' => 2, 'is_active' => true]);
@@ -463,7 +463,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_show_formats_balance_with_asset_precision(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $asset = Asset::firstOrCreate(
             ['code' => 'BTC'],
@@ -491,7 +491,7 @@ class AssetControllerTest extends ControllerTestCase
     #[Test]
     public function test_index_search_is_case_insensitive(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         Asset::firstOrCreate(
             ['code' => 'USD'],

@@ -266,8 +266,8 @@ class AgentMessageController extends Controller
                 $did,
                 $validated['type'] ?? 'all',
                 $validated['status'] ?? null,
-                $validated['unacknowledged_only'] ?? false,
-                $validated['limit'] ?? 20
+                (bool) ($validated['unacknowledged_only'] ?? false),
+                (int) ($validated['limit'] ?? 20)
             );
 
             return response()->json([

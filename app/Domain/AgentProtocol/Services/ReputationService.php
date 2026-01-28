@@ -16,27 +16,74 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for managing agent reputation scores and trust levels.
+ *
+ * Configuration is loaded from config/agent_protocol.php:
+ * - reputation.cache_ttl: Cache duration for reputation scores
+ * - reputation.initial_score: Starting reputation score for new agents
+ * - reputation.thresholds: Score thresholds for different trust levels
+ * - reputation.decay_inactive_days: Days before reputation starts decaying
+ * - reputation.weights: Score adjustments for various events
+ */
 class ReputationService
 {
-    private const CACHE_TTL = 300; // 5 minutes
+    /**
+     * Get cache TTL from configuration.
+     */
+    private function getCacheTtl(): int
+    {
+        return (int) config('agent_protocol.reputation.cache_ttl', 300);
+    }
 
-    private const REPUTATION_THRESHOLDS = [
-        'minimum_for_escrow'             => 30.0,
-        'minimum_for_high_value'         => 50.0,
-        'minimum_for_instant_settlement' => 70.0,
-    ];
+    /**
+     * Get initial reputation score from configuration.
+     */
+    private function getInitialScore(): float
+    {
+        return (float) config('agent_protocol.reputation.initial_score', 50.0);
+    }
+
+    /**
+     * Get reputation thresholds from configuration.
+     *
+     * @return array<string, float>
+     */
+    private function getReputationThresholds(): array
+    {
+        $configThresholds = config('agent_protocol.reputation.thresholds', []);
+
+        return [
+            'minimum_for_escrow'             => (float) ($configThresholds['fair'] ?? 40.0),
+            'minimum_for_high_value'         => (float) ($configThresholds['good'] ?? 60.0),
+            'minimum_for_instant_settlement' => (float) ($configThresholds['excellent'] ?? 80.0),
+        ];
+    }
+
+    /**
+     * Get decay inactive days threshold from configuration.
+     */
+    private function getDecayInactiveDays(): int
+    {
+        return (int) config('agent_protocol.reputation.decay_inactive_days', 30);
+    }
 
     /**
      * Initialize reputation for a new agent.
+     *
+     * @param string $agentId Agent's DID
+     * @param float|null $initialScore Starting score (uses config default if null)
+     * @return ReputationScore Created reputation
      */
-    public function initializeAgentReputation(string $agentId, float $initialScore = 50.0): ReputationScore
+    public function initializeAgentReputation(string $agentId, ?float $initialScore = null): ReputationScore
     {
         $reputationId = $this->generateReputationId($agentId);
+        $score = $initialScore ?? $this->getInitialScore();
 
         $aggregate = ReputationAggregate::initializeReputation(
             reputationId: $reputationId,
             agentId: $agentId,
-            initialScore: $initialScore,
+            initialScore: $score,
             metadata: [
                 'initialized_at' => Carbon::now()->toIso8601String(),
                 'source'         => 'system',
@@ -58,12 +105,17 @@ class ReputationService
 
     /**
      * Get current reputation score for an agent.
+     *
+     * @param string $agentId Agent's DID
+     * @return ReputationScore Current reputation score
      */
     public function getAgentReputation(string $agentId): ReputationScore
     {
+        $cacheTtl = $this->getCacheTtl();
+
         return Cache::remember(
             $this->getCacheKey($agentId),
-            self::CACHE_TTL,
+            $cacheTtl,
             fn () => $this->fetchReputationFromAggregate($agentId)
         );
     }
@@ -206,10 +258,16 @@ class ReputationService
 
     /**
      * Process reputation decay for inactive agents.
+     *
+     * Finds all agents inactive beyond the configured threshold and
+     * applies reputation decay based on their inactivity period.
+     *
+     * @return Collection Results of decay processing
      */
     public function processReputationDecay(): Collection
     {
-        $inactiveAgents = $this->findInactiveAgents(30); // 30 days threshold
+        $inactiveDaysThreshold = $this->getDecayInactiveDays();
+        $inactiveAgents = $this->findInactiveAgents($inactiveDaysThreshold);
         $results = collect();
 
         foreach ($inactiveAgents as $agent) {
@@ -247,15 +305,20 @@ class ReputationService
 
     /**
      * Check if agent meets reputation threshold for operation.
+     *
+     * @param string $agentId Agent's DID
+     * @param string $operation Operation type (escrow, high_value, instant_settlement)
+     * @return bool True if agent meets the threshold
      */
     public function meetsThreshold(string $agentId, string $operation): bool
     {
         $reputation = $this->getAgentReputation($agentId);
+        $thresholds = $this->getReputationThresholds();
 
         $threshold = match ($operation) {
-            'escrow'             => self::REPUTATION_THRESHOLDS['minimum_for_escrow'],
-            'high_value'         => self::REPUTATION_THRESHOLDS['minimum_for_high_value'],
-            'instant_settlement' => self::REPUTATION_THRESHOLDS['minimum_for_instant_settlement'],
+            'escrow'             => $thresholds['minimum_for_escrow'],
+            'high_value'         => $thresholds['minimum_for_high_value'],
+            'instant_settlement' => $thresholds['minimum_for_instant_settlement'],
             default              => 0.0,
         };
 
@@ -346,10 +409,12 @@ class ReputationService
         $aggregate = ReputationAggregate::retrieve($reputationId);
 
         if (! $aggregate->getAgentId()) {
-            // Return default score if not initialized
+            // Return default score from config if not initialized
+            $defaultScore = $this->getInitialScore();
+
             return new ReputationScore(
                 agentId: $agentId,
-                score: 50.0,
+                score: $defaultScore,
                 trustLevel: 'neutral',
                 totalTransactions: 0,
                 successfulTransactions: 0,

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Domain\Custodian\Models\CustodianWebhook;
+use App\Domain\Custodian\Services\WebhookProcessorService;
+use App\Domain\Shared\Jobs\TenantAwareJob;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,13 +14,22 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use InvalidArgumentException;
 
+/**
+ * Process custodian webhooks in the queue.
+ *
+ * This job is tenant-aware since custodian webhooks are processed
+ * within a specific tenant context. The tenant_id is captured at
+ * dispatch time and restored when the job is processed.
+ */
 class ProcessCustodianWebhook implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+    use TenantAwareJob;
 
     /**
      * Create a new job instance.
@@ -26,12 +37,13 @@ class ProcessCustodianWebhook implements ShouldQueue
     public function __construct(
         public readonly string $webhookUuid
     ) {
+        $this->initializeTenantAwareJob();
     }
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(WebhookProcessorService $webhookProcessor): void
     {
         $webhook = CustodianWebhook::where('uuid', $this->webhookUuid)->first();
 
@@ -42,21 +54,28 @@ class ProcessCustodianWebhook implements ShouldQueue
         }
 
         try {
-            // Process the webhook based on custodian and event type
+            // Mark webhook as processing
+            $webhook->markAsProcessing();
+
             Log::info('Processing custodian webhook', [
-                'custodian'  => $webhook->custodian,
+                'custodian'  => $webhook->custodian_name,
                 'event_type' => $webhook->event_type,
                 'webhook_id' => $webhook->id,
             ]);
 
-            // TODO: Implement actual webhook processing logic based on custodian and event type
-            // This is a placeholder implementation
+            // Delegate to the webhook processor service for actual business logic
+            $webhookProcessor->process($webhook);
 
             // Mark webhook as processed
-            $webhook->update([
-                'status'       => 'processed',
-                'processed_at' => now(),
+            $webhook->markAsProcessed();
+        } catch (InvalidArgumentException $e) {
+            // Unknown custodian or event type - mark as ignored
+            Log::warning('Webhook processing skipped', [
+                'webhook_id' => $webhook->id,
+                'reason'     => $e->getMessage(),
             ]);
+
+            $webhook->markAsIgnored($e->getMessage());
         } catch (Exception $e) {
             Log::error('Failed to process webhook', [
                 'webhook_id' => $webhook->id,
@@ -64,14 +83,19 @@ class ProcessCustodianWebhook implements ShouldQueue
             ]);
 
             // Mark webhook as failed
-            $webhook->update([
-                'status'        => 'failed',
-                'error_message' => $e->getMessage(),
-            ]);
+            $webhook->markAsFailed($e->getMessage());
 
             // Re-throw to trigger retry
             throw $e;
         }
+    }
+
+    /**
+     * Webhooks may be processed without tenant context for global webhooks.
+     */
+    public function requiresTenantContext(): bool
+    {
+        return false;
     }
 
     /**
@@ -81,6 +105,9 @@ class ProcessCustodianWebhook implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['webhook', 'custodian'];
+        return array_merge(
+            ['webhook', 'custodian'],
+            $this->tenantTags()
+        );
     }
 }

@@ -3,9 +3,12 @@ includes:
     - phpstan-baseline.neon
     - phpstan-baseline-ai-tests.neon
     - phpstan-baseline-compliance-projector.neon
+    - phpstan-baseline-level6.neon
+    - phpstan-baseline-level7.neon
+    - phpstan-baseline-level8.neon
 
 parameters:
-    level: 5
+    level: 8
     paths:
         - app
         - tests
@@ -75,6 +78,21 @@ parameters:
         
         # Missing return statements in generators
         - '#should return Generator but return statement is missing#'
+
+        # Filament chart widgets template type issues (PHP version dependent)
+        - '#Unable to resolve the template type TKey in call to function collect#'
+        - '#Unable to resolve the template type TValue in call to function collect#'
+
+        # Filament chart widgets return type issues (different across PHP versions)
+        - '#Method App\\Filament\\Admin\\Resources\\[a-zA-Z]+Resource\\Widgets\\[a-zA-Z]+::(getData|getOptions|getFilters)\(\) return type has no value type specified in iterable type array#'
+        - '#Method App\\Filament\\Admin\\Widgets\\[a-zA-Z]+::(getData|getOptions|getFilters)\(\) return type has no value type specified in iterable type array#'
+
+        # Trait template type issues (context-dependent, can't be baselined)
+        - '#Unable to resolve the template type TCallbackReturnType in call to .*Illuminate\\Database\\Connection::transaction\(\)#'
+        - '#Unable to resolve the template type TReturn in call to method App\\Traits\\HandlesNestedTransactions::safeTransaction\(\)#'
+
+        # sys_getloadavg() return type varies between PHP versions (array{float,float,float}|false vs array|false)
+        - '#Cannot access offset 0 on array.*\|false#'
         
         # Unknown parameter types
         - '#has no type specified#'
@@ -117,6 +135,9 @@ parameters:
         # Spatie Event Sourcing Aggregate test helpers
         - '#Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot::(submitKyc|approveKyc|rejectKyc|requestGdprExport|completeGdprExport|requestGdprDeletion|completeGdprDeletion|generateRegulatoryReport)\(\)#'
         - '#Call to method (assertRecorded|assertNotRecorded|assertNothingRecorded|aggregateRoot) on an unknown type#'
+
+        # Anonymous subclass test methods in unit tests
+        - '#Call to an undefined method App\\Domain\\[a-zA-Z\\]+\\Services\\[a-zA-Z]+Service.*::[a-zA-Z]+Test\(\)#'
 
         # Pest PHP specific ignores
         - '#Call to an undefined method PHPUnit\\Framework\\TestCase::(browse|artisan|actingAs|get|post|put|patch|delete|json|getJson|postJson|putJson|patchJson|deleteJson|assertAuthenticated|assertGuest|assertDatabaseHas|assertDatabaseMissing|assertDatabaseCount|assertModelExists|assertModelMissing|assertSoftDeleted|assertNotSoftDeleted|assertStatus|assertOk|assertCreated|assertNoContent|assertNotFound|assertForbidden|assertUnauthorized|assertUnprocessable|assertSuccessful|assertServerError|assertRedirect|assertHeader|assertHeaderMissing|assertLocation|assertContent|assertSee|assertSeeInOrder|assertSeeText|assertSeeTextInOrder|assertDontSee|assertDontSeeText|assertJson|assertJsonCount|assertJsonFragment|assertJsonMissing|assertJsonMissingExact|assertJsonPath|assertJsonMissingPath|assertJsonStructure|assertJsonValidationErrors|assertJsonMissingValidationErrors|assertJsonIsArray|assertJsonIsObject|assertExactJson|assertSimilarJson|assertJsonStringEqualsJsonString|assertJsonStringNotEqualsJsonString|assertCookie|assertCookieMissing|assertCookieNotExpired|assertCookieExpired|assertPlainCookie|assertSessionHas|assertSessionHasAll|assertSessionHasInput|assertSessionHasErrors|assertSessionHasErrorsIn|assertSessionHasNoErrors|assertSessionDoesntHaveErrors|assertSessionMissing|assertViewHas|assertViewHasAll|assertViewMissing|assertViewIs|assertValid|assertInvalid|expectsEvents|doesntExpectEvents|expectsJobs|doesntExpectJobs|withServerVariables|withoutMiddleware|withMiddleware|withCookie|withCookies|withUnencryptedCookie|withUnencryptedCookies|withSession|followingRedirects|disableCookieEncryption|from|assertAuthenticated|assertGuest|be|seed|withoutExceptionHandling|withExceptionHandling|handleValidationExceptions|travel|travelTo|travelBack|freezeTime|freezeSecond|withHeaders|withHeader|withToken|flushHeaders|withoutVite|withViewErrors|shareFormRequests|withCredentials|withPrefetch|actingAs|be|assertAuthenticatedAs|assertCredentials|assertInvalidCredentials|hasUser|forgetGuards|assertAuthenticated|assertGuest|assertAuthenticatedAs|actingAs)\(\)#'

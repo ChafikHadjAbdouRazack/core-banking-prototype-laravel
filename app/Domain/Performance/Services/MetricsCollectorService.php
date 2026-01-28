@@ -248,12 +248,15 @@ class MetricsCollectorService
     {
         if (PHP_OS_FAMILY === 'Linux') {
             $load = sys_getloadavg();
+            if ($load === false) {
+                return 0.0;
+            }
             $cores = (int) shell_exec('nproc');
 
-            return min(100, ($load[0] / $cores) * 100);
+            return min(100.0, ($load[0] / max($cores, 1)) * 100);
         }
 
-        return 0; // Default for non-Linux systems
+        return 0.0; // Default for non-Linux systems
     }
 
     /**

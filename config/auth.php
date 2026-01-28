@@ -128,6 +128,6 @@ return [
     |
     */
 
-    'max_concurrent_sessions' => env('AUTH_MAX_CONCURRENT_SESSIONS', 5),
+    'max_concurrent_sessions' => env('AUTH_MAX_CONCURRENT_SESSIONS', 3),
 
 ];

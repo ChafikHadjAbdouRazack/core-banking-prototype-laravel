@@ -24,7 +24,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_dashboard_returns_fraud_detection_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/dashboard');
 
@@ -50,7 +50,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_alerts_returns_paginated_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/alerts');
 
@@ -80,7 +80,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_alert_details_returns_specific_alert(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $alertId = 'alert-123';
         $response = $this->getJson("/api/fraud/alerts/{$alertId}");
@@ -109,7 +109,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_acknowledge_alert_updates_alert_status(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $alertId = 'alert-123';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/acknowledge");
@@ -134,7 +134,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_investigate_alert_starts_investigation(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $alertId = 'alert-123';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/investigate");
@@ -159,7 +159,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_statistics_returns_fraud_metrics(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/statistics');
 
@@ -183,7 +183,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_patterns_returns_fraud_patterns(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/patterns');
 
@@ -207,7 +207,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_cases_returns_paginated_list(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/cases');
 
@@ -237,7 +237,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_case_details_returns_specific_case(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $caseId = 'case-456';
         $response = $this->getJson("/api/fraud/cases/{$caseId}");
@@ -266,7 +266,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_case_modifies_case_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $caseId = 'case-456';
         $response = $this->putJson("/api/fraud/cases/{$caseId}", [
@@ -296,7 +296,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_dashboard_with_filters(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/dashboard?period=7d&severity=high');
 
@@ -310,7 +310,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_alerts_with_pagination(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/alerts?page=2&per_page=20');
 
@@ -326,7 +326,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_cases_with_status_filter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/cases?status=open&assignee=me');
 
@@ -342,7 +342,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_statistics_with_date_range(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/statistics?start_date=2024-01-01&end_date=2024-01-31');
 
@@ -355,7 +355,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_patterns_with_type_filter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/fraud/patterns?type=transaction&risk_level=high');
 
@@ -368,7 +368,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_acknowledge_alert_with_notes(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $alertId = 'alert-789';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/acknowledge", [
@@ -388,7 +388,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_investigate_alert_with_assignment(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $alertId = 'alert-999';
         $response = $this->postJson("/api/fraud/alerts/{$alertId}/investigate", [
@@ -409,7 +409,7 @@ class FraudDetectionControllerTest extends ControllerTestCase
     #[Test]
     public function test_update_case_with_full_details(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $caseId = 'case-111';
         $response = $this->putJson("/api/fraud/cases/{$caseId}", [

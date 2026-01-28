@@ -247,13 +247,14 @@ class ExchangeRateProviderRegistry
                 $count = count($numericRates);
                 if ($count % 2 === 0) {
                     // Even number of rates - average the two middle values
-                    $mid1 = $numericRates[$count / 2 - 1];
-                    $mid2 = $numericRates[$count / 2];
+                    $midIndex = (int) ($count / 2);
+                    $mid1 = $numericRates[$midIndex - 1];
+                    $mid2 = $numericRates[$midIndex];
 
                     return $mid1->plus($mid2)->dividedBy('2', 8, RoundingMode::HALF_UP);
                 } else {
                     // Odd number of rates - return the middle value
-                    return $numericRates[floor($count / 2)];
+                    return $numericRates[(int) floor($count / 2)];
                 }
 
                 // no break

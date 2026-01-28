@@ -8,7 +8,7 @@ use Laravel\Sanctum\Sanctum;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
-    Sanctum::actingAs($this->user);
+    Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 });
 
 it('can freeze an account', function () {

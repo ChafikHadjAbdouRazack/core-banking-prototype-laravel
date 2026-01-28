@@ -61,13 +61,13 @@ class ComposeBasketActivityTest extends TestCase
         $this->assertCount(3, $parameters);
 
         $this->assertEquals('accountUuid', $parameters[0]->getName());
-        $this->assertEquals('App\Domain\Account\DataObjects\AccountUuid', $parameters[0]->getType()->getName());
+        $this->assertEquals('App\Domain\Account\DataObjects\AccountUuid', $parameters[0]->getType()?->getName());
 
         $this->assertEquals('basketCode', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()->getName());
+        $this->assertEquals('string', $parameters[1]->getType()?->getName());
 
         $this->assertEquals('amount', $parameters[2]->getName());
-        $this->assertEquals('int', $parameters[2]->getType()->getName());
+        $this->assertEquals('int', $parameters[2]->getType()?->getName());
     }
 
     #[Test]

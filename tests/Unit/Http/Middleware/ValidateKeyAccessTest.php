@@ -36,7 +36,7 @@ class ValidateKeyAccessTest extends TestCase
 
         // Assert
         $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals(['error' => 'Unauthorized'], json_decode($response->getContent(), true));
+        $this->assertEquals(['error' => 'Unauthorized'], json_decode((string) $response->getContent(), true));
     }
 
     public function test_user_without_permission_receives_403(): void
@@ -55,7 +55,7 @@ class ValidateKeyAccessTest extends TestCase
 
         // Assert
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals(['error' => 'Forbidden - Insufficient permissions'], json_decode($response->getContent(), true));
+        $this->assertEquals(['error' => 'Forbidden - Insufficient permissions'], json_decode((string) $response->getContent(), true));
     }
 
     public function test_user_with_permission_passes_through(): void
@@ -75,7 +75,7 @@ class ValidateKeyAccessTest extends TestCase
 
         // Assert
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals(['success' => true], json_decode($response->getContent(), true));
+        $this->assertEquals(['success' => true], json_decode((string) $response->getContent(), true));
     }
 
     public function test_rate_limiting_blocks_excessive_requests(): void
@@ -110,7 +110,7 @@ class ValidateKeyAccessTest extends TestCase
 
         // Assert
         $this->assertEquals(429, $response->getStatusCode());
-        $responseData = json_decode($response->getContent(), true);
+        $responseData = json_decode((string) $response->getContent(), true);
         $this->assertEquals('Too many key access attempts', $responseData['error']);
         $this->assertEquals(60, $responseData['retry_after']);
 

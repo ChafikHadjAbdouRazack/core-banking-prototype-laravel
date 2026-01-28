@@ -7,6 +7,13 @@ namespace App\Domain\AgentProtocol\Services;
 use InvalidArgumentException;
 use JsonException;
 
+/**
+ * Service for creating and validating JSON-LD documents.
+ *
+ * Handles JSON-LD context management, document creation, and validation
+ * for agent-to-agent communication following Schema.org and AP2 specifications.
+ * Supports multiple vocabulary contexts for semantic interoperability.
+ */
 class JsonLDService
 {
     private const SCHEMA_ORG_CONTEXT = 'https://schema.org';

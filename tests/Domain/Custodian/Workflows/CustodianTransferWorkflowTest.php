@@ -18,7 +18,7 @@ it('has execute method with correct signature', function () {
 
     expect($method->isPublic())->toBeTrue();
     expect($method->getNumberOfParameters())->toBe(7);
-    expect($method->getReturnType()->getName())->toBe('Generator');
+    expect($method->getReturnType()?->getName())->toBe('Generator');
 });
 
 it('extends workflow base class', function () {
@@ -40,12 +40,12 @@ it('has correct parameter types', function () {
     expect($parameters[6]->getName())->toBe('reference');
 
     // Check parameter types
-    expect($parameters[0]->getType()->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
-    expect($parameters[1]->getType()->getName())->toBe('string');
-    expect($parameters[2]->getType()->getName())->toBe('string');
-    expect($parameters[3]->getType()->getName())->toBe('App\Domain\Account\DataObjects\Money');
-    expect($parameters[4]->getType()->getName())->toBe('string');
-    expect($parameters[5]->getType()->getName())->toBe('string');
+    expect($parameters[0]->getType()?->getName())->toBe('App\Domain\Account\DataObjects\AccountUuid');
+    expect($parameters[1]->getType()?->getName())->toBe('string');
+    expect($parameters[2]->getType()?->getName())->toBe('string');
+    expect($parameters[3]->getType()?->getName())->toBe('App\Domain\Account\DataObjects\Money');
+    expect($parameters[4]->getType()?->getName())->toBe('string');
+    expect($parameters[5]->getType()?->getName())->toBe('string');
     expect($parameters[6]->getType()?->getName())->toBe('string');
     expect($parameters[6]->allowsNull())->toBeTrue();
 });

@@ -127,6 +127,24 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        // Audit log channel for financial operations and compliance
+        'audit' => [
+            'driver'               => 'daily',
+            'path'                 => storage_path('logs/audit.log'),
+            'level'                => 'info',
+            'days'                 => env('LOG_AUDIT_DAYS', 365), // Retain for 1 year for compliance
+            'replace_placeholders' => true,
+        ],
+
+        // Security events channel
+        'security' => [
+            'driver'               => 'daily',
+            'path'                 => storage_path('logs/security.log'),
+            'level'                => 'info',
+            'days'                 => env('LOG_SECURITY_DAYS', 365),
+            'replace_placeholders' => true,
+        ],
+
     ],
 
 ];

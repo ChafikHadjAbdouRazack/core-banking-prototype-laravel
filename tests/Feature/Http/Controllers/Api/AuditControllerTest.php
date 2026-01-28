@@ -24,7 +24,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_audit_logs_returns_empty_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/audit/logs');
 
@@ -50,7 +50,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_export_audit_logs_returns_export_info(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/audit/logs/export');
 
@@ -75,7 +75,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_audit_events_returns_empty_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/audit/events');
 
@@ -96,7 +96,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_event_details_returns_event_id(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $eventId = 'event-123';
         $response = $this->getJson("/api/audit/events/{$eventId}");
@@ -118,7 +118,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_audit_reports_returns_empty_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/audit/reports');
 
@@ -144,7 +144,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_generate_audit_report_creates_report(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/audit/reports/generate', [
             'type'   => 'monthly',
@@ -172,7 +172,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_entity_audit_trail_returns_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $entityType = 'account';
         $entityId = 'acc-123';
@@ -207,7 +207,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_get_user_activity_returns_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $userId = 'user-456';
 
@@ -235,7 +235,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_search_audit_logs_returns_empty_results(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->getJson('/api/audit/search?query=test&event_type=login');
 
@@ -261,7 +261,7 @@ class AuditControllerTest extends ControllerTestCase
     #[Test]
     public function test_archive_audit_logs_returns_success(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/api/audit/archive', [
             'before_date' => '2023-01-01',

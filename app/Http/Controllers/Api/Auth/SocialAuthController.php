@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Traits\HasApiScopes;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +14,8 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
+    use HasApiScopes;
+
     /**
      * Get the OAuth redirect URL for a provider.
      *
@@ -165,8 +168,8 @@ class SocialAuthController extends Controller
                 );
             }
 
-            // Generate token
-            $token = $user->createToken('api-token')->plainTextToken;
+            // Generate token with proper expiration
+            $token = $this->createTokenWithScopes($user, 'social-auth-token');
 
             return response()->json(
                 [

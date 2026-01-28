@@ -94,9 +94,9 @@ class AccountBalanceChart extends ChartWidget
             );
 
             if ($period === '24h') {
-                $current->addHours($groupBy['hours']);
+                $current->addHours((int) ($groupBy['hours'] ?? 1));
             } else {
-                $current->addDays($groupBy['days']);
+                $current->addDays((int) ($groupBy['days'] ?? 1));
             }
         }
 

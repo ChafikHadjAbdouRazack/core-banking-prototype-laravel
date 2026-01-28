@@ -42,7 +42,7 @@ class StablecoinSnapshotRepositoryTest extends DomainTestCase
 
         $parameter = $constructor->getParameters()[0];
         $this->assertEquals('snapshotModel', $parameter->getName());
-        $this->assertEquals('string', $parameter->getType()->getName());
+        $this->assertEquals('string', $parameter->getType()?->getName());
         $this->assertTrue($parameter->isDefaultValueAvailable());
         $this->assertEquals(StablecoinSnapshot::class, $parameter->getDefaultValue());
     }
@@ -54,7 +54,7 @@ class StablecoinSnapshotRepositoryTest extends DomainTestCase
         $property = $reflection->getProperty('snapshotModel');
 
         $this->assertTrue($property->isProtected());
-        $this->assertEquals('string', $property->getType()->getName());
+        $this->assertEquals('string', $property->getType()?->getName());
     }
 
     #[Test]

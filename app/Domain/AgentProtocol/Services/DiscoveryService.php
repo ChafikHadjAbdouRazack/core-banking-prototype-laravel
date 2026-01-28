@@ -9,6 +9,12 @@ use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
+/**
+ * Service for agent discovery within the Agent Protocol (AP2).
+ *
+ * Handles service discovery, capability matching, and agent endpoint resolution.
+ * Enables agents to find and connect with other agents based on their capabilities.
+ */
 class DiscoveryService
 {
     private const DISCOVERY_CACHE_TTL = 300; // 5 minutes

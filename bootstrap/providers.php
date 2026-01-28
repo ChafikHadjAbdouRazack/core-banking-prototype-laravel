@@ -1,8 +1,11 @@
 <?php
 
 return [
+    App\Infrastructure\Domain\DomainServiceProvider::class,
     App\Providers\AccountServiceProvider::class,
+    App\Providers\AgentProtocolServiceProvider::class,
     App\Providers\AIInfrastructureServiceProvider::class,
+    App\Providers\MCPToolServiceProvider::class,
     App\Providers\AppServiceProvider::class,
     App\Providers\BankIntegrationServiceProvider::class,
     App\Providers\BlockchainServiceProvider::class,
@@ -22,6 +25,7 @@ return [
     App\Providers\LendingServiceProvider::class,
     App\Providers\StablecoinServiceProvider::class,
     App\Providers\TelescopeServiceProvider::class,
+    App\Providers\TenancyServiceProvider::class,
     App\Providers\TestingServiceProvider::class,
     App\Providers\WalletServiceProvider::class,
     App\Providers\WebhookServiceProvider::class,

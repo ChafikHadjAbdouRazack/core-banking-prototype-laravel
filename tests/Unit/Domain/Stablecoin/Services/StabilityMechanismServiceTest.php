@@ -60,15 +60,15 @@ class StabilityMechanismServiceTest extends ServiceTestCase
         $parameters = $constructor->getParameters();
 
         $this->assertEquals('exchangeRateService', $parameters[0]->getName());
-        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()->getName());
+        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()?->getName());
         $this->assertFalse($parameters[0]->allowsNull());
 
         $this->assertEquals('collateralService', $parameters[1]->getName());
-        $this->assertEquals(CollateralService::class, $parameters[1]->getType()->getName());
+        $this->assertEquals(CollateralService::class, $parameters[1]->getType()?->getName());
         $this->assertFalse($parameters[1]->allowsNull());
 
         $this->assertEquals('liquidationService', $parameters[2]->getName());
-        $this->assertEquals(LiquidationService::class, $parameters[2]->getType()->getName());
+        $this->assertEquals(LiquidationService::class, $parameters[2]->getType()?->getName());
         $this->assertTrue($parameters[2]->allowsNull());
         $this->assertTrue($parameters[2]->isDefaultValueAvailable());
         $this->assertNull($parameters[2]->getDefaultValue());
@@ -87,7 +87,7 @@ class StabilityMechanismServiceTest extends ServiceTestCase
 
         $this->assertEquals(0, $reflection->getNumberOfParameters());
         $this->assertTrue($reflection->isPublic());
-        $this->assertEquals('array', $reflection->getReturnType()->getName());
+        $this->assertEquals('array', $reflection->getReturnType()?->getName());
     }
 
     #[Test]

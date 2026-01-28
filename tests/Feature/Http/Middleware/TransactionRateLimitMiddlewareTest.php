@@ -48,7 +48,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_allows_transactions_under_hourly_limit(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Deposits allow 10 per hour
         for ($i = 0; $i < 10; $i++) {
@@ -61,7 +61,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_blocks_transactions_over_hourly_limit(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Make 10 deposits (the limit)
         for ($i = 0; $i < 10; $i++) {
@@ -84,7 +84,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_enforces_daily_limit(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Withdrawals allow 5 per hour, 20 per day
         // We'll simulate reaching the daily limit by manipulating the cache
@@ -107,7 +107,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_enforces_amount_limit(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Deposits have $1000 per hour limit (100000 cents)
         // Make a large deposit that exceeds the hourly amount limit
@@ -128,7 +128,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_tracks_cumulative_amounts(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Make multiple small deposits that together exceed the amount limit
         // Amount limit is $1000 (100000 cents)
@@ -146,7 +146,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_different_transaction_types_have_separate_limits(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Use up deposit limit (10 per hour)
         for ($i = 0; $i < 10; $i++) {
@@ -163,7 +163,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_includes_rate_limit_headers(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/test-transfer', ['amount' => 10]);
 
@@ -176,7 +176,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_progressive_delay_increases_retry_time(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Withdrawals have progressive delay enabled
         // Use up the limit (5 per hour)
@@ -212,7 +212,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_handles_missing_amount_parameter(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $response = $this->postJson('/test-deposit', []);
 
@@ -230,7 +230,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_rate_limits_reset_after_window(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // Use up withdrawal limit
         for ($i = 0; $i < 5; $i++) {
@@ -251,7 +251,7 @@ class TransactionRateLimitMiddlewareTest extends TestCase
     #[Test]
     public function test_suspicious_activity_triggers_alert(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         // First 14 requests should pass (under the limit of 15)
         for ($i = 0; $i < 14; $i++) {

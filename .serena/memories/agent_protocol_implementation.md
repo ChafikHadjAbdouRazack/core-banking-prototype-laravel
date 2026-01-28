@@ -57,6 +57,40 @@ Started implementation of Agent Protocols (AP2 & A2A) for AI agent commerce on S
 - All tests passing
 - Coverage includes aggregates and services
 
+## Completed: Agent Authentication System (Phase 2a - PR #278)
+
+### Agent Authentication Service (AgentAuthenticationService)
+- DID-based authentication with challenge-response flow
+- API key generation, validation, and revocation
+- Session management with JWT-style tokens
+- OAuth2-style scopes for fine-grained access control
+
+### Authentication Middleware
+1. **AuthenticateAgentDID** - Validates session tokens, API keys, and DID signatures
+2. **CheckAgentCapability** - Verifies agent has required capabilities
+3. **CheckAgentScope** - Validates requested scope permissions
+
+### API Endpoints (AgentAuthController)
+Public endpoints:
+- `POST /api/agent-protocol/auth/challenge` - Generate DID auth challenge
+- `POST /api/agent-protocol/auth/did` - Authenticate with DID signature
+- `POST /api/agent-protocol/auth/api-key` - Authenticate with API key
+- `POST /api/agent-protocol/auth/validate` - Validate session token
+- `POST /api/agent-protocol/auth/revoke` - Revoke session
+- `GET /api/agent-protocol/auth/scopes` - List available scopes
+
+Protected endpoints (Sanctum auth required):
+- `GET/POST/DELETE /api/agent-protocol/agents/{did}/api-keys` - API key management
+- `GET/DELETE /api/agent-protocol/agents/{did}/sessions` - Session management
+
+### OAuth 2.0 Style Scopes (config/agent_protocol.php)
+- Payment: `payments:read/create/cancel/*`
+- Wallet: `wallet:read/transfer/withdraw/*`
+- Escrow: `escrow:read/create/manage/*`
+- Messaging: `messaging:read/send/*`
+- Reputation: `reputation:read/rate/*`
+- Profile: `profile:read/write`
+
 ## Next Steps (Phase 2)
 
 ### Payment Infrastructure
