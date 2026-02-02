@@ -24343,6 +24343,48 @@ parameters:
 			path: app/Domain/Governance/Workflows/UpdateConfigurationWorkflow.php
 
 		-
+			message: '#^Class App\\Domain\\Mobile\\Models\\BiometricChallenge uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Mobile/Models/BiometricChallenge.php
+
+		-
+			message: '#^Class App\\Domain\\Mobile\\Models\\MobileDevice uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Mobile/Models/MobileDevice.php
+
+		-
+			message: '#^Class App\\Domain\\Mobile\\Models\\MobileDeviceSession uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Mobile/Models/MobileDeviceSession.php
+
+		-
+			message: '#^Class App\\Domain\\Mobile\\Models\\MobileNotificationPreference uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Mobile/Models/MobileNotificationPreference.php
+
+		-
+			message: '#^Class App\\Domain\\Mobile\\Models\\MobilePushNotification uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Mobile/Models/MobilePushNotification.php
+
+		-
+			message: '#^Method App\\Domain\\Mobile\\Services\\BiometricAuthenticationService\:\:resolveScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Traits/HasApiScopes.php
+
+		-
+			message: '#^Method App\\Domain\\Mobile\\Services\\BiometricAuthenticationService\:\:createTokenWithScopes\(\) has parameter \$requestedScopes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Traits/HasApiScopes.php
+
+		-
 			message: '#^Method App\\Domain\\Lending\\Aggregates\\Loan\:\:createFromApplication\(\) has parameter \$terms with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -45623,3 +45665,12 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: tests/Unit/Values/EventQueuesTest.php
+
+		# Broadcast events use TenantBroadcastEvent trait with non-nullable tenantId
+		# Multi-Sig (3) + WebSocket streaming (7) = 10 events
+		-
+			message: '#^Strict comparison using \!\=\= between string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 10
+			path: app/Broadcasting/TenantBroadcastEvent.php
+

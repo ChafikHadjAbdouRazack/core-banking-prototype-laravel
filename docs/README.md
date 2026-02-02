@@ -21,6 +21,7 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ### Architecture
 - [System Architecture](02-ARCHITECTURE/ARCHITECTURE.md) - Technical overview
+- [Multi-Tenancy v2.0](V2.0.0_MULTI_TENANCY_ARCHITECTURE.md) - Team-based tenant isolation
 - [Multi-Asset Support](02-ARCHITECTURE/MULTI_ASSET_ARCHITECTURE.md) - Multi-currency implementation
 - [Workflow Patterns](02-ARCHITECTURE/WORKFLOW_PATTERNS.md) - Saga and orchestration patterns
 
@@ -32,7 +33,9 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 - [Demo Mode](03-FEATURES/DEMO-MODE.md) - Demo environment features
 
 ### API Reference
-- [REST API v2.0](04-API/REST_API_REFERENCE.md) - Complete API documentation
+- [REST API v2.1](04-API/REST_API_REFERENCE.md) - Complete API documentation
+- [Hardware Wallet API](04-API/REST_API_REFERENCE.md#hardware-wallet) - Ledger/Trezor integration
+- [WebSocket Streaming](04-API/REST_API_REFERENCE.md#websocket) - Real-time events
 - [BIAN API](04-API/BIAN_API_DOCUMENTATION.md) - Banking industry standard
 - [Webhook Integration](04-API/WEBHOOK_INTEGRATION.md) - Event notifications
 - [CQRS Implementation](04-API/CQRS_IMPLEMENTATION.md) - Command/Query separation
@@ -91,9 +94,22 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ## Platform Status
 
-- **Version**: 2.0
+- **Version**: 2.6.0 (Privacy Layer & ERC-4337 Relayer)
 - **Status**: Demonstration Prototype
-- **Last Updated**: December 2024
+- **Last Updated**: February 2, 2026
+
+### Current Release Features (v2.6.0)
+- **Privacy Pool**: Merkle Tree infrastructure, Delegated proof generation
+- **Relayer**: ERC-4337 Smart Accounts, Gas abstraction, UserOp signing
+- **Mobile Support**: SRS manifest for ZK circuits, WebSocket Merkle updates
+
+### Previous Releases
+- v2.5.0: Mobile App Launch (Expo/React Native, separate repository)
+- v2.4.0: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)
+- v2.3.0: AI-Powered Banking, RegTech Automation, Embedded Finance (BaaS)
+- v2.2.0: Mobile Backend (Device Management, Biometrics, Push Notifications)
+- v2.1.0: Hardware Wallets, Multi-Sig, WebSocket Streaming, Kubernetes
+- v2.0.0: Multi-Tenancy with Team-Based Isolation
 
 This is an educational prototype demonstrating modern banking architecture patterns. It's not production-ready.
 

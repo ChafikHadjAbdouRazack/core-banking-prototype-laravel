@@ -121,7 +121,7 @@ class CriticalRoutesTest extends TestCase
 
         foreach ($namedRoutes as $routeName) {
             $route = route($routeName, [], false);
-            $this->assertNotNull($route, "Route [{$routeName}] should exist");
+            $this->assertNotEmpty($route, "Route [{$routeName}] should exist");
         }
     }
 

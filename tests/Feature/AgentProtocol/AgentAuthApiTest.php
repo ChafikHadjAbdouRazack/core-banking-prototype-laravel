@@ -7,10 +7,10 @@ namespace Tests\Feature\AgentProtocol;
 use App\Models\Agent;
 use App\Models\AgentApiKey;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -18,8 +18,6 @@ use Tests\TestCase;
  */
 class AgentAuthApiTest extends TestCase
 {
-    use RefreshDatabase;
-
     private Agent $agent;
 
     protected User $user;
@@ -41,7 +39,7 @@ class AgentAuthApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_list_of_available_scopes(): void
     {
         $response = $this->getJson('/api/agent-protocol/auth/scopes');
@@ -66,7 +64,7 @@ class AgentAuthApiTest extends TestCase
         $this->assertContains('wallet:read', $scopeNames);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_challenge_for_did_authentication(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/challenge', [
@@ -91,7 +89,7 @@ class AgentAuthApiTest extends TestCase
         $this->assertEquals('authenticate', $decoded['action']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_challenge_without_did(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/challenge', []);
@@ -100,7 +98,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJsonValidationErrors(['did']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_api_key_auth_with_invalid_key(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/api-key', [
@@ -114,7 +112,7 @@ class AgentAuthApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_invalid_session_token(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/validate', [
@@ -128,7 +126,7 @@ class AgentAuthApiTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_requires_authentication_for_api_key_generation(): void
     {
         $response = $this->postJson("/api/agent-protocol/agents/{$this->agent->did}/api-keys", [
@@ -139,7 +137,7 @@ class AgentAuthApiTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_api_key_for_authenticated_user(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -169,7 +167,7 @@ class AgentAuthApiTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_api_keys_for_authenticated_user(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -212,7 +210,7 @@ class AgentAuthApiTest extends TestCase
         $this->assertCount(2, $keys);
     }
 
-    /** @test */
+    #[Test]
     public function it_revokes_api_key_for_authenticated_user(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -243,7 +241,7 @@ class AgentAuthApiTest extends TestCase
         $this->assertNotNull($apiKey->revoked_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_active_sessions_for_authenticated_user(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -258,7 +256,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function it_revokes_all_sessions_for_authenticated_user(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -273,7 +271,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJson(['success' => true]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_did_auth_without_required_fields(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/did', []);
@@ -282,7 +280,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJsonValidationErrors(['did', 'signature', 'challenge']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_api_key_auth_without_api_key(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/api-key', []);
@@ -291,7 +289,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJsonValidationErrors(['api_key']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_session_validation_without_token(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/validate', []);
@@ -300,7 +298,7 @@ class AgentAuthApiTest extends TestCase
             ->assertJsonValidationErrors(['session_token']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_session_revocation_without_token(): void
     {
         $response = $this->postJson('/api/agent-protocol/auth/revoke', []);

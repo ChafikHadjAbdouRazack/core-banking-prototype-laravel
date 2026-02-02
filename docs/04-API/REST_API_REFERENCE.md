@@ -1,13 +1,15 @@
 # FinAegis REST API Reference
 
-**Version:** 2.0
-**Last Updated:** December 2024
+**Version:** 2.1
+**Last Updated:** January 30, 2026
 **Status:** Demonstration Prototype
 
-This document consolidates all REST API endpoints for the FinAegis Core Banking Platform, including the complete Phase 8 unified platform features.
+This document consolidates all REST API endpoints for the FinAegis Core Banking Platform, including v2.1.0 enterprise features.
 
 ## Table of Contents
 - [Authentication](#authentication)
+- [Hardware Wallet](#hardware-wallet) (v2.1.0)
+- [WebSocket Streaming](#websocket-streaming) (v2.1.0)
 - [Account Management](#account-management)
 - [Asset Management](#asset-management)
 - [Transaction Management](#transaction-management)
@@ -54,6 +56,119 @@ Content-Type: application/json
 ```http
 POST /api/logout
 Authorization: Bearer {token}
+```
+
+## Hardware Wallet
+
+Hardware wallet integration for Ledger and Trezor devices. Supports Ethereum, Bitcoin, Polygon, and BSC chains.
+
+### Register Device
+```http
+POST /api/hardware-wallet/register
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "device_type": "ledger_nano_x",
+  "device_id": "unique-device-identifier",
+  "device_label": "My Ledger",
+  "public_key": "04...",
+  "address": "0x...",
+  "chain": "ethereum",
+  "derivation_path": "44'/60'/0'/0/0"
+}
+```
+
+### Create Signing Request
+```http
+POST /api/hardware-wallet/signing-request
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "association_uuid": "uuid-of-device-association",
+  "transaction_data": {
+    "to": "0x...",
+    "value": "1000000000000000000",
+    "data": "0x..."
+  }
+}
+```
+
+### Submit Signature
+```http
+POST /api/hardware-wallet/signing-request/{id}/submit
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "signature": "0x...",
+  "public_key": "04..."
+}
+```
+
+### Get Signing Request Status
+```http
+GET /api/hardware-wallet/signing-request/{id}
+Authorization: Bearer {token}
+```
+
+### List User's Devices
+```http
+GET /api/hardware-wallet/associations
+Authorization: Bearer {token}
+```
+
+### Remove Device
+```http
+DELETE /api/hardware-wallet/associations/{uuid}
+Authorization: Bearer {token}
+```
+
+### Get Supported Devices (Public)
+```http
+GET /api/hardware-wallet/supported
+```
+
+**Response:**
+```json
+{
+  "devices": ["ledger_nano_s", "ledger_nano_x", "trezor_one", "trezor_model_t"],
+  "chains": ["ethereum", "bitcoin", "polygon", "bsc"]
+}
+```
+
+## WebSocket Streaming
+
+Real-time event streaming via WebSocket channels. Requires authentication.
+
+### Connection
+```javascript
+const echo = new Echo({
+  broadcaster: 'pusher',
+  key: 'your-pusher-key',
+  cluster: 'mt1',
+  authEndpoint: '/broadcasting/auth',
+  auth: { headers: { Authorization: 'Bearer ' + token } }
+});
+```
+
+### Channels
+
+| Channel | Description |
+|---------|-------------|
+| `tenant.{tenantId}` | General tenant notifications |
+| `tenant.{tenantId}.accounts` | Account balance updates |
+| `tenant.{tenantId}.transactions` | Transaction status updates |
+| `tenant.{tenantId}.exchange` | Order book and trade updates |
+| `tenant.{tenantId}.compliance` | Compliance alerts (admin) |
+
+### Subscribe to Channel
+```javascript
+echo.private('tenant.' + tenantId + '.transactions')
+  .listen('TransactionCompleted', (e) => {
+    console.log('Transaction:', e.transaction);
+  });
 ```
 
 ## Account Management

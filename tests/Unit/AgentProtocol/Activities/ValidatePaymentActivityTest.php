@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\AgentProtocol\Activities;
 
 use App\Domain\AgentProtocol\DataObjects\AgentPaymentRequest;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -71,7 +72,7 @@ class ValidatePaymentActivityTest extends TestCase
         ];
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_valid_payment_request(): void
     {
         // Arrange
@@ -91,7 +92,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertEmpty($result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_negative_amount(): void
     {
         // Arrange
@@ -111,7 +112,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertContains('Amount must be positive', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_zero_amount(): void
     {
         // Arrange
@@ -131,7 +132,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertContains('Amount must be positive', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_did_format(): void
     {
         // Arrange
@@ -151,7 +152,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertContains('Invalid sender DID format', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_same_sender_and_receiver(): void
     {
         // Arrange
@@ -171,7 +172,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertContains('Sender and receiver cannot be the same', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_supported_currencies(): void
     {
         // Arrange
@@ -191,7 +192,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertContains('Unsupported currency: XYZ', $result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_escrow_conditions(): void
     {
         // Arrange
@@ -215,7 +216,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertEquals(['condition1', 'condition2'], $result['escrowRequirements']);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_split_payments(): void
     {
         // Arrange
@@ -239,7 +240,7 @@ class ValidatePaymentActivityTest extends TestCase
         $this->assertEmpty($result['errors']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_splits_exceeding_total(): void
     {
         // Arrange

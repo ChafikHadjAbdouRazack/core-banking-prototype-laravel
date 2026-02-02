@@ -34,6 +34,7 @@ it('can add a team member successfully', function () {
         ->first();
 
     expect($membership)->not()->toBeNull();
+    /** @var stdClass $membership */
     expect($membership->role)->toBe('editor');
 
     Event::assertDispatched(AddingTeamMember::class);

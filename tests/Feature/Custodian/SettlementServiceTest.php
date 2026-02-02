@@ -128,9 +128,11 @@ it('can process net settlements', function () {
     ]);
 
     // Check transfers linked to settlement
+    $settlement = DB::table('settlements')->first();
+    $this->assertNotNull($settlement);
     $this->assertDatabaseHas('custodian_transfers', [
         'id'            => 'TRANSFER_1',
-        'settlement_id' => DB::table('settlements')->first()->id,
+        'settlement_id' => $settlement->id,
     ]);
 });
 

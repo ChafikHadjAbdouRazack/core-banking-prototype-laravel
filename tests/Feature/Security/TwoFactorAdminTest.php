@@ -4,15 +4,13 @@ namespace Tests\Feature\Security;
 
 use App\Domain\User\Values\UserRoles;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class TwoFactorAdminTest extends TestCase
 {
-    use RefreshDatabase;
-
-    /** @test */
+    #[Test]
     public function admin_without_2fa_enabled_is_blocked()
     {
         $admin = User::factory()->create();
@@ -29,7 +27,7 @@ class TwoFactorAdminTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_with_2fa_enabled_but_not_confirmed_is_blocked()
     {
         $admin = User::factory()->create([
@@ -49,7 +47,7 @@ class TwoFactorAdminTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_with_confirmed_2fa_but_not_verified_in_session_is_blocked()
     {
         $admin = User::factory()->create([
@@ -69,7 +67,7 @@ class TwoFactorAdminTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_with_verified_2fa_can_access_protected_routes()
     {
         $admin = User::factory()->create([
@@ -90,7 +88,7 @@ class TwoFactorAdminTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function non_admin_users_are_not_required_to_have_2fa()
     {
         $user = User::factory()->create();
@@ -104,7 +102,7 @@ class TwoFactorAdminTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_enable_2fa()
     {
         $admin = User::factory()->create();
@@ -128,7 +126,7 @@ class TwoFactorAdminTest extends TestCase
         $this->assertNotNull($admin->two_factor_recovery_codes);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_confirm_2fa_with_valid_code()
     {
         $admin = User::factory()->create([
@@ -158,7 +156,7 @@ class TwoFactorAdminTest extends TestCase
         $this->assertNotNull($admin->two_factor_confirmed_at);
     }
 
-    /** @test */
+    #[Test]
     public function admin_cannot_disable_2fa_without_password()
     {
         $admin = User::factory()->create([

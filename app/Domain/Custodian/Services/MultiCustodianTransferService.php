@@ -590,8 +590,8 @@ class MultiCustodianTransferService
                 'bridge'   => (int) ($stats->bridge ?? 0),
             ],
             'avg_completion_seconds' => round((float) ($stats->avg_completion_seconds ?? 0), 2),
-            'success_rate'           => $stats->total_transfers > 0
-                ? round(((int) $stats->completed / (int) $stats->total_transfers) * 100, 2)
+            'success_rate'           => ($stats->total_transfers ?? 0) > 0
+                ? round(((int) ($stats->completed ?? 0) / (int) ($stats->total_transfers ?? 1)) * 100, 2)
                 : 0,
         ];
     }

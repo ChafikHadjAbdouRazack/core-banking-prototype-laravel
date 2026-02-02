@@ -5,7 +5,6 @@ namespace Tests\Security;
 use App\Domain\Account\Models\Account;
 use App\Models\User;
 use Cache;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Group;
@@ -17,8 +16,6 @@ use Tests\TestCase;
 #[Group('memory-intensive')]
 class ComprehensiveSecurityTest extends TestCase
 {
-    use RefreshDatabase;
-
     /**
      * Test SQL injection prevention in various endpoints.
      */
@@ -429,6 +426,35 @@ class ComprehensiveSecurityTest extends TestCase
         // Test future version
         $response = $this->getJson('/api/v99/accounts');
         $response->assertStatus(404);
+    }
+
+    /**
+     * Test sensitive data is not exposed in API responses.
+     */
+    #[Test]
+    public function test_sensitive_data_not_exposed(): void
+    {
+        $user = User::factory()->create([
+            'password' => Hash::make('password123'),
+        ]);
+
+        $token = $user->createToken('test-token')->plainTextToken;
+
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/auth/user');
+
+        $response->assertOk();
+
+        // The response structure is { "user": {...} }
+        $userData = $response->json('user');
+
+        // Password should never be in response
+        $this->assertArrayNotHasKey('password', $userData);
+        $this->assertArrayNotHasKey('remember_token', $userData);
+
+        // Two-factor secrets should also be hidden
+        $this->assertArrayNotHasKey('two_factor_secret', $userData);
+        $this->assertArrayNotHasKey('two_factor_recovery_codes', $userData);
     }
 
     /**

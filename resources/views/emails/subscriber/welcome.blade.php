@@ -1,5 +1,5 @@
 <x-mail::message>
-# Welcome to FinAegis!
+# Welcome to {{ company_name() }}!
 
 Thank you for subscribing to our updates. We're excited to have you as part of our community!
 
@@ -15,11 +15,11 @@ Thank you for subscribing to our updates. We're excited to have you as part of o
 Follow us on our social channels to stay up to date with the latest news:
 
 <x-mail::button :url="config('app.url')">
-Visit FinAegis
+Visit {{ company_name() }}
 </x-mail::button>
 
 Best regards,<br>
-The FinAegis Team
+{{ team_signature() }}
 
 <x-mail::subcopy>
 If you no longer wish to receive these emails, you can <a href="{{ $unsubscribeUrl }}">unsubscribe here</a>.

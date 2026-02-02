@@ -66,7 +66,7 @@ jobs:
           tools: composer:v2
           coverage: xdebug
           ini-values: |
-            memory_limit=768M
+            memory_limit=1G
             max_execution_time=360
             
       - name: Setup Node.js
@@ -141,41 +141,34 @@ jobs:
           DB_DATABASE: ":memory:"
           CI: true
           PEST_NO_SORT: true
+          MEMORY_LIMIT: 1G
+          PEST_PARALLEL: true
+          PARALLEL_PROCS: 2
         run: |
-          # Run unit tests using SQLite in-memory database to reduce memory usage
-          # Split tests into smaller batches to prevent memory exhaustion
-          # Process tests in chunks to avoid memory issues with file sorting
-          
+          # Run unit tests using SQLite in-memory database
+          # Memory increased to 1G and parallel enabled with 2 processes
+
           # Use the batch runner for memory-efficient execution
           chmod +x ./bin/pest-batch
-          
-          # First batch: Domain unit tests
+
+          # First batch: Domain unit tests (parallel enabled)
           ./bin/pest-batch tests/Unit/Domain || exit 1
-          
-          # Second batch: HTTP and Services unit tests  
+
+          # Second batch: HTTP and Services unit tests (parallel enabled)
           ./bin/pest-batch tests/Unit/Http tests/Unit/Services || exit 1
-          
+
           # Third batch: Other unit tests (if they exist)
           if [ -d "tests/Unit/Filament" ] || [ -d "tests/Unit/Http/Middleware" ]; then
             ./bin/pest-batch tests/Unit/Filament tests/Unit/Http/Middleware || exit 1
           fi
           
-      - name: Run Security Tests
-        if: always()
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
-          CI: true
-          PEST_NO_SORT: true
-        run: |
-          # Run security tests with SQLite to reduce memory usage
-          chmod +x ./bin/pest-batch
-          if [ -d "tests/Security" ]; then
-            ./bin/pest-batch tests/Security || exit 1
-          else
-            echo "Security tests directory not found, skipping"
-          fi
-          
+      # NOTE: Security tests are NOT run here to avoid duplication.
+      # Security tests run comprehensively in 04-security-tests.yml with MySQL:
+      # - Penetration Tests
+      # - Authentication Security Tests
+      # - API Security Tests
+      # - Vulnerability Tests
+
       # Coverage upload disabled since we're not generating coverage to save memory
       # - name: Upload Test Coverage
       #   uses: codecov/codecov-action@v4
@@ -231,11 +224,26 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.composer-cache.outputs.dir }}
+            node_modules
+            ~/.npm
+          key: ${{ runner.os }}-feature-deps-${{ hashFiles('**/composer.lock', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-feature-deps-
+
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          
+
       - name: Install Dependencies
         run: |
           # Try composer install with retry logic for flaky downloads
@@ -257,7 +265,7 @@ jobs:
           done
           npm ci --prefer-offline --no-audit
           npm run build
-          
+
       - name: Prepare Laravel Application
         run: |
           # Configure MySQL database connection for CI
@@ -267,12 +275,12 @@ jobs:
           echo "DB_DATABASE=testing" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=root" >> .env
-          
+
           # Note: Route caching disabled to prevent memory exhaustion in tests
           php artisan config:clear
           php artisan route:clear
           php artisan migrate --force
-          
+
       - name: Run Feature Tests
         env:
           DB_CONNECTION: mysql
@@ -283,19 +291,21 @@ jobs:
           DB_PASSWORD: root
           CI: true
           PEST_NO_SORT: true
+          MEMORY_LIMIT: 2G
+          PEST_PARALLEL: false
         run: |
-          # Run feature tests in batches to prevent memory exhaustion
-          # Disable parallel execution temporarily due to memory constraints
-          
+          # Run feature tests in batches with 2G memory
+          # Parallel disabled for feature tests (database state conflicts)
+
           # Use the batch runner for memory-efficient execution
           chmod +x ./bin/pest-batch
-          
+
           # First batch: Critical feature tests
           ./bin/pest-batch tests/Feature/Http tests/Feature/Api || exit 1
-          
+
           # Second batch: Domain feature tests
           ./bin/pest-batch tests/Feature/Domain tests/Feature/Models || exit 1
-          
+
           # Third batch: Other feature tests
           ./bin/pest-batch tests/Feature/Cache tests/Feature/Exchange tests/Feature/Basket || exit 1
 
@@ -339,11 +349,25 @@ jobs:
           extensions: mbstring, dom, fileinfo, mysql, redis, opcache, pcntl, gd, imagick, bcmath, intl, zip, soap, gmp
           tools: composer:v2
           coverage: xdebug
-          
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ steps.composer-cache.outputs.dir }}
+            vendor
+          key: ${{ runner.os }}-integration-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-integration-composer-
+
       - name: Setup Environment
         run: |
           cp .env.testing .env
-          
+
       - name: Install Dependencies
         run: |
           # Try composer install with retry logic for flaky downloads
@@ -363,7 +387,7 @@ jobs:
               composer clear-cache
             fi
           done
-          
+
       - name: Prepare Laravel Application
         run: |
           cp .env.testing .env
@@ -374,11 +398,11 @@ jobs:
           echo "DB_DATABASE=testing" >> .env
           echo "DB_USERNAME=root" >> .env
           echo "DB_PASSWORD=root" >> .env
-          
+
           php artisan key:generate
           php artisan config:cache
           php artisan migrate --force
-          
+
       - name: Run Integration Tests
         env:
           DB_CONNECTION: mysql
@@ -501,28 +525,32 @@ jobs:
         env:
           BEHAT_BASE_URL: http://127.0.0.1:8000
           QUEUE_CONNECTION: sync
+          CI: true
         run: |
-          # Run Behat tests using the CI script
-          # This ensures only implemented features are tested and prevents interactive prompts
-          ./bin/behat-ci
-          
-          # Also generate JUnit format output for test reporting
+          # Run only implemented feature files to avoid parsing 19 unimplemented ones
+          # CI=true enables reduced wait times (500ms vs 2-3s) in Behat contexts
+          mkdir -p tests-results
+
+          # Run account_management.feature with JUnit output
           vendor/bin/behat \
             --no-interaction \
             --format=progress \
             --format=junit \
             --out=std \
             --out=tests-results \
+            --stop-on-failure \
             features/account_management.feature
-          
+
+          # Run basket_management.feature with JUnit output
           vendor/bin/behat \
             --no-interaction \
             --format=progress \
             --format=junit \
             --out=std \
             --out=tests-results \
+            --stop-on-failure \
             features/basket_management.feature
-          
+
       - name: Upload Behat Results
         if: always()
         uses: actions/upload-artifact@v4

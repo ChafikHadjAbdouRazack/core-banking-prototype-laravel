@@ -183,18 +183,26 @@
 
             <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
                 <div class="text-center">
-                    <div class="flex items-center justify-center gap-4 mb-6">
+                    <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>REST API Available</span>
+                            <span>REST API v2.1</span>
                         </span>
-                        <span class="inline-flex items-center px-4 py-2 bg-yellow-500/20 backdrop-blur-sm rounded-full text-sm">
-                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                            <span>SDKs Coming Soon</span>
+                        <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                            <span>Hardware Wallets</span>
+                        </span>
+                        <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                            <span>WebSocket Streaming</span>
                         </span>
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
                             <span>Webhooks Ready</span>
+                        </span>
+                        <span class="inline-flex items-center px-4 py-2 bg-yellow-500/20 backdrop-blur-sm rounded-full text-sm">
+                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
+                            <span>SDKs Coming Soon</span>
                         </span>
                     </div>
                     <h1 class="text-5xl md:text-7xl font-bold mb-6">

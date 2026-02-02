@@ -11,10 +11,10 @@ use App\Domain\Treasury\Events\Portfolio\RebalancingCompleted;
 use App\Domain\Treasury\Services\PortfolioManagementService;
 use App\Domain\Treasury\Services\RebalancingService;
 use App\Domain\Treasury\Workflows\PortfolioRebalancingWorkflow;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Mockery;
+use PHPUnit\Framework\Attributes\Test;
 use ReflectionClass;
 use RuntimeException;
 use Tests\TestCase;
@@ -22,8 +22,6 @@ use Workflow\WorkflowStub;
 
 class PortfolioRebalancingWorkflowTest extends TestCase
 {
-    use RefreshDatabase;
-
     private string $portfolioId;
 
     private PortfolioManagementService $portfolioService;
@@ -41,7 +39,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         Event::fake();
     }
 
-    /** @test */
+    #[Test]
     public function testCompletesRebalancingWorkflowSuccessfullyWithoutApproval()
     {
         // Arrange - Create a portfolio that needs minor rebalancing (auto-approved)
@@ -62,7 +60,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         Event::assertNotDispatched(RebalancingApprovalRequested::class);
     }
 
-    /** @test */
+    #[Test]
     public function testRequiresApprovalForHighValueRebalancing()
     {
         // Arrange - Create a portfolio that needs major rebalancing requiring approval
@@ -85,7 +83,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         Event::assertNotDispatched(RebalancingCompleted::class);
     }
 
-    /** @test */
+    #[Test]
     public function testHandlesManualApprovalSuccessfully()
     {
         // Arrange
@@ -118,7 +116,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         Event::assertDispatched(RebalancingCompleted::class);
     }
 
-    /** @test */
+    #[Test]
     public function testSkipsRebalancingWhenNotNeeded()
     {
         // Arrange - Portfolio is already balanced
@@ -135,7 +133,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         expect($result['reason'])->toContain('not needed');
     }
 
-    /** @test */
+    #[Test]
     public function testHandlesExecutionFailuresWithCompensation()
     {
         // Arrange - Set up scenario that will fail during execution
@@ -153,7 +151,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         });
     }
 
-    /** @test */
+    #[Test]
     public function testHandlesPortfolioAlreadyRebalancingScenario()
     {
         // Arrange - Mark portfolio as currently rebalancing
@@ -169,7 +167,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         expect($result['reason'])->toContain('already being rebalanced');
     }
 
-    /** @test */
+    #[Test]
     public function testProcessesForceRebalancingOverride()
     {
         // Arrange - Balanced portfolio but force rebalancing
@@ -190,7 +188,7 @@ class PortfolioRebalancingWorkflowTest extends TestCase
         expect($result['approval_required'])->toBeFalse(); // Should be auto-approved even if forced
     }
 
-    /** @test */
+    #[Test]
     public function testCalculatesApprovalRequirementsCorrectly()
     {
         $workflow = WorkflowStub::make(PortfolioRebalancingWorkflow::class);

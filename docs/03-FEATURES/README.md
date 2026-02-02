@@ -20,9 +20,37 @@ These documents help users and developers understand:
 - Feature-specific implementation details
 - Business value of each feature
 
-## Current Feature Status (September 2024)
+## Current Feature Status (February 2026)
 
-### Recently Implemented Features
+### v2.4.0 Features (February 1, 2026) - In Progress
+- 🚧 **Key Management**: Shamir's Secret Sharing (2-of-3 threshold)
+- 🚧 **Privacy Layer**: Zero-Knowledge KYC, Proof of Innocence
+- 🚧 **Commerce Domain**: Soulbound Tokens, Merchant Onboarding
+- 🚧 **TrustCert**: W3C Verifiable Credentials, Certificate Authority
+
+### v2.3.0 Features (February 1, 2026)
+- ✅ **AI-Powered Banking**: Natural language queries, ML anomaly detection
+- ✅ **RegTech Automation**: MiFID II, MiCA compliance
+- ✅ **Embedded Finance (BaaS)**: White-label APIs, partner marketplace
+
+### v2.2.0 Features (January 31, 2026)
+- ✅ **Mobile Backend**: Device management, biometric auth
+- ✅ **Push Notifications**: FCM/APNs integration
+- ✅ **WebSocket Broadcasting**: Real-time mobile updates
+
+### v2.1.0 Features (January 30, 2026)
+- ✅ **Hardware Wallet Integration**: Ledger Nano S/X, Trezor One/Model T
+- ✅ **Multi-Signature Wallets**: M-of-N threshold signatures
+- ✅ **Real-time WebSocket Streaming**: Order book, NAV, notifications
+- ✅ **Kubernetes Native Deployment**: Helm charts, HPA, Istio
+- ✅ **Security Hardening**: ECDSA, PBKDF2, EIP-2 compliance
+
+### v2.0.0 Features (January 28, 2026)
+- ✅ **Multi-Tenancy**: Team-based tenant isolation
+- ✅ **Tenant-scoped Event Sourcing**: Isolated event streams
+- ✅ **WebSocket Channel Authorization**: Tenant-aware broadcasting
+
+### Core Platform Features
 - ✅ **CGO (Continuous Growth Offering)**: Complete investment platform with payment processing
 - ✅ **GCU Voting System**: Democratic voting for currency basket composition
 - ✅ **GCU Trading**: Buy/sell operations for Global Currency Unit

@@ -320,6 +320,7 @@ describe('acknowledge alert endpoint', function () {
         $alert = DB::table('monitoring_alerts')->where('id', $alertId)->first();
         expect($alert)->not->toBeNull();
         expect($alert)->toBeObject();
+        /** @var stdClass $alert */
         expect($alert->acknowledged)->toBe(1);
         expect($alert->acknowledged_by)->toBe($this->user->id);
         expect($alert->acknowledged_at)->not->toBeNull();

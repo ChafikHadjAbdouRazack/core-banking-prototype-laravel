@@ -7,10 +7,10 @@ namespace Tests\Feature\AgentProtocol;
 use App\Domain\AgentProtocol\Services\AgentAuthenticationService;
 use App\Models\Agent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -21,8 +21,6 @@ use Tests\TestCase;
  */
 class AgentAuthMiddlewareIntegrationTest extends TestCase
 {
-    use RefreshDatabase;
-
     private Agent $agent;
 
     protected User $user;
@@ -48,7 +46,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->authService = app(AgentAuthenticationService::class);
     }
 
-    /** @test */
+    #[Test]
     public function payment_endpoints_require_agent_authentication(): void
     {
         // Without any authentication
@@ -60,7 +58,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function payment_endpoints_reject_invalid_api_key(): void
     {
         $response = $this->withHeaders([
@@ -70,7 +68,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function payment_endpoints_accept_valid_api_key_with_correct_scopes(): void
     {
         // Generate API key with payment scopes
@@ -89,7 +87,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function payment_endpoints_reject_api_key_without_required_scopes(): void
     {
         // Generate API key without payment scopes
@@ -109,7 +107,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function escrow_endpoints_require_agent_authentication(): void
     {
         $response = $this->getJson('/api/agent-protocol/escrow/test-escrow-id');
@@ -120,7 +118,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function escrow_endpoints_reject_api_key_without_escrow_scopes(): void
     {
         // Generate API key without escrow scopes
@@ -137,7 +135,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function escrow_endpoints_accept_valid_api_key_with_correct_scopes(): void
     {
         // Generate API key with escrow scopes
@@ -156,7 +154,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function messaging_endpoints_require_agent_authentication(): void
     {
         $response = $this->getJson("/api/agent-protocol/agents/{$this->agent->did}/messages");
@@ -167,7 +165,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function messaging_endpoints_accept_valid_api_key_with_correct_scopes(): void
     {
         // Generate API key with message scopes
@@ -186,7 +184,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function agent_without_required_capability_is_rejected(): void
     {
         // Create agent without payments capability
@@ -211,7 +209,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(403);
     }
 
-    /** @test */
+    #[Test]
     public function session_token_authentication_works_on_protected_routes(): void
     {
         // Generate API key and authenticate to get session token
@@ -232,7 +230,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(401, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function user_authenticated_routes_still_require_sanctum(): void
     {
         // API key management requires user auth (sanctum)
@@ -241,7 +239,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function user_authenticated_routes_accept_sanctum_token(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -251,7 +249,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
+    #[Test]
     public function agent_registration_requires_user_authentication(): void
     {
         $response = $this->postJson('/api/agent-protocol/agents/register', [
@@ -263,7 +261,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function agent_registration_accepts_sanctum_token(): void
     {
         Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
@@ -278,7 +276,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(401, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function public_routes_do_not_require_authentication(): void
     {
         // Discovery endpoint is public
@@ -294,7 +292,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(401, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function inactive_agent_is_rejected_even_with_valid_api_key(): void
     {
         // Create inactive agent
@@ -322,7 +320,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function wildcard_capability_grants_access_to_all_endpoints(): void
     {
         // Create agent with wildcard capability
@@ -355,7 +353,7 @@ class AgentAuthMiddlewareIntegrationTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function full_authentication_flow_works_end_to_end(): void
     {
         // 1. Register agent (user auth required)

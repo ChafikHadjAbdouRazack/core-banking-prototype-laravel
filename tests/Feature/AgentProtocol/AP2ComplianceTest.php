@@ -8,6 +8,7 @@ use App\Domain\AgentProtocol\Models\AgentIdentity;
 use App\Domain\AgentProtocol\Models\AgentWallet;
 use App\Models\User;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -73,8 +74,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 3.1: Agent Discovery
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_discovery_endpoint_returns_valid_configuration(): void
     {
         $response = $this->getJson('/.well-known/ap2-configuration');
@@ -89,7 +89,7 @@ class AP2ComplianceTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_agent_discovery_returns_registered_agents(): void
     {
         $response = $this->actingAs($this->user)
@@ -107,7 +107,7 @@ class AP2ComplianceTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_agent_details_returns_full_agent_info(): void
     {
         $response = $this->actingAs($this->user)
@@ -129,8 +129,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 3.2: Agent Registration
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_agent_registration_creates_new_agent(): void
     {
         $response = $this->actingAs($this->user)
@@ -154,7 +153,7 @@ class AP2ComplianceTest extends TestCase
         $this->assertStringStartsWith('did:', $response->json('data.did'));
     }
 
-    /** @test */
+    #[Test]
     public function ap2_agent_registration_requires_authentication(): void
     {
         $response = $this->postJson('/api/agents/register', [
@@ -164,7 +163,7 @@ class AP2ComplianceTest extends TestCase
         $response->assertStatus(401);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_agent_registration_validates_required_fields(): void
     {
         $response = $this->actingAs($this->user)
@@ -177,8 +176,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 4.1: Payment Initiation
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_payment_initiation_creates_pending_payment(): void
     {
         // Create recipient agent
@@ -226,7 +224,7 @@ class AP2ComplianceTest extends TestCase
         $this->assertContains($response->json('data.status'), ['pending', 'processing', 'completed']);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_payment_requires_idempotency_key(): void
     {
         $response = $this->actingAs($this->user)
@@ -241,7 +239,7 @@ class AP2ComplianceTest extends TestCase
             ->assertJsonValidationErrors(['idempotency_key']);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_payment_validates_positive_amount(): void
     {
         $response = $this->actingAs($this->user)
@@ -256,7 +254,7 @@ class AP2ComplianceTest extends TestCase
             ->assertJsonValidationErrors(['amount']);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_payment_validates_supported_currency(): void
     {
         $response = $this->actingAs($this->user)
@@ -274,8 +272,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 4.2: Payment Status
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_payment_status_returns_correct_state(): void
     {
         $paymentId = 'payment_' . Str::uuid()->toString();
@@ -290,8 +287,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 5: Escrow Services
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_escrow_creation_holds_funds(): void
     {
         $recipientDid = 'did:key:escrow_recipient_' . Str::random(32);
@@ -323,7 +319,7 @@ class AP2ComplianceTest extends TestCase
         $this->assertEquals('held', $response->json('data.status'));
     }
 
-    /** @test */
+    #[Test]
     public function ap2_escrow_release_transfers_funds(): void
     {
         $escrowId = 'escrow_' . Str::uuid()->toString();
@@ -337,7 +333,7 @@ class AP2ComplianceTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_escrow_dispute_changes_status(): void
     {
         $escrowId = 'escrow_' . Str::uuid()->toString();
@@ -355,8 +351,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 6: Messaging
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_message_sending_creates_delivery_record(): void
     {
         $recipientDid = 'did:key:msg_recipient_' . Str::random(32);
@@ -391,7 +386,7 @@ class AP2ComplianceTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_message_retrieval_returns_inbox(): void
     {
         $response = $this->actingAs($this->user)
@@ -407,7 +402,7 @@ class AP2ComplianceTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_message_acknowledgment_updates_status(): void
     {
         $messageId = 'msg_' . Str::uuid()->toString();
@@ -422,8 +417,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Section 7: Reputation System
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_reputation_query_returns_score(): void
     {
         $response = $this->actingAs($this->user)
@@ -446,7 +440,7 @@ class AP2ComplianceTest extends TestCase
         $this->assertLessThanOrEqual(100, $score);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_reputation_feedback_requires_transaction(): void
     {
         $response = $this->actingAs($this->user)
@@ -462,8 +456,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Security Requirements
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_all_endpoints_require_authentication(): void
     {
         $endpoints = [
@@ -486,7 +479,7 @@ class AP2ComplianceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function ap2_rate_limiting_is_enforced(): void
     {
         // Make multiple rapid requests
@@ -503,8 +496,7 @@ class AP2ComplianceTest extends TestCase
     // ==========================================
     // AP2 Data Format Compliance
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function ap2_did_format_is_valid(): void
     {
         $response = $this->actingAs($this->user)
@@ -521,7 +513,7 @@ class AP2ComplianceTest extends TestCase
         $this->assertMatchesRegularExpression('/^did:[a-z]+:.+$/', $did);
     }
 
-    /** @test */
+    #[Test]
     public function ap2_currency_codes_follow_iso4217(): void
     {
         $response = $this->getJson('/.well-known/ap2-configuration');
@@ -536,7 +528,7 @@ class AP2ComplianceTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function ap2_timestamps_follow_iso8601(): void
     {
         $response = $this->actingAs($this->user)

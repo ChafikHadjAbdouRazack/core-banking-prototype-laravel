@@ -163,4 +163,21 @@ return [
         'api_secret' => env('KRAKEN_API_SECRET'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Firebase Cloud Messaging Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Firebase is used for push notifications to mobile devices.
+    | The server_key is from Firebase Console > Project Settings > Cloud Messaging.
+    | For HTTP v1 API, use the project_id and credentials file instead.
+    |
+    */
+
+    'firebase' => [
+        'server_key'  => env('FIREBASE_SERVER_KEY'),
+        'project_id'  => env('FIREBASE_PROJECT_ID'),
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('firebase-credentials.json')),
+    ],
+
 ];

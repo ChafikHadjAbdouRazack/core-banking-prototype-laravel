@@ -8,17 +8,15 @@ use App\Domain\AgentProtocol\Services\AgentAuthenticationService;
 use App\Domain\AgentProtocol\Services\DIDService;
 use App\Models\Agent;
 use App\Models\AgentApiKey;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AgentAuthenticationServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private AgentAuthenticationService $service;
 
     /** @var DIDService&MockInterface */
@@ -46,7 +44,7 @@ class AgentAuthenticationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_api_key_for_agent()
     {
         // Arrange
@@ -78,7 +76,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertTrue($storedKey->is_active);
     }
 
-    /** @test */
+    #[Test]
     public function it_authenticates_with_valid_api_key()
     {
         // Arrange
@@ -100,7 +98,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertNull($result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_api_key()
     {
         // Act
@@ -113,7 +111,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Invalid or expired API key', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_expired_api_key()
     {
         // Arrange
@@ -141,7 +139,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Invalid or expired API key', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_inactive_api_key()
     {
         // Arrange
@@ -168,7 +166,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Invalid or expired API key', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_revokes_api_key()
     {
         // Arrange
@@ -189,7 +187,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertNotNull($key->revoked_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_lists_api_keys_for_agent()
     {
         // Arrange
@@ -211,7 +209,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertContains('Key 2', $keyNames);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_session_token()
     {
         // Arrange
@@ -231,7 +229,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertNull($result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_invalid_session_token()
     {
         // Act
@@ -243,7 +241,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Invalid or expired session', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_revokes_session()
     {
         // Arrange
@@ -266,7 +264,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertFalse($result['valid']);
     }
 
-    /** @test */
+    #[Test]
     public function it_generates_challenge_for_did_auth()
     {
         // Arrange
@@ -288,7 +286,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('authenticate', $decoded['action']);
     }
 
-    /** @test */
+    #[Test]
     public function it_authenticates_with_did_signature()
     {
         // Arrange
@@ -326,7 +324,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertNull($result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_did_auth_with_invalid_signature()
     {
         // Arrange
@@ -358,7 +356,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Invalid signature', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_did_auth_for_unregistered_agent()
     {
         // Arrange
@@ -379,7 +377,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Agent not registered', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_did_auth_for_inactive_agent()
     {
         // Arrange
@@ -403,7 +401,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertEquals('Agent is not active', $result['error']);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_active_sessions_for_agent()
     {
         // Arrange
@@ -427,7 +425,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertArrayHasKey('expires_at', $sessions[0]);
     }
 
-    /** @test */
+    #[Test]
     public function it_revokes_all_sessions_for_agent()
     {
         // Arrange
@@ -452,7 +450,7 @@ class AgentAuthenticationServiceTest extends TestCase
         $this->assertFalse($this->service->validateSession($auth2['session_token'])['valid']);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_last_used_at_on_api_key_auth()
     {
         // Arrange

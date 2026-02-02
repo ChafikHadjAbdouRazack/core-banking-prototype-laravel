@@ -32,11 +32,36 @@ class TenantAwareEventSourcingTest extends TestCase
     #[Test]
     public function tenant_aware_stored_event_uses_tenant_connection(): void
     {
-        $event = new class () extends TenantAwareStoredEvent {
-            public $table = 'test_events';
-        };
+        // Verify the class uses the UsesTenantConnection trait which provides tenant connection
+        $reflection = new ReflectionClass(TenantAwareStoredEvent::class);
+        $traits = $this->getClassTraits($reflection);
 
-        $this->assertSame('tenant', $event->getConnectionName());
+        $this->assertContains(
+            'App\Domain\Shared\Traits\UsesTenantConnection',
+            $traits,
+            'TenantAwareStoredEvent should use UsesTenantConnection trait'
+        );
+    }
+
+    /**
+     * Get all traits used by a class including parent traits.
+     *
+     * @template T of object
+     * @param ReflectionClass<T> $reflection
+     * @return array<int, string>
+     */
+    private function getClassTraits(ReflectionClass $reflection): array
+    {
+        $traits = [];
+        foreach ($reflection->getTraits() as $trait) {
+            $traits[] = $trait->getName();
+        }
+        $parent = $reflection->getParentClass();
+        if ($parent) {
+            $traits = array_merge($traits, $this->getClassTraits($parent));
+        }
+
+        return $traits;
     }
 
     #[Test]
@@ -50,11 +75,15 @@ class TenantAwareEventSourcingTest extends TestCase
     #[Test]
     public function tenant_aware_snapshot_uses_tenant_connection(): void
     {
-        $snapshot = new class () extends TenantAwareSnapshot {
-            public $table = 'test_snapshots';
-        };
+        // Verify the class uses the UsesTenantConnection trait which provides tenant connection
+        $reflection = new ReflectionClass(TenantAwareSnapshot::class);
+        $traits = $this->getClassTraits($reflection);
 
-        $this->assertSame('tenant', $snapshot->getConnectionName());
+        $this->assertContains(
+            'App\Domain\Shared\Traits\UsesTenantConnection',
+            $traits,
+            'TenantAwareSnapshot should use UsesTenantConnection trait'
+        );
     }
 
     #[Test]

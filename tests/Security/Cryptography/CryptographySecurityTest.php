@@ -5,7 +5,6 @@ namespace Tests\Security\Cryptography;
 use App\Domain\Account\DataObjects\Hash;
 use App\Models\User;
 use Exception;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash as HashFacade;
@@ -15,8 +14,6 @@ use Tests\TestCase;
 
 class CryptographySecurityTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected User $user;
 
     protected function setUp(): void
@@ -68,6 +65,7 @@ class CryptographySecurityTest extends TestCase
             ->where('tokenable_id', $this->user->id)
             ->first();
 
+        $this->assertNotNull($storedToken);
         $this->assertNotEquals($plainTextToken, $storedToken->token);
 
         // Should be SHA-256 hash (64 characters)

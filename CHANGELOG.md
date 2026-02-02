@@ -5,6 +5,452 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.6.0] - 2026-02-02
+
+### 🔐 Privacy Layer & Enhanced ERC-4337 Relayer for Mobile
+
+This release implements the backend APIs required for mobile app privacy features, completing the server-side infrastructure for ERC-4337 account abstraction and ZK-proof based privacy pools.
+
+### Highlights
+
+| Feature | Description | PRs |
+|---------|-------------|-----|
+| Merkle Tree Infrastructure | Privacy pool state sync for mobile | #368 |
+| Smart Account Management | ERC-4337 account deployment | #369 |
+| Delegated Proof Generation | Server-side ZK proofs for low-end devices | #370 |
+| SRS Manifest | ZK circuit parameters for mobile | #371 |
+| WebSocket Merkle Updates | Real-time tree sync | #372 |
+| Enhanced Relayer | initCode support, network details | #373 |
+| UserOperation Signing | Auth shard signing with biometrics | #374 |
+| Security Hardening | Rate limiting, input validation | #375 |
+
+### Added
+
+#### Privacy Domain
+- **MerkleTreeService** - Real-time privacy pool state synchronization
+- **DelegatedProofService** - Server-side ZK proof generation for mobile
+- **SrsManifestService** - ZK circuit SRS file management
+- **MerkleRootUpdated** event - WebSocket broadcasting for tree updates
+
+#### Relayer Domain
+- **SmartAccountService** - ERC-4337 smart account deployment
+- **GasStationService** - Enhanced with initCode support for first transactions
+- **UserOperationSigningService** - Auth shard signing with biometric verification
+
+### API Endpoints
+
+| Category | Endpoints |
+|----------|-----------|
+| Privacy | `GET /api/v1/privacy/merkle-root`, `POST /merkle-path`, `GET /srs-manifest` |
+| Delegated Proofs | `POST /api/v1/privacy/delegated-proof`, `GET /{jobId}` |
+| Smart Accounts | `POST /api/v1/relayer/account`, `GET /nonce/{address}` |
+| UserOp Signing | `POST /api/auth/sign-userop` |
+
+### Security
+- Route-level rate limiting on sensitive endpoints (throttle:10,1)
+- Input validation with bounds checking for hex strings
+- Atomic rate limiting with Cache::increment()
+- Production TODO annotations for demo implementations
+
+---
+
+## [2.5.0] - 2026-02-01
+
+### 📱 Mobile App Launch
+
+Mobile app infrastructure for Expo/React Native application (separate repository).
+
+### Added
+- Mobile app specification and architecture
+- Backend API refinements for mobile consumption
+- Passkey/WebAuthn specification (v2.5.1)
+- Privacy protocol decision framework
+
+---
+
+## [2.4.0] - 2026-02-01
+
+### 🔐 Privacy & Identity Release
+
+Enterprise privacy infrastructure with zero-knowledge proofs and decentralized identity.
+
+### Highlights
+
+| Feature | Description |
+|---------|-------------|
+| Key Management | Shamir's Secret Sharing for distributed key custody |
+| Privacy Layer | ZK-KYC, Proof of Innocence, Selective Disclosure |
+| Commerce | Soulbound Tokens, Merchant Onboarding, Payment Attestations |
+| TrustCert | W3C Verifiable Credentials, Certificate Authority |
+
+### Added
+
+#### KeyManagement Domain
+- **ShamirService** - Secret sharing with configurable thresholds
+- **KeyRecoveryService** - Multi-party key reconstruction
+- HSM integration interfaces
+
+#### Privacy Domain
+- **ZkKycService** - Zero-knowledge KYC verification
+- **ProofOfInnocenceService** - Compliance-friendly privacy proofs
+- **SelectiveDisclosureService** - Attribute-level credential sharing
+
+#### Commerce Domain
+- **SoulboundTokenService** - Non-transferable identity tokens
+- **MerchantOnboardingService** - Merchant verification workflow
+- **PaymentAttestationService** - Transaction attestation proofs
+
+#### TrustCert Domain
+- **VerifiableCredentialService** - W3C VC issuance/verification
+- **CertificateAuthorityService** - PKI certificate management
+- **TrustFrameworkService** - Multi-issuer trust policies
+
+---
+
+## [2.3.0] - 2026-01-31
+
+### 🤖 AI Framework & RegTech Foundation
+
+AI-powered financial services with regulatory technology foundation.
+
+### Added
+- AI Framework with multi-provider support (OpenAI, Anthropic, Mistral)
+- RegTech adapters for compliance automation
+- BaaS (Banking-as-a-Service) configuration system
+- Enhanced AI agent protocols
+
+---
+
+## [2.2.0] - 2026-01-31
+
+### 📱 Mobile Backend & Biometric Authentication Release
+
+This release delivers complete mobile backend infrastructure with enterprise-grade security, event sourcing integration, real-time push notifications, and WebSocket broadcasting for mobile wallet applications.
+
+### Highlights
+
+| Feature | Description | PRs |
+|---------|-------------|-----|
+| Mobile Device Management | Device registration, blocking, trust levels | #347-352 |
+| Biometric Authentication | ECDSA P-256 challenge-response, device binding | #348-349 |
+| Push Notifications | Firebase Cloud Messaging, preference management | #351 |
+| Event Sourcing | Mobile domain events with tenant awareness | #349 |
+| Cross-Domain Integration | Transaction and security event listeners | #352 |
+| WebSocket Broadcasting | Soketi configuration for real-time mobile updates | #360 |
+| CI/CD Optimization | Test parallelization, LazilyRefreshDatabase | #357-359 |
+
+### Added
+
+#### Mobile Device Management
+- **MobileDeviceService** - Device registration, blocking, trust management
+- **MobileDevice model** - Multi-device support per user (max 5)
+- Device takeover prevention with automatic session invalidation
+- Platform-specific tracking (iOS/Android)
+- Push token management with duplicate detection
+
+#### Biometric Authentication
+- **BiometricAuthenticationService** - ECDSA P-256 signature verification
+- **Challenge-response flow** - 5-minute TTL challenges
+- **Device binding** - Public key stored per device
+- **Rate limiting** - Auto-lockout after 5 failed attempts
+- IP network validation for challenge responses
+
+#### Push Notifications
+- **PushNotificationService** - Firebase Cloud Messaging integration
+- **NotificationPreferenceService** - User/device preferences
+- Notification types: transaction, security, marketing, system
+- Scheduled and retry mechanisms
+- Read/unread tracking
+
+#### Session Management
+- **MobileSessionService** - Device-bound session management
+- Token refresh endpoints
+- Revoke single/all sessions
+- Trusted device extended sessions (8 hours vs 1 hour)
+
+#### Event Sourcing Integration
+- **MobileDeviceAggregate** - Event-sourced device state
+- 10 domain events for complete audit trail
+- WebSocket broadcasting on tenant channels
+- Tenant-aware background jobs
+
+#### Cross-Domain Event Listeners
+- **SendTransactionPushNotificationListener** - Transaction alerts
+- **SendSecurityAlertListener** - Security event notifications
+- **LogMobileAuditEventListener** - Compliance audit logging
+
+### API Endpoints
+
+| Category | Endpoints |
+|----------|-----------|
+| Device Management | `POST/GET/DELETE /api/mobile/devices`, `POST /devices/{id}/block` |
+| Biometric Auth | `POST /api/mobile/auth/biometric/challenge`, `/verify` |
+| Sessions | `GET/DELETE /api/mobile/sessions` |
+| Notifications | `GET /api/mobile/notifications`, `PUT /notifications/preferences` |
+
+### Configuration
+
+New `config/mobile.php`:
+- App version management with force update flag
+- Device limits and session durations
+- Biometric challenge TTL and failure thresholds
+- Push notification batch size and retry settings
+
+### Security
+
+- ECDSA P-256 public key verification
+- Challenge expiration (5 minutes)
+- Biometric lockout after 5 failures (30 minutes)
+- Device takeover detection with session invalidation
+- IP network validation for challenge responses
+- Sensitive fields hidden in API responses
+
+#### WebSocket Broadcasting (#360)
+- Soketi (Pusher-compatible) configuration for real-time updates
+- Tenant-scoped mobile channel (`tenant.{id}.mobile`)
+- TenantBroadcastEvent integration
+- Broadcasting configuration in `config/broadcasting.php`
+
+### Changed
+
+#### CI/CD Optimization (#357-359)
+- **LazilyRefreshDatabase** - ~40% faster test execution with lazy database refresh
+- **Parallel test execution** - 2 workers for unit tests in CI
+- **Memory optimization** - Increased from 768M to 1G for test stability
+- **Behat optimization** - CI-aware wait times (500ms vs 2-3s)
+- **Security test consolidation** - Removed duplicate test execution
+- **Pipeline parallelization** - Removed sequential job dependencies
+
+#### API Response Standardization (#356)
+- Consistent `error.code` and `error.message` format
+- User-friendly validation messages
+- Standardized HTTP status codes
+
+### Documentation
+
+- Created Mobile domain README
+- Added API endpoint documentation
+- Updated CLAUDE.md with Mobile services
+- Updated version badges
+
+---
+
+## [2.1.0] - 2026-01-30
+
+### 🔐 Security & Enterprise Features Release
+
+This release delivers enterprise-grade security hardening and infrastructure features, including hardware wallet integration, multi-signature support, real-time WebSocket streaming, and Kubernetes-native deployment.
+
+### Highlights
+
+| Feature | Description | PRs |
+|---------|-------------|-----|
+| Hardware Wallet Integration | Ledger Nano S/X, Trezor One/Model T support | #341 |
+| Multi-Signature Wallets | M-of-N threshold signatures for corporate accounts | #342 |
+| WebSocket Streaming | Real-time order book, NAV, transaction updates | #343 |
+| Kubernetes Native | Helm charts, HPA, Istio service mesh | #344 |
+| Security Hardening | ECDSA, PBKDF2, EIP-2 compliance | #345 |
+
+### Added
+
+#### Hardware Wallet Integration
+- **LedgerSignerService** - Ledger Nano S/X device support
+- **TrezorSignerService** - Trezor One/Model T device support
+- **HardwareWalletManager** - Unified wallet coordination
+- **HardwareWalletController** - REST API for device management
+- Supported chains: Ethereum, Bitcoin, Polygon, BSC
+- BIP44 derivation path support
+- Transaction signing workflows with 5-minute TTL
+
+#### Multi-Signature Wallet Support
+- M-of-N threshold signature schemes (e.g., 2-of-3, 3-of-5)
+- Transaction approval workflows
+- Multi-signer coordination
+- Signature aggregation and verification
+
+#### WebSocket Real-time Streaming
+- Tenant-scoped broadcast channels
+- Real-time order book updates
+- Live NAV calculations
+- Transaction status notifications
+- Portfolio value streaming
+
+#### Kubernetes Native Deployment
+- **Helm Charts** - Complete deployment package
+- **Horizontal Pod Autoscaler** - CPU/memory-based scaling
+- **Istio Service Mesh** - Traffic management, mTLS
+- **Network Policies** - Pod-to-pod security
+- Production and staging value files
+
+### Security
+
+#### Cryptographic Hardening
+- **ECDSA ecrecover** - Proper signature validation with public key recovery
+- **PBKDF2** - 100,000 iteration key derivation
+- **EIP-2** - Signature malleability protection (s-value validation)
+- **Timing-safe comparison** - Prevent timing attacks on key comparison
+- **Curve order validation** - Secp256k1 compliance
+
+### Infrastructure
+
+#### Docker Build Improvements
+- Multi-stage build optimization
+- Alpine PHP 8.4-fpm base image
+- PECL Redis extension compilation
+- Autoconf build dependencies management
+
+### Documentation
+- Updated all documentation to v2.1.0
+- Added Hardware Wallet API documentation
+- Added WebSocket streaming guide
+- Cleaned up archived documentation
+- Updated version badges across all files
+
+---
+
+## [2.0.0] - 2026-01-28
+
+### 🏢 Multi-Tenancy Release
+
+Transform FinAegis into a **multi-tenant SaaS platform** with team-based data isolation, powered by stancl/tenancy v3.9. This release introduces complete tenant isolation for all domains while maintaining backward compatibility for single-tenant deployments.
+
+### Highlights
+
+| Phase | Deliverable | PRs |
+|-------|-------------|-----|
+| Phase 1 | Foundation POC - stancl/tenancy setup, tenant model, middleware | #328 |
+| Phase 2 | Migration Infrastructure - 14 tenant migration files | #329, #337 |
+| Phase 3 | Event Sourcing Integration - Tenant-aware aggregates & projectors | #330 |
+| Phase 4 | Model Scoping - 83 models with tenant connection trait | #331 |
+| Phase 5 | Queue Job Tenant Context - TenantAwareJob trait | #332 |
+| Phase 6 | WebSocket Channel Authorization - Tenant-scoped broadcasting | #333 |
+| Phase 7 | Filament Admin Tenant Filtering - Admin panel tenant support | #334 |
+| Phase 8 | Data Migration Tooling - Import/export commands | #335 |
+| Phase 9 | Security Audit - Isolation validation tests | #336 |
+
+### Added
+
+#### Multi-Tenancy Foundation
+- **stancl/tenancy v3.9** integration with custom team-based tenancy
+- **Tenant Model** - Links to Teams, supports multiple database strategies
+- **InitializeTenancyByTeam Middleware** - Team membership verification, rate limiting, audit logging
+- **TeamTenantResolver** - Cached tenant resolution with security checks
+
+#### Tenant Database Migrations (14 files)
+- `0001_01_01_000001_create_tenant_accounts_table.php` - Core account tables
+- `0001_01_01_000002_create_tenant_transactions_table.php` - Transaction records
+- `0001_01_01_000003_create_tenant_transfers_table.php` - Transfer tracking
+- `0001_01_01_000004_create_tenant_account_balances_table.php` - Balance projections
+- `0001_01_01_000005_create_tenant_compliance_tables.php` - KYC/AML tables
+- `0001_01_01_000006_create_tenant_banking_tables.php` - Bank connections
+- `0001_01_01_000007_create_tenant_lending_tables.php` - Loan lifecycle
+- `0001_01_01_000008_create_tenant_event_sourcing_tables.php` - Event stores
+- `0001_01_01_000009_create_tenant_exchange_tables.php` - Trading engine
+- `0001_01_01_000010_create_tenant_stablecoin_tables.php` - Stablecoin ops
+- `0001_01_01_000011_create_tenant_wallet_tables.php` - Blockchain wallets
+- `0001_01_01_000012_create_tenant_treasury_tables.php` - Portfolio management
+- `0001_01_01_000013_create_tenant_cgo_tables.php` - Investment platform
+- `0001_01_01_000014_create_tenant_agent_protocol_tables.php` - AI agent protocol
+
+#### Event Sourcing Integration
+- **TenantAwareStoredEvent** - Base class for tenant-scoped events
+- **TenantAwareSnapshot** - Base class for tenant-scoped snapshots
+- **TenantAwareAggregateRoot** - Aggregate root with tenant context
+- **TenantAwareStoredEventRepository** - Tenant-filtered event storage
+- **TenantAwareSnapshotRepository** - Tenant-filtered snapshots
+
+#### Model Scoping
+- **UsesTenantConnection Trait** - Applied to 83 Eloquent models
+- All domain models updated (Account, Banking, Compliance, Exchange, etc.)
+- 16 event sourcing models extend TenantAwareStoredEvent
+- 5 snapshot models extend TenantAwareSnapshot
+
+#### Queue & Background Jobs
+- **TenantAwareJob Trait** - Explicit tenant context tracking
+- Updated AsyncCommandJob, AsyncDomainEventJob, ProcessCustodianWebhook
+- Tenant tags for Laravel Horizon monitoring
+- QueueTenancyBootstrapper enabled in config
+
+#### WebSocket & Broadcasting
+- **TenantChannelAuthorizer** - Tenant-scoped channel authorization
+- **TenantBroadcastEvent Trait** - Tenant-aware event broadcasting
+- Tenant-scoped channel definitions in routes/channels.php
+
+#### Filament Admin Panel
+- **TenantAwareResource Trait** - Automatic tenant scoping for resources
+- **FilamentTenantMiddleware** - Tenant context initialization
+- **TenantSelectorWidget** - UI widget for switching tenants
+- Admin panel tenant filtering across all resources
+
+#### Data Migration Tooling
+- **TenantDataMigrationService** - Core data migration service
+- **MigrateTenantDataCommand** - `php artisan tenant:migrate-data`
+- **ExportTenantDataCommand** - `php artisan tenant:export` (JSON/CSV/SQL)
+- **ImportTenantDataCommand** - `php artisan tenant:import`
+- Migration tracking tables (tenant_data_migrations, imports, exports)
+
+#### Security Features
+- Team membership verification before tenant access
+- Rate limiting (60 attempts/minute) on tenant lookups
+- Audit logging for all tenancy events
+- Explicit 403 responses when tenant required but not found
+- Config-based auto-creation (dev/test only)
+
+### Security
+
+- **TenantIsolationSecurityTest** - 9 structural security tests
+- **CrossTenantAccessPreventionTest** - 17 isolation validation tests
+- Security audit documentation at `docs/security/MULTI_TENANCY_SECURITY_AUDIT.md`
+- Pure unit tests using reflection (no Laravel container dependencies)
+
+### Changed
+
+- Database connections now support: central, tenant, tenant_template
+- Event sourcing repositories are now tenant-aware
+- All financial models use tenant-scoped database connections
+- Queue jobs preserve tenant context across async boundaries
+
+### Migration Notes
+
+1. **New Configuration Files**:
+   ```bash
+   config/tenancy.php      # stancl/tenancy configuration
+   config/multitenancy.php # Custom multi-tenancy settings
+   ```
+
+2. **Run Central Migrations**:
+   ```bash
+   php artisan migrate  # Creates tenants table and domains
+   ```
+
+3. **Run Tenant Migrations** (after creating tenants):
+   ```bash
+   php artisan tenants:migrate
+   ```
+
+4. **Data Migration** (for existing single-tenant data):
+   ```bash
+   php artisan tenant:migrate-data {tenant_id} --tables=accounts,transactions
+   ```
+
+### Upgrade Notes
+
+For existing single-tenant deployments:
+- The default behavior remains unchanged when no tenant is active
+- Multi-tenancy features are opt-in via middleware
+- Existing data can be migrated using the data migration commands
+- See `docs/V2.0.0_MULTI_TENANCY_ARCHITECTURE.md` for detailed upgrade guide
+
+### Breaking Changes
+
+- None for single-tenant deployments
+- Multi-tenant deployments require:
+  - Tenant creation before accessing tenant-scoped resources
+  - Team membership for tenant access
+  - Updated route middleware configuration
+
+---
+
 ## [1.4.1] - 2026-01-27
 
 ### 🐛 Database Cache Connection Fix
@@ -741,7 +1187,9 @@ This release marks the transformation of FinAegis from a proprietary platform to
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **1.4.0** | **In Progress** | **🧪 Test Coverage Expansion** |
+| **2.0.0** | **2026-01-28** | **🏢 Multi-Tenancy** |
+| 1.4.1 | 2026-01-27 | 🐛 Database Cache Connection Fix |
+| 1.4.0 | 2026-01-27 | 🧪 Test Coverage Expansion |
 | 1.3.0 | 2026-01-25 | 🔧 Platform Modularity |
 | 1.2.0 | 2026-01-13 | 🚀 Feature Completion |
 | 1.1.0 | 2026-01-11 | 🔧 Foundation Hardening |
@@ -777,7 +1225,10 @@ This is a documentation-focused release with no breaking changes.
 - Run `php artisan migrate` for AI Framework tables
 - Configure AI providers in `config/ai.php`
 
-[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.4.1...v2.0.0
+[1.4.1]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.4.0...v1.4.1
+[1.4.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.0.0...v1.1.0

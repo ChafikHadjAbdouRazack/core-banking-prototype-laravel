@@ -319,14 +319,30 @@ class TransactionStatusController extends Controller
             )
             ->first();
 
+        if (! $stats) {
+            return (object) [
+                'total'                         => 0,
+                'completed'                     => 0,
+                'pending'                       => 0,
+                'processing'                    => 0,
+                'failed'                        => 0,
+                'avg_completion_time'           => null,
+                'success_rate'                  => 0,
+                'avg_completion_time_formatted' => 'N/A',
+            ];
+        }
+
         // Calculate success rate
-        $stats->success_rate = $stats->total > 0
-            ? round(($stats->completed / $stats->total) * 100, 1)
+        $total = $stats->total ?? 0;
+        $completed = $stats->completed ?? 0;
+        $stats->success_rate = $total > 0
+            ? round(($completed / $total) * 100, 1)
             : 0;
 
         // Format average completion time
-        $stats->avg_completion_time_formatted = $stats->avg_completion_time
-            ? $this->formatDuration($stats->avg_completion_time)
+        $avgCompletionTime = $stats->avg_completion_time ?? null;
+        $stats->avg_completion_time_formatted = $avgCompletionTime
+            ? $this->formatDuration($avgCompletionTime)
             : 'N/A';
 
         return $stats;

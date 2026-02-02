@@ -3,14 +3,12 @@
 namespace Tests\Feature\Security;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RateLimitingTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -23,7 +21,7 @@ class RateLimitingTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
+    #[Test]
     public function auth_endpoints_have_strict_rate_limiting()
     {
         // Auth endpoints allow 5 requests per minute
@@ -60,7 +58,7 @@ class RateLimitingTest extends TestCase
         $response->assertHeader('Retry-After');
     }
 
-    /** @test */
+    #[Test]
     public function password_reset_has_rate_limiting()
     {
         // Password reset allows 5 attempts per hour
@@ -89,7 +87,7 @@ class RateLimitingTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function different_endpoints_have_different_rate_limits()
     {
         $user = User::factory()->create();
@@ -112,7 +110,7 @@ class RateLimitingTest extends TestCase
         $this->assertGreaterThan(0, $remainingHeader);
     }
 
-    /** @test */
+    #[Test]
     public function rate_limit_is_per_user_not_per_ip()
     {
         $user1 = User::factory()->create();
@@ -134,7 +132,7 @@ class RateLimitingTest extends TestCase
         $this->assertNotEquals(429, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function rate_limit_blocking_duration_varies_by_endpoint_type()
     {
         // Auth endpoints have 5 minute block duration
@@ -158,7 +156,7 @@ class RateLimitingTest extends TestCase
         $this->assertNotNull($response->headers->get('X-RateLimit-Blocked-Until'));
     }
 
-    /** @test */
+    #[Test]
     public function rate_limit_headers_are_present_on_successful_requests()
     {
         $response = $this->getJson('/api/health');
@@ -172,7 +170,7 @@ class RateLimitingTest extends TestCase
         $response->assertHeader('X-RateLimit-Window');
     }
 
-    /** @test */
+    #[Test]
     public function admin_endpoints_have_higher_rate_limits()
     {
         $admin = User::factory()->create();
@@ -196,7 +194,7 @@ class RateLimitingTest extends TestCase
         $this->assertGreaterThan(50, $remaining);
     }
 
-    /** @test */
+    #[Test]
     public function rate_limit_resets_after_window_expires()
     {
         // Make requests to nearly exhaust limit

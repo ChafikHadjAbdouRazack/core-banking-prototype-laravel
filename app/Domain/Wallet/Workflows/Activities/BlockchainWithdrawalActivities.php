@@ -54,6 +54,10 @@ class BlockchainWithdrawalActivities
             ->where('wallet_id', $walletId)
             ->first();
 
+        if (! $wallet) {
+            return false;
+        }
+
         $settings = json_decode($wallet->settings, true) ?? [];
 
         return $settings['requires_2fa'] ?? false;
@@ -77,6 +81,10 @@ class BlockchainWithdrawalActivities
             ->where('wallet_id', $walletId)
             ->first();
 
+        if (! $wallet) {
+            throw new Exception('Wallet not found');
+        }
+
         $settings = json_decode($wallet->settings, true) ?? [];
         $dailyLimit = BigDecimal::of($settings['daily_limit'] ?? '10000');
 
@@ -99,6 +107,10 @@ class BlockchainWithdrawalActivities
         $wallet = DB::table('blockchain_wallets')
             ->where('wallet_id', $walletId)
             ->first();
+
+        if (! $wallet) {
+            throw new Exception('Wallet not found');
+        }
 
         $settings = json_decode($wallet->settings, true) ?? [];
         $whitelistedAddresses = $settings['whitelisted_addresses'] ?? [];
@@ -204,6 +216,10 @@ class BlockchainWithdrawalActivities
         $wallet = DB::table('blockchain_wallets')
             ->where('wallet_id', $walletId)
             ->first();
+
+        if (! $wallet) {
+            throw new Exception('Wallet not found');
+        }
 
         // Decrypt the private key
         $privateKey = $this->keyManager->decrypt($wallet->encrypted_private_key);
@@ -469,6 +485,10 @@ class BlockchainWithdrawalActivities
         $wallet = DB::table('blockchain_wallets')
             ->where('wallet_id', $hotWallet->wallet_id)
             ->first();
+
+        if (! $wallet) {
+            throw new Exception('Hot wallet configuration not found');
+        }
 
         // Calculate total amount including fees
         $totalAmount = BigDecimal::of($cryptoAmount)->plus($fees['total_fee']);

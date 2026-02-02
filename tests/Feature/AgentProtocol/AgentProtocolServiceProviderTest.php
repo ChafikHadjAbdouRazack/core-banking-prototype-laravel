@@ -26,6 +26,7 @@ use App\Domain\AgentProtocol\Services\RegulatoryReportingService;
 use App\Domain\AgentProtocol\Services\ReputationService;
 use App\Domain\AgentProtocol\Services\SignatureService;
 use App\Domain\AgentProtocol\Services\TransactionVerificationService;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -39,8 +40,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Contract Binding Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function it_binds_wallet_operation_interface_to_agent_wallet_service(): void
     {
         $service = app(WalletOperationInterface::class);
@@ -48,7 +48,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentWalletService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_binds_risk_scoring_interface_to_fraud_detection_service(): void
     {
         $service = app(RiskScoringInterface::class);
@@ -56,7 +56,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(FraudDetectionService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_binds_transaction_verifier_interface_to_verification_service(): void
     {
         $service = app(TransactionVerifierInterface::class);
@@ -67,8 +67,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Core Services Registration Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function it_registers_did_service_as_singleton(): void
     {
         $service1 = app(DIDService::class);
@@ -78,7 +77,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertSame($service1, $service2);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_discovery_service_with_did_dependency(): void
     {
         $service = app(DiscoveryService::class);
@@ -86,7 +85,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(DiscoveryService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_agent_discovery_service_with_registry_dependency(): void
     {
         $service = app(AgentDiscoveryService::class);
@@ -94,7 +93,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentDiscoveryService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_agent_registry_service_as_singleton(): void
     {
         $service1 = app(AgentRegistryService::class);
@@ -104,7 +103,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertSame($service1, $service2);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_json_ld_service(): void
     {
         $service = app(JsonLDService::class);
@@ -112,7 +111,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(JsonLDService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_agent_wallet_service_as_singleton(): void
     {
         $service1 = app(AgentWalletService::class);
@@ -122,7 +121,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertSame($service1, $service2);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_escrow_service_with_dependencies(): void
     {
         $service = app(EscrowService::class);
@@ -130,7 +129,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(EscrowService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_reputation_service(): void
     {
         $service = app(ReputationService::class);
@@ -138,7 +137,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(ReputationService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_notification_service(): void
     {
         $service = app(AgentNotificationService::class);
@@ -146,7 +145,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentNotificationService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_webhook_service(): void
     {
         $service = app(AgentWebhookService::class);
@@ -154,7 +153,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentWebhookService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_regulatory_reporting_service(): void
     {
         $service = app(RegulatoryReportingService::class);
@@ -165,8 +164,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Security Services Registration Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function it_registers_encryption_service_as_singleton(): void
     {
         $service1 = app(EncryptionService::class);
@@ -176,7 +174,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertSame($service1, $service2);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_signature_service_as_singleton(): void
     {
         $service1 = app(SignatureService::class);
@@ -186,7 +184,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertSame($service1, $service2);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_digital_signature_service_with_dependencies(): void
     {
         $service = app(DigitalSignatureService::class);
@@ -194,7 +192,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(DigitalSignatureService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_fraud_detection_service(): void
     {
         $service = app(FraudDetectionService::class);
@@ -202,7 +200,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(FraudDetectionService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_transaction_verification_service_with_all_dependencies(): void
     {
         $service = app(TransactionVerificationService::class);
@@ -210,7 +208,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(TransactionVerificationService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_agent_authentication_service_with_did_dependency(): void
     {
         $service = app(AgentAuthenticationService::class);
@@ -221,8 +219,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Integration Services Registration Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function it_registers_agent_payment_integration_service(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -230,7 +227,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentPaymentIntegrationService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_registers_agent_kyc_integration_service(): void
     {
         $service = app(AgentKycIntegrationService::class);
@@ -241,8 +238,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Service Functionality Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function did_service_can_generate_valid_did(): void
     {
         $service = app(DIDService::class);
@@ -252,7 +248,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertStringStartsWith('did:', $did);
     }
 
-    /** @test */
+    #[Test]
     public function encryption_service_can_encrypt_and_decrypt(): void
     {
         $service = app(EncryptionService::class);
@@ -277,7 +273,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertEquals($originalData, $decrypted);
     }
 
-    /** @test */
+    #[Test]
     public function signature_service_can_generate_key_pair(): void
     {
         $service = app(SignatureService::class);
@@ -290,7 +286,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertNotEmpty($keyPair['private_key']);
     }
 
-    /** @test */
+    #[Test]
     public function fraud_detection_service_can_analyze_transaction_risk(): void
     {
         $service = app(FraudDetectionService::class);
@@ -309,7 +305,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertArrayHasKey('decision', $risk);
     }
 
-    /** @test */
+    #[Test]
     public function reputation_service_can_get_agent_reputation(): void
     {
         $service = app(ReputationService::class);
@@ -323,7 +319,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertContains($reputation->trustLevel, ['untrusted', 'low', 'neutral', 'high', 'trusted']);
     }
 
-    /** @test */
+    #[Test]
     public function json_ld_service_can_serialize_data(): void
     {
         $service = app(JsonLDService::class);
@@ -343,8 +339,7 @@ class AgentProtocolServiceProviderTest extends TestCase
     // ==========================================
     // Service Dependency Chain Tests
     // ==========================================
-
-    /** @test */
+    #[Test]
     public function transaction_verifier_chain_is_properly_wired(): void
     {
         // Get the verifier through the interface
@@ -365,7 +360,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertArrayHasKey('risk_score', $result);
     }
 
-    /** @test */
+    #[Test]
     public function wallet_operations_chain_is_properly_wired(): void
     {
         $walletOps = app(WalletOperationInterface::class);
@@ -374,7 +369,7 @@ class AgentProtocolServiceProviderTest extends TestCase
         $this->assertInstanceOf(AgentWalletService::class, $walletOps);
     }
 
-    /** @test */
+    #[Test]
     public function risk_scoring_chain_is_properly_wired(): void
     {
         $riskScoring = app(RiskScoringInterface::class);

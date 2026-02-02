@@ -1,7 +1,7 @@
 <x-mail::message>
 # Investment Confirmation
 
-Thank you for your investment in FinAegis Continuous Growth Offering!
+Thank you for your investment in {{ company_name() }} Continuous Growth Offering!
 
 We have received your {{ $tier }} tier investment of ${{ $amount }}.
 
@@ -20,8 +20,8 @@ View Investment Status
 
 If you have any questions about your investment, please don't hesitate to contact our support team.
 
-Thank you for believing in FinAegis!
+Thank you for believing in {{ company_name() }}!
 
 Best regards,<br>
-The FinAegis Team
+{{ team_signature() }}
 </x-mail::message>

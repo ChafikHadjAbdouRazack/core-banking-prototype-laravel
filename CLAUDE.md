@@ -1,682 +1,143 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
 
 ---
 
-## 🚀 Session Recovery (READ FIRST)
+## Quick Start (READ FIRST)
 
-### When Starting a New Session
 ```bash
 # 1. Check current state
 git status && git branch --show-current
-gh pr list --state open
 
-# 2. Read the development guide memory (Serena)
-# Use: mcp__serena__read_memory with "development_continuation_guide"
+# 2. Read Serena memory for session context
+# mcp__serena__read_memory("development_continuation_guide")
 
 # 3. Quick health check
 ./vendor/bin/pest --parallel --stop-on-failure
 ```
 
-### Current Version Status
-| Version | Status | Notes |
-|---------|--------|-------|
-| **v1.1.0** | ✅ Released | Foundation Hardening complete |
-| **v1.2.0** | 🔄 In Progress | Feature Completion - check memory for details |
+### Version Status
+| Version | Status | Key Changes |
+|---------|--------|-------------|
+| v2.7.0 | 📋 Planned | AI Query Endpoints, RegTech Adapters, SDK Generation, BaaS Implementation |
+| v2.6.0 | ✅ Released | Privacy Layer & ERC-4337: Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing |
+| v2.5.0 | ✅ Released | Mobile App Launch (Expo/React Native, separate repo) |
+| v2.4.0 | ✅ Released | Privacy & Identity: Key Management, Privacy Layer, Commerce, TrustCert |
+| v2.3.0 | ✅ Released | AI Framework, RegTech Foundation, BaaS Configuration |
+| v2.2.0 | ✅ Released | Mobile backend: device mgmt, biometrics, push notifications |
+| v2.1.0 | ✅ Released | Security hardening, Hardware wallets, WebSocket, Kubernetes |
+| v2.0.0 | ✅ Released | Multi-Tenancy (stancl/tenancy v3.9) |
 
-### Key Services (DON'T RECREATE)
-Before implementing new features, check if these exist:
-
-| Need | Existing Service |
-|------|------------------|
-| Webhook Processing | `WebhookProcessorService` in Custodian domain |
-| Agent Payments | `AgentPaymentIntegrationService` in AgentProtocol domain |
-| Yield Optimization | `YieldOptimizationService` in Treasury domain |
-| Agent Notifications | `AgentNotificationService` in AgentProtocol domain |
-
-### Memory Hierarchy (Serena)
-1. **Read first**: `development_continuation_guide` - Master handoff document
-2. **Reference**: `project_architecture_overview`, `todo_fixme_analysis_v120`
-3. **Historical**: Feature-specific memories (ai-framework-*, etc.)
+### Key Serena Memories
+| Memory | Purpose |
+|--------|---------|
+| `development_continuation_guide` | Master handoff document |
+| `v2.2.0_mobile_backend_implementation` | v2.2.0 Mobile implementation details |
+| `coding_standards_and_conventions` | Code style reference |
+| `project_architecture_overview` | Architecture details |
 
 ---
 
-## CI/CD Troubleshooting Guide
-
-### Pre-Commit Checks (ALWAYS RUN BEFORE PUSHING)
-```bash
-# Enhanced pre-commit check that mirrors GitHub Actions
-./bin/pre-commit-check.sh          # Check modified files only
-./bin/pre-commit-check.sh --fix    # Auto-fix issues where possible
-./bin/pre-commit-check.sh --all    # Check entire codebase
-
-# If pre-commit times out on PHPStan, run manually:
-XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
-```
-
-### Common CI Failures and Fixes
-
-#### 1. PHPStan Errors
-```bash
-# Fix type errors and undefined methods
-XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G
-
-# Common issues:
-# - Cast return types: (int), (string), (float)
-# - Undefined methods: Check trait usage and method names
-# - Binary operations: Cast string variables to int/float
-```
-
-#### 2. Test Isolation Failures
-```bash
-# Security tests failing due to IP blocking or rate limiting?
-# Add to test setUp():
-\Illuminate\Support\Facades\Cache::flush();
-\Illuminate\Support\Facades\DB::table('blocked_ips')->truncate();
-
-# Or use the CleansUpSecurityState trait:
-use Tests\Traits\CleansUpSecurityState;
-```
-
-#### 3. Code Style Violations
-```bash
-# Auto-fix most issues:
-./vendor/bin/php-cs-fixer fix
-./vendor/bin/phpcbf --standard=PSR12 app/
-
-# Check without fixing:
-./vendor/bin/php-cs-fixer fix --dry-run --diff
-./vendor/bin/phpcs --standard=PSR12 app/
-```
-
-#### 4. GitHub Actions Status Check
-```bash
-# Check PR status
-gh pr list --state open
-gh pr checks <PR_NUMBER>
-
-# View failed logs
-gh run list --branch <BRANCH_NAME>
-gh run view <RUN_ID> --log-failed
-```
-
-### Preventing CI Failures
-
-1. **ALWAYS run pre-commit check before pushing:**
-   ```bash
-   ./bin/pre-commit-check.sh --fix
-   ```
-
-2. **Test locally with CI configuration:**
-   ```bash
-   # Run tests as CI does
-   ./vendor/bin/pest --configuration=phpunit.ci.xml --parallel
-   ```
-
-3. **Fix common issues proactively:**
-   - Clear test state in setUp() methods
-   - Cast types for PHPStan compliance
-   - Run code formatters before commit
-
 ## Essential Commands
+
+### Pre-Commit (ALWAYS RUN)
+```bash
+./bin/pre-commit-check.sh --fix    # Auto-fix and check
+./bin/pre-commit-check.sh --all    # Full codebase check
+```
 
 ### Testing
 ```bash
-# Run all tests in parallel (RECOMMENDED)
-./vendor/bin/pest --parallel
-
-# Run specific test file
-./vendor/bin/pest tests/Feature/Http/Controllers/Api/AccountControllerTest.php
-
-# Run with coverage (minimum 50% required)
-./vendor/bin/pest --parallel --coverage --min=50
-
-# Run tests for CI environment
-./vendor/bin/pest --configuration=phpunit.ci.xml --parallel --coverage --min=50
-
-# Run specific test suites
-./vendor/bin/pest tests/Domain/         # Domain layer tests
-./vendor/bin/pest tests/Feature/        # Feature tests
-./vendor/bin/pest tests/Unit/           # Unit tests
+./vendor/bin/pest --parallel                                    # All tests
+./vendor/bin/pest --parallel --coverage --min=50                # With coverage
+./vendor/bin/pest tests/Domain/                                  # Domain tests only
 ```
 
-### Code Quality (ALWAYS RUN BEFORE COMMITTING)
+### Code Quality
 ```bash
-# NEW: Comprehensive pre-commit check (RECOMMENDED)
-./bin/pre-commit-check.sh          # Check modified files only
-./bin/pre-commit-check.sh --fix    # Auto-fix issues where possible
-./bin/pre-commit-check.sh --all    # Check entire codebase
-
-# Individual Tools (if needed):
-
-# 1. PHP CS Fixer - Fix code style issues
-./vendor/bin/php-cs-fixer fix      # Fix issues
-./vendor/bin/php-cs-fixer fix --dry-run --diff  # Check without fixing
-
-# 2. PHP CodeSniffer (PHPCS) - Check PSR-12 compliance
-./vendor/bin/phpcs --standard=PSR12 app/        # Check compliance
-./vendor/bin/phpcbf --standard=PSR12 app/       # Auto-fix issues
-
-# 3. PHPStan - Static analysis (Level 8)
-XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
-
-# 4. Tests - Run in parallel
-./vendor/bin/pest --parallel
-
-# Quick one-liner (old method - use pre-commit-check.sh instead)
-./vendor/bin/php-cs-fixer fix && ./vendor/bin/phpcbf --standard=PSR12 app/ && ./vendor/bin/pest --parallel && XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
-
-# IMPORTANT: The correct order is:
-# 1. PHP CS Fixer (fixes most style issues)
-# 2. PHPCS/PHPCBF (catches PSR-12 issues CS Fixer might miss)
-# 3. PHPStan (static analysis)
-# 4. Tests (verify functionality)
+./vendor/bin/php-cs-fixer fix                                    # Code style
+./vendor/bin/phpcbf --standard=PSR12 app/                        # PSR-12 fix
+XDEBUG_MODE=off vendor/bin/phpstan analyse --memory-limit=2G     # Static analysis
 ```
 
-### Development Server
+### Development
 ```bash
-# Start Laravel server
-php artisan serve
-
-# Start Vite dev server
-npm run dev
-
-# Build production assets
-npm run build
-
-# Create admin user
-php artisan make:filament-user
+php artisan serve                   # Start server
+npm run dev                         # Vite dev server
+php artisan migrate:fresh --seed    # Reset database
+php artisan horizon                 # Queue monitoring
+php artisan l5-swagger:generate     # API docs
 ```
 
-### Queue & Cache
+### Multi-Tenancy (v2.0.0)
 ```bash
-# Start queue workers
-php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
-
-# Monitor with Horizon
-php artisan horizon
-
-# Warm up cache
-php artisan cache:warmup
-
-# Clear all caches
-php artisan cache:clear
+php artisan tenants:migrate                              # Tenant migrations
+php artisan tenants:migrate-data --tenant=<uuid>         # Data migration
+php artisan tenants:export-data <id> --format=json       # Export data
 ```
 
-### Database
-```bash
-# Fresh migration with seeding
-php artisan migrate:fresh --seed
-
-# Seed GCU basket
-php artisan db:seed --class=GCUBasketSeeder
-```
-
-### API Documentation
-```bash
-# Generate/update API docs
-php artisan l5-swagger:generate
-# Access at: http://localhost:8000/api/documentation
-```
-
-## Infrastructure Configuration
-
-### CQRS & Domain Events
-
-The platform uses a clean CQRS implementation with Domain Event Bus for decoupled communication:
-
-#### For Demo/Development Environment
-```php
-// Infrastructure is enabled but handlers are optional
-// Set in .env for demo site:
-DOMAIN_ENABLE_HANDLERS=false  # Handlers not needed for demo
-```
-
-#### For Production Environment
-```php
-// Enable full infrastructure with handlers
-DOMAIN_ENABLE_HANDLERS=true
-
-// Register command/query/event handlers in DomainServiceProvider
-// Example:
-$commandBus->register(
-    PlaceOrderCommand::class,
-    PlaceOrderHandler::class
-);
-```
-
-#### Infrastructure Components
-- **CommandBus**: Handles commands with sync/async/transactional support
-- **QueryBus**: Handles queries with caching support
-- **DomainEventBus**: Bridges domain events with Laravel's event system
-- **Sagas**: Multi-step workflows with compensation support
-
-All infrastructure implementations are in `app/Infrastructure/` and are production-ready.
-
-## Demo Mode Development Workflow
-
-### Working with Demo Environment
-
-The platform includes a comprehensive demo mode for development and testing without external dependencies.
-
-#### Quick Demo Setup
-```bash
-# Use demo environment configuration
-cp .env.demo .env
-php artisan config:cache
-
-# Or set manually in .env
-APP_ENV_MODE=demo
-DEMO_SHOW_BANNER=true
-```
-
-#### Demo Service Development
-
-When developing new features, always implement the demo service layer:
-
-```php
-// 1. Create interface
-interface YourServiceInterface
-{
-    public function performAction(array $data): Result;
-}
-
-// 2. Create production implementation
-class ProductionYourService implements YourServiceInterface
-{
-    // Real implementation
-}
-
-// 3. Create demo implementation
-class DemoYourService implements YourServiceInterface
-{
-    public function performAction(array $data): Result
-    {
-        // Simulated behavior
-        return new Result(['success' => true, 'demo' => true]);
-    }
-}
-
-// 4. Register in service provider
-$this->app->bind(YourServiceInterface::class, function ($app) {
-    return match (config('services.environment_mode')) {
-        'demo' => new DemoYourService(),
-        default => new ProductionYourService(),
-    };
-});
-```
-
-#### Testing in Demo Mode
-
-```bash
-# Run tests with demo services
-APP_ENV_MODE=demo ./vendor/bin/pest
-
-# Test specific demo scenarios
-./vendor/bin/pest tests/Feature/Demo/
-```
-
-#### Demo Data Management
-
-```bash
-# Seed demo data
-php artisan db:seed --class=DemoDataSeeder
-
-# Reset demo environment
-php artisan demo:reset
-
-# Clean up old demo data
-php artisan demo:cleanup
-```
-
-#### Demo Mode Best Practices
-
-1. **Always implement demo services** for external integrations
-2. **Use predictable test data** (e.g., card 4242... always succeeds)
-3. **Add demo indicators** in UI (banners, badges)
-4. **Document demo behaviors** in service classes
-5. **Test both production and demo** implementations
-6. **Keep demo data isolated** using scopes or flags
+---
 
 ## Architecture Overview
 
-### Domain-Driven Design Structure
 ```
 app/
-├── Domain/                    # Business logic (DDD)
-│   ├── Account/              # Account management domain
-│   ├── AgentProtocol/        # AI Agent payment protocol (AP2)
-│   ├── Exchange/             # Trading & exchange engine
-│   ├── Stablecoin/          # Stablecoin framework
-│   ├── Lending/             # P2P lending platform
-│   ├── Wallet/              # Blockchain wallet management
-│   ├── CGO/                 # Continuous Growth Offering
-│   ├── Governance/          # Voting & governance
-│   ├── Compliance/          # KYC/AML & regulatory
-│   └── Shared/               # Shared domain interfaces (CQRS, Events)
-├── Infrastructure/           # Infrastructure implementations
-│   ├── CQRS/                # Command & Query Bus implementations
-│   └── Events/              # Domain Event Bus implementation
-├── Http/Controllers/Api/     # REST API endpoints
-├── Models/                   # Eloquent models
-├── Services/                 # Application services
-└── Filament/Admin/Resources/ # Admin panel resources
+├── Domain/           # DDD bounded contexts (30+ domains)
+│   ├── Account/      # Account management
+│   ├── Exchange/     # Trading engine
+│   ├── Lending/      # P2P lending
+│   ├── Mobile/       # Mobile wallet backend (v2.2.0)
+│   ├── Treasury/     # Portfolio management
+│   ├── Wallet/       # Blockchain wallets
+│   ├── Compliance/   # KYC/AML
+│   ├── KeyManagement/# Shamir's Secret Sharing, HSM (v2.4.0)
+│   ├── Privacy/      # ZK-KYC, Proof of Innocence, Merkle Trees (v2.4.0+v2.6.0)
+│   ├── Commerce/     # SBT, Merchants, Attestations (v2.4.0)
+│   ├── TrustCert/    # W3C VCs, Certificate Authority (v2.4.0)
+│   ├── Relayer/      # ERC-4337 Gas Abstraction, Smart Accounts (v2.6.0)
+│   └── Shared/       # CQRS interfaces, events
+├── Infrastructure/   # CQRS bus implementations
+├── Http/Controllers/ # REST API
+├── Models/           # Eloquent models
+└── Filament/         # Admin panel
 ```
 
-### Agent Protocol (AP2) Domain
+### Key Patterns
+- **Event Sourcing**: Spatie Event Sourcing with domain-specific event tables
+- **CQRS**: Command/Query Bus with read/write separation
+- **Sagas**: Laravel Workflow with compensation
+- **Multi-Tenancy**: Team-based isolation with `UsesTenantConnection` trait
 
-The Agent Protocol domain implements Google's Agent Payments Protocol for AI agent commerce. It provides secure transaction processing, escrow services, and reputation management for AI agents.
+### Key Services (DON'T RECREATE)
+| Need | Existing Service |
+|------|------------------|
+| Hardware Wallets | `HardwareWalletManager` (Wallet) |
+| Ledger Signing | `LedgerSignerService` (Wallet) |
+| Trezor Signing | `TrezorSignerService` (Wallet) |
+| Webhook Processing | `WebhookProcessorService` (Custodian) |
+| Agent Payments | `AgentPaymentIntegrationService` (AgentProtocol) |
+| Yield Optimization | `YieldOptimizationService` (Treasury) |
+| Mobile Devices | `MobileDeviceService` (Mobile) |
+| Biometric Auth | `BiometricAuthenticationService` (Mobile) |
+| Push Notifications | `PushNotificationService` (Mobile) |
+| Mobile Sessions | `MobileSessionService` (Mobile) |
+| Key Sharding | `ShamirService` (KeyManagement) |
+| ZK-KYC | `ZkKycService` (Privacy) |
+| Proof of Innocence | `ProofOfInnocenceService` (Privacy) |
+| Soulbound Tokens | `SoulboundTokenService` (Commerce) |
+| Merchant Onboarding | `MerchantOnboardingService` (Commerce) |
+| Verifiable Credentials | `VerifiableCredentialService` (TrustCert) |
+| Certificate Authority | `CertificateAuthorityService` (TrustCert) |
+| Trust Framework | `TrustFrameworkService` (TrustCert) |
+| Smart Accounts | `SmartAccountService` (Relayer) |
+| Gas Station | `GasStationService` (Relayer) |
+| UserOp Signing | `UserOperationSigningService` (Relayer) |
+| Merkle Trees | `MerkleTreeService` (Privacy) |
+| Delegated Proofs | `DelegatedProofService` (Privacy) |
+| SRS Manifest | `SrsManifestService` (Privacy) |
 
-#### Domain Structure
-```
-app/Domain/AgentProtocol/
-├── Aggregates/               # Event-sourced aggregates
-│   ├── AgentComplianceAggregate.php
-│   ├── AgentTransactionAggregate.php
-│   └── AgentWalletAggregate.php
-├── Contracts/                # Interfaces for DI
-│   ├── RiskScoringInterface.php
-│   ├── TransactionVerifierInterface.php
-│   └── WalletOperationInterface.php
-├── DataObjects/              # Immutable data transfer objects
-├── Enums/                    # Status and type enumerations
-├── Events/                   # Domain events
-├── Models/                   # Eloquent models
-├── Repositories/             # Data access layer
-├── Services/                 # Business logic services
-│   ├── AgentKycIntegrationService.php
-│   ├── AgentPaymentIntegrationService.php
-│   ├── AgentRegistryService.php
-│   ├── AgentWalletService.php
-│   ├── EscrowService.php
-│   ├── FraudDetectionService.php
-│   ├── ReputationService.php
-│   └── TransactionVerificationService.php
-└── Workflows/                # Laravel Workflow definitions
-    ├── Activities/           # Workflow activities
-    └── PaymentOrchestrationWorkflow.php
-```
-
-#### Configuration
-All Agent Protocol settings are centralized in `config/agent_protocol.php`:
-
-```php
-// Key configuration sections:
-'reputation' => [...]    // Reputation scoring thresholds and weights
-'kyc' => [...]           // KYC verification levels and limits
-'verification' => [...]  // Transaction verification settings
-'fraud_detection' => [...] // Fraud detection thresholds
-'aml' => [...]           // AML screening configuration
-'wallet' => [...]        // Wallet and currency settings
-```
-
-#### Working with Agent Protocol
-
-```php
-// Register an agent with DID
-$registryService = app(AgentRegistryService::class);
-$agent = $registryService->registerAgent([
-    'did' => 'did:agent:example:123',
-    'name' => 'Shopping Assistant',
-    'capabilities' => ['payments', 'escrow'],
-]);
-
-// Create escrow transaction
-$escrowService = app(EscrowService::class);
-$escrow = $escrowService->createEscrow(
-    senderId: 'did:agent:buyer:1',
-    receiverId: 'did:agent:seller:2',
-    amount: 100.00,
-    currency: 'USD',
-    conditions: ['delivery_confirmed']
-);
-
-// Link agent to user for KYC inheritance
-$kycService = app(AgentKycIntegrationService::class);
-$kycService->linkAgentToUser($agentDid, $userId);
-```
-
-### Event Sourcing Pattern
-
-## Spatie Event Sourcing Implementation
-
-### Overview
-All domains in this project use [Spatie Event Sourcing](https://spatie.be/docs/laravel-event-sourcing) for maintaining complete audit trails and implementing true event sourcing patterns. This ensures complete auditability, replay capability, and CQRS implementation.
-
-### Standard Structure for Each Domain
-
-Every event-sourced domain follows this pattern:
-
-#### 1. Event Store Tables
-```sql
--- Events table (e.g., compliance_events, treasury_events)
-CREATE TABLE domain_events (
-    id BIGINT PRIMARY KEY,
-    aggregate_uuid UUID,
-    aggregate_version INT,
-    event_version INT DEFAULT 1,
-    event_class VARCHAR(255),
-    event_properties JSON,
-    meta_data JSON,
-    created_at TIMESTAMP
-);
-
--- Snapshots table (e.g., compliance_snapshots, treasury_snapshots)
-CREATE TABLE domain_snapshots (
-    id BIGINT PRIMARY KEY,
-    aggregate_uuid UUID,
-    aggregate_version INT,
-    state JSON,
-    created_at TIMESTAMP
-);
-```
-
-#### 2. Domain Models
-```php
-// Event model
-class DomainEvent extends EloquentStoredEvent
-{
-    protected $table = 'domain_events';
-}
-
-// Snapshot model
-class DomainSnapshot extends EloquentSnapshot
-{
-    protected $table = 'domain_snapshots';
-}
-```
-
-#### 3. Repositories
-```php
-// Event repository
-class DomainEventRepository extends EloquentStoredEventRepository
-{
-    protected string $storedEventModel = DomainEvent::class;
-}
-
-// Snapshot repository
-class DomainSnapshotRepository extends EloquentSnapshotRepository
-{
-    protected string $snapshotModel = DomainSnapshot::class;
-}
-```
-
-#### 4. Aggregates
-```php
-use Spatie\EventSourcing\AggregateRoots\AggregateRoot;
-
-class DomainAggregate extends AggregateRoot
-{
-    // Override to use custom repositories
-    protected function getStoredEventRepository(): StoredEventRepository
-    {
-        return app(DomainEventRepository::class);
-    }
-
-    protected function getSnapshotRepository(): SnapshotRepository
-    {
-        return app(DomainSnapshotRepository::class);
-    }
-
-    // Business methods
-    public function performAction(): self
-    {
-        $this->recordThat(new ActionPerformed(...));
-        return $this;
-    }
-
-    // Event handlers
-    protected function applyActionPerformed(ActionPerformed $event): void
-    {
-        // Update aggregate state
-    }
-}
-```
-
-#### 5. Projectors
-```php
-use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
-
-class DomainProjector extends Projector
-{
-    public function onEventOccurred(EventOccurred $event): void
-    {
-        // Update read models
-        ReadModel::create([...]);
-    }
-}
-```
-
-### Working with Aggregates
-
-#### Creating New Aggregates
-```php
-// Create new aggregate
-$aggregate = DomainAggregate::retrieve($uuid);
-$aggregate->performAction($data);
-$aggregate->persist(); // Saves events to event store
-```
-
-#### Loading Existing Aggregates
-```php
-// Load from event store
-$aggregate = DomainAggregate::retrieve($uuid);
-// Aggregate is automatically reconstituted from events
-```
-
-#### Chaining Operations
-```php
-$aggregate = DomainAggregate::retrieve($uuid)
-    ->performFirstAction($data1)
-    ->performSecondAction($data2)
-    ->performThirdAction($data3);
-$aggregate->persist(); // Save all events at once
-```
-
-### Event Sourcing Commands
-
-```bash
-# Replay all projectors (rebuild read models from events)
-php artisan event-sourcing:replay
-
-# Replay specific projector
-php artisan event-sourcing:replay "App\\Domain\\Compliance\\Projectors\\ComplianceAlertProjector"
-
-# Clear all projections (careful!)
-php artisan event-sourcing:clear-event-handlers
-
-# Create snapshot for aggregate
-php artisan event-sourcing:create-snapshot {aggregate-uuid}
-```
-
-### Implemented Domains
-
-The following domains use Spatie Event Sourcing:
-
-1. **Treasury Domain** (`treasury_events`, `treasury_snapshots`)
-   - Portfolio management, cash allocation, yield optimization
-
-2. **Compliance Domain** (`compliance_events`, `compliance_snapshots`)
-   - Alert management, transaction monitoring, risk assessment
-
-3. **Exchange Domain** (`exchange_events`, `exchange_snapshots`)
-   - Order matching, liquidity pools, trading
-
-4. **Lending Domain** (`lending_events`, `lending_snapshots`)
-   - Loan applications, disbursements, repayments
-
-5. **Stablecoin Domain** (`stablecoin_events`, `stablecoin_snapshots`)
-   - Token minting, burning, transfers
-
-### Best Practices
-
-1. **Always use aggregates for state changes** - Never modify read models directly
-2. **Use projectors for read models** - Keep write and read models separate
-3. **Record business decisions as events** - Not just CRUD operations
-4. **Version your events** - Use `event_version` field for backward compatibility
-5. **Use transactions** - Wrap aggregate operations in database transactions
-6. **Implement snapshots** - For aggregates with many events (>100)
-7. **Test event handlers** - Ensure idempotency and correctness
-
-### Example: Compliance Alert Lifecycle
-
-```php
-use App\Domain\Compliance\Aggregates\ComplianceAlertAggregate;
-
-// Create alert
-$aggregate = ComplianceAlertAggregate::create(
-    type: 'suspicious_activity',
-    severity: 'high',
-    entityType: 'transaction',
-    entityId: $transactionId,
-    description: 'Large cash deposit',
-    details: ['amount' => 50000]
-);
-$aggregate->persist();
-
-// Later: assign and investigate
-$aggregate = ComplianceAlertAggregate::retrieve($alertId);
-$aggregate->assign('officer-123')
-    ->addNote('Investigation started')
-    ->changeStatus('investigating');
-$aggregate->persist();
-
-// Finally: resolve
-$aggregate = ComplianceAlertAggregate::retrieve($alertId);
-$aggregate->resolve('false_positive', 'officer-123', 'Legitimate business transaction');
-$aggregate->persist();
-```
-
-All major domains use event sourcing with dedicated event tables:
-- `exchange_events` - Trading events
-- `stablecoin_events` - Token lifecycle events
-- `lending_events` - Loan lifecycle events
-- `wallet_events` - Blockchain operations
-- `cgo_events` - Investment events
-
-### Workflow & Saga Pattern
-Complex operations use Laravel Workflow with saga pattern for:
-- Multi-step transactions with compensation
-- Cross-domain coordination
-- Automatic rollback on failures
-- Human task integration
-
-Example saga locations:
-- `app/Domain/Exchange/Workflows/OrderMatchingWorkflow.php`
-- `app/Domain/Lending/Workflows/LoanApplicationWorkflow.php`
-- `app/Domain/Wallet/Workflows/WithdrawalWorkflow.php`
-
-### Key Technologies
-- **Backend**: PHP 8.4+, Laravel 12
-- **Event Sourcing**: Spatie Event Sourcing
-- **Workflow Engine**: Laravel Workflow with Waterline
-- **CQRS Pattern**: Command & Query Bus with Laravel implementation
-- **Domain Events**: Custom Event Bus bridging with Laravel Events
-- **Admin Panel**: Filament 3.0
-- **Queue Management**: Laravel Horizon
-- **Testing**: Pest PHP (parallel support)
-- **API Docs**: L5-Swagger (OpenAPI)
+---
 
 ## Code Conventions
 
@@ -687,392 +148,69 @@ declare(strict_types=1);
 
 namespace App\Domain\Exchange\Services;
 
-use App\Domain\Exchange\Models\Order;
-use Illuminate\Support\Collection;
-
 class OrderMatchingService
 {
     public function __construct(
         private readonly OrderRepository $repository
     ) {}
-
-    public function matchOrders(Order $order): Collection
-    {
-        // Implementation
-    }
 }
 ```
 
 ### Import Order
-1. `App\Domain\...`
-2. `App\Http\...`
-3. `App\Models\...`
-4. `App\Services\...`
-5. `Illuminate\...`
-6. Third-party packages
+1. `App\Domain\...` → 2. `App\Http\...` → 3. `App\Models\...` → 4. `Illuminate\...` → 5. Third-party
 
 ### Commit Messages
-Use conventional commits:
 ```
 feat: Add liquidity pool management
 fix: Resolve order matching race condition
 test: Add coverage for wallet workflows
-```
-
-When using AI assistance, include:
-```
-🤖 Generated with [Claude Code](https://claude.ai/code)
 
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
+---
+
+## CI/CD Quick Reference
+
+### Common Fixes
+| Issue | Fix |
+|-------|-----|
+| PHPStan type errors | Cast return types: `(int)`, `(string)`, `(float)` |
+| Test isolation failures | Add `Cache::flush()` in `setUp()` |
+| Code style violations | Run `./vendor/bin/php-cs-fixer fix` |
+
+### GitHub Actions
+```bash
+gh pr checks <PR_NUMBER>              # Check PR status
+gh run view <RUN_ID> --log-failed     # View failed logs
+```
+
+---
+
 ## Task Completion Checklist
 
 Before marking any task complete:
+1. Run `./bin/pre-commit-check.sh --fix`
+2. Verify tests pass: `./vendor/bin/pest --parallel`
+3. Update API docs if endpoints changed: `php artisan l5-swagger:generate`
+4. Commit with conventional commit message
 
-1. **Run comprehensive pre-commit check**: `./bin/pre-commit-check.sh --fix`
-2. **Or run individual tools in correct order**:
-   - Fix code style: `./vendor/bin/php-cs-fixer fix`
-   - Fix PSR-12 issues: `./vendor/bin/phpcbf --standard=PSR12 app/`
-   - Check static analysis: `XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G`
-   - Run tests: `./vendor/bin/pest --parallel`
-3. **Update documentation** if needed
-4. **Verify coverage** for new features: `./vendor/bin/pest --parallel --coverage --min=50`
-5. **Update API docs** if endpoints changed: `php artisan l5-swagger:generate`
+---
 
 ## Important Files
 
-### Configuration
-- `.env.example` - Environment template
-- `phpunit.xml` - Test configuration
-- `phpunit.ci.xml` - CI test configuration
-- `.php-cs-fixer.php` - Code style rules
-- `phpstan.neon` - Static analysis config
+| Category | Files |
+|----------|-------|
+| Config | `.env.example`, `phpunit.xml`, `phpstan.neon`, `.php-cs-fixer.php` |
+| CI/CD | `.github/workflows/ci-pipeline.yml`, `.github/workflows/security.yml` |
+| Docs | `docs/`, `README.md` |
 
-### Documentation
-- `docs/` - Comprehensive documentation
-- `TODO.md` - Project tasks (gitignored, session continuity)
-- `README.md` - Project overview
-
-### CI/CD
-- `.github/workflows/ci-pipeline.yml` - Main CI workflow
-- `.github/workflows/test.yml` - Test workflow
-- `.github/workflows/security.yml` - Security scanning
-
-## Current Development Focus
-
-**Current Version**: v1.2.0 (Feature Completion)
-**Platform Maturity**: 85-90% complete
-
-The platform has completed v1.1.0 (Foundation Hardening) and is working on v1.2.0:
-- ✅ PHPStan Level 8 with 83% baseline reduction
-- ✅ 5,073 tests across 499 test files
-- ✅ 22 Behat features for E2E testing
-- ✅ 29 bounded contexts with 15+ domains
-
-**v1.2.0 Focus Areas**:
-- Observability dashboards (Grafana)
-- Enhanced Due Diligence (EDD)
-- Remaining TODO cleanup
-
-See Serena memory `development_continuation_guide` for current session state.
+---
 
 ## Notes
 
 - Always work in feature branches
-- Create pull requests for all changes
 - Ensure GitHub Actions pass before merging
-- Read `TODO.md` at session start for continuity
-- Never create documentation files unless explicitly requested
-- Always prefer editing existing files over creating new ones
-## AI Team Configuration (autogenerated by team-configurator, 2024-09-16)
-
-**Important: YOU MUST USE subagents when available for the task.**
-
-### Detected Technology Stack
-
-**Core Framework & Architecture:**
-- **Backend Framework**: Laravel 12 (PHP 8.4+) with strict type declarations
-- **Architecture Pattern**: Domain-Driven Design (DDD) with comprehensive Event Sourcing
-- **Event Sourcing Engine**: Spatie Event Sourcing v7.7+ with domain-specific event tables
-- **CQRS Implementation**: Custom Command/Query Bus with Laravel Events bridge
-- **Workflow Engine**: Laravel Workflow with Waterline (Saga Pattern with compensation)
-- **Infrastructure Layer**: Custom CQRS and Event Bus implementations in `app/Infrastructure/`
-
-**Domain Architecture:**
-- **Bounded Contexts**: 15+ domains (Account, Exchange, Lending, Treasury, Wallet, Stablecoin, CGO, Governance, Compliance, AI, Banking, Fraud, Monitoring, Payment, Performance)
-- **Event Tables**: Domain-specific event stores (`exchange_events`, `lending_events`, `wallet_events`, etc.)
-- **Aggregates & Projections**: Full CQRS with read/write model separation
-- **Cross-Domain Coordination**: Saga patterns for multi-domain workflows
-- **Value Objects**: Immutable domain objects with validation
-
-**Testing & Quality Assurance:**
-- **Testing Framework**: Pest PHP v3.0+ with parallel execution and Laravel plugins
-- **Test Coverage**: Minimum 50% with comprehensive domain/feature/unit test separation
-- **Static Analysis**: PHPStan Level 8 with Larastan and custom baselines
-- **Code Style**: PHP-CS-Fixer with PSR-12 + custom rules, PHPCS for compliance
-- **Behavioral Testing**: Behat with Chrome extension for E2E scenarios
-- **Performance Testing**: Custom benchmark commands and load testing
-
-**API & Documentation:**
-- **API Documentation**: L5-Swagger (OpenAPI 3.0) with automatic generation
-- **REST Architecture**: Resource-based API design with versioning support
-- **Authentication**: Laravel Passport (OAuth2) + Sanctum with API key management
-- **Rate Limiting**: Multi-tier rate limiting with IP blocking and transaction limits
-
-**Frontend & Build Tools:**
-- **Build System**: Vite 6.3+ with Laravel plugin integration
-- **CSS Framework**: TailwindCSS v3.4+ with forms and typography plugins
-- **UI Components**: Livewire v3.6+ for reactive components
-- **Admin Panel**: Filament 3.0 with custom resources and advanced features
-
-**Infrastructure & Operations:**
-- **Queue Management**: Laravel Horizon v5.27+ with Redis backend
-- **Caching**: Redis with Predis client for distributed caching
-- **Monitoring**: Custom metrics with Prometheus, OpenTelemetry integration
-- **Search**: Laravel Scout with Meilisearch for full-text search
-- **File Storage**: AWS SDK integration for S3 and CloudFront
-
-**Security & Compliance:**
-- **Authentication**: Multi-factor with Jetstream, biometric verification
-- **Authorization**: Spatie Permission with role-based access control
-- **Security Scanning**: Continuous vulnerability assessments
-- **Compliance**: GDPR, AML, KYC compliance with audit trails
-- **Fraud Detection**: ML-based fraud detection with behavioral analysis
-
-**Payment & Financial Integration:**
-- **Payment Gateways**: Stripe, Coinbase Commerce with webhook processing
-- **Banking Integration**: Open Banking connectors (Deutsche Bank, Santander, Paysera)
-- **Blockchain**: Ethereum wallet management with elliptic curve cryptography
-- **Exchange Connectors**: Binance, Kraken API integration with rate limiting
-
-**Development & CI/CD:**
-- **Version Control**: Git with GitHub Actions (15+ workflow files)
-- **CI Pipeline**: Multi-stage pipeline (code quality, security, testing, performance, build)
-- **Pre-commit Hooks**: Automated quality checks with `./bin/pre-commit-check.sh`
-- **Environment Management**: Docker support with Laravel Sail
-- **Code Generation**: Custom Artisan commands for scaffolding
-
-### AI Team Assignments
-
-| Task Category | Primary Agent | Secondary Agent | Specialized Use Cases |
-|---------------|---------------|-----------------|----------------------|
-| **Laravel Backend Development** | `@laravel-backend-expert` | `@laravel-eloquent-expert` | Controllers, services, middleware, command/query handlers, Laravel-specific patterns |
-| **Data Architecture & Modeling** | `@laravel-eloquent-expert` | `@performance-optimizer` | Event sourcing schemas, migrations, projections, relationships, query optimization |
-| **API Design & Contracts** | `@api-architect` | `@laravel-backend-expert` | REST API design, OpenAPI specs, resource models, authentication flows |
-| **Complex Project Coordination** | `@tech-lead-orchestrator` | `@code-archaeologist` | Multi-domain features, architecture decisions, workflow orchestration |
-| **Code Quality & Security** | `@code-reviewer` | `@performance-optimizer` | Pre-merge reviews, security analysis, compliance checks, technical debt |
-| **Performance & Optimization** | `@performance-optimizer` | `@laravel-eloquent-expert` | Query tuning, caching strategies, bottleneck identification, load testing |
-| **Codebase Analysis & Documentation** | `@code-archaeologist` | `@documentation-specialist` | Architecture exploration, legacy analysis, technical documentation |
-
-### Domain-Specific Routing Rules
-
-**Event Sourcing & CQRS Architecture:**
-- `@laravel-eloquent-expert` → Event store schema design, aggregate persistence, projection optimization
-- `@laravel-backend-expert` → Command/query handlers, domain event implementation, CQRS bus integration
-- `@api-architect` → Event-driven API patterns, webhook design, async processing contracts
-- `@performance-optimizer` → Event store performance, projection rebuilding, aggregate snapshotting
-
-**Financial Domain Complexity:**
-- `@tech-lead-orchestrator` → Multi-domain workflows (Exchange + Lending + Wallet + Treasury)
-- `@code-reviewer` → Regulatory compliance (GDPR, AML, KYC), security reviews, audit trail validation
-- `@performance-optimizer` → High-frequency trading, real-time order matching, latency optimization
-- `@laravel-backend-expert` → Financial calculations, transaction processing, settlement workflows
-
-**Workflow & Saga Patterns:**
-- `@laravel-backend-expert` → Laravel Workflow implementation, activity definitions, saga orchestration
-- `@code-archaeologist` → Complex workflow state machines, saga recovery, compensation analysis
-- `@api-architect` → Workflow API design, human task integration, async operation patterns
-- `@tech-lead-orchestrator` → Cross-domain saga coordination, workflow dependencies
-
-**AI & Machine Learning Integration:**
-- `@laravel-backend-expert` → AI service integration, LLM providers (Claude, OpenAI), MCP implementations
-- `@api-architect` → AI API contracts, conversation flows, tool integration patterns
-- `@performance-optimizer` → Vector database optimization, ML inference caching, model performance
-- `@code-reviewer` → AI safety, bias detection, responsible AI practices
-
-**Blockchain & Cryptocurrency:**
-- `@laravel-backend-expert` → Blockchain connectors, wallet management, cryptographic operations
-- `@performance-optimizer` → Transaction throughput, gas optimization, network latency
-- `@code-reviewer` → Security audits, private key management, smart contract integration
-- `@api-architect` → Blockchain API design, webhook processing, event synchronization
-
-**Banking & Payment Integration:**
-- `@laravel-backend-expert` → Banking connectors, payment gateway integration, Open Banking APIs
-- `@code-reviewer` → Payment security, PCI compliance, fraud detection integration
-- `@performance-optimizer` → Payment processing optimization, settlement performance
-- `@api-architect` → Payment API contracts, webhook validation, reconciliation flows
-
-### Development Workflow
-
-**1. Feature Planning & Analysis**
-- **Complex Features**: `@tech-lead-orchestrator` → Analyze requirements, break down tasks, coordinate domains
-- **Simple Features**: `@laravel-backend-expert` → Direct implementation with pattern analysis
-- **Performance Features**: `@performance-optimizer` → Bottleneck analysis, optimization strategy
-
-**2. Architecture & Design**
-- **System Design**: `@tech-lead-orchestrator` → Multi-domain architecture, workflow coordination
-- **Data Architecture**: `@laravel-eloquent-expert` → Event sourcing design, projection strategy
-- **API Design**: `@api-architect` → Contract specification, resource modeling, documentation
-
-**3. Implementation**
-- **Domain Logic**: `@laravel-backend-expert` → Service implementation, aggregate logic, workflows
-- **Data Layer**: `@laravel-eloquent-expert` → Models, migrations, repositories, factories
-- **API Layer**: `@api-architect` OR `@laravel-backend-expert` → Controllers, resources, validation
-
-**4. Quality Assurance**
-- **Code Review**: `@code-reviewer` → Security analysis, maintainability, compliance
-- **Performance Review**: `@performance-optimizer` → Query analysis, caching, optimization
-- **Documentation**: `@documentation-specialist` → Technical docs, API specs, guides
-
-**5. Optimization & Maintenance**
-- **Performance Issues**: `@performance-optimizer` → Profiling, bottleneck resolution, scaling
-- **Architecture Evolution**: `@code-archaeologist` → Legacy analysis, refactoring strategy
-- **Complex Debugging**: `@tech-lead-orchestrator` → Multi-domain issue analysis
-
-### Specialized Command Examples
-
-**Multi-Domain Features:**
-```
-@tech-lead-orchestrator design liquidity pool management system across Exchange, Treasury, and Wallet domains with event sourcing and saga coordination
-
-@laravel-backend-expert implement market maker workflow with Laravel Workflow, including inventory balancing and spread management activities
-
-@laravel-eloquent-expert create event sourcing schema for liquidity pools with optimized projections for real-time price calculations
-```
-
-**API & Integration:**
-```
-@api-architect design REST API for stablecoin minting with proper error handling, rate limiting, and OpenAPI documentation
-
-@laravel-backend-expert integrate Binance API connector with circuit breaker pattern and comprehensive error handling
-
-@performance-optimizer optimize exchange order book queries and implement Redis caching for sub-millisecond response times
-```
-
-**Security & Compliance:**
-```
-@code-reviewer audit Treasury portfolio management feature for security vulnerabilities, compliance gaps, and regulatory requirements
-
-@laravel-backend-expert implement KYC verification workflow with biometric verification and document analysis services
-
-@tech-lead-orchestrator coordinate fraud detection across Payment, Account, and Compliance domains with ML integration
-```
-
-**Performance & Optimization:**
-```
-@performance-optimizer analyze slow queries in exchange order matching and implement database sharding strategy
-
-@laravel-eloquent-expert optimize event sourcing projections for high-throughput trading scenarios with batch processing
-
-@laravel-backend-expert implement horizontal scaling for payment processing with queue partitioning
-```
-
-**Architecture & Analysis:**
-```
-@code-archaeologist analyze existing Treasury domain architecture and provide refactoring recommendations for better maintainability
-
-@tech-lead-orchestrator evaluate feasibility of implementing cross-chain bridge integration across Wallet and Exchange domains
-
-@laravel-backend-expert refactor legacy payment processing to use modern Laravel patterns with proper error handling
-```
-
-### Agent-Specific Guidelines
-
-**For `@laravel-backend-expert`:**
-- Always analyze existing Laravel patterns and service provider registrations
-- Implement demo service variants for development/testing environments
-- Follow event sourcing patterns with proper aggregate design
-- Use Laravel Workflow for complex multi-step operations
-- Implement proper error handling with Laravel exception patterns
-
-**For `@laravel-eloquent-expert`:**
-- Design event sourcing schemas with proper indexing strategies
-- Create efficient projections for read model optimization
-- Implement proper factory patterns for testing data generation
-- Use Laravel's advanced Eloquent features (casts, attributes, relationships)
-- Optimize queries for financial high-frequency operations
-
-**For `@api-architect`:**
-- Design contracts following OpenAPI 3.0 specifications
-- Implement proper versioning strategies for financial APIs
-- Create comprehensive error response structures
-- Design webhook patterns for asynchronous operations
-- Focus on contract-first development with clear documentation
-
-**For `@code-reviewer`:**
-- Enforce security best practices for financial data handling
-- Validate compliance with banking regulations (PCI, GDPR, AML)
-- Review event sourcing implementation for data consistency
-- Check performance implications of architectural decisions
-- Ensure proper error handling and audit trail implementation
-
-**For `@performance-optimizer`:**
-- Focus on financial workload performance (sub-second trading operations)
-- Optimize event sourcing queries and projection rebuilding
-- Implement proper caching strategies for real-time data
-- Analyze and optimize Laravel Horizon queue performance
-- Design scaling strategies for high-throughput scenarios
-
-**For `@tech-lead-orchestrator`:**
-- Coordinate complex multi-domain feature implementations
-- Make architectural decisions considering event sourcing implications
-- Plan saga coordination for cross-domain operations
-- Evaluate trade-offs between consistency and performance
-- Design integration strategies for external financial services
-
-**For `@code-archaeologist`:**
-- Analyze complex domain relationships and dependencies
-- Document event sourcing patterns and aggregate boundaries
-- Identify technical debt in financial calculation logic
-- Map complex workflow state machines and saga patterns
-- Provide refactoring strategies for legacy financial components
-
-### Quality Standards & Pre-Commit Requirements
-
-**Mandatory Quality Checks:**
-1. **Code Style**: PHP-CS-Fixer + PHPCS (PSR-12 compliance)
-2. **Static Analysis**: PHPStan Level 8 with zero errors
-3. **Testing**: Pest PHP with minimum 50% coverage
-4. **Security**: No security vulnerabilities in dependencies
-5. **Performance**: No N+1 queries or inefficient database operations
-
-**Pre-Commit Command:**
-```bash
-./bin/pre-commit-check.sh --fix  # ALWAYS run before pushing
-```
-
-**Agent Responsibilities:**
-- All agents MUST run quality checks before marking tasks complete
-- Event sourcing implementations require extra validation for data consistency
-- Financial calculations need comprehensive test coverage (>80%)
-- API changes require OpenAPI documentation updates
-- Performance-critical code needs benchmark validation
-
-### Technology Integration Notes
-
-**Event Sourcing Specific:**
-- All state changes must go through domain events
-- Projections must be rebuildable from event streams
-- Aggregate boundaries align with business invariants
-- Event versioning strategy for long-term compatibility
-
-**Laravel Workflow Integration:**
-- Use Activities for external service calls
-- Implement proper compensation for failed workflows
-- Design workflows for long-running operations
-- Handle workflow retry and error scenarios
-
-**Demo Mode Architecture:**
-- Implement both production and demo service implementations
-- Use service container binding for environment-specific behavior
-- Maintain demo data isolation with proper scoping
-- Document demo service behaviors and limitations
-
-**Multi-Domain Coordination:**
-- Use sagas for cross-domain consistency requirements
-- Design proper event choreography vs orchestration
-- Implement idempotent operations for reliability
-- Handle eventual consistency in distributed scenarios
-
-This configuration optimizes the AI team for the complex financial domain with its sophisticated event sourcing architecture, comprehensive compliance requirements, and high-performance trading operations.
+- Use Serena memories for detailed context
+- Never create docs files unless explicitly requested
+- Prefer editing existing files over creating new ones

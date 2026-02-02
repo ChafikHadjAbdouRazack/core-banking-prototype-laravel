@@ -74,6 +74,20 @@ Route::prefix('monitoring')->group(function () {
     Route::get('/alive', [App\Http\Controllers\Api\MonitoringController::class, 'alive'])->name('monitoring.alive');
 });
 
+// WebSocket configuration endpoints (public - for client initialization)
+Route::prefix('websocket')->name('api.websocket.')->group(function () {
+    Route::get('/config', [App\Http\Controllers\Api\WebSocketController::class, 'config'])->name('config');
+    Route::get('/status', [App\Http\Controllers\Api\WebSocketController::class, 'status'])->name('status');
+    Route::get('/channels/{type}', [App\Http\Controllers\Api\WebSocketController::class, 'channelInfo'])->name('channel-info');
+});
+
+// WebSocket authenticated endpoints
+Route::prefix('websocket')->name('api.websocket.')
+    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->group(function () {
+        Route::get('/channels', [App\Http\Controllers\Api\WebSocketController::class, 'channels'])->name('channels');
+    });
+
 // Legacy authentication routes for backward compatibility
 Route::post('/login', [LoginController::class, 'login'])->middleware('api.rate_limit:auth');
 Route::post('/register', [RegisterController::class, 'register'])->middleware('api.rate_limit:auth');
@@ -115,6 +129,12 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
             Route::post('/verify', [TwoFactorAuthController::class, 'verify']);
             Route::post('/recovery-codes', [TwoFactorAuthController::class, 'regenerateRecoveryCodes']);
         });
+
+        // UserOperation signing with auth shard (v2.6.0)
+        // Rate limited: 10 requests per minute (additional service-level rate limiting applies)
+        Route::post('/sign-userop', [App\Http\Controllers\Api\Auth\UserOpSigningController::class, 'sign'])
+            ->middleware('throttle:10,1')
+            ->name('api.auth.sign-userop');
     });
 });
 
@@ -685,6 +705,88 @@ Route::prefix('blockchain-wallets')->middleware(['auth:sanctum', 'check.token.ex
     Route::post('/generate-mnemonic', [App\Http\Controllers\Api\BlockchainWalletController::class, 'generateMnemonic']);
 });
 
+// Hardware Wallet endpoints (v2.1.0)
+Route::prefix('hardware-wallet')->name('api.hardware-wallet.')->group(function () {
+    // Public endpoint for supported devices/chains
+    Route::get('/supported', [App\Http\Controllers\Api\HardwareWalletController::class, 'supported'])
+        ->name('supported');
+
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:blockchain'])->group(function () {
+        // Device registration
+        Route::post('/register', [App\Http\Controllers\Api\HardwareWalletController::class, 'register'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('register');
+
+        // Signing requests
+        Route::post('/signing-request', [App\Http\Controllers\Api\HardwareWalletController::class, 'createSigningRequest'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('signing-request.create');
+
+        Route::get('/signing-request/{id}', [App\Http\Controllers\Api\HardwareWalletController::class, 'getSigningRequestStatus'])
+            ->name('signing-request.status');
+
+        Route::post('/signing-request/{id}/submit', [App\Http\Controllers\Api\HardwareWalletController::class, 'submitSignature'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('signing-request.submit');
+
+        Route::post('/signing-request/{id}/cancel', [App\Http\Controllers\Api\HardwareWalletController::class, 'cancelSigningRequest'])
+            ->name('signing-request.cancel');
+
+        // Associations management
+        Route::get('/associations', [App\Http\Controllers\Api\HardwareWalletController::class, 'listAssociations'])
+            ->name('associations.list');
+
+        Route::delete('/associations/{uuid}', [App\Http\Controllers\Api\HardwareWalletController::class, 'removeAssociation'])
+            ->name('associations.remove');
+    });
+});
+
+// Multi-Signature Wallet endpoints (v2.1.0)
+Route::prefix('multi-sig')->name('api.multi-sig.')->group(function () {
+    // Public endpoint for supported configuration
+    Route::get('/supported', [App\Http\Controllers\Api\MultiSigWalletController::class, 'getSupported'])
+        ->name('supported');
+
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:blockchain'])->group(function () {
+        // Wallet management
+        Route::post('/wallets', [App\Http\Controllers\Api\MultiSigWalletController::class, 'createWallet'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('wallets.create');
+
+        Route::get('/wallets', [App\Http\Controllers\Api\MultiSigWalletController::class, 'listWallets'])
+            ->name('wallets.list');
+
+        Route::get('/wallets/{id}', [App\Http\Controllers\Api\MultiSigWalletController::class, 'getWallet'])
+            ->name('wallets.show');
+
+        Route::post('/wallets/{id}/signers', [App\Http\Controllers\Api\MultiSigWalletController::class, 'addSigner'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('wallets.signers.add');
+
+        // Approval requests
+        Route::post('/wallets/{id}/approval-requests', [App\Http\Controllers\Api\MultiSigWalletController::class, 'createApprovalRequest'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('wallets.approval-requests.create');
+
+        Route::post('/approval-requests/{id}/approve', [App\Http\Controllers\Api\MultiSigWalletController::class, 'submitApproval'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('approval-requests.approve');
+
+        Route::post('/approval-requests/{id}/reject', [App\Http\Controllers\Api\MultiSigWalletController::class, 'rejectApproval'])
+            ->name('approval-requests.reject');
+
+        Route::post('/approval-requests/{id}/broadcast', [App\Http\Controllers\Api\MultiSigWalletController::class, 'broadcastTransaction'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('approval-requests.broadcast');
+
+        // Pending approvals for current user
+        Route::get('/pending-approvals', [App\Http\Controllers\Api\MultiSigWalletController::class, 'getPendingApprovals'])
+            ->name('pending-approvals');
+    });
+});
+
 // P2P Lending endpoints
 Route::prefix('lending')->middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:lending'])->group(function () {
     // Loan applications
@@ -933,5 +1035,214 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
                 Route::get('/agreements/{otherDid}/check', [AgentProtocolNegotiationController::class, 'checkAgreement'])
                     ->name('agreements.check');
             });
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Mobile API Routes
+|--------------------------------------------------------------------------
+|
+| These routes handle mobile device registration, biometric authentication,
+| and push notification management for the FinAegis mobile app.
+|
+*/
+
+use App\Http\Controllers\Api\MobileController;
+
+Route::prefix('mobile')->name('api.mobile.')->group(function () {
+    // Public endpoints (no auth required)
+    Route::get('/config', [MobileController::class, 'getConfig'])->name('config');
+
+    // Biometric authentication (no auth required - this IS the auth)
+    // Rate limited to prevent brute force attacks (10 requests per minute)
+    Route::prefix('auth/biometric')
+        ->middleware('throttle:10,1')
+        ->name('auth.biometric.')
+        ->group(function () {
+            Route::post('/challenge', [MobileController::class, 'getBiometricChallenge'])->name('challenge');
+            Route::post('/verify', [MobileController::class, 'verifyBiometric'])->name('verify');
+        });
+
+    // Protected endpoints (require authentication)
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+        // Device management
+        Route::prefix('devices')->name('devices.')->group(function () {
+            Route::get('/', [MobileController::class, 'listDevices'])->name('index');
+            Route::post('/', [MobileController::class, 'registerDevice'])->name('register');
+            Route::get('/{id}', [MobileController::class, 'getDevice'])->name('show');
+            Route::delete('/{id}', [MobileController::class, 'unregisterDevice'])->name('destroy');
+            Route::patch('/{id}/token', [MobileController::class, 'updatePushToken'])->name('token');
+
+            // Device security actions
+            Route::post('/{id}/block', [MobileController::class, 'blockDevice'])->name('block');
+            Route::post('/{id}/unblock', [MobileController::class, 'unblockDevice'])->name('unblock');
+            Route::post('/{id}/trust', [MobileController::class, 'trustDevice'])->name('trust');
+        });
+
+        // Biometric management (requires auth to enable/disable)
+        Route::prefix('auth/biometric')->name('auth.biometric.')->group(function () {
+            Route::post('/enable', [MobileController::class, 'enableBiometric'])->name('enable');
+            Route::delete('/disable', [MobileController::class, 'disableBiometric'])->name('disable');
+        });
+
+        // Token refresh
+        Route::post('/auth/refresh', [MobileController::class, 'refreshToken'])->name('auth.refresh');
+
+        // Session management
+        Route::prefix('sessions')->name('sessions.')->group(function () {
+            Route::get('/', [MobileController::class, 'listSessions'])->name('index');
+            Route::delete('/{id}', [MobileController::class, 'revokeSession'])->name('revoke');
+            Route::delete('/', [MobileController::class, 'revokeAllSessions'])->name('revoke-all');
+        });
+
+        // Push notifications
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [MobileController::class, 'getNotifications'])->name('index');
+            Route::post('/{id}/read', [MobileController::class, 'markNotificationRead'])->name('read');
+            Route::post('/read-all', [MobileController::class, 'markAllNotificationsRead'])->name('read-all');
+
+            // Notification preferences
+            Route::get('/preferences', [MobileController::class, 'getNotificationPreferences'])->name('preferences.index');
+            Route::put('/preferences', [MobileController::class, 'updateNotificationPreferences'])->name('preferences.update');
+        });
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Card Issuance API Routes (v2.5.0)
+|--------------------------------------------------------------------------
+|
+| Virtual card provisioning for Apple Pay / Google Pay and JIT funding
+| webhooks for real-time card authorization.
+|
+*/
+
+use App\Http\Controllers\Api\CardIssuance\CardController;
+use App\Http\Controllers\Api\CardIssuance\JitFundingWebhookController;
+
+Route::prefix('v1/cards')->name('api.cards.')->group(function () {
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+        Route::get('/', [CardController::class, 'index'])->name('index');
+        Route::post('/provision', [CardController::class, 'provision'])
+            ->middleware('transaction.rate_limit:card_provision')
+            ->name('provision');
+        Route::post('/{cardId}/freeze', [CardController::class, 'freeze'])->name('freeze');
+        Route::delete('/{cardId}/freeze', [CardController::class, 'unfreeze'])->name('unfreeze');
+        Route::delete('/{cardId}', [CardController::class, 'cancel'])->name('cancel');
+    });
+});
+
+// Card issuer webhook endpoints (CRITICAL: <2000ms latency budget)
+Route::prefix('webhooks/card-issuer')->name('api.webhooks.card.')
+    ->middleware(['api.rate_limit:webhook'])
+    ->group(function () {
+        Route::post('/authorization', [JitFundingWebhookController::class, 'handleAuthorization'])->name('authorization');
+        Route::post('/settlement', [JitFundingWebhookController::class, 'settlement'])->name('settlement');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Gas Relayer API Routes (v2.5.0)
+|--------------------------------------------------------------------------
+|
+| Meta-transaction relayer for gasless stablecoin transfers using
+| ERC-4337 Account Abstraction (Paymaster + Bundler).
+|
+*/
+
+use App\Http\Controllers\Api\Relayer\RelayerController;
+use App\Http\Controllers\Api\Relayer\SmartAccountController;
+
+Route::prefix('v1/relayer')->name('api.relayer.')->group(function () {
+    // Public endpoint for supported networks
+    Route::get('/networks', [RelayerController::class, 'networks'])->name('networks');
+
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+        Route::post('/sponsor', [RelayerController::class, 'sponsor'])
+            ->middleware('transaction.rate_limit:relayer')
+            ->name('sponsor');
+        Route::post('/estimate', [RelayerController::class, 'estimate'])->name('estimate');
+
+        // Smart Account Management (v2.6.0)
+        Route::post('/account', [SmartAccountController::class, 'createAccount'])
+            ->middleware('transaction.rate_limit:relayer')
+            ->name('account.create');
+        Route::get('/accounts', [SmartAccountController::class, 'listAccounts'])->name('accounts.list');
+        Route::get('/nonce/{address}', [SmartAccountController::class, 'getNonce'])->name('nonce');
+        Route::get('/init-code/{address}', [SmartAccountController::class, 'getInitCode'])->name('init-code');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| TrustCert Presentation API Routes (v2.5.0)
+|--------------------------------------------------------------------------
+|
+| Generate and verify TrustCert credential presentations via QR codes
+| and deep links for privacy-preserving certificate verification.
+|
+*/
+
+use App\Http\Controllers\Api\TrustCert\PresentationController;
+
+Route::prefix('v1/trustcert')->name('api.trustcert.')->group(function () {
+    // Public verification endpoint (no auth - anyone can verify a presentation)
+    Route::get('/verify/{token}', [PresentationController::class, 'verify'])->name('verify');
+
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+        Route::post('/{certificateId}/present', [PresentationController::class, 'present'])->name('present');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Privacy API Routes (v2.6.0)
+|--------------------------------------------------------------------------
+|
+| Merkle tree synchronization and proof endpoints for mobile privacy features.
+|
+*/
+
+use App\Http\Controllers\Api\Privacy\DelegatedProofController;
+use App\Http\Controllers\Api\Privacy\PrivacyController;
+
+Route::prefix('v1/privacy')->name('api.privacy.')->group(function () {
+    // Public endpoint for supported networks
+    Route::get('/networks', [PrivacyController::class, 'getNetworks'])->name('networks');
+
+    // Public endpoint for delegated proof types
+    Route::get('/delegated-proof-types', [DelegatedProofController::class, 'getSupportedTypes'])
+        ->name('delegated-proof-types');
+
+    // Public endpoint for SRS manifest (mobile needs this before auth)
+    Route::get('/srs-manifest', [PrivacyController::class, 'getSrsManifest'])->name('srs-manifest');
+
+    // Authenticated endpoints
+    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+        Route::get('/merkle-root', [PrivacyController::class, 'getMerkleRoot'])->name('merkle-root');
+        Route::post('/merkle-path', [PrivacyController::class, 'getMerklePath'])->name('merkle-path');
+        Route::post('/verify-commitment', [PrivacyController::class, 'verifyCommitment'])->name('verify-commitment');
+        Route::post('/sync', [PrivacyController::class, 'syncTree'])
+            ->middleware('transaction.rate_limit:privacy_sync')
+            ->name('sync');
+
+        // Delegated Proof Generation (v2.6.0)
+        Route::post('/delegated-proof', [DelegatedProofController::class, 'requestProof'])
+            ->middleware('transaction.rate_limit:delegated_proof')
+            ->name('delegated-proof.request');
+        Route::get('/delegated-proof/{jobId}', [DelegatedProofController::class, 'getProofStatus'])
+            ->name('delegated-proof.status');
+        Route::get('/delegated-proofs', [DelegatedProofController::class, 'listProofJobs'])
+            ->name('delegated-proofs.list');
+        Route::delete('/delegated-proof/{jobId}', [DelegatedProofController::class, 'cancelProofJob'])
+            ->name('delegated-proof.cancel');
+
+        // SRS download tracking for analytics
+        Route::post('/srs-downloaded', [PrivacyController::class, 'trackSrsDownload'])->name('srs-downloaded');
     });
 });

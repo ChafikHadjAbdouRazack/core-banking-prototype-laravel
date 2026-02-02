@@ -22,9 +22,44 @@ These documents provide:
 - Webhook integration guidance
 - API best practices
 
-## Current API Status (September 2024)
+## Current API Status (February 2026)
 
-### Recently Added API Endpoints
+### v2.4.0 API Endpoints (February 1, 2026)
+- 🚧 **Privacy APIs**: Zero-Knowledge KYC verification
+  - `POST /api/privacy/zkkyc/verify` - Verify without exposing PII
+  - `POST /api/privacy/selective-disclosure` - Prove specific claims
+  - `POST /api/privacy/proof-of-innocence` - Generate compliance proofs
+
+- 🚧 **Commerce APIs**: Soulbound tokens, attestations
+  - `POST /api/commerce/soulbound-tokens` - Issue SBT
+  - `POST /api/commerce/merchants/onboard` - Merchant onboarding
+  - `POST /api/commerce/attestations` - Payment attestations
+
+- 🚧 **TrustCert APIs**: Verifiable credentials
+  - `POST /api/trustcert/credentials` - Issue credential
+  - `POST /api/trustcert/verify` - Verify credential
+  - `GET /api/trustcert/revocations` - Check revocation status
+
+### v2.2.0 API Endpoints (January 31, 2026)
+- ✅ **Mobile Device APIs**: Device registration and management
+- ✅ **Biometric APIs**: Biometric authentication
+- ✅ **Push Notification APIs**: FCM/APNs integration
+
+### v2.1.0 API Endpoints (January 30, 2026)
+- ✅ **Hardware Wallet APIs**: Device registration, signing requests
+  - `POST /api/hardware-wallet/register` - Register Ledger/Trezor device
+  - `POST /api/hardware-wallet/signing-request` - Create signing request
+  - `POST /api/hardware-wallet/signing-request/{id}/submit` - Submit signature
+  - `GET /api/hardware-wallet/associations` - List user's devices
+  - `GET /api/hardware-wallet/supported` - Supported devices/chains
+
+- ✅ **WebSocket Channels**: Real-time streaming
+  - `tenant.{tenantId}` - General notifications
+  - `tenant.{tenantId}.accounts` - Account updates
+  - `tenant.{tenantId}.transactions` - Transaction feed
+  - `tenant.{tenantId}.exchange` - Order book/trading updates
+
+### Core API Endpoints
 - ✅ **CGO Investment APIs**: Complete investment platform endpoints
   - `POST /api/cgo/investments` - Create investment
   - `GET /api/cgo/investments/{uuid}` - Get investment details

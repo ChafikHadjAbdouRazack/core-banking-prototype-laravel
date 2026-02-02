@@ -1,16 +1,16 @@
 <x-mail::message>
 # Investment Confirmed!
 
-Congratulations! Your investment in FinAegis Continuous Growth Offering has been successfully confirmed.
+Congratulations! Your investment in {{ company_name() }} Continuous Growth Offering has been successfully confirmed.
 
 ## Investment Details:
 
 <x-mail::panel>
-**Certificate Number**: {{ $certificateNumber }}  
-**Investment Amount**: ${{ $amount }} USD  
-**Tier**: {{ $tier }}  
-**Shares Purchased**: {{ $shares }}  
-**Ownership Percentage**: {{ $ownershipPercentage }}%  
+**Certificate Number**: {{ $certificateNumber }}
+**Investment Amount**: ${{ $amount }} USD
+**Tier**: {{ $tier }}
+**Shares Purchased**: {{ $shares }}
+**Ownership Percentage**: {{ $ownershipPercentage }}%
 **Investment Date**: {{ $investment->created_at->format('F j, Y') }}
 </x-mail::panel>
 
@@ -33,12 +33,12 @@ Download Investment Certificate
 - Your investment is subject to the terms and conditions outlined in the investment agreement
 - For any questions, please contact our investor relations team
 
-Thank you for investing in FinAegis! We're excited to have you as part of our journey.
+Thank you for investing in {{ company_name() }}! We're excited to have you as part of our journey.
 
 Best regards,<br>
-The FinAegis Team
+{{ team_signature() }}
 
 <x-mail::subcopy>
-This email confirms your investment in FinAegis Ltd. If you did not make this investment, please contact us immediately at info@finaegis.org.
+This email confirms your investment in {{ company_name() }}. If you did not make this investment, please contact us immediately at {{ support_email() }}.
 </x-mail::subcopy>
 </x-mail::message>

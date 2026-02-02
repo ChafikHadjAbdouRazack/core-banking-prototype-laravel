@@ -6,6 +6,7 @@ namespace Tests\Unit\AgentProtocol\Activities;
 
 use App\Domain\AgentProtocol\DataObjects\AgentPaymentRequest;
 use Illuminate\Support\Str;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -29,7 +30,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->receiverDid = 'did:agent:test:receiver-' . Str::random(8);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_standard_fees(): void
     {
         // Arrange
@@ -56,7 +57,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals(100.00 + $expectedFee, $totalAmount);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_minimum_fee_for_small_amounts(): void
     {
         // Arrange
@@ -75,7 +76,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals($amount + $minFee, $amount + $appliedFee);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_maximum_fee_for_large_amounts(): void
     {
         // Arrange
@@ -94,7 +95,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals($amount + $maxFee, $amount + $appliedFee);
     }
 
-    /** @test */
+    #[Test]
     public function it_exempts_fees_for_micropayments(): void
     {
         // Arrange
@@ -108,7 +109,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals(0.0, $appliedFee);
     }
 
-    /** @test */
+    #[Test]
     public function it_exempts_fees_for_system_accounts(): void
     {
         // Arrange
@@ -124,7 +125,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertContains($systemDid, $systemAccounts);
     }
 
-    /** @test */
+    #[Test]
     public function it_exempts_fees_for_internal_transfers(): void
     {
         // Arrange - internal transfer prefix marks exemption
@@ -134,7 +135,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertStringStartsWith('internal:', $purpose);
     }
 
-    /** @test */
+    #[Test]
     public function it_applies_custom_fee_rate_when_specified(): void
     {
         // Arrange
@@ -149,7 +150,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals(105.00, $amount + $appliedFee);
     }
 
-    /** @test */
+    #[Test]
     public function it_reverses_fees_correctly(): void
     {
         // Arrange
@@ -168,7 +169,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals($appliedFee, $reversedFee);
     }
 
-    /** @test */
+    #[Test]
     public function it_updates_wallet_balances_correctly(): void
     {
         // This test validates the concept of balance updates
@@ -192,7 +193,7 @@ class ApplyFeesActivityTest extends TestCase
         $this->assertEquals($initialBalance - $appliedFee, $expectedSenderBalance);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_custom_fee_rate_above_limit(): void
     {
         // Arrange

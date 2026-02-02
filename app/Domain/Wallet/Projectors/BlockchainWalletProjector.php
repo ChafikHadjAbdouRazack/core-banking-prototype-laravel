@@ -65,7 +65,7 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->first();
 
-        $metadata = json_decode($wallet->metadata, true) ?? [];
+        $metadata = $wallet !== null ? (json_decode($wallet->metadata, true) ?? []) : [];
         $metadata['freeze_reason'] = $event->reason;
         $metadata['frozen_by'] = $event->frozenBy;
         $metadata['frozen_at'] = $event->frozenAt->toDateTimeString();
@@ -87,7 +87,7 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->first();
 
-        $metadata = json_decode($wallet->metadata, true) ?? [];
+        $metadata = $wallet !== null ? (json_decode($wallet->metadata, true) ?? []) : [];
         unset($metadata['freeze_reason']);
         unset($metadata['frozen_by']);
         unset($metadata['frozen_at']);
@@ -121,7 +121,7 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->first();
 
-        $metadata = json_decode($wallet->metadata, true) ?? [];
+        $metadata = $wallet !== null ? (json_decode($wallet->metadata, true) ?? []) : [];
         $metadata['last_key_rotation'] = [
             'chain'      => $event->chain,
             'rotated_by' => $event->rotatedBy,
@@ -158,7 +158,7 @@ class BlockchainWalletProjector extends Projector
             ->where('wallet_id', $event->walletId)
             ->first();
 
-        $metadata = json_decode($wallet->metadata, true) ?? [];
+        $metadata = $wallet !== null ? (json_decode($wallet->metadata, true) ?? []) : [];
         $metadata['last_backup'] = [
             'backup_id'  => $event->backupId,
             'method'     => $event->backupMethod,

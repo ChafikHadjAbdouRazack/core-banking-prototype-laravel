@@ -383,15 +383,18 @@ class FeeTierService
             ->pluck('count', 'tier_override')
             ->toArray();
 
+        $totalVolume = $stats->total_volume ?? 0;
+        $totalFees = $stats->total_fees ?? 0;
+
         return [
             'period'             => $period,
             'total_orders'       => $stats->total_orders ?? 0,
-            'total_fees'         => $stats->total_fees ?? 0,
+            'total_fees'         => $totalFees,
             'average_fee'        => $stats->avg_fee ?? 0,
-            'total_volume'       => $stats->total_volume ?? 0,
+            'total_volume'       => $totalVolume,
             'tier_distribution'  => $tierDistribution,
-            'effective_fee_rate' => $stats->total_volume > 0
-                ? ($stats->total_fees / $stats->total_volume) * 10000
+            'effective_fee_rate' => $totalVolume > 0
+                ? ($totalFees / $totalVolume) * 10000
                 : 0,
         ];
     }

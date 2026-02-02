@@ -3,14 +3,12 @@
 namespace Tests\Feature\Security;
 
 use App\Http\Middleware\IpBlocking;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class IpBlockingTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -19,7 +17,7 @@ class IpBlockingTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_whitelisted_ips()
     {
         // Whitelist a specific IP
@@ -36,7 +34,7 @@ class IpBlockingTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_ip_after_max_failed_attempts()
     {
         $ip = '192.168.1.100';
@@ -61,7 +59,7 @@ class IpBlockingTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_permanently_blocks_ip_after_threshold()
     {
         $ip = '192.168.1.200';
@@ -90,7 +88,7 @@ class IpBlockingTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_unblock_an_ip()
     {
         $ip = '192.168.1.150';
@@ -112,7 +110,7 @@ class IpBlockingTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function it_supports_cidr_notation_for_blocking()
     {
         // Add a CIDR range to blacklist
@@ -135,7 +133,7 @@ class IpBlockingTest extends TestCase
         $this->assertNotEquals(403, $response->status());
     }
 
-    /** @test */
+    #[Test]
     public function it_tracks_failed_attempts_with_expiration()
     {
         $ip = '192.168.1.50';
@@ -155,7 +153,7 @@ class IpBlockingTest extends TestCase
         $this->assertTrue(Cache::has($key));
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_internal_ips_by_default()
     {
         $internalIps = ['127.0.0.1', '::1'];

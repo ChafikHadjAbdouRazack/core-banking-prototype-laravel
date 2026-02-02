@@ -11,6 +11,7 @@ use App\Domain\AgentProtocol\Services\AgentPaymentIntegrationService;
 use App\Models\User;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 /**
@@ -83,7 +84,7 @@ class AgentPaymentIntegrationTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_creates_integration_service(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -91,7 +92,7 @@ class AgentPaymentIntegrationTest extends TestCase
         $this->assertInstanceOf(AgentPaymentIntegrationService::class, $service);
     }
 
-    /** @test */
+    #[Test]
     public function it_links_agent_wallet_to_main_account(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -111,7 +112,7 @@ class AgentPaymentIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_linked_main_account(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -122,7 +123,7 @@ class AgentPaymentIntegrationTest extends TestCase
         $this->assertEquals($this->mainAccount->uuid, $linkedAccount->uuid);
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_null_for_unlinked_agent(): void
     {
         // Create agent without linked account
@@ -153,7 +154,7 @@ class AgentPaymentIntegrationTest extends TestCase
         $this->assertNull($linkedAccount);
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_integration_transaction_history(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -165,7 +166,7 @@ class AgentPaymentIntegrationTest extends TestCase
         $this->assertEmpty($history);
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_amount_greater_than_zero_for_funding(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -181,7 +182,7 @@ class AgentPaymentIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_amount_greater_than_zero_for_withdrawal(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -197,7 +198,7 @@ class AgentPaymentIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_sufficient_balance_for_withdrawal(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -213,7 +214,7 @@ class AgentPaymentIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_agent_wallet_exists(): void
     {
         $service = app(AgentPaymentIntegrationService::class);
@@ -228,7 +229,7 @@ class AgentPaymentIntegrationTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function it_validates_main_account_exists(): void
     {
         $service = app(AgentPaymentIntegrationService::class);

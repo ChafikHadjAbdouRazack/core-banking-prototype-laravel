@@ -49,10 +49,9 @@ jobs:
       node-version: '20'
     secrets: inherit
 
-  # Phase 2: Test Suites (After Code Quality)
+  # Phase 2: Test Suites (Run in parallel with code quality)
   test-suite:
     name: Test Suite
-    needs: [code-quality]
     uses: ./.github/workflows/03-test-suite.yml
     with:
       php-version: '8.3'
@@ -68,10 +67,9 @@ jobs:
       php-version: '8.3'
     secrets: inherit
 
-  # Phase 4: Performance Tests (After Test Suite)
+  # Phase 4: Performance Tests (Run in parallel - no blocking dependencies)
   performance-tests:
     name: Performance Tests
-    needs: [test-suite]
     uses: ./.github/workflows/05-performance.yml
     with:
       php-version: '8.3'

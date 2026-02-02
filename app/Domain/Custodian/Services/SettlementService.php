@@ -604,8 +604,8 @@ class SettlementService
             'total_gross_amount' => (int) ($stats->total_gross ?? 0),
             'total_net_amount'   => (int) ($stats->total_net ?? 0),
             'total_savings'      => (int) (($stats->total_gross ?? 0) - ($stats->total_net ?? 0)),
-            'savings_percentage' => $stats->total_gross > 0
-                ? round(((float) ($stats->total_gross - $stats->total_net) / (float) $stats->total_gross) * 100, 2)
+            'savings_percentage' => ($stats->total_gross ?? 0) > 0
+                ? round(((float) (($stats->total_gross ?? 0) - ($stats->total_net ?? 0)) / (float) ($stats->total_gross ?? 0)) * 100, 2)
                 : 0,
             'total_transfers_settled' => (int) ($stats->total_transfers ?? 0),
             'avg_settlement_seconds'  => round((float) ($stats->avg_settlement_seconds ?? 0), 2),

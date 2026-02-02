@@ -8,14 +8,12 @@ use App\Domain\AgentProtocol\Models\Agent;
 use App\Domain\AgentProtocol\Services\DigitalSignatureService;
 use App\Domain\AgentProtocol\Services\EncryptionService;
 use App\Domain\AgentProtocol\Services\SignatureService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class DigitalSignatureServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private DigitalSignatureService $service;
 
     private SignatureService $signatureService;
@@ -37,7 +35,7 @@ class DigitalSignatureServiceTest extends TestCase
         Cache::flush();
     }
 
-    /** @test */
+    #[Test]
     public function itCanGenerateAgentKeyPair()
     {
         $agentId = 'agent_' . uniqid();
@@ -60,7 +58,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertTrue(Cache::has("agent_public_key:{$agentId}"));
     }
 
-    /** @test */
+    #[Test]
     public function itCanSignAndVerifyAgentTransaction()
     {
         $agentId = 'agent_' . uniqid();
@@ -107,7 +105,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertEquals($agentId, $verification['agent_id']);
     }
 
-    /** @test */
+    #[Test]
     public function itDetectsInvalidSignatures()
     {
         $agentId = 'agent_' . uniqid();
@@ -143,7 +141,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertFalse($verification['is_valid']);
     }
 
-    /** @test */
+    #[Test]
     public function itDetectsExpiredSignatures()
     {
         $agentId = 'agent_' . uniqid();
@@ -175,7 +173,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertEquals('Signature has expired', $verification['reason']);
     }
 
-    /** @test */
+    #[Test]
     public function itPreventsReplayAttacksWithNonceVerification()
     {
         $agentId = 'agent_' . uniqid();
@@ -217,7 +215,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertEquals('Invalid or reused nonce', $verification2['reason']);
     }
 
-    /** @test */
+    #[Test]
     public function itCanCreateMultiPartySignatures()
     {
         $transactionId = 'txn_' . uniqid();
@@ -255,7 +253,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertCount(3, $multiSig['signatures']);
     }
 
-    /** @test */
+    #[Test]
     public function itCanRotateAgentKeys()
     {
         $agentId = 'agent_' . uniqid();
@@ -292,7 +290,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertTrue($archived, 'Archived keys should exist in cache');
     }
 
-    /** @test */
+    #[Test]
     public function itSelectsAppropriateAlgorithmBasedOnSecurityLevel()
     {
         $agentId = 'agent_' . uniqid();
@@ -330,7 +328,7 @@ class DigitalSignatureServiceTest extends TestCase
         $this->assertEquals('RS512', $maxSig['algorithm']);
     }
 
-    /** @test */
+    #[Test]
     public function itCanCreateSignatureProofForZeroKnowledgeVerification()
     {
         $transactionId = 'txn_' . uniqid();

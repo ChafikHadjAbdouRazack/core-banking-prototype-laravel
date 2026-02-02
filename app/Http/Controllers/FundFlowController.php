@@ -230,13 +230,27 @@ class FundFlowController extends Controller
 
         $result = $stats->first();
 
+        if (! $result) {
+            return (object) [
+                'total_inflow'      => 0,
+                'total_outflow'     => 0,
+                'total_internal'    => 0,
+                'active_days'       => 0,
+                'total_flows'       => 0,
+                'net_flow'          => 0,
+                'avg_daily_inflow'  => 0,
+                'avg_daily_outflow' => 0,
+                'top_categories'    => [],
+            ];
+        }
+
         // Calculate net flow
-        $result->net_flow = $result->total_inflow - $result->total_outflow;
+        $result->net_flow = ($result->total_inflow ?? 0) - ($result->total_outflow ?? 0);
 
         // Calculate average daily flow
         $days = $dateRange['start']->diffInDays($dateRange['end']) ?: 1;
-        $result->avg_daily_inflow = round($result->total_inflow / $days);
-        $result->avg_daily_outflow = round($result->total_outflow / $days);
+        $result->avg_daily_inflow = round(($result->total_inflow ?? 0) / $days);
+        $result->avg_daily_outflow = round(($result->total_outflow ?? 0) / $days);
 
         // Get top flow categories
         $result->top_categories = $this->getTopFlowCategories($user, $dateRange, $filters);

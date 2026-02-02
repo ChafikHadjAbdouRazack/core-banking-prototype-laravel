@@ -136,4 +136,92 @@ return [
             'secret' => env('HSM_SECRET_KEY'),
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hardware Wallet Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for hardware wallet integration (Ledger, Trezor).
+    | Hardware wallets provide secure key storage with user-controlled signing.
+    |
+    */
+
+    'hardware_wallets' => [
+        'enabled' => env('HARDWARE_WALLETS_ENABLED', true),
+
+        'ledger' => [
+            'supported_models' => ['nano_s', 'nano_x'],
+            'app_versions'     => [
+                'ethereum' => '1.9.0',
+                'bitcoin'  => '2.0.0',
+            ],
+        ],
+
+        'trezor' => [
+            'supported_models' => ['one', 'model_t'],
+            'webusb_enabled'   => true,
+        ],
+
+        'signing_request' => [
+            'ttl_seconds'      => env('HARDWARE_WALLET_SIGNING_TTL', 300), // 5 minutes
+            'max_retries'      => 3,
+            'poll_interval_ms' => 1000,
+        ],
+
+        'supported_chains' => [
+            'ethereum' => [
+                'coin_type'       => 60,
+                'derivation_path' => "m/44'/60'/0'/0/{index}",
+            ],
+            'bitcoin' => [
+                'coin_type'       => 0,
+                'derivation_path' => "m/44'/0'/0'/0/{index}",
+            ],
+            'polygon' => [
+                'coin_type'       => 60, // Same as Ethereum (EVM compatible)
+                'derivation_path' => "m/44'/60'/0'/0/{index}",
+            ],
+            'bsc' => [
+                'coin_type'       => 60, // Same as Ethereum (EVM compatible)
+                'derivation_path' => "m/44'/60'/0'/0/{index}",
+            ],
+        ],
+
+        'security' => [
+            'require_verification'      => true,
+            'max_associations_per_user' => 10,
+            'max_pending_requests'      => 5,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Multi-Signature Wallet Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configuration for multi-signature wallet support.
+    | M-of-N signature schemes for secure transaction approval workflows.
+    |
+    */
+
+    'multi_sig' => [
+        'enabled' => env('MULTI_SIG_ENABLED', true),
+
+        // Maximum and minimum number of signers
+        'max_signers' => 10,
+        'min_signers' => 2,
+
+        // Approval request TTL (24 hours default)
+        'approval_ttl_seconds' => env('MULTI_SIG_APPROVAL_TTL', 86400),
+
+        // Supported signature schemes
+        'supported_schemes' => ['2-of-3', '3-of-5', '2-of-2', '3-of-4'],
+
+        // Maximum pending approval requests per wallet
+        'max_pending_requests_per_wallet' => 5,
+
+        // Auto-broadcast when quorum is reached
+        'auto_broadcast' => env('MULTI_SIG_AUTO_BROADCAST', false),
+    ],
 ];

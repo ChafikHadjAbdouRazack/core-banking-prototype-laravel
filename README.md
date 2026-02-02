@@ -1,11 +1,12 @@
 # FinAegis Core Banking Platform
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Mobile Ready](https://img.shields.io/badge/mobile-ready-green.svg)](docs/MOBILE_APP_SPECIFICATION.md)
 
 **An open-source core banking platform built with event sourcing, domain-driven design, and modern financial patterns.**
 
@@ -19,10 +20,17 @@ FinAegis provides the foundation for building digital banking applications. The 
 
 | Challenge | FinAegis Solution |
 |-----------|-------------------|
-| Building financial systems from scratch | 29 production-ready domain modules |
+| Building financial systems from scratch | 31 production-ready domain modules |
 | Audit trail requirements | Event sourcing captures every state change |
 | Complex multi-step transactions | Saga pattern with automatic compensation |
 | Regulatory compliance | Built-in KYC/AML workflows |
+| Multi-tenant SaaS deployment | Team-based tenant isolation (v2.0.0) |
+| Hardware wallet security | Ledger/Trezor support with multi-sig (v2.1.0) |
+| Real-time data streaming | WebSocket broadcasting for trading (v2.1.0) |
+| Cloud-native deployment | Kubernetes Helm charts, HPA, Istio (v2.1.0) |
+| Mobile wallet backend | Biometric auth, push notifications, device mgmt (v2.2.0) |
+| Privacy-preserving transactions | Shamir key sharding, ZK-KYC, Proof of Innocence (v2.4.0) |
+| Tap-to-pay with stablecoins | Virtual cards (Apple/Google Pay), Gas abstraction (v2.5.0) |
 | Learning modern architecture | Complete DDD + CQRS + Event Sourcing example |
 
 ---
@@ -104,7 +112,7 @@ php artisan serve
 php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
 ```
 
-**Requirements**: PHP 8.4+, MySQL 8.0+/PostgreSQL 13+, Redis 6.0+, Node.js 18+
+**Requirements**: PHP 8.3+, MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+, Redis 6.0+, Node.js 18+
 
 ### Modular Installation (v1.3.0+)
 
@@ -151,9 +159,9 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 
 | Domain | Capabilities |
 |--------|-------------|
-| **Exchange** | Order matching, liquidity pools, AMM, external connectors |
+| **Exchange** | Order matching, liquidity pools, AMM, external connectors, WebSocket streaming |
 | **Stablecoin** | Multi-collateral minting, burning, liquidation |
-| **Wallet** | Multi-chain support (BTC, ETH, Polygon, BSC) |
+| **Wallet** | Multi-chain (BTC, ETH, Polygon, BSC), Hardware wallets (Ledger, Trezor), Multi-sig (M-of-N) |
 | **Basket (GCU)** | Weighted currency basket, NAV calculation, rebalancing |
 
 ### Platform Services
@@ -164,6 +172,18 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 | **Lending** | P2P loans, credit scoring, risk assessment |
 | **AI Framework** | MCP server, 20+ banking tools, event-sourced interactions |
 | **Agent Protocol** | A2A messaging, escrow, reputation system |
+| **Multi-Tenancy** | Team-based isolation, tenant-aware event sourcing |
+
+### Mobile Backend (v2.4.0+)
+
+| Domain | Capabilities |
+|--------|-------------|
+| **Key Management** | Shamir's Secret Sharing (2-of-3), HSM integration |
+| **Privacy** | ZK-KYC verification, Proof of Innocence, selective disclosure |
+| **Card Issuance** | Virtual cards for Apple Pay/Google Pay, JIT funding |
+| **Gas Relayer** | ERC-4337 meta-transactions, pay fees in USDC |
+| **TrustCert** | W3C Verifiable Credentials, QR/deep link verification |
+| **Mobile** | Biometric auth, push notifications, device management |
 
 ---
 
@@ -194,7 +214,8 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 - **Event Sourcing** - Complete audit trail, temporal queries, replay capability
 - **CQRS** - Separated read/write models for optimal performance
 - **Saga Pattern** - Distributed transactions with automatic rollback
-- **DDD** - 29 bounded contexts with clear boundaries
+- **DDD** - 31 bounded contexts with clear boundaries
+- **Multi-Tenancy** - Team-based data isolation with stancl/tenancy v3.9
 
 See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
 
@@ -207,6 +228,7 @@ See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
 | **Getting Started** | [Quick Start](#quick-start) · [User Guides](docs/05-USER-GUIDES/) |
 | **Architecture** | [Overview](docs/02-ARCHITECTURE/) · [ADRs](docs/ADR/) · [Roadmap](docs/ARCHITECTURAL_ROADMAP.md) |
 | **API** | [REST Reference](docs/04-API/REST_API_REFERENCE.md) · [OpenAPI](/api/documentation) |
+| **Mobile** | [Mobile App Specification](docs/MOBILE_APP_SPECIFICATION.md) · [Version Roadmap](docs/VERSION_ROADMAP.md) |
 | **Development** | [Contributing](CONTRIBUTING.md) · [Dev Guides](docs/06-DEVELOPMENT/) |
 | **Reference** | [GCU Design](docs/ADR/ADR-004-gcu-basket-design.md) · [Event Sourcing](docs/ADR/ADR-001-event-sourcing.md) |
 
@@ -224,9 +246,43 @@ git checkout -b feature/your-feature
 # Submit PR
 ```
 
-**Standards**: PSR-12 · PHPStan Level 5 · 50%+ Coverage · Conventional Commits
+**Standards**: PSR-12 · PHPStan Level 8 · 50%+ Coverage · Conventional Commits
 
 This project supports AI coding assistants. Look for `AGENTS.md` files for context-aware guidance.
+
+---
+
+## Deployment
+
+### Kubernetes (v2.1.0+)
+
+Deploy to any Kubernetes cluster with Helm:
+
+```bash
+# Add Bitnami repo for dependencies
+helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# Install with staging values
+helm upgrade --install finaegis ./helm/finaegis \
+  --values ./helm/finaegis/values-staging.yaml \
+  --namespace finaegis-staging \
+  --create-namespace
+
+# Install with production values
+helm upgrade --install finaegis ./helm/finaegis \
+  --values ./helm/finaegis/values-production.yaml \
+  --namespace finaegis
+```
+
+**Features:**
+- Multi-stage Docker build (PHP 8.4-fpm-alpine)
+- Horizontal Pod Autoscaler (CPU, memory, queue depth)
+- Istio service mesh compatible (mTLS, circuit breaker)
+- External Secrets for Vault/AWS integration
+- Prometheus ServiceMonitor for observability
+- Network Policies for pod isolation
+
+See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details.
 
 ---
 
@@ -234,14 +290,17 @@ This project supports AI coding assistants. Look for `AGENTS.md` files for conte
 
 | Layer | Technology |
 |-------|------------|
-| **Backend** | Laravel 12, PHP 8.4+ |
+| **Backend** | Laravel 12, PHP 8.3+ (8.4 supported) |
 | **Event Sourcing** | Spatie Event Sourcing |
 | **Workflows** | Laravel Workflow (Waterline) |
-| **Database** | MySQL 8.0+ / PostgreSQL 13+ |
+| **Multi-Tenancy** | stancl/tenancy v3.9 |
+| **Database** | MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+ |
 | **Cache/Queue** | Redis, Laravel Horizon |
-| **Testing** | Pest PHP (parallel) |
+| **Real-time** | Soketi (Pusher-compatible), Laravel Echo |
+| **Testing** | Pest PHP (parallel, 5,700+ tests), PHPStan Level 5 |
 | **Admin** | Filament v3 |
 | **Frontend** | Livewire, Tailwind CSS |
+| **Deployment** | Docker, Kubernetes (Helm), Istio |
 
 ---
 
@@ -255,7 +314,7 @@ This is a **demonstration platform** showcasing modern banking architecture. Use
 - Contributing to open-source fintech
 - Studying GCU as a basket currency reference
 
-**Not recommended** for production use without security audit and compliance review.
+**Production Readiness**: The codebase includes production-grade infrastructure (CQRS, event sourcing, multi-tenancy, 50%+ test coverage, PHPStan Level 8, 5,000+ tests). However, **a security audit and compliance review are required** before any production deployment. See [Security Policy](SECURITY.md) for vulnerability reporting.
 
 ---
 
