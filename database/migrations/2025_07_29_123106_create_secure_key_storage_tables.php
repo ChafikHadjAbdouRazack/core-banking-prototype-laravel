@@ -38,7 +38,7 @@ return new class () extends Migration {
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('accessed_at');
+            $table->dateTime('accessed_at');
 
             $table->index(['wallet_id', 'action']);
             $table->index(['user_id', 'accessed_at']);
@@ -54,7 +54,7 @@ return new class () extends Migration {
             $table->integer('old_version');
             $table->integer('new_version');
             $table->json('metadata')->nullable();
-            $table->timestamp('rotated_at');
+            $table->dateTime('rotated_at');
 
             $table->index('wallet_id');
             $table->index('rotated_at');

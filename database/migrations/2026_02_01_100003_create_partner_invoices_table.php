@@ -56,12 +56,12 @@ return new class () extends Migration {
             // Payment
             $table->string('payment_method')->nullable(); // card, bank_transfer, invoice
             $table->string('payment_reference')->nullable();
-            $table->timestamp('paid_at')->nullable();
+            $table->dateTime('paid_at')->nullable();
             $table->date('due_date');
 
             // PDF
             $table->string('pdf_path')->nullable();
-            $table->timestamp('pdf_generated_at')->nullable();
+            $table->dateTime('pdf_generated_at')->nullable();
 
             // Notes
             $table->text('notes')->nullable();

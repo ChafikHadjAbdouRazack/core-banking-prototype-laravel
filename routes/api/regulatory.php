@@ -79,9 +79,6 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
     // Transaction Monitoring
     Route::prefix('transaction-monitoring')->group(function () {
         Route::get('/', [TransactionMonitoringController::class, 'getMonitoredTransactions']);
-        Route::get('/{id}', [TransactionMonitoringController::class, 'getTransactionDetails']);
-        Route::post('/{id}/flag', [TransactionMonitoringController::class, 'flagTransaction']);
-        Route::post('/{id}/clear', [TransactionMonitoringController::class, 'clearTransaction']);
         Route::get('/rules', [TransactionMonitoringController::class, 'getRules']);
         Route::post('/rules', [TransactionMonitoringController::class, 'createRule']);
         Route::put('/rules/{id}', [TransactionMonitoringController::class, 'updateRule']);
@@ -92,6 +89,10 @@ Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function ()
         Route::post('/analyze/realtime', [TransactionMonitoringController::class, 'analyzeRealtime']);
         Route::post('/analyze/batch', [TransactionMonitoringController::class, 'analyzeBatch']);
         Route::get('/analysis/{analysisId}', [TransactionMonitoringController::class, 'getAnalysisStatus']);
+        // Parameterized routes must come AFTER static routes to avoid /{id} capturing /rules, /patterns, etc.
+        Route::get('/{id}', [TransactionMonitoringController::class, 'getTransactionDetails']);
+        Route::post('/{id}/flag', [TransactionMonitoringController::class, 'flagTransaction']);
+        Route::post('/{id}/clear', [TransactionMonitoringController::class, 'clearTransaction']);
     });
 
     // Audit Trail Management

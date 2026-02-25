@@ -27,8 +27,8 @@ return new class () extends Migration {
             $table->decimal('shares_sold', 15, 4)->default(0);
             $table->decimal('total_raised', 15, 2)->default(0);
             $table->decimal('valuation', 20, 2)->nullable();
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at')->nullable();
+            $table->dateTime('started_at');
+            $table->dateTime('ended_at')->nullable();
             $table->boolean('is_active')->default(false);
 
             // Audit fields
@@ -70,7 +70,7 @@ return new class () extends Migration {
 
             // Certificate
             $table->string('certificate_number')->nullable();
-            $table->timestamp('certificate_issued_at')->nullable();
+            $table->dateTime('certificate_issued_at')->nullable();
 
             // KYC fields
             $table->boolean('kyc_required')->default(false);
@@ -83,16 +83,16 @@ return new class () extends Migration {
                 'rejected',
                 'expired',
             ])->default('not_required');
-            $table->timestamp('kyc_started_at')->nullable();
-            $table->timestamp('kyc_approved_at')->nullable();
+            $table->dateTime('kyc_started_at')->nullable();
+            $table->dateTime('kyc_approved_at')->nullable();
             $table->string('kyc_provider_id')->nullable();
             $table->json('kyc_documents')->nullable();
             $table->text('kyc_rejection_reason')->nullable();
-            $table->timestamp('kyc_expiry_date')->nullable();
+            $table->dateTime('kyc_expiry_date')->nullable();
 
             // Agreement fields
             $table->boolean('agreement_signed')->default(false);
-            $table->timestamp('agreement_signed_at')->nullable();
+            $table->dateTime('agreement_signed_at')->nullable();
             $table->string('agreement_ip_address')->nullable();
             $table->text('agreement_user_agent')->nullable();
             $table->string('agreement_document_hash')->nullable();
@@ -101,7 +101,7 @@ return new class () extends Migration {
 
             // Audit fields
             $table->string('confirmed_by')->nullable();
-            $table->timestamp('confirmed_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
             $table->timestamps();
 
             $table->index('status');
@@ -133,17 +133,17 @@ return new class () extends Migration {
             $table->string('initiated_by')->index();
 
             // Processing details
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->string('processor_reference')->nullable();
             $table->json('processor_response')->nullable();
             $table->text('processing_notes')->nullable();
 
             // Failure tracking
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
 
             // Cancellation tracking
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->text('cancellation_reason')->nullable();
 
             // Refund destination
@@ -168,8 +168,8 @@ return new class () extends Migration {
             $table->string('status', 20)->default('pending')->index();
             $table->text('subject')->nullable();
             $table->text('content');
-            $table->timestamp('sent_at')->nullable();
-            $table->timestamp('read_at')->nullable();
+            $table->dateTime('sent_at')->nullable();
+            $table->dateTime('read_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 

@@ -9,8 +9,9 @@
                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
                     Send {{ $supportedChains[$address->chain]['symbol'] }}
                 </a>
-                <button onclick="copyAddress('{{ $address->address }}')" 
-                        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                <button onclick="copyAddress('{{ $address->address }}')"
+                        class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition"
+                        aria-label="Copy wallet address to clipboard">
                     Copy Address
                 </button>
             </div>
@@ -63,13 +64,16 @@
                                             {{ number_format($balance['available'], 8) }} {{ $supportedChains[$address->chain]['symbol'] }}
                                         </p>
                                         @php
-                                            // Mock USD conversion
-                                            $usdRate = $supportedChains[$address->chain]['symbol'] === 'BTC' ? 30000 : 
-                                                      ($supportedChains[$address->chain]['symbol'] === 'ETH' ? 2000 : 1);
-                                            $usdValue = $balance['available'] * $usdRate;
+                                            $symbol = $supportedChains[$address->chain]['symbol'];
+                                            $usdRate = $usdRates[$symbol] ?? null;
+                                            $usdValue = $usdRate !== null ? $balance['available'] * $usdRate : null;
                                         @endphp
                                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                                            ≈ ${{ number_format($usdValue, 2) }} USD
+                                            @if($usdValue !== null)
+                                                ≈ ${{ number_format($usdValue, 2) }} USD
+                                            @else
+                                                Rate unavailable
+                                            @endif
                                         </p>
                                     </div>
                                     @if($balance['pending'] > 0)
@@ -90,10 +94,7 @@
                         <h4 class="text-md font-semibold mb-3">Receive {{ $supportedChains[$address->chain]['symbol'] }}</h4>
                         <div class="flex items-center space-x-4">
                             <div class="bg-white p-4 rounded-lg border border-gray-200">
-                                <!-- QR Code placeholder - in production, generate actual QR code -->
-                                <div class="w-48 h-48 bg-gray-100 flex items-center justify-center">
-                                    <span class="text-gray-400">QR Code</span>
-                                </div>
+                                <div id="address-qrcode" class="flex items-center justify-center" style="min-width: 192px; min-height: 192px;"></div>
                             </div>
                             <div class="flex-1">
                                 <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
@@ -148,7 +149,7 @@
                     
                     @if($transactions->isEmpty())
                         <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                             </svg>
                             <p class="mt-2 text-gray-600 dark:text-gray-400">No transactions yet</p>
@@ -231,7 +232,28 @@
     </div>
 
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script>
+        // Generate QR code for receive address
+        (function() {
+            const container = document.getElementById('address-qrcode');
+            const canvas = document.createElement('canvas');
+            canvas.style.display = 'block';
+            container.appendChild(canvas);
+
+            QRCode.toCanvas(canvas, '{{ $address->address }}', {
+                width: 192,
+                height: 192,
+                margin: 2,
+                color: { dark: '#000000', light: '#FFFFFF' },
+                errorCorrectionLevel: 'H'
+            }, function(error) {
+                if (error) {
+                    container.innerHTML = '<div class="text-red-500 text-sm">Error generating QR code</div>';
+                }
+            });
+        })();
+
         function copyAddress(address) {
             navigator.clipboard.writeText(address).then(function() {
                 // Show success notification

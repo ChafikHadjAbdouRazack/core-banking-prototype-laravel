@@ -1,0 +1,33 @@
+type VirtualCard {
+    id: ID!
+    card_token: String!
+    cardholder_name: String!
+    last_four: String!
+    network: String!
+    status: String!
+    expires_at: String
+    created_at: DateTime
+}
+
+input ProvisionCardInput {
+    cardholder_name: String!
+}
+
+extend type Query {
+    card(id: ID!): VirtualCard
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\CardIssuance\\CardQuery")
+
+    cards(
+        page: Int @rules(apply: ["integer", "min:1"])
+        first: Int @rules(apply: ["integer", "min:1", "max:100"])
+    ): [VirtualCard!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\CardIssuance\\CardsQuery")
+}
+
+extend type Mutation {
+    provisionCard(input: ProvisionCardInput! @spread): VirtualCard!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\CardIssuance\\ProvisionCardMutation")
+}

@@ -368,7 +368,7 @@ class ComprehensiveSecurityTest extends TestCase
         ]);
 
         $response->assertSuccessful();
-        $token = $response->json('access_token');
+        $token = $response->json('data.access_token');
         $this->assertNotNull($token, 'Login should return an access token');
 
         // Test session timeout (configured to 60 minutes in sanctum config)
@@ -389,7 +389,7 @@ class ComprehensiveSecurityTest extends TestCase
             ]);
 
             $response->assertSuccessful();
-            $token = $response->json('access_token');
+            $token = $response->json('data.access_token');
             $this->assertNotNull($token, "Token should not be null for iteration $i");
             $tokens[] = $token;
         }
@@ -445,8 +445,8 @@ class ComprehensiveSecurityTest extends TestCase
 
         $response->assertOk();
 
-        // The response structure is { "user": {...} }
-        $userData = $response->json('user');
+        // The response structure is { "success": true, "data": {...} }
+        $userData = $response->json('data');
 
         // Password should never be in response
         $this->assertArrayNotHasKey('password', $userData);

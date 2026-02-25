@@ -27,14 +27,14 @@ return new class () extends Migration {
             $table->string('file_hash')->nullable(); // SHA-256 hash for integrity
 
             // Submission details
-            $table->timestamp('generated_at');
-            $table->timestamp('submitted_at')->nullable();
+            $table->dateTime('generated_at');
+            $table->dateTime('submitted_at')->nullable();
             $table->string('submitted_by')->nullable();
             $table->string('submission_reference')->nullable(); // External reference number
             $table->json('submission_response')->nullable(); // Response from regulatory authority
 
             // Review process
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->string('reviewed_by')->nullable();
             $table->text('review_notes')->nullable();
             $table->boolean('requires_correction')->default(false);
@@ -43,7 +43,7 @@ return new class () extends Migration {
             // Compliance details
             $table->string('regulation_reference')->nullable(); // e.g., "31 CFR 1022.320"
             $table->boolean('is_mandatory')->default(true);
-            $table->timestamp('due_date')->nullable();
+            $table->dateTime('due_date')->nullable();
             $table->boolean('is_overdue')->default(false);
             $table->integer('days_overdue')->default(0);
 

@@ -125,6 +125,19 @@ Use descriptive branch names following this pattern:
 
 ## Coding Standards
 
+### SPDX License Headers
+
+All new PHP files should include an SPDX license header at the top of the file, immediately after the opening `<?php` tag:
+
+```php
+<?php
+
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2024-2026 FinAegis
+```
+
+Existing files will be updated incrementally via automated tooling in a future release.
+
 ### PHP Code Style
 
 We follow PSR-12 with additional rules defined in `.php-cs-fixer.php`.
@@ -465,6 +478,43 @@ class TransferWorkflow extends Workflow
         }
     }
 }
+```
+
+### Module Development (v3.2.0)
+
+Each domain module has a `module.json` manifest that defines its metadata, dependencies, and interfaces:
+
+```json
+{
+  "name": "YourDomain",
+  "version": "1.0.0",
+  "type": "optional",
+  "description": "Brief description of what this module does",
+  "dependencies": ["Account", "Shared"],
+  "routes": "Routes/api.php",
+  "providers": ["YourDomainServiceProvider"],
+  "interfaces": { "provided": [], "consumed": [] },
+  "events": { "published": [], "subscribed": [] }
+}
+```
+
+**Adding a new module:**
+
+1. Create the domain directory structure under `app/Domain/YourDomain/`
+2. Create `app/Domain/YourDomain/module.json` following the schema above
+3. Create `app/Domain/YourDomain/Routes/api.php` for domain-specific routes
+4. The `ModuleRouteLoader` will automatically discover and load your routes
+5. Verify with `php artisan domain:verify YourDomain`
+
+**Module commands:**
+
+```bash
+php artisan domain:create YourDomain  # Scaffold a new domain
+php artisan domain:list               # List all modules with status
+php artisan module:enable YourDomain  # Enable a disabled module
+php artisan module:disable YourDomain # Disable (preserves migrations)
+php artisan domain:verify YourDomain  # Check manifest integrity
+php artisan domain:dependencies       # View dependency graph
 ```
 
 ---

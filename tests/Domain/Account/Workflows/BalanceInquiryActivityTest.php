@@ -3,17 +3,13 @@
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\BalanceInquiryActivity;
 
-it('class exists', function () {
-    expect(class_exists(BalanceInquiryActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(BalanceInquiryActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(BalanceInquiryActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(BalanceInquiryActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('has logInquiry method', function () {
@@ -57,5 +53,5 @@ it('can create data object instances for balance inquiry testing', function () {
     $uuid = new AccountUuid('balance-test-uuid');
 
     expect($uuid->getUuid())->toBe('balance-test-uuid');
-    expect(class_exists(BalanceInquiryActivity::class))->toBeTrue();
+    expect((new ReflectionClass(BalanceInquiryActivity::class))->getName())->not->toBeEmpty();
 });

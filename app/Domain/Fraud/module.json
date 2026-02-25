@@ -1,8 +1,8 @@
 {
     "$schema": "https://finaegis.io/schemas/module.json",
     "name": "finaegis/fraud",
-    "version": "1.3.0",
-    "description": "Fraud detection with ML-based analysis and behavioral patterns",
+    "version": "2.0.0",
+    "description": "Fraud detection with ML anomaly detection, behavioral profiling, and pattern analysis",
     "type": "optional",
     "dependencies": {
         "required": {

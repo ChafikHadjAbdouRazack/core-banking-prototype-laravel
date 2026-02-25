@@ -20,8 +20,8 @@ return new class () extends Migration {
             $table->string('status', 50)->index();
             $table->text('error_message')->nullable();
             $table->decimal('execution_time_ms', 10, 2)->nullable();
-            $table->timestamp('created_at')->useCurrent()->index();
-            $table->timestamp('updated_at')->nullable();
+            $table->dateTime('created_at')->useCurrent()->index();
+            $table->dateTime('updated_at')->nullable();
 
             // Composite index for common queries
             $table->index(['agent_did', 'status', 'created_at']);

@@ -52,15 +52,15 @@ return new class () extends Migration {
             $table->boolean('adverse_media_check')->default(false);
 
             // Verification Results
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->text('failure_reason')->nullable();
             $table->json('verification_report')->nullable();
 
             // Review Information
             $table->foreignId('reviewed_by')->nullable()->constrained('users');
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->text('review_notes')->nullable();
 
             $table->timestamps();

@@ -33,8 +33,8 @@ return new class () extends Migration {
             $table->json('metadata')->nullable()->comment('Additional device metadata');
             $table->boolean('is_active')->default(true);
             $table->boolean('is_verified')->default(false);
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('last_used_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('last_used_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -59,8 +59,8 @@ return new class () extends Migration {
             $table->string('signed_transaction_hash')->nullable()->comment('Hash of signed transaction');
             $table->text('error_message')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('expires_at');
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('expires_at');
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

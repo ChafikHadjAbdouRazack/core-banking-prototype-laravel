@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Compliance\Services;
 
 use App\Domain\Compliance\Aggregates\AmlScreeningAggregate;
+use App\Domain\Compliance\Contracts\SanctionsScreeningInterface;
 use App\Domain\Compliance\Events\ScreeningCompleted;
 use App\Domain\Compliance\Events\ScreeningMatchFound;
 use App\Domain\Compliance\Models\AmlScreening;
@@ -26,6 +29,22 @@ class AmlScreeningService
     ];
 
     private string $provider = 'Internal';
+
+    private ?SanctionsScreeningInterface $sanctionsAdapter;
+
+    /**
+     * @param  SanctionsScreeningInterface|null  $sanctionsAdapter  Optional external sanctions screening adapter.
+     *                                                               When provided, sanctions checks are delegated to it.
+     *                                                               When null, the internal simulated checks are used.
+     */
+    public function __construct(?SanctionsScreeningInterface $sanctionsAdapter = null)
+    {
+        $this->sanctionsAdapter = $sanctionsAdapter;
+
+        if ($this->sanctionsAdapter !== null) {
+            $this->provider = $this->sanctionsAdapter->getName();
+        }
+    }
 
     /**
      * Perform comprehensive screening.
@@ -147,9 +166,18 @@ class AmlScreeningService
 
     /**
      * Perform sanctions screening check.
+     *
+     * When an external sanctions adapter is configured, delegates the screening
+     * to it. Otherwise, falls back to the internal simulated OFAC/EU/UN checks.
      */
     public function performSanctionsCheck(array $searchParams): array
     {
+        // Delegate to external adapter when available
+        if ($this->sanctionsAdapter !== null) {
+            return $this->sanctionsAdapter->screenIndividual($searchParams);
+        }
+
+        // Fallback: internal simulated checks
         $results = [
             'matches'       => [],
             'lists_checked' => [],

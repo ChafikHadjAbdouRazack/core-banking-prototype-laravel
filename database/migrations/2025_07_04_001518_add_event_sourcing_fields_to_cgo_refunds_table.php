@@ -23,7 +23,7 @@ return new class () extends Migration {
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'approved_at')) {
-                $table->timestamp('approved_at')->nullable();
+                $table->dateTime('approved_at')->nullable();
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'rejected_by')) {
@@ -35,7 +35,7 @@ return new class () extends Migration {
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'rejected_at')) {
-                $table->timestamp('rejected_at')->nullable();
+                $table->dateTime('rejected_at')->nullable();
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'payment_processor')) {
@@ -55,7 +55,7 @@ return new class () extends Migration {
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'completed_at')) {
-                $table->timestamp('completed_at')->nullable();
+                $table->dateTime('completed_at')->nullable();
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'cancelled_by')) {
@@ -63,7 +63,7 @@ return new class () extends Migration {
             }
 
             if (! Schema::hasColumn('cgo_refunds', 'requested_at')) {
-                $table->timestamp('requested_at')->nullable();
+                $table->dateTime('requested_at')->nullable();
             }
 
             // Indexes might already exist from the original migration

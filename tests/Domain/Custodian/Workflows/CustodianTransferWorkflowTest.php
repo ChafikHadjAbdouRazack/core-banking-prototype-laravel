@@ -6,7 +6,7 @@ use App\Domain\Custodian\Workflows\CustodianTransferWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for custodian transfer', function () {
-    expect(class_exists(CustodianTransferWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(CustodianTransferWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(CustodianTransferWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

@@ -78,28 +78,144 @@
 
 ---
 
-## Deferred Items (with reasoning)
+## Completed Versions (Summary)
 
-### Deferred to v1.2.0+
-- Multi-agent coordination service (complex, needs bridges first)
-- Hardware wallet integration (v2.0.0 feature)
-- Multi-signature support (v2.0.0 feature)
+- **v2.9.0** (Feb 10, 2026): ML Anomaly Detection & BaaS (Statistical/Behavioral/Velocity/Geo anomaly detection, Partner SDKs, Billing, Widgets, Marketplace, 26 Partner API endpoints)
+- **v2.7.0** (Feb 8, 2026): Mobile Payment API & Enhanced Authentication (Payment Intents, Passkey Auth, P2P Transfer Helpers, TrustCert Export, Security Hardening)
+- **v2.6.0** (Feb 2, 2026): Privacy Layer & ERC-4337 (Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing with Biometric JWT, Production-Ready Gas Station)
+- **v2.5.0**: Mobile App Launch (Expo/React Native)
+- **v2.4.0**: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)
+- **v2.3.0**: AI Framework, RegTech Foundation, BaaS Configuration
+- **v2.2.0**: Mobile Backend (Device Management, Biometrics, Push Notifications)
+- **v2.1.0**: Security Hardening, Hardware Wallets, WebSocket, Kubernetes
+- **v2.0.0**: Multi-Tenancy with Team-Based Isolation
 
-### Deferred to v1.3.0+
-- ELK Stack log aggregation (after dashboards)
-- Advanced Grafana per-domain dashboards
-- Paysera full integration (if needed)
+- **v2.9.1** (Feb 10, 2026): Production Hardening (On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault, Security Audit)
+- **v2.10.0** (Feb 10, 2026): Mobile API Compatibility (~30 mobile-facing API endpoints)
+- **v3.0.0** (Feb 10, 2026): Cross-Chain & DeFi (Bridge protocols: Wormhole/LayerZero/Axelar, DeFi: Uniswap/Aave/Curve/Lido, cross-chain swaps, multi-chain portfolio)
+- **v3.1.0** (Feb 11, 2026): Consolidation, Documentation & UI Completeness (8 phases, PRs #456-#465)
 
-### Deferred to v2.0.0+
-- Cross-chain bridges (EVM, Solana, Cosmos)
-- Smart contract deployment
-- Real-time WebSocket streaming
+- **v3.2.0 — Production Readiness & Plugin Architecture (COMPLETED)
+Status: Released (2026-02-11)
+Phases: 6 phases across 6 PRs (#466-#471)
+Key deliverables:
+- 41 domain module manifests with enable/disable toggle
+- ModuleRouteLoader extracting 1,646-line api.php into 24 per-domain route files
+- Module REST API + Filament admin page + health widget
+- k6 load test suite (smoke/load/stress), QueryPerformanceMiddleware, performance:report command
+- GitHub community files (Dependabot, issue templates, PR template)
+- SPDX license headers, 24 integration tests covering plugin system
+v3.3.0 — Event Store Optimization & Observability (COMPLETED)
+Status: Released (2026-02-12)
+Patch: v3.3.1 (2026-02-12) — PHPStan fixes, checkProjectorLag bug fix, security hardening, performance optimizations (PR #499)
+Phases: 6 phases across 6 PRs (#493-#498)
+Key deliverables:
+- EventStoreService centralizing event store operations for 21 domains
+- event:stats, event:replay, event:rebuild, snapshot:cleanup commands with --dry-run
+- EventStoreDashboard Filament page with 5 widgets (stats, throughput, aggregate health, system metrics, domain health)
+- StructuredJsonFormatter, StructuredLoggingMiddleware, LogsWithDomainContext trait
+- EventStoreHealthCheck with connectivity, projector lag, snapshot freshness, growth rate checks
+- EventArchivalService with archive, compact, restore methods; archived_events table; event-store config
+- 3 integration test suites covering all features
 
-### Deferred to v2.1.0+ (Future Vision)
-- AI-powered banking (NLP queries)
-- Automated regulatory reporting (MiFID II, MiCA)
-- Embedded finance APIs
-- DeFi bridge integration
+v3.5.0 — Compliance Certification (COMPLETED)
+Status: Released (2026-02-12)
+Phases: 4 phases across 5 PRs (#511-#516)
+Key deliverables:
+- SOC 2 Type II: evidence collection, access reviews, incident response
+- PCI DSS: data classification, encryption verification, key rotation
+- Multi-Region: data residency, region-aware storage, geo-routing
+- GDPR Enhanced: Article 30 ROPA, DPIA, breach notification (72h), consent v2, retention enforcement
+- 10 services, 10 models, 10 migrations, 6 events, 6 commands, 2 controllers
+- 90+ tests across all certification domains
+
+v4.0.0 — Architecture Evolution (COMPLETED)
+Status: Released (2026-02-13)
+Phases: 7 phases across 7 PRs (#517-#523)
+Key deliverables:
+- Event Store v2: EventRouter for namespace-based domain table routing (21 domains)
+- Event Store v2: Batch migration tooling with validation (event:migrate, event:migrate:rollback)
+- Event Store v2: Schema evolution with chained upcasters (EventUpcastingService, EventVersionRegistry)
+- GraphQL API: Lighthouse-PHP foundation, Account domain, custom @tenant directive
+- GraphQL API: Wallet, Exchange, Compliance schemas, DataLoaders, subscription stubs
+- Plugin Marketplace: PluginManager with semver dependency resolver, 6 Artisan commands
+- Plugin Marketplace: Permission sandbox, security scanner, marketplace REST API, Filament admin
+- 80+ tests across all features
+
+v4.1.0 — GraphQL Expansion & Projector Health (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- GraphQL API expansion to 10 domains (Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin + 3 more)
+- Projector health monitoring and management
+- DataLoader optimizations for N+1 prevention
+
+v4.2.0 — Real-Time Subscriptions & Plugin Hooks (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- Real-time GraphQL subscriptions for live data
+- Plugin hook system for extensibility
+- Webhook plugin and Audit plugin implementations
+
+v4.3.0 — GraphQL Security & Domain Expansion (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- GraphQL Fraud, Banking, Mobile, TrustCert domain schemas
+- CLI commands for GraphQL management
+- GraphQL security middleware (depth limiting, complexity analysis, introspection control)
+- Total GraphQL domains: 24 (expanded from 14 in v4.3.0 to 24 with AI, Asset, Commerce, Custodian, Governance, KeyManagement, Privacy, RegTech, Relayer, Banking additions)
+
+v5.0.0 — Event Streaming, Live Dashboard, Notifications, API Gateway (COMPLETED — MAJOR)
+Status: Released (2026-02-13)
+Key deliverables:
+- Event Streaming: Redis Streams publisher/consumer for real-time event distribution
+- Live Dashboard: 5 metrics endpoints for real-time system monitoring
+- Notification System: 5 channels for alerts and notifications
+- API Gateway Middleware: Centralized request routing, rate limiting, authentication
+- 41 domains total, 775+ test files, 6300+ tests, PHPStan Level 8
+
+v5.1.0 — Mobile API Completeness & GraphQL Full Coverage (COMPLETED)
+Status: Released (2026-02-16)
+Key deliverables:
+- 21 missing mobile API endpoints (Privacy 11, Commerce 4, Card Issuance 3, Mobile 2, Wallet 1)
+- GraphQL schemas for 9 remaining domains (completing 33-domain coverage)
+- GraphQL integration tests for 14 domains
+- BlockchainAddress/BlockchainTransaction Eloquent models with UUID support
+- 42 new feature tests, 9 pre-existing test failures fixed
+- CI hardening: k6 non-blocking, PHPStan bootstrap, PHPCS fixes
+- Security: axios CVE-2025-27152 fix, PHPStan generic types, MariaDB timestamp fixes
+
+v5.1.3 — Mobile API Compatibility (COMPLETED)
+Status: Released (2026-02-17)
+Key deliverables:
+- Optional `owner_address` for `POST /api/v1/relayer/account` — mobile onboarding fix
+- Auth response standardization (register, passkey) — `{ success, data }` envelope with full User model
+- Token refresh endpoint (`POST /api/auth/refresh`) and logout-all (`POST /api/auth/logout-all`)
+- Rate limiter crash fix for unknown transaction types
+
+v5.1.4 — Refresh Token Mechanism (COMPLETED)
+Status: Released (2026-02-18)
+Key deliverables:
+- Proper access/refresh token pairs using Sanctum `abilities` column — no DB migration
+- Token rotation on refresh (old pair revoked, new pair issued)
+- `POST /api/auth/refresh` moved to public route group (works after access tokens expire)
+- `refresh_token` and `refresh_expires_in` in all auth responses
+- `sanctum.refresh_token_expiration` config (default: 30 days)
+- PHPStan `config/sanctum.php` type error fixed
+- OpenAPI/Swagger annotations updated for login/register endpoints
+- 5 new security tests for refresh token flows
+
+v5.1.5 — Dependency Cleanup & Production Readiness (COMPLETED)
+Status: Released (2026-02-21)
+Key deliverables:
+- l5-swagger upgrade 9.0.1 → 10.1.0 (swagger-php 5 → 6)
+- doctrine/annotations as direct dependency (docblock OA support)
+- PSR-4 fix: plugin directories renamed to PascalCase
+- .env.production.example for mobile backend deployment
+- PasskeyAuthenticationServiceTest fix (v5.1.4 token pair alignment)
+- Roadmap updated with v5.1.0–v5.1.4 entries
+
+Future roadmap:
+- v5.2.0 — OpenAPI Attribute Migration (10,385 @OA\ docblocks → PHP 8 #[OA\] attributes, drop doctrine/annotations), Laravel 13 upgrade when available, PHP 8.5 features
 
 ---
 

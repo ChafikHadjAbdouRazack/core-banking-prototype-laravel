@@ -81,20 +81,20 @@ describe('WalletController Methods', function () {
     it('has required controller methods', function () {
         $controller = new App\Http\Controllers\WalletController();
 
-        expect(method_exists($controller, 'showDeposit'))->toBeTrue();
-        expect(method_exists($controller, 'showWithdraw'))->toBeTrue();
-        expect(method_exists($controller, 'showTransfer'))->toBeTrue();
-        expect(method_exists($controller, 'showConvert'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showDeposit'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showWithdraw'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showTransfer'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showConvert'))->toBeTrue();
     });
 
     it('controller methods return view responses', function () {
         $controller = new App\Http\Controllers\WalletController();
 
         // These tests ensure the methods exist and return something
-        expect(method_exists($controller, 'showDeposit'))->toBeTrue();
-        expect(method_exists($controller, 'showWithdraw'))->toBeTrue();
-        expect(method_exists($controller, 'showTransfer'))->toBeTrue();
-        expect(method_exists($controller, 'showConvert'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showDeposit'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showWithdraw'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showTransfer'))->toBeTrue();
+        expect((new ReflectionClass($controller))->hasMethod('showConvert'))->toBeTrue();
     });
 });
 

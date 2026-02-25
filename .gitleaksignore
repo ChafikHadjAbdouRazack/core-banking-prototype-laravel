@@ -14,3 +14,15 @@ your_webhook_secret:docs/
 # Ignore development API keys from .env.dev
 5ef219fca15ff91e9c77b2ef1a00d37e8d08b0ee:.env.dev:generic-api-key:171
 5ef219fca15ff91e9c77b2ef1a00d37e8d08b0ee:.env.dev:generic-api-key:242
+
+# Developer documentation Blade views with placeholder API keys in code examples
+resources/views/developers/sdks.blade.php
+resources/views/developers/examples.blade.php
+
+# Public blockchain smart contract addresses (NOT secrets)
+# These are publicly deployed, immutable contract addresses visible on block explorers.
+# GitLeaks flags the 0x... hex strings as generic-api-key false positives.
+config/crosschain.php
+config/defi.php
+config/relayer.php
+config/privacy.php

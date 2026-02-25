@@ -42,47 +42,47 @@ it('can test asset resource navigation methods', function () {
 });
 
 it('workflow activity classes exist', function () {
-    expect(class_exists(App\Domain\Account\Workflows\AccountValidationActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Workflows\BalanceInquiryActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Workflows\DepositAccountActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Workflows\WithdrawAccountActivity::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Workflows\AccountValidationActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Workflows\BalanceInquiryActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Workflows\DepositAccountActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Workflows\WithdrawAccountActivity::class))->getName())->not->toBeEmpty();
 });
 
 it('asset workflow classes exist', function () {
-    expect(class_exists(App\Domain\Asset\Workflows\AssetDepositWorkflow::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\AssetWithdrawWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\AssetDepositWorkflow::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\AssetWithdrawWorkflow::class))->getName())->not->toBeEmpty();
 });
 
 it('asset activity classes exist', function () {
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\DepositAssetActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\WithdrawAssetActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\CompleteAssetTransferActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\FailAssetTransferActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\InitiateAssetTransferActivity::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Workflows\Activities\ValidateExchangeRateActivity::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\DepositAssetActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\WithdrawAssetActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\CompleteAssetTransferActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\FailAssetTransferActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\InitiateAssetTransferActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Workflows\Activities\ValidateExchangeRateActivity::class))->getName())->not->toBeEmpty();
 });
 
 it('projector classes exist and have methods', function () {
     $transactionProjector = new AssetTransactionProjector();
     $transferProjector = new AssetTransferProjector();
 
-    expect(class_exists(App\Domain\Asset\Projectors\ExchangeRateProjector::class))->toBeTrue();
-    expect(method_exists($transactionProjector, 'onAssetTransactionCreated'))->toBeTrue();
-    expect(method_exists($transferProjector, 'onAssetTransferInitiated'))->toBeTrue();
-    expect(method_exists($transferProjector, 'onAssetTransferCompleted'))->toBeTrue();
-    expect(method_exists($transferProjector, 'onAssetTransferFailed'))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Asset\Projectors\ExchangeRateProjector::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass($transactionProjector))->hasMethod('onAssetTransactionCreated'))->toBeTrue();
+    expect((new ReflectionClass($transferProjector))->hasMethod('onAssetTransferInitiated'))->toBeTrue();
+    expect((new ReflectionClass($transferProjector))->hasMethod('onAssetTransferCompleted'))->toBeTrue();
+    expect((new ReflectionClass($transferProjector))->hasMethod('onAssetTransferFailed'))->toBeTrue();
 });
 
 it('filament resource pages exist', function () {
-    expect(class_exists(AssetResource\Pages\CreateAsset::class))->toBeTrue();
-    expect(class_exists(AssetResource\Pages\EditAsset::class))->toBeTrue();
-    expect(class_exists(AssetResource\Pages\ListAssets::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\ExchangeRateResource\Pages\CreateExchangeRate::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\ExchangeRateResource\Pages\EditExchangeRate::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\ExchangeRateResource\Pages\ListExchangeRates::class))->toBeTrue();
+    expect((new ReflectionClass(AssetResource\Pages\CreateAsset::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(AssetResource\Pages\EditAsset::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(AssetResource\Pages\ListAssets::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\ExchangeRateResource\Pages\CreateExchangeRate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\ExchangeRateResource\Pages\EditExchangeRate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\ExchangeRateResource\Pages\ListExchangeRates::class))->getName())->not->toBeEmpty();
 });
 
 it('widgets and relation managers exist', function () {
-    expect(class_exists(App\Filament\Admin\Resources\AccountResource\RelationManagers\TurnoversRelationManager::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\AccountResource\Widgets\AccountStatsOverview::class))->toBeTrue();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\AccountResource\RelationManagers\TurnoversRelationManager::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\AccountResource\Widgets\AccountStatsOverview::class))->getName())->not->toBeEmpty();
 });

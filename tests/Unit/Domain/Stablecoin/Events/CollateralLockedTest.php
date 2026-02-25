@@ -14,7 +14,7 @@ class CollateralLockedTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(CollateralLocked::class));
+        $this->assertNotEmpty((new ReflectionClass(CollateralLocked::class))->getName());
     }
 
     #[Test]

@@ -15,18 +15,26 @@ beforeEach(function () {
     $this->account1 = Account::factory()->zeroBalance()->create();
     $this->account2 = Account::factory()->zeroBalance()->create();
 
-    // Create balances
-    AccountBalance::create([
-        'account_uuid' => $this->account1->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 100000, // $1000
-    ]);
+    // Update balances (use updateOrCreate since zeroBalance() factory state already creates AccountBalance records)
+    AccountBalance::updateOrCreate(
+        [
+            'account_uuid' => $this->account1->uuid,
+            'asset_code'   => 'USD',
+        ],
+        [
+            'balance' => 100000, // $1000
+        ]
+    );
 
-    AccountBalance::create([
-        'account_uuid' => $this->account2->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 50000, // $500
-    ]);
+    AccountBalance::updateOrCreate(
+        [
+            'account_uuid' => $this->account2->uuid,
+            'asset_code'   => 'USD',
+        ],
+        [
+            'balance' => 50000, // $500
+        ]
+    );
 
     $this->optimizationService = app(TransferOptimizationService::class);
 });
@@ -121,10 +129,10 @@ it('can warm up caches for accounts', function () {
 
 it('optimized transfer workflow exists and can be instantiated', function () {
     // Test that the optimized workflow class exists
-    expect(class_exists(OptimizedAssetTransferWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(OptimizedAssetTransferWorkflow::class))->getName())->not->toBeEmpty();
 
     // Test that the optimized activity exists
-    expect(class_exists(OptimizedInitiateAssetTransferActivity::class))->toBeTrue();
+    expect((new ReflectionClass(OptimizedInitiateAssetTransferActivity::class))->getName())->not->toBeEmpty();
 
     // Test that the optimization service is registered
     $service = app(TransferOptimizationService::class);

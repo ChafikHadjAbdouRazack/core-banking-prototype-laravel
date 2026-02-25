@@ -231,7 +231,7 @@ describe('Dynamic Rate Limiting Service', function () {
         $service->recordViolation($this->user->id, 'rate_limit_exceeded');
 
         $violationCount = Cache::get("user_violations:{$this->user->id}", 0);
-        expect($violationCount)->toBe('1'); // Cache stores as string
+        expect($violationCount)->toBe(1); // Cache stores as integer (incremented from 0)
     });
 
     test('dynamic rate limiting provides system metrics', function () {

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\CardIssuance;
 
+use App\Domain\CardIssuance\Enums\CardNetwork;
 use App\Domain\CardIssuance\Enums\WalletType;
 use App\Domain\CardIssuance\Services\CardProvisioningService;
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -22,6 +25,7 @@ class CardController extends Controller
 {
     public function __construct(
         private readonly CardProvisioningService $provisioningService,
+        private readonly ?BiometricJWTService $biometricJWTService = null,
     ) {
     }
 
@@ -151,6 +155,214 @@ class CardController extends Controller
     }
 
     /**
+     * Create a new virtual card.
+     *
+     * @OA\Post(
+     *     path="/api/v1/cards",
+     *     summary="Create a new virtual card",
+     *     tags={"Card Issuance"},
+     *     security={{"sanctum": {}}},
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             @OA\Property(property="cardholder_name", type="string", example="John Doe"),
+     *             @OA\Property(property="currency", type="string", example="USD"),
+     *             @OA\Property(property="network", type="string", enum={"visa", "mastercard"}, example="visa"),
+     *             @OA\Property(property="label", type="string", example="My Travel Card", maxLength=50)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Card created",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="card_token", type="string"),
+     *                 @OA\Property(property="last4", type="string"),
+     *                 @OA\Property(property="network", type="string"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="label", type="string", nullable=true)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=400, description="Card creation failed"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'cardholder_name' => 'nullable|string|max:255',
+            'currency'        => 'nullable|string|max:10',
+            'network'         => 'nullable|string|in:visa,mastercard',
+            'label'           => 'nullable|string|max:50',
+        ]);
+
+        try {
+            $user = $request->user();
+            if ($user === null) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => [
+                        'code'    => 'ERR_AUTH_001',
+                        'message' => 'Authentication required',
+                    ],
+                ], 401);
+            }
+
+            $cardholderName = $validated['cardholder_name'] ?? $user->name ?? 'FinAegis User';
+            $network = isset($validated['network']) ? CardNetwork::from($validated['network']) : null;
+
+            $card = $this->provisioningService->createCard(
+                userId: (string) $user->id,
+                cardholderName: $cardholderName,
+                network: $network,
+                label: $validated['label'] ?? null,
+            );
+
+            $data = $card->toArray();
+            $data['currency'] = $validated['currency'] ?? 'USD';
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ], 201);
+        } catch (Throwable $e) {
+            Log::error('Card creation failed', [
+                'error'   => $e->getMessage(),
+                'user_id' => $request->user()?->id,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error'   => [
+                    'code'    => 'ERR_CARD_005',
+                    'message' => 'Failed to create card: ' . $e->getMessage(),
+                ],
+            ], 400);
+        }
+    }
+
+    /**
+     * Get a specific card.
+     *
+     * @OA\Get(
+     *     path="/api/v1/cards/{cardId}",
+     *     summary="Get a specific virtual card",
+     *     tags={"Card Issuance"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Card details",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=404, description="Card not found")
+     * )
+     */
+    public function show(Request $request, string $cardId): JsonResponse
+    {
+        try {
+            $card = $this->provisioningService->getCard($cardId);
+
+            if ($card === null) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => [
+                        'code'    => 'ERR_CARD_NOT_FOUND',
+                        'message' => 'Card not found',
+                    ],
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data'    => $card->toArray(),
+            ]);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'error'   => [
+                    'code'    => 'ERR_CARD_006',
+                    'message' => $e->getMessage(),
+                ],
+            ], 400);
+        }
+    }
+
+    /**
+     * Get transactions for a card.
+     *
+     * @OA\Get(
+     *     path="/api/v1/cards/{cardId}/transactions",
+     *     summary="Get transactions for a virtual card",
+     *     tags={"Card Issuance"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
+     *     @OA\Parameter(name="limit", in="query", required=false, @OA\Schema(type="integer", default=20, maximum=100)),
+     *     @OA\Parameter(name="cursor", in="query", required=false, @OA\Schema(type="string")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Card transactions",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="string"),
+     *                 @OA\Property(property="amount", type="number"),
+     *                 @OA\Property(property="currency", type="string"),
+     *                 @OA\Property(property="merchant", type="string"),
+     *                 @OA\Property(property="category", type="string"),
+     *                 @OA\Property(property="status", type="string"),
+     *                 @OA\Property(property="timestamp", type="string", format="date-time")
+     *             )),
+     *             @OA\Property(property="pagination", type="object",
+     *                 @OA\Property(property="next_cursor", type="string", nullable=true),
+     *                 @OA\Property(property="has_more", type="boolean"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function transactions(Request $request, string $cardId): JsonResponse
+    {
+        $limit = min((int) $request->query('limit', '20'), 100);
+        $cursor = $request->query('cursor');
+
+        // Generate deterministic demo transactions seeded by cardId
+        $allTransactions = $this->generateDemoTransactions($cardId);
+
+        // Apply cursor-based pagination
+        $offset = 0;
+        if ($cursor !== null) {
+            foreach ($allTransactions as $index => $tx) {
+                if ($tx['id'] === $cursor) {
+                    $offset = $index + 1;
+
+                    break;
+                }
+            }
+        }
+
+        $page = array_slice($allTransactions, $offset, $limit);
+        $hasMore = ($offset + $limit) < count($allTransactions);
+        $nextCursor = $hasMore && count($page) > 0 ? $page[count($page) - 1]['id'] : null;
+
+        return response()->json([
+            'success'    => true,
+            'data'       => $page,
+            'pagination' => [
+                'next_cursor' => $nextCursor,
+                'has_more'    => $hasMore,
+                'total'       => count($allTransactions),
+            ],
+        ]);
+    }
+
+    /**
      * Freeze a virtual card.
      *
      * @OA\Post(
@@ -217,28 +429,57 @@ class CardController extends Controller
     }
 
     /**
-     * Cancel a virtual card.
+     * Cancel a virtual card (requires biometric authentication).
      *
      * @OA\Delete(
      *     path="/api/v1/cards/{cardId}",
-     *     summary="Cancel a virtual card permanently",
+     *     summary="Cancel a virtual card permanently (requires biometric auth)",
      *     tags={"Card Issuance"},
      *     security={{"sanctum": {}}},
      *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
      *     @OA\RequestBody(
+     *         required=true,
      *         @OA\JsonContent(
+     *             required={"biometric_token"},
+     *             @OA\Property(property="biometric_token", type="string", minLength=32, maxLength=2048, description="Biometric JWT or demo HMAC token"),
      *             @OA\Property(property="reason", type="string", example="User requested cancellation")
      *         )
      *     ),
      *     @OA\Response(response=200, description="Card cancelled"),
-     *     @OA\Response(response=404, description="Card not found")
+     *     @OA\Response(response=403, description="Biometric verification failed"),
+     *     @OA\Response(response=404, description="Card not found"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=503, description="Biometric service unavailable")
      * )
      */
     public function cancel(Request $request, string $cardId): JsonResponse
     {
         $validated = $request->validate([
-            'reason' => 'nullable|string|max:500',
+            'biometric_token' => 'required|string|min:32|max:2048',
+            'reason'          => 'nullable|string|max:500',
         ]);
+
+        $user = $request->user();
+        if ($user === null) {
+            return response()->json([
+                'success' => false,
+                'error'   => [
+                    'code'    => 'ERR_AUTH_001',
+                    'message' => 'Authentication required',
+                ],
+            ], 401);
+        }
+
+        // Verify biometric token
+        if (! $this->verifyBiometricToken($user, $validated['biometric_token'])) {
+            return response()->json([
+                'success' => false,
+                'error'   => [
+                    'code'    => 'ERR_BIOMETRIC_001',
+                    'message' => 'Biometric verification failed',
+                ],
+            ], 403);
+        }
 
         try {
             $result = $this->provisioningService->cancelCard(
@@ -259,5 +500,93 @@ class CardController extends Controller
                 ],
             ], 400);
         }
+    }
+
+    /**
+     * Verify biometric token using BiometricJWTService or demo fallback.
+     *
+     * @param \App\Models\User $user
+     */
+    private function verifyBiometricToken($user, string $biometricToken): bool
+    {
+        if (empty($biometricToken)) {
+            return false;
+        }
+
+        // Production mode: Use JWT verification
+        if ($this->biometricJWTService !== null) {
+            return $this->biometricJWTService->verifyToken($user, $biometricToken);
+        }
+
+        // Reject in production environment without JWT service
+        if (app()->environment('production')) {
+            Log::critical('BiometricJWTService not configured in production for card cancellation', [
+                'user_id' => $user->id,
+            ]);
+
+            throw new RuntimeException('Biometric verification unavailable.');
+        }
+
+        // Demo mode: Verify using HMAC signature with app key
+        Log::warning('Using demo biometric verification for card cancellation', [
+            'user_id'     => $user->id,
+            'environment' => app()->environment(),
+        ]);
+
+        $expectedToken = hash_hmac('sha256', 'demo_biometric:' . $user->id, (string) config('app.key'));
+
+        return hash_equals($expectedToken, $biometricToken);
+    }
+
+    /**
+     * Generate deterministic demo transactions for a card.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function generateDemoTransactions(string $cardId): array
+    {
+        $seed = crc32($cardId);
+        mt_srand($seed);
+
+        $merchants = [
+            ['name' => 'Amazon', 'category' => 'shopping'],
+            ['name' => 'Uber', 'category' => 'transport'],
+            ['name' => 'Starbucks', 'category' => 'food_and_drink'],
+            ['name' => 'Netflix', 'category' => 'entertainment'],
+            ['name' => 'Shell Gas Station', 'category' => 'fuel'],
+            ['name' => 'Whole Foods', 'category' => 'groceries'],
+            ['name' => 'Apple Store', 'category' => 'electronics'],
+            ['name' => 'Hilton Hotels', 'category' => 'travel'],
+        ];
+
+        $statuses = ['completed', 'completed', 'completed', 'pending', 'completed'];
+
+        $transactions = [];
+        $count = mt_rand(7, 10);
+        $baseTime = time();
+
+        for ($i = 0; $i < $count; $i++) {
+            $merchant = $merchants[mt_rand(0, count($merchants) - 1)];
+            $amount = mt_rand(199, 25000) / 100;
+            $hoursAgo = mt_rand(1, 720); // up to 30 days
+
+            $transactions[] = [
+                'id'        => sprintf('txn_%s_%d', substr(md5($cardId . $i), 0, 12), $i),
+                'amount'    => round($amount, 2),
+                'currency'  => 'USD',
+                'merchant'  => $merchant['name'],
+                'category'  => $merchant['category'],
+                'status'    => $statuses[mt_rand(0, count($statuses) - 1)],
+                'timestamp' => date('c', $baseTime - ($hoursAgo * 3600)),
+            ];
+        }
+
+        // Sort by timestamp DESC
+        usort($transactions, fn (array $a, array $b): int => strcmp($b['timestamp'], $a['timestamp']));
+
+        // Reset random seed
+        mt_srand();
+
+        return $transactions;
     }
 }

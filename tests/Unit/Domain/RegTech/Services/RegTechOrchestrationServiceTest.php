@@ -209,8 +209,7 @@ class RegTechOrchestrationServiceTest extends TestCase
         $result = $this->service->submitReport('SAR', Jurisdiction::US, ['data' => 'test']);
 
         $this->assertFalse($result['success']);
-        $this->assertContains('Connection timeout', $result['errors']);
-        $this->assertTrue($result['details']['exception']);
+        $this->assertStringContainsString('Report submission failed', $result['errors'][0]);
     }
 
     public function test_check_report_status_demo_mode(): void

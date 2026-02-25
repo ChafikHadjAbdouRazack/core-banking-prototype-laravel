@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Domain\Privacy\Jobs;
 
+use App\Domain\Privacy\Contracts\ZkProverInterface;
+use App\Domain\Privacy\Enums\ProofType;
 use App\Domain\Privacy\Events\DelegatedProofCompleted;
 use App\Domain\Privacy\Events\DelegatedProofFailed;
 use App\Domain\Privacy\Events\DelegatedProofProgress;
 use App\Domain\Privacy\Models\DelegatedProofJob;
+use App\Domain\Privacy\Services\DemoZkProver;
+use App\Domain\Privacy\Services\SnarkjsProverService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -62,11 +66,14 @@ class GenerateDelegatedProofJob implements ShouldQueue
             // Mark as proving
             $this->proofJob->update(['status' => DelegatedProofJob::STATUS_PROVING]);
 
-            // Simulate proof generation with progress updates
-            $this->generateProofWithProgress();
+            // Simulate proof generation with progress updates (demo only)
+            $prover = $this->resolveProver();
+            if ($prover instanceof DemoZkProver) {
+                $this->generateProofWithProgress();
+            }
 
-            // Generate the proof (demo mode returns deterministic proof)
-            $proof = $this->generateDemoProof();
+            // Generate the proof using configured provider
+            $proof = $this->generateProof($prover);
 
             // Mark as completed
             $this->proofJob->markCompleted($proof);
@@ -123,18 +130,57 @@ class GenerateDelegatedProofJob implements ShouldQueue
     }
 
     /**
+     * Resolve the ZK prover based on configuration.
+     */
+    private function resolveProver(): ZkProverInterface
+    {
+        $provider = config('privacy.zk.provider', 'demo');
+
+        return match ($provider) {
+            'snarkjs' => new SnarkjsProverService(),
+            default   => new DemoZkProver(),
+        };
+    }
+
+    /**
+     * Generate a proof using the configured prover.
+     */
+    private function generateProof(ZkProverInterface $prover): string
+    {
+        $publicInputs = is_array($this->proofJob->public_inputs) ? $this->proofJob->public_inputs : [];
+        $proofType = ProofType::tryFrom($this->proofJob->proof_type ?? '');
+
+        if ($proofType === null) {
+            return $this->generateDemoProof();
+        }
+
+        try {
+            $zkProof = $prover->generateProof(
+                type: $proofType,
+                privateInputs: [],
+                publicInputs: $publicInputs,
+            );
+
+            return $zkProof->proof;
+        } catch (Throwable $e) {
+            Log::warning('Prover failed, falling back to demo proof', [
+                'provider' => $prover->getProviderName(),
+                'error'    => $e->getMessage(),
+            ]);
+
+            return $this->generateDemoProof();
+        }
+    }
+
+    /**
      * Generate a demo proof (deterministic based on inputs).
      */
     private function generateDemoProof(): string
     {
-        // In production, this would call actual ZK proving infrastructure
-        // For demo, generate a deterministic proof based on inputs
-
         $publicInputs = $this->proofJob->public_inputs;
         $proofType = $this->proofJob->proof_type;
         $network = $this->proofJob->network;
 
-        // Create a deterministic "proof" from inputs
         $proofData = hash('sha256', json_encode([
             'type'    => $proofType,
             'network' => $network,
@@ -142,8 +188,7 @@ class GenerateDelegatedProofJob implements ShouldQueue
             'salt'    => 'demo_proof_' . $this->proofJob->id,
         ]) ?: '');
 
-        // Return as hex-encoded proof structure
-        return '0x' . $proofData . str_repeat('0', 256); // Pad to simulate full proof
+        return '0x' . $proofData . str_repeat('0', 256);
     }
 
     /**

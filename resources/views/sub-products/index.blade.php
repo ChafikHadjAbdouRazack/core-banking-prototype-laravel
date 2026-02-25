@@ -216,101 +216,99 @@
                     </div>
 
                     <!-- Stablecoins -->
-                    <div class="product-card stablecoins bg-gray-50 rounded-2xl p-8 shadow-lg relative">
-                        <span class="coming-soon-badge">COMING SOON</span>
+                    <div class="product-card stablecoins bg-gray-50 rounded-2xl p-8 shadow-lg">
                         <div class="flex items-start justify-between mb-6">
                             <div class="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center feature-icon">
                                 <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                             </div>
-                            <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm font-semibold">Q2 2025</span>
+                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">Available</span>
                         </div>
-                        
+
                         <h3 class="text-2xl font-bold text-gray-900 mb-4">FinAegis Stablecoins</h3>
                         <p class="text-gray-600 mb-6">
-                            Issue and manage stable tokens backed by real assets. Multi-chain support with instant redemption.
+                            Issue and manage stable tokens backed by real assets. Multi-chain support with cross-chain bridges and instant redemption.
                         </p>
-                        
-                        <div class="space-y-3 mb-6 opacity-75">
+
+                        <div class="space-y-3 mb-6">
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>EUR, USD, GBP stables</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Full reserve backing</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Cross-chain bridges</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>MiCA compliant</span>
                             </div>
                         </div>
-                        
+
                         <div class="flex items-center justify-between">
                             <a href="{{ route('sub-products.show', 'stablecoins') }}" class="text-yellow-600 font-semibold hover:text-yellow-700">
                                 Learn more →
                             </a>
-                            <span class="text-sm text-gray-500">Pricing TBD</span>
+                            <span class="text-sm text-gray-500">From €4.99/month</span>
                         </div>
                     </div>
 
                     <!-- Treasury -->
-                    <div class="product-card treasury bg-gray-50 rounded-2xl p-8 shadow-lg relative">
-                        <span class="coming-soon-badge">COMING SOON</span>
+                    <div class="product-card treasury bg-gray-50 rounded-2xl p-8 shadow-lg">
                         <div class="flex items-start justify-between mb-6">
                             <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center feature-icon">
                                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                 </svg>
                             </div>
-                            <span class="bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-sm font-semibold">Q3 2025</span>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">Available</span>
                         </div>
-                        
+
                         <h3 class="text-2xl font-bold text-gray-900 mb-4">FinAegis Treasury</h3>
                         <p class="text-gray-600 mb-6">
-                            Advanced cash management across multiple banks. Optimize yields and minimize risk automatically.
+                            Advanced cash management across multiple banks. Optimize yields and minimize risk with automated portfolio rebalancing.
                         </p>
-                        
-                        <div class="space-y-3 mb-6 opacity-75">
+
+                        <div class="space-y-3 mb-6">
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Multi-bank allocation</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Automated rebalancing</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Risk optimization</span>
                             </div>
                             <div class="flex items-center text-gray-700">
-                                <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
                                 <span>Corporate controls</span>
                             </div>
                         </div>
-                        
+
                         <div class="flex items-center justify-between">
                             <a href="{{ route('sub-products.show', 'treasury') }}" class="text-blue-600 font-semibold hover:text-blue-700">
                                 Learn more →
@@ -521,10 +519,10 @@
                                         <span class="font-medium">Stablecoins</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center text-gray-500">TBD</td>
-                                <td class="px-6 py-4 text-center text-gray-500">TBD</td>
+                                <td class="px-6 py-4 text-center">€4.99</td>
+                                <td class="px-6 py-4 text-center text-gray-600">0.1% mint/redeem</td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">Coming Q2</span>
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Available</span>
                                 </td>
                             </tr>
                             <tr>
@@ -538,10 +536,10 @@
                                         <span class="font-medium">Treasury</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center text-gray-500">Custom</td>
-                                <td class="px-6 py-4 text-center text-gray-500">Volume-based</td>
+                                <td class="px-6 py-4 text-center">Custom</td>
+                                <td class="px-6 py-4 text-center text-gray-600">Volume-based</td>
                                 <td class="px-6 py-4 text-center">
-                                    <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm">Coming Q3</span>
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">Available</span>
                                 </td>
                             </tr>
                         </tbody>

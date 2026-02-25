@@ -30,7 +30,7 @@ return new class () extends Migration {
             // Security fields
             $table->boolean('mfa_enabled')->default(false);
             $table->boolean('withdrawal_locked')->default(false);
-            $table->timestamp('last_activity_at')->nullable();
+            $table->dateTime('last_activity_at')->nullable();
 
             // Audit fields
             $table->string('created_by')->nullable()->index();
@@ -52,7 +52,7 @@ return new class () extends Migration {
 
             // Security tracking
             $table->boolean('is_verified')->default(false);
-            $table->timestamp('verified_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
             $table->string('verified_by')->nullable();
 
             $table->timestamps();
@@ -81,11 +81,11 @@ return new class () extends Migration {
             // Security/Compliance fields
             $table->boolean('aml_screened')->default(false);
             $table->string('aml_status')->nullable();
-            $table->timestamp('aml_screened_at')->nullable();
+            $table->dateTime('aml_screened_at')->nullable();
 
             // Audit fields
             $table->string('initiated_by')->nullable()->index();
-            $table->timestamp('confirmed_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
             $table->timestamps();
 
             $table->index(['wallet_id', 'status']);
@@ -103,7 +103,7 @@ return new class () extends Migration {
             $table->string('encryption_version')->default('v1');
 
             // Key rotation tracking
-            $table->timestamp('last_rotated_at')->nullable();
+            $table->dateTime('last_rotated_at')->nullable();
             $table->string('rotated_by')->nullable();
             $table->timestamps();
         });
@@ -119,7 +119,7 @@ return new class () extends Migration {
             $table->integer('decimals');
             $table->string('balance');
             $table->string('value_usd')->nullable();
-            $table->timestamp('last_synced_at')->nullable();
+            $table->dateTime('last_synced_at')->nullable();
             $table->timestamps();
 
             $table->unique(['address', 'chain', 'token_address']);
@@ -135,7 +135,7 @@ return new class () extends Migration {
             $table->text('encrypted_data')->comment('Encrypted backup data');
             $table->string('checksum');
             $table->string('created_by')->index();
-            $table->timestamp('verified_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
             $table->boolean('is_valid')->default(true);
             $table->timestamps();
         });

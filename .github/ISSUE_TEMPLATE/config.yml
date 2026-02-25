@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://finaegis.org/docs
+    about: Read the documentation before opening an issue
+  - name: Discussions
+    url: https://github.com/FinAegis/core-banking-prototype-laravel/discussions
+    about: Ask questions and share ideas in Discussions

@@ -36,7 +36,7 @@ return new class () extends Migration {
             $table->integer('true_positives')->default(0);
             $table->integer('false_positives')->default(0);
             $table->decimal('precision_rate', 5, 2)->nullable(); // TP / (TP + FP)
-            $table->timestamp('last_triggered_at')->nullable();
+            $table->dateTime('last_triggered_at')->nullable();
 
             // Machine Learning
             $table->boolean('ml_enabled')->default(false);

@@ -21,9 +21,9 @@ return new class () extends Migration {
             $table->integer('processed_items')->default(0);
             $table->integer('failed_items')->default(0);
             $table->json('metadata')->nullable();
-            $table->timestamp('scheduled_at')->nullable();
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('scheduled_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->index('uuid');

@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.3'
+        default: '8.4'
         type: string
     secrets:
       CODECOV_TOKEN:
@@ -26,7 +26,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           
@@ -43,7 +43,7 @@ jobs:
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
         
       - name: Cache Composer Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -55,24 +55,11 @@ jobs:
           
       - name: Install Dependencies
         run: |
-          # Try composer install with retry logic for flaky downloads
-          for i in 1 2 3; do
-            if composer install --prefer-dist --no-progress --optimize-autoloader; then
-              echo "Composer install succeeded on attempt $i"
-              break
-            else
-              echo "Composer install failed on attempt $i"
-              if [ $i -eq 3 ]; then
-                echo "All attempts failed"
-                exit 1
-              fi
-              echo "Retrying in 5 seconds..."
-              sleep 5
-              # Clear composer cache for problematic packages
-              composer clear-cache
-            fi
-          done
-        
+          # Skip composer scripts during install (filament:upgrade needs full app context).
+          # Then run package:discover manually — it works with .env.testing (sqlite/array drivers).
+          composer install --prefer-dist --no-progress --optimize-autoloader --no-scripts
+          php artisan package:discover --ansi
+
       - name: Run PHP Code Sniffer
         run: vendor/bin/phpcs
         

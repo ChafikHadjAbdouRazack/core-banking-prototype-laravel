@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', config('app.name', 'FinAegis'))</title>
+    <title>@yield('title', config('brand.name', 'FinAegis'))</title>
 
     @include('partials.favicon')
-    
+
     @hasSection('seo')
         @yield('seo')
     @else
         @include('partials.seo', [
-            'title' => config('app.name', 'FinAegis'),
-            'description' => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking.',
-            'keywords' => 'FinAegis, banking platform, fintech, core banking system',
+            'title' => config('brand.name', 'FinAegis'),
+            'description' => config('brand.name', 'FinAegis') . ' - The Enterprise Financial Platform Powering the Future of Banking.',
+            'keywords' => config('brand.name', 'FinAegis') . ', banking platform, fintech, core banking system',
         ])
     @endif
 
@@ -29,15 +29,17 @@
     <!-- Custom Styles -->
     @stack('styles')
 
+    @if(config('brand.ga_id'))
     <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X65KH9NFMY"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('brand.ga_id') }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-X65KH9NFMY');
+      gtag('config', '{{ config('brand.ga_id') }}');
     </script>
+    @endif
 </head>
 <body class="font-sans antialiased">
     <x-platform-banners />

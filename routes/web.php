@@ -2,14 +2,28 @@
 
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GCUController;
+use App\Http\Controllers\ProductionRedirectController;
 use App\Http\Controllers\StatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public Pages
+// Public Pages — production serves app landing at root; non-production serves welcome
 Route::get('/', function () {
+    if (app()->environment('production')) {
+        return view('app');
+    }
+
     return view('welcome');
 })->name('home');
+
+// /app — production redirects to /, non-production shows app landing
+if (app()->environment('production')) {
+    Route::get('/app', ProductionRedirectController::class)->name('app.landing');
+} else {
+    Route::get('/app', function () {
+        return view('app');
+    })->name('app.landing');
+}
 
 // WebSocket endpoint with origin validation
 Route::get('/ws', function (Request $request) {
@@ -46,126 +60,155 @@ Route::get('/ws', function (Request $request) {
         ->header('Connection', 'Upgrade');
 })->name('websocket');
 
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+// Promotional / demo-only routes — hidden in production, redirect to / to keep named routes alive
+if (! app()->environment('production')) {
+    Route::get('/about', function () {
+        return view('about');
+    })->name('about');
 
-Route::get('/platform', function () {
-    return view('platform.index');
-})->name('platform');
+    Route::get('/platform', function () {
+        return view('platform.index');
+    })->name('platform');
 
-Route::get('/gcu', [GCUController::class, 'index'])->name('gcu');
+    Route::get('/gcu', [GCUController::class, 'index'])->name('gcu');
 
-Route::get('/sub-products', function () {
-    return view('sub-products.index');
-})->name('sub-products');
+    Route::get('/sub-products', function () {
+        return view('sub-products.index');
+    })->name('sub-products');
 
-Route::get('/sub-products/{product}', function ($product) {
-    return view('sub-products.' . $product);
-})->name('sub-products.show');
+    Route::get('/sub-products/{product}', function ($product) {
+        return view('sub-products.' . $product);
+    })->name('sub-products.show');
 
-// Features routes
-Route::get('/features', function () {
-    return view('features.index');
-})->name('features');
+    // Features routes
+    Route::get('/features', function () {
+        return view('features.index');
+    })->name('features');
 
-Route::get('/features/{feature}', function ($feature) {
-    // List of valid feature pages
-    $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api'];
+    Route::get('/features/{feature}', function ($feature) {
+        $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol'];
 
-    if (! in_array($feature, $validFeatures)) {
-        abort(404);
+        if (! in_array($feature, $validFeatures)) {
+            abort(404);
+        }
+
+        return view('features.' . $feature);
+    })->name('features.show');
+
+    // AI Agent Framework routes
+    Route::get('/ai-framework', function () {
+        return view('ai-framework.index');
+    })->name('ai-framework');
+
+    Route::get('/ai-framework/demo', function () {
+        return view('ai-framework.demo');
+    })->name('ai-framework.demo');
+
+    Route::get('/demo/ai-agent', function () {
+        return view('demo.ai-agent');
+    })->name('demo.ai-agent');
+
+    Route::get('/ai-framework/docs', function () {
+        return view('ai-framework.docs');
+    })->name('ai-framework.docs');
+
+    Route::get('/pricing', function () {
+        return view('pricing');
+    })->name('pricing');
+
+    Route::get('/security', function () {
+        return view('security');
+    })->name('security');
+
+    Route::get('/compliance', function () {
+        return view('compliance');
+    })->name('compliance');
+
+    Route::get('/developers', function () {
+        return view('developers.index');
+    })->name('developers');
+
+    Route::get('/developers/{section}', function ($section) {
+        return view('developers.' . $section);
+    })->name('developers.show');
+
+    // Subproduct routes
+    Route::get('/subproducts/exchange', function () {
+        return view('subproducts.exchange');
+    })->name('subproducts.exchange');
+
+    Route::get('/subproducts/lending', function () {
+        return view('subproducts.lending');
+    })->name('subproducts.lending');
+
+    Route::get('/subproducts/stablecoins', function () {
+        return view('subproducts.stablecoins');
+    })->name('subproducts.stablecoins');
+
+    Route::get('/subproducts/treasury', function () {
+        return view('subproducts.treasury');
+    })->name('subproducts.treasury');
+
+    // Financial institutions routes
+    Route::get('/financial-institutions/apply', [App\Http\Controllers\FinancialInstitutionApplicationController::class, 'show'])
+        ->name('financial-institutions.apply');
+
+    Route::post('/financial-institutions/submit', [App\Http\Controllers\FinancialInstitutionApplicationController::class, 'submit'])
+        ->name('financial-institutions.submit');
+
+    Route::get('/support', function () {
+        return view('support.index');
+    })->name('support');
+
+    Route::get('/support/contact', function () {
+        return view('support.contact');
+    })->name('support.contact');
+
+    Route::post('/support/contact', [ContactController::class, 'submit'])->name('support.contact.submit');
+
+    Route::get('/support/faq', function () {
+        return view('support.faq');
+    })->name('support.faq');
+
+    Route::get('/support/guides', function () {
+        return view('support.guides');
+    })->name('support.guides');
+
+    Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog');
+    Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
+    Route::post('/blog/subscribe', [App\Http\Controllers\BlogController::class, 'subscribe'])->name('blog.subscribe');
+
+    Route::get('/partners', function () {
+        return view('partners');
+    })->name('partners');
+} else {
+    // Production: register named route fallbacks so route() calls don't throw RouteNotFoundException
+    $promoRoutes = [
+        'about', 'platform', 'gcu', 'sub-products', 'features', 'ai-framework',
+        'pricing', 'security', 'compliance', 'developers', 'partners',
+        'support', 'support.contact', 'support.faq', 'support.guides',
+        'blog', 'subproducts.exchange', 'subproducts.lending',
+        'subproducts.stablecoins', 'subproducts.treasury',
+        'financial-institutions.apply',
+    ];
+
+    foreach ($promoRoutes as $name) {
+        $path = '/' . str_replace('.', '/', $name);
+        Route::get($path, ProductionRedirectController::class)->name($name);
     }
 
-    return view('features.' . $feature);
-})->name('features.show');
-
-// AI Agent Framework routes
-Route::get('/ai-framework', function () {
-    return view('ai-framework.index');
-})->name('ai-framework');
-
-Route::get('/ai-framework/demo', function () {
-    return view('ai-framework.demo');
-})->name('ai-framework.demo');
-
-Route::get('/demo/ai-agent', function () {
-    return view('demo.ai-agent');
-})->name('demo.ai-agent');
-
-Route::get('/ai-framework/docs', function () {
-    return view('ai-framework.docs');
-})->name('ai-framework.docs');
-
-Route::get('/pricing', function () {
-    return view('pricing');
-})->name('pricing');
-
-Route::get('/security', function () {
-    return view('security');
-})->name('security');
-
-Route::get('/compliance', function () {
-    return view('compliance');
-})->name('compliance');
-
-Route::get('/developers', function () {
-    return view('developers.index');
-})->name('developers');
-
-Route::get('/developers/{section}', function ($section) {
-    return view('developers.' . $section);
-})->name('developers.show');
-
-// Subproduct routes
-Route::get('/subproducts/exchange', function () {
-    return view('subproducts.exchange');
-})->name('subproducts.exchange');
-
-Route::get('/subproducts/lending', function () {
-    return view('subproducts.lending');
-})->name('subproducts.lending');
-
-Route::get('/subproducts/stablecoins', function () {
-    return view('subproducts.stablecoins');
-})->name('subproducts.stablecoins');
-
-Route::get('/subproducts/treasury', function () {
-    return view('subproducts.treasury');
-})->name('subproducts.treasury');
-
-// Financial institutions routes
-Route::get('/financial-institutions/apply', [App\Http\Controllers\FinancialInstitutionApplicationController::class, 'show'])
-    ->name('financial-institutions.apply');
-
-Route::post('/financial-institutions/submit', [App\Http\Controllers\FinancialInstitutionApplicationController::class, 'submit'])
-    ->name('financial-institutions.submit');
-
-Route::get('/support', function () {
-    return view('support.index');
-})->name('support');
-
-Route::get('/support/contact', function () {
-    return view('support.contact');
-})->name('support.contact');
-
-Route::post('/support/contact', [ContactController::class, 'submit'])->name('support.contact.submit');
-
-Route::get('/support/faq', function () {
-    return view('support.faq');
-})->name('support.faq');
-
-Route::get('/support/guides', function () {
-    return view('support.guides');
-})->name('support.guides');
-
-Route::get('/blog', [App\Http\Controllers\BlogController::class, 'index'])->name('blog');
-Route::get('/blog/{slug}', [App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
-Route::post('/blog/subscribe', [App\Http\Controllers\BlogController::class, 'subscribe'])->name('blog.subscribe');
-
-Route::get('/partners', function () {
-    return view('partners');
-})->name('partners');
+    // Wildcard promo routes that take parameters
+    Route::get('/sub-products/{product}', ProductionRedirectController::class)->name('sub-products.show');
+    Route::get('/features/{feature}', ProductionRedirectController::class)->name('features.show');
+    Route::get('/developers/{section}', ProductionRedirectController::class)->name('developers.show');
+    Route::get('/ai-framework/demo', ProductionRedirectController::class)->name('ai-framework.demo');
+    Route::get('/ai-framework/docs', ProductionRedirectController::class)->name('ai-framework.docs');
+    Route::get('/demo/ai-agent', ProductionRedirectController::class)->name('demo.ai-agent');
+    Route::get('/blog/{slug}', ProductionRedirectController::class)->name('blog.show');
+    Route::post('/blog/subscribe', ProductionRedirectController::class)->name('blog.subscribe');
+    Route::post('/support/contact', ProductionRedirectController::class)->name('support.contact.submit');
+    Route::post('/financial-institutions/submit', ProductionRedirectController::class)->name('financial-institutions.submit');
+}
 
 Route::get('/legal/terms', function () {
     return view('legal.terms');
@@ -320,6 +363,26 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    // Cross-Chain Portfolio
+    Route::get('/crosschain', function () {
+        return view('crosschain.index');
+    })->name('crosschain.index');
+
+    // DeFi Portfolio
+    Route::get('/defi', function () {
+        return view('defi.index');
+    })->name('defi.index');
+
+    // Privacy & Identity
+    Route::get('/privacy', function () {
+        return view('privacy.index');
+    })->name('privacy.index');
+
+    // Trust Certificates
+    Route::get('/trustcert', function () {
+        return view('trustcert.index');
+    })->name('trustcert.index');
 
     // Team Member Management (for business organizations)
     Route::prefix('teams/{team}')->name('teams.')->group(function () {
@@ -651,13 +714,18 @@ Route::middleware([
             // Manual bank transfer
             Route::get('/manual', function () {
                 $account = Auth::user()->accounts()->first();
+                $bankDetails = config('cgo.bank_details');
+                $isDemo = app()->environment('demo');
 
-                return view('wallet.deposit-manual', compact('account'));
+                return view('wallet.deposit-manual', compact('account', 'bankDetails', 'isDemo'));
             })->name('manual');
 
-            // Crypto deposits (placeholder)
+            // Crypto deposits
             Route::get('/crypto', function () {
-                return view('wallet.deposit-crypto');
+                $cryptoAddresses = config('cgo.deposit_addresses');
+                $isDemo = app()->environment('demo');
+
+                return view('wallet.deposit-crypto', compact('cryptoAddresses', 'isDemo'));
             })->name('crypto');
         });
 
@@ -678,19 +746,24 @@ Route::middleware([
     });
 });
 
-// API Documentation routes
-Route::get('/docs/api-docs.json', function () {
-    $path = storage_path('api-docs/api-docs.json');
-    if (! file_exists($path)) {
-        abort(404, 'API documentation not found. Run: php artisan l5-swagger:generate');
-    }
+// API Documentation routes — production requires authentication
+$apiDocsMiddleware = app()->environment('production')
+    ? ['auth', 'verified', 'L5Swagger\Http\Middleware\Config']
+    : ['L5Swagger\Http\Middleware\Config'];
 
-    return response()->json(json_decode(file_get_contents($path), true));
-});
+Route::middleware(app()->environment('production') ? ['auth', 'verified'] : [])
+    ->get('/docs/api-docs.json', function () {
+        $path = storage_path('api-docs/api-docs.json');
+        if (! file_exists($path)) {
+            abort(404, 'API documentation not found. Run: php artisan l5-swagger:generate');
+        }
+
+        return response()->json(json_decode(file_get_contents($path), true));
+    });
 
 // L5-Swagger routes - manually register since they're not loading automatically
 Route::group([
-    'middleware'               => ['L5Swagger\Http\Middleware\Config'],
+    'middleware'               => $apiDocsMiddleware,
     'l5-swagger.documentation' => 'default',
 ], function () {
     Route::get('/api/documentation', '\L5Swagger\Http\Controllers\SwaggerController@api')

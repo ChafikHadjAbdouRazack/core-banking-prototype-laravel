@@ -29,9 +29,9 @@ return new class () extends Migration {
             $table->string('file_hash')->nullable()->comment('SHA-256 hash for integrity');
             $table->json('metadata')->nullable()->comment('Additional document metadata');
             $table->text('rejection_reason')->nullable();
-            $table->timestamp('uploaded_at');
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('uploaded_at');
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->string('verified_by')->nullable()->comment('Admin user who verified');
             $table->timestamps();
 

@@ -30,8 +30,8 @@ return new class () extends Migration {
             $table->text('description');
             $table->json('details')->nullable();
             $table->string('assigned_to')->nullable();
-            $table->timestamp('assigned_at')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('assigned_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->string('resolution_type')->nullable();
             $table->text('resolution_notes')->nullable();
             $table->string('resolved_by')->nullable();
@@ -54,9 +54,9 @@ return new class () extends Migration {
             $table->text('summary');
             $table->json('details')->nullable();
             $table->string('assigned_to')->nullable();
-            $table->timestamp('assigned_at')->nullable();
-            $table->timestamp('due_date')->nullable();
-            $table->timestamp('closed_at')->nullable();
+            $table->dateTime('assigned_at')->nullable();
+            $table->dateTime('due_date')->nullable();
+            $table->dateTime('closed_at')->nullable();
             $table->string('resolution')->nullable();
             $table->text('resolution_notes')->nullable();
             $table->string('closed_by')->nullable();
@@ -78,8 +78,8 @@ return new class () extends Migration {
             $table->json('verification_results')->nullable();
             $table->string('provider')->nullable();
             $table->string('provider_reference')->nullable();
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->string('verified_by')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->json('metadata')->nullable();
@@ -103,7 +103,7 @@ return new class () extends Migration {
             $table->string('file_hash')->nullable();
             $table->string('status')->default('pending');
             $table->json('verification_results')->nullable();
-            $table->timestamp('verified_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
             $table->string('verified_by')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->json('metadata')->nullable();

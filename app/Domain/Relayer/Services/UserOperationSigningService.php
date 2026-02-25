@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Relayer\Services;
 
 use App\Domain\KeyManagement\HSM\HsmIntegrationService;
+use App\Domain\Mobile\Contracts\BiometricJWTServiceInterface;
 use App\Domain\Relayer\Contracts\UserOperationSignerInterface;
 use App\Domain\Relayer\Exceptions\UserOpSigningException;
 use App\Models\User;
@@ -12,6 +13,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -21,12 +23,18 @@ use Throwable;
  * operations. In demo mode (HSM provider = 'demo'), it uses deterministic signatures
  * that are suitable for testing but NOT for production.
  *
+ * Biometric Authentication:
+ * - In production: Uses BiometricJWTService for JWT-based token verification
+ * - In demo mode: Falls back to length-based validation (NOT SECURE)
+ *
  * Production Configuration:
  * - Set HSM_PROVIDER=aws|azure|hashicorp in .env
  * - Configure appropriate HSM credentials
  * - Ensure secp256k1 signing key exists in HSM
+ * - Set BIOMETRIC_JWT_SECRET for JWT signing
  *
- * @see \App\Domain\KeyManagement\HSM\HsmIntegrationService
+ * @see HsmIntegrationService
+ * @see \App\Domain\Mobile\Services\BiometricJWTService
  */
 class UserOperationSigningService implements UserOperationSignerInterface
 {
@@ -46,8 +54,10 @@ class UserOperationSigningService implements UserOperationSignerInterface
     private const RATE_LIMIT_WINDOW_SECONDS = 60;
 
     public function __construct(
-        private readonly HsmIntegrationService $hsm
-    ) {}
+        private readonly HsmIntegrationService $hsm,
+        private readonly ?BiometricJWTServiceInterface $jwtService = null
+    ) {
+    }
 
     /**
      * Sign a UserOperation hash using the server's authentication shard.
@@ -104,19 +114,45 @@ class UserOperationSigningService implements UserOperationSignerInterface
     /**
      * Verify biometric token validity.
      *
-     * @todo PRODUCTION: Replace with JWT verification + mobile attestation
+     * In production mode (with BiometricJWTService), this verifies:
+     * - JWT signature validity
+     * - Token expiration
+     * - User binding (sub claim matches user UUID)
+     * - Session validity (session still active and not expired)
+     *
+     * In demo mode (without BiometricJWTService), requires HMAC-signed demo token.
+     *
+     * @throws RuntimeException if JWT service is missing in production
      */
     public function verifyBiometricToken(User $user, string $biometricToken): bool
     {
-        // Demo: Accept any non-empty token for now
-        // In production: Verify against stored biometric session data
         if (empty($biometricToken)) {
             return false;
         }
 
-        // Demo: Accept tokens that match expected format
-        // In production: Cryptographic verification with mobile attestation
-        return strlen($biometricToken) >= 32;
+        // Production mode: Use JWT verification
+        if ($this->jwtService !== null) {
+            return $this->jwtService->verifyToken($user, $biometricToken);
+        }
+
+        // Reject in production environment without JWT service
+        if (app()->environment('production')) {
+            Log::critical('BiometricJWTService not configured in production', [
+                'user_id' => $user->id,
+            ]);
+
+            throw new RuntimeException('Biometric verification unavailable.');
+        }
+
+        // Demo mode: Verify using HMAC signature with app key
+        Log::warning('Using demo biometric verification - NOT suitable for production', [
+            'user_id'     => $user->id,
+            'environment' => app()->environment(),
+        ]);
+
+        $expectedToken = hash_hmac('sha256', 'demo_biometric:' . $user->id, config('app.key'));
+
+        return hash_equals($expectedToken, $biometricToken);
     }
 
     /**

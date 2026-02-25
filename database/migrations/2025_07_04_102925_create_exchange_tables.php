@@ -27,8 +27,8 @@ return new class () extends Migration {
             $table->jsonb('trades')->nullable();
             $table->jsonb('metadata')->nullable();
             $table->timestamps();
-            $table->timestamp('cancelled_at')->nullable();
-            $table->timestamp('filled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
+            $table->dateTime('filled_at')->nullable();
 
             // Indexes
             $table->index('account_id');

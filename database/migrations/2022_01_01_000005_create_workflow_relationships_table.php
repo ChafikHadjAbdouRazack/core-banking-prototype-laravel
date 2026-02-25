@@ -19,7 +19,7 @@ final class CreateWorkflowRelationshipsTable extends Migration
                 ->nullable()
                 ->index();
             $blueprint->unsignedBigInteger('parent_index');
-            $blueprint->timestamp('parent_now');
+            $blueprint->dateTime('parent_now');
             $blueprint->foreignId('child_workflow_id')
                 ->nullable()
                 ->index();

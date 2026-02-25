@@ -15,10 +15,10 @@ return new class () extends Migration {
             $table->enum('risk_level', ['low', 'medium', 'high', 'critical'])->nullable()->after('compliance_status');
             $table->decimal('risk_score', 5, 2)->nullable()->after('risk_level');
             $table->json('patterns_detected')->nullable()->after('risk_score');
-            $table->timestamp('flagged_at')->nullable();
+            $table->dateTime('flagged_at')->nullable();
             $table->foreignId('flagged_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('flag_reason')->nullable();
-            $table->timestamp('cleared_at')->nullable();
+            $table->dateTime('cleared_at')->nullable();
             $table->foreignId('cleared_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('clear_reason')->nullable();
 

@@ -1,7 +1,7 @@
 # FinAegis Platform Architecture
 
-**Version:** 8.0
-**Last Updated:** December 2024
+**Version:** 5.0.1
+**Last Updated:** February 2026
 **Status:** Demonstration Prototype
 
 This document provides a comprehensive overview of the FinAegis Platform architecture, design patterns, and implementation details. The platform delivers the Global Currency Unit (GCU) as its flagship product alongside modular sub-products: Exchange, Lending, Stablecoins, and Treasury.
@@ -31,7 +31,7 @@ This document provides a comprehensive overview of the FinAegis Platform archite
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           Presentation Layer                        │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Web UI (Filament)  │  REST API  │  GraphQL (Planned)  │  CLI       │
+│  Web UI (Filament)  │  REST API  │  GraphQL (33 domains)  │  CLI       │
 ├─────────────────────────────────────────────────────────────────────┤
 │                          Application Layer                          │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -1035,11 +1035,15 @@ The FinAegis platform represents a modern, scalable approach to core banking sys
 - ✅ **Authorization**: Role and permission-based access control
 - ✅ **Audit Logging**: Complete operation tracking
 
+### Implemented (v4.0.0-v5.0.0)
+- **GraphQL API**: Schema-first Lighthouse PHP across 33 domains with subscriptions and DataLoaders
+- **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution (v5.0.0)
+- **Plugin Marketplace**: Plugin manager, sandbox execution, security scanning (v4.0.0)
+- **API Gateway**: Request ID tracing, timing headers, version middleware (v5.0.0)
+
 ### Future Considerations
-- 🔄 **Microservices Migration**: Domain boundaries enable service extraction
-- 🔄 **GraphQL API**: Enhanced query capabilities
-- 🔄 **Event Streaming**: Real-time event processing with Kafka
-- 🔄 **Multi-Region Deployment**: Geographic distribution support
+- **Microservices Migration**: Domain boundaries enable service extraction
+- **Multi-Region Deployment**: Geographic distribution support (foundations in v3.5.0)
 
 ---
 
@@ -1140,6 +1144,6 @@ return [
 
 ---
 
-**Architecture Version**: 3.0
-**Implementation Status**: Core Complete, Extensions Planned
-**Last Updated**: December 2024
+**Architecture Version**: 5.0.1
+**Implementation Status**: Core Complete, 41 Bounded Contexts, 33 GraphQL Domains
+**Last Updated**: February 2026

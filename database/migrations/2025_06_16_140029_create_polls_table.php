@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->text('description')->nullable();
             $table->string('type', 50); // PollType enum values
             $table->json('options'); // Array of PollOption objects
-            $table->timestamp('start_date');
-            $table->timestamp('end_date');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
             $table->string('status', 20)->default('draft'); // PollStatus enum values
             $table->integer('required_participation')->nullable(); // Minimum percentage required
             $table->string('voting_power_strategy', 100)->default('one_user_one_vote');

@@ -32,6 +32,15 @@ return [
             'enabled'   => true,
             'log_audit' => env('SBT_LOG_AUDIT', true),
         ],
+
+        // On-chain anchoring (ERC-5192 SBT on Polygon)
+        'on_chain_anchoring' => (bool) env('SBT_ON_CHAIN_ANCHORING', false),
+        'contract_address'   => env('SBT_CONTRACT_ADDRESS'),
+        'network'            => env('SBT_NETWORK', 'polygon'),
+        'rpc_url'            => env('SBT_RPC_URL', 'https://polygon-rpc.com'),
+        'signer_address'     => env('SBT_SIGNER_ADDRESS'),
+        'signer_private_key' => env('SBT_SIGNER_PRIVATE_KEY'),
+        'abi_path'           => env('SBT_ABI_PATH', storage_path('app/contracts/sbt_abi.json')),
     ],
 
     /*

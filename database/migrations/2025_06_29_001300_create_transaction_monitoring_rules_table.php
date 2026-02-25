@@ -40,12 +40,12 @@ return new class () extends Migration {
             $table->integer('true_positives')->default(0);
             $table->integer('false_positives')->default(0);
             $table->decimal('accuracy_rate', 5, 2)->nullable();
-            $table->timestamp('last_triggered_at')->nullable();
+            $table->dateTime('last_triggered_at')->nullable();
 
             // Review and Tuning
             $table->foreignId('created_by')->constrained('users');
             $table->foreignId('last_modified_by')->nullable()->constrained('users');
-            $table->timestamp('last_reviewed_at')->nullable();
+            $table->dateTime('last_reviewed_at')->nullable();
             $table->json('tuning_history')->nullable();
 
             $table->timestamps();

@@ -15,7 +15,7 @@ class MarketAnalysisWorkflowTest extends TestCase
         #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_create_workflow_stub(): void
     {
-        $this->assertTrue(class_exists(MarketAnalysisWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(MarketAnalysisWorkflow::class))->getName());
 
         $workflow = WorkflowStub::make(MarketAnalysisWorkflow::class);
         $this->assertInstanceOf(WorkflowStub::class, $workflow);

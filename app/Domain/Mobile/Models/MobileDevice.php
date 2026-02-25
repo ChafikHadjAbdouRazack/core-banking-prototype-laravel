@@ -50,6 +50,11 @@ class MobileDevice extends Model
     use HasFactory;
     use HasUuids;
 
+    protected static function newFactory(): \Database\Factories\MobileDeviceFactory
+    {
+        return \Database\Factories\MobileDeviceFactory::new();
+    }
+
     protected $fillable = [
         'user_id',
         'device_id',
@@ -66,6 +71,10 @@ class MobileDevice extends Model
         'biometric_enabled_at',
         'biometric_failure_count',
         'biometric_blocked_until',
+        'passkey_enabled',
+        'passkey_credential_id',
+        'passkey_public_key',
+        'passkey_enabled_at',
         'is_trusted',
         'trusted_at',
         'trusted_by',
@@ -77,10 +86,12 @@ class MobileDevice extends Model
 
     protected $casts = [
         'biometric_enabled'       => 'boolean',
+        'passkey_enabled'         => 'boolean',
         'is_trusted'              => 'boolean',
         'is_blocked'              => 'boolean',
         'last_active_at'          => 'datetime',
         'biometric_enabled_at'    => 'datetime',
+        'passkey_enabled_at'      => 'datetime',
         'biometric_failure_count' => 'integer',
         'biometric_blocked_until' => 'datetime',
         'trusted_at'              => 'datetime',
@@ -90,6 +101,7 @@ class MobileDevice extends Model
 
     protected $hidden = [
         'biometric_public_key',
+        'passkey_public_key',
     ];
 
     /**

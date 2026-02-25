@@ -17,10 +17,10 @@ return new class () extends Migration {
                 $table->decimal('daily_total', 20, 2)->default(0);
                 $table->decimal('weekly_total', 20, 2)->default(0);
                 $table->decimal('monthly_total', 20, 2)->default(0);
-                $table->timestamp('last_daily_reset')->nullable();
-                $table->timestamp('last_weekly_reset')->nullable();
-                $table->timestamp('last_monthly_reset')->nullable();
-                $table->timestamp('last_transaction_at')->nullable();
+                $table->dateTime('last_daily_reset')->nullable();
+                $table->dateTime('last_weekly_reset')->nullable();
+                $table->dateTime('last_monthly_reset')->nullable();
+                $table->dateTime('last_transaction_at')->nullable();
                 $table->timestamps();
 
                 $table->foreign('agent_id')

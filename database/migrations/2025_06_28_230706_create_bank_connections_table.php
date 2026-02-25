@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->string('status', 20)->default('active');
             $table->text('credentials'); // Encrypted
             $table->json('permissions')->nullable();
-            $table->timestamp('last_sync_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('last_sync_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 

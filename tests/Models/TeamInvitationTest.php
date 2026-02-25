@@ -20,11 +20,11 @@ it('has correct fillable attributes', function () {
 });
 
 it('has team relationship', function () {
-    expect(method_exists(TeamInvitation::class, 'team'))->toBeTrue();
+    expect((new ReflectionClass(TeamInvitation::class))->hasMethod('team'))->toBeTrue();
 });
 
 it('has team method', function () {
-    expect(method_exists(TeamInvitation::class, 'team'))->toBeTrue();
+    expect((new ReflectionClass(TeamInvitation::class))->hasMethod('team'))->toBeTrue();
 });
 
 it('team method returns BelongsTo type', function () {

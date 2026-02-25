@@ -14,12 +14,12 @@ return new class () extends Migration {
             // Security and suspension fields
             $table->boolean('is_suspended')->default(false)->after('status');
             $table->string('suspension_reason')->nullable()->after('is_suspended');
-            $table->timestamp('suspended_at')->nullable()->after('suspension_reason');
+            $table->dateTime('suspended_at')->nullable()->after('suspension_reason');
 
             // KYC/Compliance fields
             $table->boolean('kyc_verified')->default(false)->after('suspended_at');
             $table->string('kyc_status')->default('pending')->after('kyc_verified'); // pending, verified, rejected
-            $table->timestamp('kyc_verified_at')->nullable()->after('kyc_status');
+            $table->dateTime('kyc_verified_at')->nullable()->after('kyc_status');
 
             // Reputation and limits
             $table->integer('reputation_score')->default(50)->after('kyc_verified_at');
@@ -31,7 +31,7 @@ return new class () extends Migration {
 
             // Additional security fields
             $table->string('risk_level')->default('low')->after('monthly_limit'); // low, medium, high, critical
-            $table->timestamp('last_security_audit')->nullable()->after('risk_level');
+            $table->dateTime('last_security_audit')->nullable()->after('risk_level');
         });
     }
 

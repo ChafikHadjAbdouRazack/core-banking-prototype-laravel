@@ -6,6 +6,7 @@ use App\Domain\Account\DataObjects\Account;
 use App\Domain\Account\Workflows\CreateAccountActivity;
 use App\Domain\Account\Workflows\CreateAccountWorkflow;
 use PHPUnit\Framework\Attributes\Test;
+use ReflectionClass;
 use Tests\DomainTestCase;
 
 class CreateAccountWorkflowTest extends DomainTestCase
@@ -15,8 +16,8 @@ class CreateAccountWorkflowTest extends DomainTestCase
     #[Test]
     public function it_has_correct_structure(): void
     {
-        $this->assertTrue(class_exists(CreateAccountWorkflow::class));
-        $this->assertTrue(class_exists(CreateAccountActivity::class));
+        $this->assertNotEmpty((new ReflectionClass(CreateAccountWorkflow::class))->getName());
+        $this->assertNotEmpty((new ReflectionClass(CreateAccountActivity::class))->getName());
     }
 
     // Note: Workflow testing requires a full workflow runtime which is not available in unit tests.

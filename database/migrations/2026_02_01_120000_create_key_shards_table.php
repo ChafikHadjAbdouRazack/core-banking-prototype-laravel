@@ -20,7 +20,7 @@ return new class () extends Migration {
             $table->string('key_version', 50);
             $table->string('status', 20)->default(ShardStatus::ACTIVE->value);
             $table->string('public_key_hash', 64)->nullable();
-            $table->timestamp('last_accessed_at')->nullable();
+            $table->dateTime('last_accessed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

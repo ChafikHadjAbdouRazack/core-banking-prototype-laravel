@@ -31,15 +31,20 @@ class TokenExpirationTest extends TestCase
 
         $response->assertOk();
         $response->assertJsonStructure([
-            'access_token',
-            'expires_in',
+            'success',
+            'data' => [
+                'access_token',
+                'refresh_token',
+                'expires_in',
+                'refresh_expires_in',
+            ],
         ]);
 
         // Check that expires_in is set correctly (60 minutes = 3600 seconds)
-        $this->assertEquals(3600, $response->json('expires_in'));
+        $this->assertEquals(3600, $response->json('data.expires_in'));
 
-        // Check database for token expiration
-        $token = $this->user->tokens()->first();
+        // Check database for access token expiration
+        $token = $this->user->tokens()->where('abilities', '!=', '["refresh"]')->first();
         $this->assertNotNull($token);
         $this->assertNotNull($token->expires_at);
 
@@ -110,23 +115,180 @@ class TokenExpirationTest extends TestCase
 
     public function test_token_refresh_maintains_scopes(): void
     {
-        // Create initial token with specific scopes
-        $token = $this->user->createToken('test-token', ['read', 'write'])->plainTextToken;
+        config(['sanctum.expiration' => 60]);
+        config(['sanctum.refresh_token_expiration' => 43200]);
 
-        // Refresh the token
-        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-            ->postJson('/api/auth/refresh');
-
-        $response->assertOk();
-        $response->assertJsonStructure([
-            'access_token',
-            'token_type',
-            'expires_in',
+        // Login to get a token pair
+        $loginResponse = $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'password',
         ]);
 
-        // Check new token has same scopes
-        $newToken = $this->user->tokens()->latest()->first();
-        $this->assertEquals(['read', 'write'], $newToken->abilities);
+        $loginResponse->assertOk();
+        $refreshToken = $loginResponse->json('data.refresh_token');
+        $this->assertNotEmpty($refreshToken);
+
+        // Refresh using the refresh token (sent in body, no Bearer auth needed)
+        $refreshResponse = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $refreshResponse->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'access_token',
+                    'refresh_token',
+                    'token_type',
+                    'expires_in',
+                    'refresh_expires_in',
+                ],
+            ])
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.token_type', 'Bearer')
+            ->assertJsonPath('data.expires_in', 3600);
+
+        $newAccessToken = $refreshResponse->json('data.access_token');
+        $newRefreshToken = $refreshResponse->json('data.refresh_token');
+        $this->assertNotEmpty($newAccessToken);
+        $this->assertNotEmpty($newRefreshToken);
+        $this->assertNotEquals($refreshToken, $newRefreshToken);
+
+        // New access token should work
+        $newTokenResponse = $this->withHeader('Authorization', 'Bearer ' . $newAccessToken)
+            ->getJson('/api/auth/user');
+        $newTokenResponse->assertOk();
+
+        // New access token should have expiration set
+        $newTokenRecord = $this->user->tokens()
+            ->where('abilities', '!=', '["refresh"]')
+            ->latest('id')
+            ->first();
+        $this->assertNotNull($newTokenRecord->expires_at);
+    }
+
+    public function test_refresh_works_after_access_token_expires(): void
+    {
+        config(['sanctum.expiration' => 60]);
+        config(['sanctum.refresh_token_expiration' => 43200]);
+
+        // Login to get a token pair
+        $loginResponse = $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $loginResponse->assertOk();
+        $accessToken = $loginResponse->json('data.access_token');
+        $refreshToken = $loginResponse->json('data.refresh_token');
+
+        // Expire the access token
+        $this->user->tokens()
+            ->where('abilities', '!=', '["refresh"]')
+            ->update(['expires_at' => Carbon::now()->subMinute()]);
+
+        // Verify access token is rejected
+        $this->withHeader('Authorization', 'Bearer ' . $accessToken)
+            ->getJson('/api/auth/user')
+            ->assertUnauthorized();
+
+        // Refresh should still work with the refresh token
+        $refreshResponse = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $refreshResponse->assertOk();
+        $newAccessToken = $refreshResponse->json('data.access_token');
+
+        // New access token should work
+        $this->withHeader('Authorization', 'Bearer ' . $newAccessToken)
+            ->getJson('/api/auth/user')
+            ->assertOk();
+    }
+
+    public function test_refresh_rejects_access_tokens(): void
+    {
+        config(['sanctum.expiration' => 60]);
+        config(['sanctum.refresh_token_expiration' => 43200]);
+
+        // Login to get a token pair
+        $loginResponse = $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $loginResponse->assertOk();
+        $accessToken = $loginResponse->json('data.access_token');
+
+        // Try to refresh using the access token (should fail — wrong ability)
+        $refreshResponse = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $accessToken,
+        ]);
+
+        $refreshResponse->assertUnauthorized();
+    }
+
+    public function test_refresh_rejects_expired_refresh_tokens(): void
+    {
+        config(['sanctum.expiration' => 60]);
+        config(['sanctum.refresh_token_expiration' => 43200]);
+
+        // Login to get a token pair
+        $loginResponse = $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $loginResponse->assertOk();
+        $refreshToken = $loginResponse->json('data.refresh_token');
+
+        // Expire the refresh token
+        $this->user->tokens()
+            ->where('abilities', '["refresh"]')
+            ->update(['expires_at' => Carbon::now()->subMinute()]);
+
+        // Refresh should fail
+        $refreshResponse = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $refreshResponse->assertUnauthorized();
+    }
+
+    public function test_refresh_rotates_tokens_old_revoked(): void
+    {
+        config(['sanctum.expiration' => 60]);
+        config(['sanctum.refresh_token_expiration' => 43200]);
+
+        // Login to get a token pair
+        $loginResponse = $this->postJson('/api/auth/login', [
+            'email'    => $this->user->email,
+            'password' => 'password',
+        ]);
+
+        $loginResponse->assertOk();
+        $refreshToken = $loginResponse->json('data.refresh_token');
+
+        // Refresh to get new pair
+        $refreshResponse = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $refreshResponse->assertOk();
+
+        // Old refresh token should be revoked (trying again should fail)
+        $secondRefresh = $this->postJson('/api/auth/refresh', [
+            'refresh_token' => $refreshToken,
+        ]);
+
+        $secondRefresh->assertUnauthorized();
+    }
+
+    public function test_refresh_without_token_returns_401(): void
+    {
+        $response = $this->postJson('/api/auth/refresh');
+
+        $response->assertUnauthorized();
     }
 
     public function test_multiple_expired_tokens_are_handled_correctly(): void
@@ -171,10 +333,10 @@ class TokenExpirationTest extends TestCase
         ]);
 
         $response->assertOk();
-        $this->assertNull($response->json('expires_in'));
+        $this->assertNull($response->json('data.expires_in'));
 
-        // Token should not have expires_at set
-        $token = $this->user->tokens()->first();
+        // Access token should not have expires_at set
+        $token = $this->user->tokens()->where('abilities', '!=', '["refresh"]')->first();
         $this->assertNull($token->expires_at);
     }
 
@@ -189,10 +351,10 @@ class TokenExpirationTest extends TestCase
         ]);
 
         $response->assertOk();
-        $this->assertEquals(7200, $response->json('expires_in')); // 120 minutes = 7200 seconds
+        $this->assertEquals(7200, $response->json('data.expires_in')); // 120 minutes = 7200 seconds
 
-        // Check database
-        $token = $this->user->tokens()->first();
+        // Check database for access token
+        $token = $this->user->tokens()->where('abilities', '!=', '["refresh"]')->first();
         $this->assertNotNull($token->expires_at);
 
         // Should expire in approximately 120 minutes

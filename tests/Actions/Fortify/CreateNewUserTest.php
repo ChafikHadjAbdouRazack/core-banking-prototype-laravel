@@ -8,7 +8,7 @@ it('implements CreatesNewUsers contract', function () {
 });
 
 it('has create method', function () {
-    expect(method_exists(CreateNewUser::class, 'create'))->toBeTrue();
+    expect((new ReflectionClass(CreateNewUser::class))->hasMethod('create'))->toBeTrue();
 });
 
 it('can be instantiated', function () {

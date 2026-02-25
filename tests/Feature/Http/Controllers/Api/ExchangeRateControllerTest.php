@@ -6,6 +6,7 @@ use App\Domain\Asset\Models\Asset;
 use App\Domain\Asset\Models\ExchangeRate;
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
@@ -23,6 +24,9 @@ class ExchangeRateControllerTest extends ControllerTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // Clear exchange rate cache to prevent stale entries from parallel processes
+        Cache::flush();
 
         $this->user = User::factory()->create();
 
@@ -95,6 +99,8 @@ class ExchangeRateControllerTest extends ControllerTestCase
             'to_asset_code'   => 'EUR',
             'rate'            => '0.85000000',
             'is_active'       => true,
+            'valid_at'        => now(),
+            'expires_at'      => null,
         ]);
 
         $response = $this->getJson('/api/exchange-rates/usd/eur');
@@ -128,6 +134,7 @@ class ExchangeRateControllerTest extends ControllerTestCase
             'rate'            => '0.85000000',
             'is_active'       => true,
             'valid_at'        => now(),
+            'expires_at'      => now()->addHour(),
         ]);
 
         $response = $this->getJson('/api/exchange-rates/USD/EUR/convert?amount=10000');
@@ -167,6 +174,8 @@ class ExchangeRateControllerTest extends ControllerTestCase
             'to_asset_code'   => 'EUR',
             'rate'            => '0.85000000',
             'is_active'       => true,
+            'valid_at'        => now(),
+            'expires_at'      => null,
         ]);
 
         // Missing amount
@@ -287,7 +296,7 @@ class ExchangeRateControllerTest extends ControllerTestCase
         ]);
 
         // Clear any cache that might exist
-        \Illuminate\Support\Facades\Cache::forget('exchange_rate:USD:EUR');
+        Cache::forget('exchange_rate:USD:EUR');
 
         $response = $this->getJson('/api/exchange-rates/USD/EUR');
 

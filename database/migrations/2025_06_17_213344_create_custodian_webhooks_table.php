@@ -27,7 +27,7 @@ return new class () extends Migration {
             // Processing status
             $table->enum('status', ['pending', 'processing', 'processed', 'failed', 'ignored']);
             $table->integer('attempts')->default(0);
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->text('error_message')->nullable();
 
             // Related entities

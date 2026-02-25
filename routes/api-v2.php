@@ -27,11 +27,13 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\Auth\RegisterController::class, 'register']);
     Route::post('/login', [App\Http\Controllers\Api\Auth\LoginController::class, 'login']);
 
+    // Token refresh (public — accepts refresh token in body or Authorization header)
+    Route::post('/refresh', [App\Http\Controllers\Api\Auth\LoginController::class, 'refresh'])->middleware('throttle:20,1');
+
     // Protected auth endpoints
     Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
         Route::post('/logout', [App\Http\Controllers\Api\Auth\LoginController::class, 'logout']);
         Route::post('/logout-all', [App\Http\Controllers\Api\Auth\LoginController::class, 'logoutAll']);
-        Route::post('/refresh', [App\Http\Controllers\Api\Auth\LoginController::class, 'refresh']);
         Route::get('/user', [App\Http\Controllers\Api\Auth\LoginController::class, 'user']);
         Route::post('/change-password', [App\Http\Controllers\Api\Auth\PasswordController::class, 'changePassword']);
     });

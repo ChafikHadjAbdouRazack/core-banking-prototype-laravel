@@ -15,7 +15,7 @@ return new class () extends Migration {
             $table->uuid('aggregate_uuid');
             $table->unsignedBigInteger('aggregate_version');
             $table->jsonb('state');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->index('aggregate_uuid');
             $table->unique(['aggregate_uuid', 'aggregate_version'], 'collateral_position_snapshots_aggregate_uuid_version');

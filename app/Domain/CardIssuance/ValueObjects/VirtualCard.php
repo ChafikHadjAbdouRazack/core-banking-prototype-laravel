@@ -26,6 +26,7 @@ final readonly class VirtualCard
         public ?string $pan = null,          // Only available in secure contexts
         public ?string $cvv = null,          // Only available in secure contexts
         public array $metadata = [],
+        public ?string $label = null,
     ) {
     }
 
@@ -46,6 +47,7 @@ final readonly class VirtualCard
             'status'          => $this->status->value,
             'cardholder_name' => $this->cardholderName,
             'expires_at'      => $this->expiresAt->format('Y-m-d'),
+            'label'           => $this->label,
             'metadata'        => $this->metadata,
         ];
     }

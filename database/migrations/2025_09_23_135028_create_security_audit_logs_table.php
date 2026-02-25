@@ -21,7 +21,7 @@ return new class () extends Migration {
             $table->json('context')->nullable();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
-            $table->timestamp('occurred_at')->index();
+            $table->dateTime('occurred_at')->index();
             $table->timestamps();
 
             // Composite indexes for common queries

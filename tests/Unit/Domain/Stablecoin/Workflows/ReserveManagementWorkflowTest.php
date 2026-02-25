@@ -12,7 +12,7 @@ class ReserveManagementWorkflowTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(ReserveManagementWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(ReserveManagementWorkflow::class))->getName());
     }
 
     #[Test]
@@ -25,9 +25,9 @@ class ReserveManagementWorkflowTest extends DomainTestCase
     #[Test]
     public function test_has_workflow_methods(): void
     {
-        $this->assertTrue(method_exists(ReserveManagementWorkflow::class, 'depositReserve'));
-        $this->assertTrue(method_exists(ReserveManagementWorkflow::class, 'withdrawReserve'));
-        $this->assertTrue(method_exists(ReserveManagementWorkflow::class, 'rebalanceReserves'));
+        $this->assertTrue((new ReflectionClass(ReserveManagementWorkflow::class))->hasMethod('depositReserve'));
+        $this->assertTrue((new ReflectionClass(ReserveManagementWorkflow::class))->hasMethod('withdrawReserve'));
+        $this->assertTrue((new ReflectionClass(ReserveManagementWorkflow::class))->hasMethod('rebalanceReserves'));
     }
 
     #[Test]
@@ -62,8 +62,8 @@ class ReserveManagementWorkflowTest extends DomainTestCase
         $reflection = new ReflectionClass(ReserveManagementWorkflow::class);
 
         // Check if the workflow has compensation methods
-        $this->assertTrue(method_exists(ReserveManagementWorkflow::class, 'addCompensation'));
-        $this->assertTrue(method_exists(ReserveManagementWorkflow::class, 'compensate'));
+        $this->assertTrue((new ReflectionClass(ReserveManagementWorkflow::class))->hasMethod('addCompensation'));
+        $this->assertTrue((new ReflectionClass(ReserveManagementWorkflow::class))->hasMethod('compensate'));
     }
 
     #[Test]

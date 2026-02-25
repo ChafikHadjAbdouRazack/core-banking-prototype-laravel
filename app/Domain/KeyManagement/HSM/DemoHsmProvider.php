@@ -20,6 +20,13 @@ class DemoHsmProvider implements HsmProviderInterface
 
     private const DEMO_KEY = 'demo-hsm-encryption-key-32bytes!';
 
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            throw new RuntimeException('DemoHsmProvider cannot be used in production');
+        }
+    }
+
     public function encrypt(string $data, string $keyId): string
     {
         // Simple encryption for demo purposes

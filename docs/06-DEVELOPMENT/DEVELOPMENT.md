@@ -81,7 +81,7 @@ The platform uses Laravel Workflow for saga pattern implementation:
 
 ### Prerequisites
 
-- PHP 8.3+
+- PHP 8.4+
 - Laravel 12
 - MySQL/PostgreSQL
 - Redis (for queues)

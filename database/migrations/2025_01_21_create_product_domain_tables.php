@@ -22,8 +22,8 @@ return new class () extends Migration {
             $table->json('prices')->nullable();
             $table->json('metadata')->nullable();
             $table->integer('popularity_score')->default(0);
-            $table->timestamp('activated_at')->nullable();
-            $table->timestamp('deactivated_at')->nullable();
+            $table->dateTime('activated_at')->nullable();
+            $table->dateTime('deactivated_at')->nullable();
             $table->timestamps();
 
             $table->index('category');
@@ -38,8 +38,8 @@ return new class () extends Migration {
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->uuid('product_id');
             $table->enum('status', ['active', 'suspended', 'cancelled'])->default('active');
-            $table->timestamp('subscribed_at');
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('subscribed_at');
+            $table->dateTime('expires_at')->nullable();
             $table->json('configuration')->nullable();
             $table->json('usage_data')->nullable();
             $table->timestamps();
@@ -58,7 +58,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->unique(['aggregate_uuid', 'aggregate_version']);
             $table->index('aggregate_uuid');

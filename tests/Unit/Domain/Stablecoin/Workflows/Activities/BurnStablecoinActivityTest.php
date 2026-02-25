@@ -14,7 +14,7 @@ class BurnStablecoinActivityTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(BurnStablecoinActivity::class));
+        $this->assertNotEmpty((new ReflectionClass(BurnStablecoinActivity::class))->getName());
     }
 
     #[Test]
@@ -27,7 +27,7 @@ class BurnStablecoinActivityTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(BurnStablecoinActivity::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(BurnStablecoinActivity::class))->hasMethod('execute'));
     }
 
     #[Test]

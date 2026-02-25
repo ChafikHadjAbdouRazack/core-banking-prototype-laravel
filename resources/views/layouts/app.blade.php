@@ -19,15 +19,17 @@
         <!-- Styles -->
         @livewireStyles
 
+        @if(config('brand.ga_id'))
         <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-X65KH9NFMY"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('brand.ga_id') }}"></script>
         <script>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
 
-          gtag('config', 'G-X65KH9NFMY');
+          gtag('config', '{{ config('brand.ga_id') }}');
         </script>
+        @endif
     </head>
     <body class="font-sans antialiased">
         <x-platform-banners />

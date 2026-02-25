@@ -24,7 +24,7 @@ class CreateTenantsTable extends Migration
             $table->unsignedBigInteger('team_id')->nullable();
             $table->string('name');
             $table->string('plan')->default('default');
-            $table->timestamp('trial_ends_at')->nullable();
+            $table->dateTime('trial_ends_at')->nullable();
 
             $table->timestamps();
             $table->json('data')->nullable();

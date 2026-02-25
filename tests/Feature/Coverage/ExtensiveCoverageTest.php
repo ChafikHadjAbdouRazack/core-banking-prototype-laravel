@@ -210,30 +210,30 @@ it('can test account balance model methods extensively', function () {
 
 // Test turnover model class exists
 it('can test turnover model exists', function () {
-    expect(class_exists(Turnover::class))->toBeTrue();
+    expect((new ReflectionClass(Turnover::class))->getName())->not->toBeEmpty();
 });
 
 // Test additional application classes that exist
 it('can test existing application classes', function () {
     // Test that key API controllers exist
-    expect(class_exists(App\Http\Controllers\Api\AccountController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\AssetController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\ExchangeRateController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\AccountBalanceController::class))->toBeTrue();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AccountController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AssetController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\ExchangeRateController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AccountBalanceController::class))->getName())->not->toBeEmpty();
 
     // Test that BIAN controllers exist
-    expect(class_exists(App\Http\Controllers\Api\BIAN\PaymentInitiationController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\BIAN\CurrentAccountController::class))->toBeTrue();
+    expect((new ReflectionClass(App\Http\Controllers\Api\BIAN\PaymentInitiationController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\BIAN\CurrentAccountController::class))->getName())->not->toBeEmpty();
 
     // Test that Filament resources exist
-    expect(class_exists(App\Filament\Admin\Resources\AssetResource::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\ExchangeRateResource::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\AccountResource::class))->toBeTrue();
-    expect(class_exists(App\Filament\Admin\Resources\UserResource::class))->toBeTrue();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\AssetResource::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\ExchangeRateResource::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\AccountResource::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Filament\Admin\Resources\UserResource::class))->getName())->not->toBeEmpty();
 
     // Test that domain services exist
-    expect(class_exists(App\Domain\Account\Services\AccountService::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Services\ExchangeRateService::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Services\AccountService::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Services\ExchangeRateService::class))->getName())->not->toBeEmpty();
 });
 
 // Test view components
@@ -245,36 +245,36 @@ it('can test existing view components', function () {
     expect($guestLayout)->toBeInstanceOf(App\View\Components\GuestLayout::class);
 
     // Test Laravel core middleware exist
-    expect(class_exists(Illuminate\Auth\Middleware\Authenticate::class))->toBeTrue();
-    expect(class_exists(Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class))->toBeTrue();
+    expect((new ReflectionClass(Illuminate\Auth\Middleware\Authenticate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class))->getName())->not->toBeEmpty();
 });
 
 // Test command classes that exist
 it('can test existing console command classes', function () {
-    expect(class_exists(App\Domain\Account\Console\Commands\VerifyTransactionHashes::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Console\Commands\VerifyTransactionHashes::class))->getName())->not->toBeEmpty();
 });
 
 // Test domain events
 it('can test existing domain event classes', function () {
-    expect(class_exists(App\Domain\Account\Events\MoneyAdded::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Events\MoneySubtracted::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Events\MoneyTransferred::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransactionCreated::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransferInitiated::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransferCompleted::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransferFailed::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Events\MoneyAdded::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Events\MoneySubtracted::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Events\MoneyTransferred::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransactionCreated::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransferInitiated::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransferCompleted::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransferFailed::class))->getName())->not->toBeEmpty();
 });
 
 // Test aggregates and projectors
 it('can test existing aggregate and projector classes', function () {
-    expect(class_exists(App\Domain\Account\Aggregates\LedgerAggregate::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Aggregates\TransactionAggregate::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Aggregates\TransferAggregate::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Aggregates\AssetTransactionAggregate::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Aggregates\AssetTransferAggregate::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Aggregates\LedgerAggregate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Aggregates\TransactionAggregate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Aggregates\TransferAggregate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Aggregates\AssetTransactionAggregate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Aggregates\AssetTransferAggregate::class))->getName())->not->toBeEmpty();
 
-    expect(class_exists(App\Domain\Account\Projectors\AccountProjector::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Projectors\TurnoverProjector::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Projectors\AssetTransactionProjector::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Projectors\AssetTransferProjector::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Projectors\AccountProjector::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Projectors\TurnoverProjector::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Projectors\AssetTransactionProjector::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Projectors\AssetTransferProjector::class))->getName())->not->toBeEmpty();
 });

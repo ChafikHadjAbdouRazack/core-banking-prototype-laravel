@@ -6,7 +6,7 @@ use App\Domain\Account\Workflows\WithdrawAccountWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for withdraw', function () {
-    expect(class_exists(WithdrawAccountWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(WithdrawAccountWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(WithdrawAccountWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

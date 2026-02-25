@@ -29,7 +29,9 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
     public function createCard(
         string $userId,
         string $cardholderName,
-        array $metadata = []
+        array $metadata = [],
+        ?CardNetwork $network = null,
+        ?string $label = null,
     ): VirtualCard {
         $cardToken = 'card_demo_' . bin2hex(random_bytes(16));
         $last4 = (string) random_int(1000, 9999);
@@ -38,11 +40,12 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
         $card = new VirtualCard(
             cardToken: $cardToken,
             last4: $last4,
-            network: CardNetwork::VISA,
+            network: $network ?? CardNetwork::VISA,
             status: CardStatus::ACTIVE,
             cardholderName: $cardholderName,
             expiresAt: $expiresAt,
-            metadata: array_merge($metadata, ['user_id' => $userId]),
+            metadata: array_merge($metadata, ['user_id' => $userId, 'label' => $label]),
+            label: $label,
         );
 
         // Store in cache for demo purposes
@@ -94,6 +97,7 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
             cardholderName: $card->cardholderName,
             expiresAt: $card->expiresAt,
             metadata: $card->metadata,
+            label: $card->label,
         );
 
         Cache::put("card:{$cardToken}", $frozenCard, now()->addDays(30));
@@ -116,6 +120,7 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
             cardholderName: $card->cardholderName,
             expiresAt: $card->expiresAt,
             metadata: $card->metadata,
+            label: $card->label,
         );
 
         Cache::put("card:{$cardToken}", $activeCard, now()->addDays(30));
@@ -138,6 +143,7 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
             cardholderName: $card->cardholderName,
             expiresAt: $card->expiresAt,
             metadata: array_merge($card->metadata, ['cancellation_reason' => $reason]),
+            label: $card->label,
         );
 
         Cache::put("card:{$cardToken}", $cancelledCard, now()->addDays(30));

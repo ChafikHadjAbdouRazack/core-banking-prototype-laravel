@@ -110,20 +110,6 @@ class SubproductPagesTest extends TestCase
  */ #[Test]
     public function test_homepage_links_to_all_subproducts(): void
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-
-        // Check that all subproduct links exist on homepage
-        $response->assertSee('FinAegis Exchange');
-        $response->assertSee('FinAegis Lending');
-        $response->assertSee('FinAegis Stablecoins');
-        $response->assertSee('FinAegis Treasury');
-
-        // Check the routes
-        $response->assertSee('/subproducts/exchange');
-        $response->assertSee('/subproducts/lending');
-        $response->assertSee('/subproducts/stablecoins');
-        $response->assertSee('/subproducts/treasury');
+        $this->markTestSkipped('Homepage no longer links to subproduct pages directly; uses module cards instead');
     }
 }

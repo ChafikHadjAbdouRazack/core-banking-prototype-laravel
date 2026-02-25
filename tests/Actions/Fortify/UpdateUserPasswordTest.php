@@ -8,7 +8,7 @@ it('implements UpdatesUserPasswords contract', function () {
 });
 
 it('has update method', function () {
-    expect(method_exists(UpdateUserPassword::class, 'update'))->toBeTrue();
+    expect((new ReflectionClass(UpdateUserPassword::class))->hasMethod('update'))->toBeTrue();
 });
 
 it('can be instantiated', function () {

@@ -11,4 +11,13 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            external: [
+                '@ledgerhq/hw-transport-webusb',
+                '@ledgerhq/hw-app-eth',
+                '@trezor/connect-web',
+            ],
+        },
+    },
 });

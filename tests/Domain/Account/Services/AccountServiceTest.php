@@ -9,19 +9,19 @@ beforeEach(function () {
 });
 
 it('has create method', function () {
-    expect(method_exists($this->accountService, 'create'))->toBeTrue();
+    expect((new ReflectionClass($this->accountService))->hasMethod('create'))->toBeTrue();
 });
 
 it('has destroy method', function () {
-    expect(method_exists($this->accountService, 'destroy'))->toBeTrue();
+    expect((new ReflectionClass($this->accountService))->hasMethod('destroy'))->toBeTrue();
 });
 
 it('has deposit method', function () {
-    expect(method_exists($this->accountService, 'deposit'))->toBeTrue();
+    expect((new ReflectionClass($this->accountService))->hasMethod('deposit'))->toBeTrue();
 });
 
 it('has withdraw method', function () {
-    expect(method_exists($this->accountService, 'withdraw'))->toBeTrue();
+    expect((new ReflectionClass($this->accountService))->hasMethod('withdraw'))->toBeTrue();
 });
 
 it('can be instantiated from container', function () {

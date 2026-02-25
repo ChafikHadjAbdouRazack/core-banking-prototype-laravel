@@ -26,7 +26,7 @@ beforeEach(function () {
 });
 
 it('can create workflow stub for transfer', function () {
-    expect(class_exists(TransferWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(TransferWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(TransferWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

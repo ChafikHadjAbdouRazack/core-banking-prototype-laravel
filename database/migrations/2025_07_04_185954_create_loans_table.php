@@ -24,24 +24,24 @@ return new class () extends Migration {
             // Funding fields
             $table->jsonb('investor_ids')->nullable();
             $table->decimal('funded_amount', 19, 2)->nullable();
-            $table->timestamp('funded_at')->nullable();
+            $table->dateTime('funded_at')->nullable();
 
             // Disbursement fields
             $table->decimal('disbursed_amount', 19, 2)->nullable();
-            $table->timestamp('disbursed_at')->nullable();
+            $table->dateTime('disbursed_at')->nullable();
 
             // Payment tracking
             $table->decimal('total_principal_paid', 19, 2)->default(0);
             $table->decimal('total_interest_paid', 19, 2)->default(0);
-            $table->timestamp('last_payment_date')->nullable();
+            $table->dateTime('last_payment_date')->nullable();
             $table->integer('missed_payments')->default(0);
 
             // Settlement/completion fields
             $table->decimal('settlement_amount', 19, 2)->nullable();
-            $table->timestamp('settled_at')->nullable();
+            $table->dateTime('settled_at')->nullable();
             $table->string('settled_by')->nullable();
-            $table->timestamp('defaulted_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('defaulted_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
 
             $table->timestamps();
 

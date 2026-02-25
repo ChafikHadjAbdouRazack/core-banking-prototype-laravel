@@ -4,6 +4,12 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\ServiceProvider;
+use Kreait\Firebase\Contract\Messaging;
+use Kreait\Laravel\Firebase\FirebaseProjectManager;
+use OpenApi\Analysers\AttributeAnnotationFactory;
+use OpenApi\Analysers\DocBlockAnnotationFactory;
+use OpenApi\Analysers\ReflectionAnalyser;
+use Throwable;
 use URL;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +30,15 @@ class AppServiceProvider extends ServiceProvider
 
         // Register blockchain service provider
         $this->app->register(BlockchainServiceProvider::class);
+
+        // Override Firebase Messaging to return null when credentials are not configured
+        $this->app->singleton(Messaging::class, function ($app) {
+            try {
+                return $app->make(FirebaseProjectManager::class)->project()->messaging();
+            } catch (Throwable) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -31,6 +46,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // L5-Swagger: inject the analyser at generation time (not in config) so
+        // config:cache / optimize works. Object instances are not serializable.
+        $this->app->resolving(\L5Swagger\GeneratorFactory::class, function () {
+            if (config('l5-swagger.defaults.scanOptions.analyser') === null) {
+                config(['l5-swagger.defaults.scanOptions.analyser' => new ReflectionAnalyser([
+                    new DocBlockAnnotationFactory(),
+                    new AttributeAnnotationFactory(),
+                ])]);
+            }
+        });
+
         // Configure factory namespace resolution for domain models
         /**
          * @param class-string<\Illuminate\Database\Eloquent\Model> $modelName

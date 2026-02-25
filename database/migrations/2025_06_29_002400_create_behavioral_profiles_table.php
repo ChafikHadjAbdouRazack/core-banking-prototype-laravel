@@ -53,7 +53,7 @@ return new class () extends Migration {
             $table->integer('password_change_frequency')->default(0);
             $table->boolean('uses_2fa')->default(false);
             $table->integer('failed_login_attempts')->default(0);
-            $table->timestamp('last_suspicious_activity')->nullable();
+            $table->dateTime('last_suspicious_activity')->nullable();
 
             // Velocity Metrics
             $table->decimal('max_daily_volume', 15, 2)->nullable();
@@ -65,12 +65,12 @@ return new class () extends Migration {
             $table->integer('days_since_first_transaction')->default(0);
             $table->integer('total_transaction_count')->default(0);
             $table->decimal('total_transaction_volume', 15, 2)->default(0);
-            $table->timestamp('profile_established_at')->nullable();
+            $table->dateTime('profile_established_at')->nullable();
             $table->boolean('is_established')->default(false); // Enough data for reliable profiling
 
             // ML Features
             $table->json('ml_feature_vector')->nullable(); // Computed features for ML
-            $table->timestamp('ml_features_updated_at')->nullable();
+            $table->dateTime('ml_features_updated_at')->nullable();
 
             $table->timestamps();
 

@@ -19,7 +19,7 @@ return new class () extends Migration {
             $table->json('request_headers')->nullable();
             $table->json('request_body')->nullable();
             $table->json('response_body')->nullable();
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->index(['api_key_id', 'created_at']);
             $table->index('created_at');

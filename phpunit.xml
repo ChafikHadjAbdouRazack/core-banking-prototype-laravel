@@ -59,6 +59,7 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="LIGHTHOUSE_SCHEMA_CACHE_ENABLE" value="false"/>
         <!-- Parallel testing configuration -->
         <env name="PEST_PARALLEL" value="false"/>
         <!-- Test timeout configuration -->

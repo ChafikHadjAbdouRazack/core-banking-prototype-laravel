@@ -10,10 +10,10 @@ use App\Domain\Account\Workflows\SingleBatchOperationActivity;
 
 it('can execute batch processing operations', function () {
     // Simply verify the workflow can be created and has the right structure
-    expect(class_exists(BatchProcessingWorkflow::class))->toBeTrue();
-    expect(class_exists(SingleBatchOperationActivity::class))->toBeTrue();
-    expect(class_exists(ReverseBatchOperationActivity::class))->toBeTrue();
-    expect(class_exists(CreateBatchSummaryActivity::class))->toBeTrue();
+    expect((new ReflectionClass(BatchProcessingWorkflow::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(SingleBatchOperationActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(ReverseBatchOperationActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(CreateBatchSummaryActivity::class))->getName())->not->toBeEmpty();
 });
 
 it('executes compensation logic when configured', function () {

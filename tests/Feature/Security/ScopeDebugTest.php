@@ -14,8 +14,8 @@ class ScopeDebugTest extends TestCase
     {
         $user = User::factory()->create();
 
-        // Test with no abilities
-        Sanctum::actingAs($user, ['read', 'write', 'delete']);
+        // Test with no abilities - explicitly pass empty array to avoid TransientToken granting all
+        Sanctum::actingAs($user, []);
 
         echo "\n=== Test 1: Sanctum::actingAs without abilities ===\n";
         $canRead = $user->tokenCan('read');

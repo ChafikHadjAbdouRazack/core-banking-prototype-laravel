@@ -2,16 +2,22 @@
 
 declare(strict_types=1);
 
+use App\Domain\Commerce\Contracts\OnChainSbtServiceInterface;
 use App\Domain\Commerce\Enums\TokenType;
 use App\Domain\Commerce\Events\SoulboundTokenIssued;
+use App\Domain\Commerce\Events\SoulboundTokenMintedOnChain;
 use App\Domain\Commerce\Events\SoulboundTokenRevoked;
+use App\Domain\Commerce\Events\SoulboundTokenRevokedOnChain;
 use App\Domain\Commerce\Services\SoulboundTokenService;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Event;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function (): void {
     Event::fake();
+    Cache::flush();
     $this->service = new SoulboundTokenService('test-issuer');
 });
 
@@ -183,6 +189,133 @@ describe('SoulboundTokenService', function (): void {
 
             expect($details)->not->toBeNull();
             expect($details['reason'])->toBe('Account closed');
+        });
+    });
+
+    describe('on-chain anchoring', function (): void {
+        it('mints on-chain when anchoring is enabled', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', true);
+            Config::set('commerce.soulbound_tokens.contract_address', '0xcontract');
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldReceive('isAvailable')->andReturn(true);
+            $mockOnChain->shouldReceive('mintToken')->andReturn([
+                'token_id'         => 1,
+                'tx_hash'          => '0xtxhash123',
+                'contract_address' => '0xcontract',
+                'network'          => 'polygon',
+            ]);
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            $token = $service->issueToken(
+                type: TokenType::SOULBOUND,
+                recipientId: 'user-123',
+                metadata: ['badge_type' => 'test'],
+            );
+
+            expect($token->getMetadata('on_chain_tx_hash'))->toBe('0xtxhash123');
+
+            Event::assertDispatched(SoulboundTokenMintedOnChain::class, function ($event) use ($token): bool {
+                return $event->tokenId === $token->tokenId
+                    && $event->txHash === '0xtxhash123';
+            });
+        });
+
+        it('does not mint on-chain when anchoring is disabled', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', false);
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldNotReceive('mintToken');
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            $token = $service->issueToken(
+                type: TokenType::SOULBOUND,
+                recipientId: 'user-123',
+                metadata: [],
+            );
+
+            expect($token->getMetadata('on_chain_tx_hash'))->toBeNull();
+            Event::assertNotDispatched(SoulboundTokenMintedOnChain::class);
+        });
+
+        it('handles on-chain minting failure gracefully', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', true);
+            Config::set('commerce.soulbound_tokens.contract_address', '0xcontract');
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldReceive('isAvailable')->andReturn(true);
+            $mockOnChain->shouldReceive('mintToken')->andThrow(new RuntimeException('Network error'));
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            $token = $service->issueToken(
+                type: TokenType::SOULBOUND,
+                recipientId: 'user-123',
+                metadata: [],
+            );
+
+            // Token should still be issued even if on-chain fails
+            expect($token->tokenId)->not->toBeEmpty();
+            expect($token->getMetadata('on_chain_tx_hash'))->toBeNull();
+        });
+
+        it('revokes on-chain when token has on-chain ID cached', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', true);
+            Config::set('commerce.soulbound_tokens.contract_address', '0xcontract');
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldReceive('isAvailable')->andReturn(true);
+            $mockOnChain->shouldReceive('revokeToken')->once()->andReturn([
+                'tx_hash'          => '0xrevoke123',
+                'contract_address' => '0xcontract',
+                'network'          => 'polygon',
+            ]);
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            // Simulate cached on-chain token ID
+            Cache::put('sbt_on_chain_id:token-abc', 42);
+
+            $service->revokeToken('token-abc', 'Test revocation');
+
+            Event::assertDispatched(SoulboundTokenRevokedOnChain::class, function ($event): bool {
+                return $event->tokenId === 'token-abc'
+                    && $event->onChainTokenId === 42;
+            });
+        });
+
+        it('skips on-chain revoke when no cached on-chain ID', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', true);
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldReceive('isAvailable')->andReturn(true);
+            $mockOnChain->shouldNotReceive('revokeToken');
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            $service->revokeToken('token-xyz', 'Test revocation');
+
+            Event::assertNotDispatched(SoulboundTokenRevokedOnChain::class);
+        });
+
+        it('anchorOnChain returns null when service unavailable', function (): void {
+            Config::set('commerce.soulbound_tokens.on_chain_anchoring', true);
+
+            $mockOnChain = Mockery::mock(OnChainSbtServiceInterface::class);
+            $mockOnChain->shouldReceive('isAvailable')->andReturn(false);
+
+            $service = new SoulboundTokenService('test-issuer', $mockOnChain);
+
+            $token = $service->issueToken(
+                type: TokenType::SOULBOUND,
+                recipientId: 'user-123',
+                metadata: [],
+            );
+
+            $result = $service->anchorOnChain($token);
+            expect($result)->toBeNull();
         });
     });
 });

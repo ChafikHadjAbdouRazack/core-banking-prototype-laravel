@@ -22,7 +22,7 @@ class TenantChannelAuthorizerTest extends TestCase
     #[Test]
     public function authorizer_class_exists(): void
     {
-        $this->assertTrue(class_exists(TenantChannelAuthorizer::class));
+        $this->assertNotEmpty((new ReflectionClass(TenantChannelAuthorizer::class))->getName());
     }
 
     #[Test]

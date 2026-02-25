@@ -6,9 +6,16 @@ return [
      * These directories will be scanned for projectors and reactors. They
      * will be registered to Projectionist automatically.
      */
-    'auto_discover_projectors_and_reactors' => [
-        app()->path(),
-    ],
+    'auto_discover_projectors_and_reactors' => array_values(array_filter(
+        array_merge(
+            glob(app_path('Domain/*/Projectors')) ?: [],
+            glob(app_path('Domain/*/Reactors')) ?: [],
+            glob(app_path('Domain/*/Sagas')) ?: [],
+            glob(app_path('Domain/*/Listeners')) ?: [],
+            glob(app_path('Domain/*/*/Reactors')) ?: [],
+        ),
+        'is_dir'
+    )),
 
     /*
      * This directory will be used as the base path when scanning

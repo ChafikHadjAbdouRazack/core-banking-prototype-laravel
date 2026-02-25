@@ -34,17 +34,17 @@ return new class () extends Migration {
             $table->foreignId('initiated_by')->constrained('users');
 
             // Processing details
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->string('processor_reference')->nullable(); // Stripe refund ID, bank reference, etc.
             $table->json('processor_response')->nullable();
             $table->text('processing_notes')->nullable();
 
             // Failure tracking
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
 
             // Cancellation tracking
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->text('cancellation_reason')->nullable();
 
             // Additional fields for manual refunds

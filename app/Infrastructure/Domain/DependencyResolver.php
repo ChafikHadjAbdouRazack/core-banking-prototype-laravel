@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024-2026 FinAegis Contributors
+
 namespace App\Infrastructure\Domain;
 
 use App\Infrastructure\Domain\DataObjects\DependencyNode;

@@ -25,13 +25,13 @@ return new class () extends Migration {
             $table->boolean('biometric_enabled')->default(false);
             $table->text('biometric_public_key')->nullable()->comment('ECDSA P-256 public key for biometric auth');
             $table->string('biometric_key_id', 100)->nullable()->comment('Key identifier for rotation');
-            $table->timestamp('last_active_at')->nullable();
-            $table->timestamp('biometric_enabled_at')->nullable();
+            $table->dateTime('last_active_at')->nullable();
+            $table->dateTime('biometric_enabled_at')->nullable();
             $table->boolean('is_trusted')->default(false)->comment('Whether device has been explicitly trusted');
-            $table->timestamp('trusted_at')->nullable();
+            $table->dateTime('trusted_at')->nullable();
             $table->string('trusted_by')->nullable()->comment('Admin who trusted the device');
             $table->boolean('is_blocked')->default(false);
-            $table->timestamp('blocked_at')->nullable();
+            $table->dateTime('blocked_at')->nullable();
             $table->string('blocked_reason')->nullable();
             $table->json('metadata')->nullable()->comment('Additional device metadata');
             $table->timestamps();
@@ -49,8 +49,8 @@ return new class () extends Migration {
             $table->string('session_token', 64)->unique();
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent')->nullable();
-            $table->timestamp('last_activity_at');
-            $table->timestamp('expires_at');
+            $table->dateTime('last_activity_at');
+            $table->dateTime('expires_at');
             $table->boolean('is_biometric_session')->default(false);
             $table->timestamps();
 
@@ -75,10 +75,10 @@ return new class () extends Migration {
             $table->string('external_id')->nullable()->comment('FCM/APNS message ID');
             $table->text('error_message')->nullable();
             $table->integer('retry_count')->default(0);
-            $table->timestamp('scheduled_at')->nullable();
-            $table->timestamp('sent_at')->nullable();
-            $table->timestamp('delivered_at')->nullable();
-            $table->timestamp('read_at')->nullable();
+            $table->dateTime('scheduled_at')->nullable();
+            $table->dateTime('sent_at')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->dateTime('read_at')->nullable();
             $table->timestamps();
 
             $table->foreign('mobile_device_id')
@@ -99,8 +99,8 @@ return new class () extends Migration {
             $table->string('challenge', 64)->unique()->comment('Random challenge for signing');
             $table->enum('status', ['pending', 'verified', 'expired', 'failed'])->default('pending');
             $table->string('ip_address', 45)->nullable();
-            $table->timestamp('expires_at');
-            $table->timestamp('verified_at')->nullable();
+            $table->dateTime('expires_at');
+            $table->dateTime('verified_at')->nullable();
             $table->timestamps();
 
             $table->foreign('mobile_device_id')

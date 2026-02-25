@@ -36,8 +36,8 @@ return new class () extends Migration {
 
             // Investigation Details
             $table->foreignId('investigator_id')->nullable()->constrained('users');
-            $table->timestamp('investigation_started_at')->nullable();
-            $table->timestamp('investigation_completed_at')->nullable();
+            $table->dateTime('investigation_started_at')->nullable();
+            $table->dateTime('investigation_completed_at')->nullable();
             $table->text('investigation_findings')->nullable();
             $table->json('supporting_documents')->nullable();
 
@@ -45,13 +45,13 @@ return new class () extends Migration {
             $table->string('decision')->nullable(); // file_sar, no_action, continue_monitoring
             $table->text('decision_rationale')->nullable();
             $table->foreignId('decision_maker_id')->nullable()->constrained('users');
-            $table->timestamp('decision_date')->nullable();
+            $table->dateTime('decision_date')->nullable();
             $table->json('actions_taken')->nullable();
 
             // Regulatory Filing
             $table->boolean('filed_with_regulator')->default(false);
             $table->string('filing_reference')->nullable();
-            $table->timestamp('filing_date')->nullable();
+            $table->dateTime('filing_date')->nullable();
             $table->string('filing_jurisdiction')->nullable();
             $table->json('filing_details')->nullable();
 
@@ -63,14 +63,14 @@ return new class () extends Migration {
 
             // Quality Assurance
             $table->foreignId('reviewed_by')->nullable()->constrained('users');
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->text('review_comments')->nullable();
             $table->boolean('qa_approved')->default(false);
 
             // Metadata
             $table->boolean('is_confidential')->default(true);
             $table->json('access_log')->nullable(); // Who accessed and when
-            $table->timestamp('retention_until')->nullable();
+            $table->dateTime('retention_until')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

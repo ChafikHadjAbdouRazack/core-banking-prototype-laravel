@@ -180,8 +180,8 @@
                                 <div class="text-sm text-gray-500">License</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-blue-400 code-font">12+</div>
-                                <div class="text-sm text-gray-500">APIs</div>
+                                <div class="text-2xl font-bold text-blue-400 code-font">1,189+</div>
+                                <div class="text-sm text-gray-500">Routes</div>
                             </div>
                             <div>
                                 <div class="text-2xl font-bold text-purple-400 code-font">∞</div>
@@ -420,31 +420,96 @@
                     </div>
                     
                     <!-- Lending -->
-                    <div class="hover-lift bg-gray-100 rounded-xl p-6 relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white relative overflow-hidden">
                         <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-gray-300 text-gray-700 rounded-full text-xs font-bold">SOON</span>
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
                         </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Lending</h3>
-                        <p class="text-gray-600 text-sm">P2P lending marketplace</p>
+                        <p class="text-green-100 text-sm mb-4">P2P lending marketplace with loan origination and repayment workflows</p>
+                        <a href="{{ route('features.show', 'multi-asset') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
                     </div>
-                    
+
                     <!-- Treasury -->
-                    <div class="hover-lift bg-gray-100 rounded-xl p-6 relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl p-6 text-white relative overflow-hidden">
                         <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-gray-300 text-gray-700 rounded-full text-xs font-bold">SOON</span>
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
                         </div>
-                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Treasury</h3>
-                        <p class="text-gray-600 text-sm">Multi-bank cash management</p>
+                        <p class="text-red-100 text-sm mb-4">Multi-bank cash management and yield optimization</p>
+                        <a href="{{ route('features.show', 'multi-asset') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Additional Capabilities -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
+                    <!-- Cross-Chain & DeFi -->
+                    <div class="bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Cross-Chain & DeFi</h3>
+                        <p class="text-orange-100 text-sm mb-4">Bridge protocols, DEX aggregation, staking, and yield optimization</p>
+                        <a href="{{ route('features.show', 'crosschain-defi') }}" class="text-white font-semibold hover:underline">Explore &rarr;</a>
+                    </div>
+
+                    <!-- GraphQL API -->
+                    <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">GraphQL API</h3>
+                        <p class="text-pink-100 text-sm mb-4">33 domains, subscriptions, DataLoaders, and real-time queries</p>
+                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
+                    </div>
+
+                    <!-- Event Streaming -->
+                    <div class="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Event Streaming</h3>
+                        <p class="text-teal-100 text-sm mb-4">Redis Streams, live dashboard, and real-time event processing</p>
+                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
+                    </div>
+
+                    <!-- Plugin Marketplace -->
+                    <div class="bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl p-6 text-white relative overflow-hidden">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
+                        </div>
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Plugin Marketplace</h3>
+                        <p class="text-violet-100 text-sm mb-4">Sandbox execution, security scanner, and extensible hook system</p>
+                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
                     </div>
                 </div>
             </div>

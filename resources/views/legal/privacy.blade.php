@@ -13,7 +13,7 @@
             <div class="prose prose-lg max-w-none">
                 
                 <h2>1. Introduction</h2>
-                <p>FinAegis ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform and services.</p>
+                <p>{{ config('brand.legal_entity') }} ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform and services.</p>
 
                 <h2>2. Information We Collect</h2>
                 <h3>2.1 Personal Information</h3>
@@ -167,8 +167,8 @@
                 <p>For privacy-related questions or to exercise your rights, contact us at:</p>
                 <div class="bg-gray-50 p-6 rounded-lg mt-6">
                     <p><strong>Data Protection Officer</strong><br>
-                    Email: privacy@finaegis.org<br>
-                    Address: Vilnius, Lithuania</p>
+                    Email: {{ config('brand.privacy_email') }}<br>
+                    Address: {{ config('brand.legal_jurisdiction') }}</p>
                 </div>
 
                 <h2>13. Data Processing Legal Bases</h2>

@@ -29,7 +29,7 @@ class StablecoinProjectorTest extends TestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(StablecoinProjector::class));
+        $this->assertNotEmpty((new ReflectionClass(StablecoinProjector::class))->getName());
     }
 
     #[Test]
@@ -53,7 +53,7 @@ class StablecoinProjectorTest extends TestCase
         ];
 
         foreach ($expectedMethods as $method) {
-            $this->assertTrue(method_exists($this->projector, $method));
+            $this->assertTrue((new ReflectionClass($this->projector))->hasMethod($method));
         }
     }
 

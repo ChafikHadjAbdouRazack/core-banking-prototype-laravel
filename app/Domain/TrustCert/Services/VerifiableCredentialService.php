@@ -12,6 +12,7 @@ use App\Domain\TrustCert\ValueObjects\TrustChain;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 /**
  * Service for W3C Verifiable Credentials standard implementation.
@@ -28,6 +29,9 @@ class VerifiableCredentialService
         private readonly string $issuerId = 'did:finaegis:issuer:default',
         private readonly string $signingKey = '',
     ) {
+        if (app()->environment('production') && empty($this->signingKey)) {
+            throw new RuntimeException('Credential signing key must be configured in production');
+        }
     }
 
     /**

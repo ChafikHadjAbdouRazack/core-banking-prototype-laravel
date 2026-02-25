@@ -10,7 +10,7 @@ return [
     */
     'certificate_authority' => [
         'ca_id'            => env('TRUSTCERT_CA_ID', 'finaegis-root-ca'),
-        'ca_signing_key'   => env('TRUSTCERT_CA_SIGNING_KEY', ''),
+        'ca_signing_key'   => env('TRUSTCERT_CA_SIGNING_KEY'),
         'default_validity' => [
             'days' => 365,
         ],
@@ -23,8 +23,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'credentials' => [
-        'credential_signing_key'   => env('TRUSTCERT_CREDENTIAL_SIGNING_KEY', ''),
-        'presentation_signing_key' => env('TRUSTCERT_PRESENTATION_SIGNING_KEY', ''),
+        'credential_signing_key'   => env('TRUSTCERT_CREDENTIAL_SIGNING_KEY'),
+        'presentation_signing_key' => env('TRUSTCERT_PRESENTATION_SIGNING_KEY'),
         'default_issuer'           => env('TRUSTCERT_DEFAULT_ISSUER', 'did:finaegis:issuer:default'),
         'supported_proof_types'    => [
             'Ed25519Signature2020',

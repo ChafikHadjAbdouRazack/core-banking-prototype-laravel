@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\CardIssuance\Services;
 
 use App\Domain\CardIssuance\Contracts\CardIssuerInterface;
+use App\Domain\CardIssuance\Enums\CardNetwork;
 use App\Domain\CardIssuance\Enums\WalletType;
 use App\Domain\CardIssuance\Events\CardProvisioned;
 use App\Domain\CardIssuance\ValueObjects\ProvisioningData;
@@ -31,14 +32,16 @@ class CardProvisioningService
     public function createCard(
         string $userId,
         string $cardholderName,
-        array $metadata = []
+        array $metadata = [],
+        ?CardNetwork $network = null,
+        ?string $label = null,
     ): VirtualCard {
         Log::info('Creating virtual card', [
             'user_id' => $userId,
             'issuer'  => $this->cardIssuer->getName(),
         ]);
 
-        $card = $this->cardIssuer->createCard($userId, $cardholderName, $metadata);
+        $card = $this->cardIssuer->createCard($userId, $cardholderName, $metadata, $network, $label);
 
         Log::info('Virtual card created', [
             'user_id'    => $userId,
@@ -102,6 +105,14 @@ class CardProvisioningService
         ]);
 
         return $provisioningData;
+    }
+
+    /**
+     * Get a card by token.
+     */
+    public function getCard(string $cardToken): ?VirtualCard
+    {
+        return $this->cardIssuer->getCard($cardToken);
     }
 
     /**

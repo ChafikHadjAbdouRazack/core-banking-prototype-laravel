@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->string('reason');
             $table->string('status')->default('pending'); // pending, completed, failed, cancelled
             $table->json('metadata')->nullable();
-            $table->timestamp('executed_at')->nullable();
+            $table->dateTime('executed_at')->nullable();
             $table->timestamps();
 
             $table->index('uuid');

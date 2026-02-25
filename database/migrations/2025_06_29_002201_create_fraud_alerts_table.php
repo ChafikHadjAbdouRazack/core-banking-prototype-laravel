@@ -24,8 +24,8 @@ return new class () extends Migration {
             $table->uuid('entity_type'); // account, user, transaction
             $table->uuid('entity_id');
             $table->text('description');
-            $table->timestamp('triggered_at');
-            $table->timestamp('acknowledged_at')->nullable();
+            $table->dateTime('triggered_at');
+            $table->dateTime('acknowledged_at')->nullable();
             $table->uuid('acknowledged_by')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

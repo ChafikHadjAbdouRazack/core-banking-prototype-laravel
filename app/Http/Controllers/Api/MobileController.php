@@ -944,11 +944,8 @@ class MobileController extends Controller
      *             @OA\Property(
      *                 property="preferences",
      *                 type="object",
-     *                 additionalProperties=@OA\Schema(
-     *                     type="object",
-     *                     @OA\Property(property="push_enabled", type="boolean"),
-     *                     @OA\Property(property="email_enabled", type="boolean")
-     *                 )
+     *                 description="Map of notification category to preference settings",
+     *                 example={"transactions": {"push_enabled": true, "email_enabled": false}}
      *             )
      *         )
      *     ),
@@ -983,6 +980,79 @@ class MobileController extends Controller
                 'preferences' => array_values($updatedPreferences),
             ],
             'message' => 'Preferences updated successfully',
+        ]);
+    }
+
+    /**
+     * Get app status for mobile version/maintenance check.
+     *
+     * @OA\Get(
+     *     path="/api/v1/app/status",
+     *     operationId="getAppStatus",
+     *     tags={"Mobile"},
+     *     summary="Get app version and maintenance status",
+     *     @OA\Response(
+     *         response=200,
+     *         description="App status",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="min_version", type="string", example="1.0.0"),
+     *                 @OA\Property(property="latest_version", type="string", example="1.2.0"),
+     *                 @OA\Property(property="force_update", type="boolean", example=false),
+     *                 @OA\Property(property="maintenance", type="boolean", example=false),
+     *                 @OA\Property(property="maintenance_message", type="string", nullable=true)
+     *             )
+     *         )
+     *     )
+     * )
+     */
+    public function getAppStatus(): JsonResponse
+    {
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'min_version'         => config('mobile.min_version', '1.0.0'),
+                'latest_version'      => config('mobile.latest_version', '1.0.0'),
+                'force_update'        => (bool) config('mobile.force_update', false),
+                'maintenance'         => app()->isDownForMaintenance(),
+                'maintenance_message' => config('mobile.maintenance_message'),
+            ],
+        ]);
+    }
+
+    /**
+     * Bulk remove all devices for the authenticated user.
+     *
+     * @OA\Delete(
+     *     path="/api/mobile/devices/all",
+     *     operationId="bulkRemoveDevices",
+     *     tags={"Mobile"},
+     *     summary="Remove all registered devices for the current user",
+     *     security={{"sanctum":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="All devices removed",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="removed_count", type="integer", example=3)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated")
+     * )
+     */
+    public function bulkRemoveDevices(Request $request): JsonResponse
+    {
+        $user = $this->getAuthenticatedUser($request);
+        $count = $this->deviceService->removeAllDevices($user);
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'removed_count' => $count,
+            ],
         ]);
     }
 

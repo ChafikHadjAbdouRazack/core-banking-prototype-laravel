@@ -22,20 +22,20 @@ class TenantIsolationSecurityTest extends TestCase
     #[Test]
     public function middleware_class_exists(): void
     {
-        $this->assertTrue(class_exists(InitializeTenancyByTeam::class));
+        $this->assertNotEmpty((new ReflectionClass(InitializeTenancyByTeam::class))->getName());
     }
 
     #[Test]
     public function middleware_has_handle_method(): void
     {
         /** @phpstan-ignore function.alreadyNarrowedType */
-        $this->assertTrue(method_exists(InitializeTenancyByTeam::class, 'handle'));
+        $this->assertTrue((new ReflectionClass(InitializeTenancyByTeam::class))->hasMethod('handle'));
     }
 
     #[Test]
     public function tenant_model_exists(): void
     {
-        $this->assertTrue(class_exists(Tenant::class));
+        $this->assertNotEmpty((new ReflectionClass(Tenant::class))->getName());
     }
 
     #[Test]
@@ -72,7 +72,7 @@ class TenantIsolationSecurityTest extends TestCase
     public function tenant_model_has_team_relationship_method(): void
     {
         /** @phpstan-ignore function.alreadyNarrowedType */
-        $this->assertTrue(method_exists(Tenant::class, 'team'));
+        $this->assertTrue((new ReflectionClass(Tenant::class))->hasMethod('team'));
     }
 
     #[Test]

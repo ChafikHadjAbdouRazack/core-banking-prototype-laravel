@@ -32,8 +32,8 @@ return new class () extends Migration {
             $table->decimal('fee', 20, 8)->default(0);
             $table->decimal('exchange_rate', 20, 10)->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('processed_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

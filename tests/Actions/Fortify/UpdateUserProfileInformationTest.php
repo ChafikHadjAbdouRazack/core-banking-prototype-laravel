@@ -8,7 +8,7 @@ it('implements UpdatesUserProfileInformation contract', function () {
 });
 
 it('has update method', function () {
-    expect(method_exists(UpdateUserProfileInformation::class, 'update'))->toBeTrue();
+    expect((new ReflectionClass(UpdateUserProfileInformation::class))->hasMethod('update'))->toBeTrue();
 });
 
 it('can be instantiated', function () {

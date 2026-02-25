@@ -165,10 +165,10 @@ it('has correct command signature', function () {
 });
 
 it('has required method structure', function () {
-    expect(method_exists(App\Console\Commands\CreateSnapshot::class, 'handle'))->toBeTrue();
-    expect(method_exists(App\Console\Commands\CreateSnapshot::class, 'createTransactionSnapshots'))->toBeTrue();
-    expect(method_exists(App\Console\Commands\CreateSnapshot::class, 'createTransferSnapshots'))->toBeTrue();
-    expect(method_exists(App\Console\Commands\CreateSnapshot::class, 'createLedgerSnapshots'))->toBeTrue();
+    expect((new ReflectionClass(App\Console\Commands\CreateSnapshot::class))->hasMethod('handle'))->toBeTrue();
+    expect((new ReflectionClass(App\Console\Commands\CreateSnapshot::class))->hasMethod('createTransactionSnapshots'))->toBeTrue();
+    expect((new ReflectionClass(App\Console\Commands\CreateSnapshot::class))->hasMethod('createTransferSnapshots'))->toBeTrue();
+    expect((new ReflectionClass(App\Console\Commands\CreateSnapshot::class))->hasMethod('createLedgerSnapshots'))->toBeTrue();
 });
 
 it('has proper inheritance', function () {

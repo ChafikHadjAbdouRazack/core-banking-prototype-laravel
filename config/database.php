@@ -53,25 +53,43 @@ return [
         */
 
         'central' => [
-            'driver'                  => 'sqlite',
-            'url'                     => env('DB_URL'),
-            'database'                => env('DB_DATABASE', database_path('database.sqlite')),
-            'prefix'                  => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout'            => null,
-            'journal_mode'            => null,
-            'synchronous'             => null,
+            'driver'         => 'mariadb',
+            'url'            => env('DB_URL'),
+            'host'           => env('DB_HOST', '127.0.0.1'),
+            'port'           => env('DB_PORT', '3306'),
+            'database'       => env('DB_DATABASE', 'finaegis'),
+            'username'       => env('DB_USERNAME', 'root'),
+            'password'       => env('DB_PASSWORD', ''),
+            'unix_socket'    => env('DB_SOCKET', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'engine'         => null,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
         'tenant_template' => [
-            'driver'                  => 'sqlite',
-            'url'                     => env('DB_URL'),
-            'database'                => null, // Set dynamically by stancl/tenancy
-            'prefix'                  => '',
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout'            => null,
-            'journal_mode'            => null,
-            'synchronous'             => null,
+            'driver'         => 'mariadb',
+            'url'            => env('DB_URL'),
+            'host'           => env('DB_HOST', '127.0.0.1'),
+            'port'           => env('DB_PORT', '3306'),
+            'database'       => null, // Set dynamically by stancl/tenancy
+            'username'       => env('DB_USERNAME', 'root'),
+            'password'       => env('DB_PASSWORD', ''),
+            'unix_socket'    => env('DB_SOCKET', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'engine'         => null,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
         /*
@@ -88,17 +106,11 @@ return [
         |
         */
         'tenant' => [
-            'driver' => env('DB_CONNECTION', 'sqlite'),
-            'url'    => env('DB_URL'),
-            // SQLite fields - use shared cache for in-memory databases
-            'database'                => env('DB_DATABASE', database_path('database.sqlite')),
-            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout'            => null,
-            'journal_mode'            => null,
-            'synchronous'             => null,
-            // MySQL/MariaDB/PostgreSQL fields
+            'driver'         => 'mariadb',
+            'url'            => env('DB_URL'),
             'host'           => env('DB_HOST', '127.0.0.1'),
             'port'           => env('DB_PORT', '3306'),
+            'database'       => env('DB_DATABASE', 'finaegis'),
             'username'       => env('DB_USERNAME', 'root'),
             'password'       => env('DB_PASSWORD', ''),
             'unix_socket'    => env('DB_SOCKET', ''),
@@ -181,6 +193,84 @@ return [
             'prefix_indexes' => true,
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        /*
+        |----------------------------------------------------------------------
+        | Regional Read Replicas (v3.5.0 — Multi-Region Data Residency)
+        |----------------------------------------------------------------------
+        |
+        | Read-only replicas for region-local queries. Used by
+        | DataResidencyService when cross-region read optimization is enabled.
+        |
+        */
+
+        'replica-eu' => [
+            'driver'         => 'mariadb',
+            'host'           => env('DB_REPLICA_EU_HOST', '127.0.0.1'),
+            'port'           => env('DB_REPLICA_EU_PORT', '3306'),
+            'database'       => env('DB_REPLICA_EU_DATABASE', 'finaegis'),
+            'username'       => env('DB_REPLICA_EU_USERNAME', 'root'),
+            'password'       => env('DB_REPLICA_EU_PASSWORD', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'replica-us' => [
+            'driver'         => 'mariadb',
+            'host'           => env('DB_REPLICA_US_HOST', '127.0.0.1'),
+            'port'           => env('DB_REPLICA_US_PORT', '3306'),
+            'database'       => env('DB_REPLICA_US_DATABASE', 'finaegis'),
+            'username'       => env('DB_REPLICA_US_USERNAME', 'root'),
+            'password'       => env('DB_REPLICA_US_PASSWORD', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'replica-apac' => [
+            'driver'         => 'mariadb',
+            'host'           => env('DB_REPLICA_APAC_HOST', '127.0.0.1'),
+            'port'           => env('DB_REPLICA_APAC_PORT', '3306'),
+            'database'       => env('DB_REPLICA_APAC_DATABASE', 'finaegis'),
+            'username'       => env('DB_REPLICA_APAC_USERNAME', 'root'),
+            'password'       => env('DB_REPLICA_APAC_PASSWORD', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'replica-uk' => [
+            'driver'         => 'mariadb',
+            'host'           => env('DB_REPLICA_UK_HOST', '127.0.0.1'),
+            'port'           => env('DB_REPLICA_UK_PORT', '3306'),
+            'database'       => env('DB_REPLICA_UK_DATABASE', 'finaegis'),
+            'username'       => env('DB_REPLICA_UK_USERNAME', 'root'),
+            'password'       => env('DB_REPLICA_UK_PASSWORD', ''),
+            'charset'        => env('DB_CHARSET', 'utf8mb4'),
+            'collation'      => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix'         => '',
+            'prefix_indexes' => true,
+            'strict'         => true,
+            'options'        => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
         ],
 
     ],

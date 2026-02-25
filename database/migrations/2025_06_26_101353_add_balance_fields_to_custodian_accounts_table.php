@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::table('custodian_accounts', function (Blueprint $table) {
             $table->bigInteger('last_known_balance')->nullable()->after('metadata');
-            $table->timestamp('last_synced_at')->nullable()->after('last_known_balance');
+            $table->dateTime('last_synced_at')->nullable()->after('last_known_balance');
 
             $table->index('last_synced_at');
         });

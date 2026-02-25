@@ -11,15 +11,21 @@ use App\Domain\TrustCert\Events\CertificateRevoked;
 use App\Domain\TrustCert\ValueObjects\Certificate;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Internal Certificate Authority for credential signing.
  */
 class CertificateAuthorityService implements CertificateAuthorityInterface
 {
+    private const CACHE_PREFIX = 'ca_cert:';
+
+    private const CACHE_SUBJECT_PREFIX = 'ca_subject:';
+
     /** @var array<string, Certificate> */
     private array $certificates = [];
 
@@ -30,6 +36,9 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
         private readonly string $caId = 'finaegis-root-ca',
         private readonly string $signingKey = '',
     ) {
+        if (app()->environment('production') && empty($this->signingKey)) {
+            throw new RuntimeException('CA signing key must be configured in production');
+        }
     }
 
     /**
@@ -73,9 +82,11 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             extensions: $extensions,
         );
 
-        // Store certificate
+        // Persist in both memory and cache
         $this->certificates[$certificateId] = $certificate;
         $this->subjectIndex[$subjectId] = $certificateId;
+        Cache::put(self::CACHE_PREFIX . $certificateId, $certificate);
+        Cache::put(self::CACHE_SUBJECT_PREFIX . $subjectId, $certificateId);
 
         // Dispatch event
         Event::dispatch(new CertificateIssued(
@@ -122,7 +133,11 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             revocationReason: $reason,
         );
 
+        // Persist in both memory and cache; remove from subject index
         $this->certificates[$certificateId] = $revokedCertificate;
+        Cache::put(self::CACHE_PREFIX . $certificateId, $revokedCertificate);
+        unset($this->subjectIndex[$certificate->subjectId]);
+        Cache::forget(self::CACHE_SUBJECT_PREFIX . $certificate->subjectId);
 
         Event::dispatch(new CertificateRevoked(
             certificateId: $certificateId,
@@ -160,7 +175,9 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             extensions: array_merge($certificate->extensions, ['suspension_reason' => $reason]),
         );
 
+        // Persist in both memory and cache
         $this->certificates[$certificateId] = $suspendedCertificate;
+        Cache::put(self::CACHE_PREFIX . $certificateId, $suspendedCertificate);
 
         return true;
     }
@@ -200,7 +217,11 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             extensions: $extensions,
         );
 
+        // Persist in both memory and cache; restore subject index
         $this->certificates[$certificateId] = $reinstatedCertificate;
+        $this->subjectIndex[$certificate->subjectId] = $certificateId;
+        Cache::put(self::CACHE_PREFIX . $certificateId, $reinstatedCertificate);
+        Cache::put(self::CACHE_SUBJECT_PREFIX . $certificate->subjectId, $certificateId);
 
         return true;
     }
@@ -210,7 +231,8 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
      */
     public function getCertificate(string $certificateId): ?Certificate
     {
-        return $this->certificates[$certificateId] ?? null;
+        return $this->certificates[$certificateId]
+            ?? Cache::get(self::CACHE_PREFIX . $certificateId);
     }
 
     /**
@@ -272,7 +294,9 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
      */
     public function getCertificateBySubject(string $subjectId): ?Certificate
     {
-        $certificateId = $this->subjectIndex[$subjectId] ?? null;
+        $certificateId = $this->subjectIndex[$subjectId]
+            ?? Cache::get(self::CACHE_SUBJECT_PREFIX . $subjectId);
+
         if ($certificateId === null) {
             return null;
         }

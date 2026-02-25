@@ -8,12 +8,14 @@ use App\Domain\TrustCert\Enums\TrustLevel;
 use App\Domain\TrustCert\Services\RevocationRegistryService;
 use App\Domain\TrustCert\Services\TrustFrameworkService;
 use App\Domain\TrustCert\Services\VerifiableCredentialService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 uses(Tests\TestCase::class);
 
 describe('VerifiableCredentialService', function (): void {
     beforeEach(function (): void {
+        Cache::flush();
         Event::fake();
         $this->revocationRegistry = new RevocationRegistryService();
         $this->trustFramework = new TrustFrameworkService();

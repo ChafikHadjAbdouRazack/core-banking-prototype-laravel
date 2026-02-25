@@ -67,7 +67,7 @@ return new class () extends Migration {
             $table->string('status')->default('pending'); // pending, under_review, approved, rejected, on_hold
             $table->string('review_stage')->nullable(); // initial, compliance, technical, legal, final
             $table->uuid('reviewed_by')->nullable();
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->text('review_notes')->nullable();
             $table->text('rejection_reason')->nullable();
 
@@ -92,7 +92,7 @@ return new class () extends Migration {
             $table->string('api_client_id')->nullable();
             $table->boolean('sandbox_access_granted')->default(false);
             $table->boolean('production_access_granted')->default(false);
-            $table->timestamp('onboarding_completed_at')->nullable();
+            $table->dateTime('onboarding_completed_at')->nullable();
 
             // Metadata
             $table->json('metadata')->nullable();

@@ -20,9 +20,9 @@ return new class () extends Migration {
             $table->json('triggered_rules')->nullable();
             $table->text('flag_reason')->nullable();
             $table->text('clear_reason')->nullable();
-            $table->timestamp('analyzed_at')->nullable();
-            $table->timestamp('flagged_at')->nullable();
-            $table->timestamp('cleared_at')->nullable();
+            $table->dateTime('analyzed_at')->nullable();
+            $table->dateTime('flagged_at')->nullable();
+            $table->dateTime('cleared_at')->nullable();
             $table->timestamps();
 
             $table->index(['status', 'risk_level']);

@@ -25,7 +25,7 @@ return new class () extends Migration {
             $table->unsignedBigInteger('leaf_count')->default(0);
             $table->unsignedInteger('tree_depth')->default(32);
             $table->unsignedBigInteger('block_number')->comment('Block number at last sync');
-            $table->timestamp('synced_at');
+            $table->dateTime('synced_at');
             $table->timestamps();
 
             $table->index('network');
@@ -41,8 +41,8 @@ return new class () extends Migration {
             $table->unsignedBigInteger('leaf_index');
             $table->string('nullifier', 66)->nullable()->comment('Nullifier hash if spent');
             $table->boolean('is_spent')->default(false);
-            $table->timestamp('shielded_at')->nullable();
-            $table->timestamp('spent_at')->nullable();
+            $table->dateTime('shielded_at')->nullable();
+            $table->dateTime('spent_at')->nullable();
             $table->timestamps();
 
             $table->unique(['commitment', 'network']);

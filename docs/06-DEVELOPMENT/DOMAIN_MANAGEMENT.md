@@ -4,7 +4,7 @@ This guide covers the modular domain system introduced in v1.3.0, allowing you t
 
 ## Overview
 
-FinAegis uses Domain-Driven Design (DDD) with 29 bounded contexts. The platform supports modular installation where you can choose which domains to enable based on your requirements.
+FinAegis uses Domain-Driven Design (DDD) with 41 bounded contexts. The platform supports modular installation where you can choose which domains to enable based on your requirements.
 
 ## Domain Types
 
@@ -93,61 +93,93 @@ app/Domain/MyDomain/
 
 ## Domain Registry
 
-All 29 domains and their dependencies:
+All 41 domains and their dependencies:
 
 ### Core Domains (Always Installed)
 
-| Domain | Version | Dependencies |
-|--------|---------|--------------|
-| shared | 1.3.0 | - |
-| account | 1.3.0 | shared |
-| user | 1.3.0 | shared |
-| compliance | 1.3.0 | shared, account, user |
+| Domain | Dependencies | Description |
+|--------|--------------|-------------|
+| Shared | - | CQRS interfaces, events, base classes |
+| Account | Shared | Core banking account management |
+| User | Shared | User management |
+| Compliance | Shared, Account, User | KYC, AML, regulatory reporting |
 
 ### Financial Domains
 
 | Domain | Dependencies | Description |
 |--------|--------------|-------------|
-| exchange | shared, account, compliance | Trading engine, order matching |
-| lending | shared, account, compliance | P2P lending, credit scoring |
-| treasury | shared, account | Portfolio management, yield optimization |
-| stablecoin | shared, account, compliance | Token minting, burning, liquidation |
-| wallet | shared, account | Multi-chain blockchain wallets |
-| payment | shared, account | Payment processing |
-| banking | shared, account, compliance | SEPA/SWIFT transfers |
+| Exchange | Shared, Account, Compliance | Trading engine, order matching |
+| Lending | Shared, Account, Compliance | P2P lending, credit scoring |
+| Treasury | Shared, Account | Portfolio management, yield optimization |
+| Stablecoin | Shared, Account, Compliance | Token minting, burning, liquidation |
+| Wallet | Shared, Account | Multi-chain blockchain wallets |
+| Payment | Shared, Account | Payment processing |
+| Banking | Shared, Account, Compliance | SEPA/SWIFT transfers |
+| CardIssuance | Shared, Account | Card issuance and management |
+
+### Blockchain & Web3 Domains
+
+| Domain | Dependencies | Description |
+|--------|--------------|-------------|
+| CrossChain | Shared, Wallet | Bridge protocols (Wormhole/LayerZero/Axelar), cross-chain swaps |
+| DeFi | Shared, Wallet | DEX aggregation, lending, staking, yield optimization |
+| Relayer | Shared, Wallet | ERC-4337 gas abstraction, smart accounts |
+| Commerce | Shared, Account | Soulbound tokens, merchant onboarding, attestations |
+| TrustCert | Shared, Compliance | W3C Verifiable Credentials, Certificate Authority |
+| Privacy | Shared, Compliance | ZK-KYC, Proof of Innocence, Merkle trees |
+| KeyManagement | Shared | Shamir's Secret Sharing, HSM integration |
+
+### Mobile Domains
+
+| Domain | Dependencies | Description |
+|--------|--------------|-------------|
+| Mobile | Shared, User | Device management, biometrics, push notifications |
+| MobilePayment | Shared, Account | Payment intents, receipts, activity feed |
 
 ### AI & Agent Domains
 
 | Domain | Dependencies | Description |
 |--------|--------------|-------------|
-| ai | shared | MCP server, LLM integration |
-| agent-protocol | shared, account, compliance | A2A messaging, escrow |
+| AI | Shared | MCP server, LLM integration |
+| AgentProtocol | Shared, Account, Compliance | A2A messaging, escrow |
+
+### Compliance & Regulation Domains
+
+| Domain | Dependencies | Description |
+|--------|--------------|-------------|
+| RegTech | Shared, Compliance | MiFID II, MiCA, Travel Rule, jurisdiction adapters |
+| Regulatory | Shared, Compliance | Regulatory reporting |
+| Fraud | Shared, Account, Compliance | Fraud detection |
+| Security | Shared | Security scanning and hardening |
 
 ### Infrastructure Domains
 
 | Domain | Dependencies | Description |
 |--------|--------------|-------------|
-| monitoring | shared | Metrics, health checks |
-| fraud | shared, account, compliance | Fraud detection |
-| batch | shared | Batch processing |
-| webhook | shared | Webhook management |
+| Monitoring | Shared | Observability dashboards, structured logging, health checks |
+| Batch | Shared | Batch processing |
+| Webhook | Shared | Webhook management |
+| Performance | Shared | Performance tracking |
 
-### Other Domains
+### Business Domains
 
 | Domain | Dependencies | Description |
 |--------|--------------|-------------|
-| governance | shared, account | Voting, proposals |
-| cgo | shared, account, compliance | Continuous Growth Offering |
-| basket | shared, account, asset | Currency baskets (GCU) |
-| asset | shared, account | Asset management |
-| custodian | shared, account | Custody services |
-| activity | shared, user | Activity logging |
-| contact | shared, user | Contact management |
-| newsletter | shared | Email newsletters |
-| product | shared | Product catalog |
-| performance | shared | Performance tracking |
-| regulatory | shared, compliance | Regulatory reporting |
-| financial-institution | shared, compliance | FI management |
+| Governance | Shared, Account | Voting, proposals |
+| Cgo | Shared, Account, Compliance | Continuous Growth Offering |
+| Basket | Shared, Account, Asset | Currency baskets (GCU) |
+| Asset | Shared, Account | Asset management |
+| Custodian | Shared, Account | Custody services |
+| FinancialInstitution | Shared, Compliance | FI management |
+
+### Engagement Domains
+
+| Domain | Dependencies | Description |
+|--------|--------------|-------------|
+| Activity | Shared, User | Activity logging |
+| Contact | Shared, User | Contact management |
+| Newsletter | Shared | Email newsletters |
+| Product | Shared | Product catalog |
 
 ## Best Practices
 

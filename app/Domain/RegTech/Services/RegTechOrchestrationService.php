@@ -154,14 +154,16 @@ class RegTechOrchestrationService
             ];
         } catch (Throwable $e) {
             Log::error('RegTech: Report submission failed', [
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
+                'exception' => $e::class,
+                'trace'     => $e->getTraceAsString(),
             ]);
 
             return [
                 'success'   => false,
                 'reference' => null,
-                'errors'    => [$e->getMessage()],
-                'details'   => ['exception' => true],
+                'errors'    => ['Report submission failed. Please try again or contact support.'],
+                'details'   => [],
             ];
         }
     }
@@ -235,10 +237,15 @@ class RegTechOrchestrationService
         try {
             return $adapter->checkStatus($reference);
         } catch (Throwable $e) {
+            Log::error('RegTech: Status check failed', [
+                'reference' => $reference,
+                'error'     => $e->getMessage(),
+            ]);
+
             return [
                 'status'  => 'error',
-                'message' => $e->getMessage(),
-                'details' => ['exception' => true],
+                'message' => 'Unable to check report status. Please try again later.',
+                'details' => [],
             ];
         }
     }

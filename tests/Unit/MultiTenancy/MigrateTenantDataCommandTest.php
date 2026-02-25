@@ -21,7 +21,7 @@ class MigrateTenantDataCommandTest extends TestCase
     #[Test]
     public function command_class_exists(): void
     {
-        $this->assertTrue(class_exists(MigrateTenantDataCommand::class));
+        $this->assertNotEmpty((new ReflectionClass(MigrateTenantDataCommand::class))->getName());
     }
 
     #[Test]

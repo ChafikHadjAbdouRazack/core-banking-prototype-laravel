@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->decimal('principal_amount', 19, 2);
             $table->decimal('interest_amount', 19, 2);
             $table->decimal('remaining_balance', 19, 2);
-            $table->timestamp('paid_at');
+            $table->dateTime('paid_at');
             $table->timestamps();
 
             // $table->foreign('loan_id')->references('id')->on('loans');

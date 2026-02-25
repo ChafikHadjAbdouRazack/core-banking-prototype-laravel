@@ -6,7 +6,7 @@ use App\Domain\Account\Workflows\DestroyAccountWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for destroy', function () {
-    expect(class_exists(DestroyAccountWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(DestroyAccountWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(DestroyAccountWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

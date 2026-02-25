@@ -12,6 +12,7 @@ use App\Domain\TrustCert\Events\TrustLevelChanged;
 use App\Domain\TrustCert\ValueObjects\TrustChain;
 use App\Domain\TrustCert\ValueObjects\TrustedIssuer;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -21,6 +22,10 @@ use InvalidArgumentException;
  */
 class TrustFrameworkService implements TrustFrameworkInterface
 {
+    private const CACHE_PREFIX = 'trust_issuer:';
+
+    private const CACHE_CHILD_PREFIX = 'trust_children:';
+
     /** @var array<string, TrustedIssuer> */
     private array $issuers = [];
 
@@ -60,7 +65,9 @@ class TrustFrameworkService implements TrustFrameworkInterface
             metadata: $metadata,
         );
 
+        // Persist in both memory and cache
         $this->issuers[$issuerId] = $issuer;
+        Cache::put(self::CACHE_PREFIX . $issuerId, $issuer);
 
         Event::dispatch(new IssuerRegistered(
             issuerId: $issuerId,
@@ -116,13 +123,16 @@ class TrustFrameworkService implements TrustFrameworkInterface
             parentIssuerId: $parentIssuerId,
         );
 
+        // Persist in both memory and cache
         $this->issuers[$issuerId] = $issuer;
+        Cache::put(self::CACHE_PREFIX . $issuerId, $issuer);
 
         // Index parent-child relationship
         if (! isset($this->childIndex[$parentIssuerId])) {
             $this->childIndex[$parentIssuerId] = [];
         }
         $this->childIndex[$parentIssuerId][] = $issuerId;
+        Cache::put(self::CACHE_CHILD_PREFIX . $parentIssuerId, $this->childIndex[$parentIssuerId]);
 
         Event::dispatch(new IssuerRegistered(
             issuerId: $issuerId,
@@ -167,7 +177,9 @@ class TrustFrameworkService implements TrustFrameworkInterface
             parentIssuerId: $issuer->parentIssuerId,
         );
 
+        // Persist in both memory and cache
         $this->issuers[$issuerId] = $updatedIssuer;
+        Cache::put(self::CACHE_PREFIX . $issuerId, $updatedIssuer);
 
         Event::dispatch(new TrustLevelChanged(
             issuerId: $issuerId,
@@ -207,7 +219,9 @@ class TrustFrameworkService implements TrustFrameworkInterface
             revocationReason: $reason,
         );
 
+        // Persist in both memory and cache
         $this->issuers[$issuerId] = $revokedIssuer;
+        Cache::put(self::CACHE_PREFIX . $issuerId, $revokedIssuer);
 
         // Also revoke child issuers
         $this->revokeChildIssuers($issuerId, 'Parent issuer revoked');
@@ -233,7 +247,8 @@ class TrustFrameworkService implements TrustFrameworkInterface
      */
     public function getIssuer(string $issuerId): ?TrustedIssuer
     {
-        return $this->issuers[$issuerId] ?? null;
+        return $this->issuers[$issuerId]
+            ?? Cache::get(self::CACHE_PREFIX . $issuerId);
     }
 
     /**
@@ -341,12 +356,13 @@ class TrustFrameworkService implements TrustFrameworkInterface
      */
     public function getChildIssuers(string $parentIssuerId): array
     {
-        $childIds = $this->childIndex[$parentIssuerId] ?? [];
+        $childIds = $this->childIndex[$parentIssuerId]
+            ?? Cache::get(self::CACHE_CHILD_PREFIX . $parentIssuerId, []);
 
-        return array_map(
-            fn (string $id) => $this->issuers[$id],
+        return array_filter(array_map(
+            fn (string $id) => $this->getIssuer($id),
             $childIds,
-        );
+        ));
     }
 
     /**
@@ -374,7 +390,8 @@ class TrustFrameworkService implements TrustFrameworkInterface
 
     private function revokeChildIssuers(string $parentIssuerId, string $reason): void
     {
-        $childIds = $this->childIndex[$parentIssuerId] ?? [];
+        $childIds = $this->childIndex[$parentIssuerId]
+            ?? Cache::get(self::CACHE_CHILD_PREFIX . $parentIssuerId, []);
 
         foreach ($childIds as $childId) {
             $child = $this->getIssuer($childId);

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domain\Monitoring\Services\EventStoreHealthCheck;
 use App\Models\SystemHealthCheck;
 use App\Models\SystemIncident;
 use Exception;
@@ -18,7 +19,7 @@ class PerformSystemHealthChecks extends Command
      *
      * @var string
      */
-    protected $signature = 'system:health-check {--service=}';
+    protected $signature = 'system:health-check {--service=} {--deep}';
 
     /**
      * The console command description.
@@ -32,8 +33,13 @@ class PerformSystemHealthChecks extends Command
      */
     public function handle()
     {
-        // Set a reasonable memory limit for health checks
-        ini_set('memory_limit', '256M');
+        // Set a reasonable memory limit for health checks (only increase, never decrease)
+        $currentLimit = ini_get('memory_limit');
+        $currentBytes = $this->parseMemoryLimit($currentLimit !== false ? $currentLimit : '128M');
+        $targetBytes = 256 * 1024 * 1024; // 256M
+        if ($currentBytes < $targetBytes) {
+            ini_set('memory_limit', '256M');
+        }
 
         $service = $this->option('service');
 
@@ -41,6 +47,11 @@ class PerformSystemHealthChecks extends Command
             $this->checkSpecificService($service);
         } else {
             $this->checkAllServices();
+        }
+
+        // Run deep event store health checks when --deep flag is provided
+        if ($this->option('deep')) {
+            $this->runDeepHealthChecks();
         }
 
         $this->info('Health checks completed.');
@@ -350,6 +361,29 @@ class PerformSystemHealthChecks extends Command
         }
     }
 
+    private function runDeepHealthChecks(): void
+    {
+        $this->info('');
+        $this->info('Running deep event store health checks...');
+
+        try {
+            /** @var EventStoreHealthCheck $healthCheck */
+            $healthCheck = app(EventStoreHealthCheck::class);
+            $result = $healthCheck->checkAll();
+
+            $statusIcon = $result['healthy'] ? '<info>✓</info>' : '<error>✗</error>';
+            $this->line("  Event Store: {$statusIcon} {$result['status']}");
+
+            foreach ($result['checks'] as $checkName => $check) {
+                $icon = $check['healthy'] ? '<info>✓</info>' : '<error>✗</error>';
+                $message = $check['message'] ?? $check['name'];
+                $this->line("    {$icon} {$checkName}: {$message}");
+            }
+        } catch (Exception $e) {
+            $this->error("  Error running deep health checks: {$e->getMessage()}");
+        }
+    }
+
     private function manageIncidents($service, $status)
     {
         // Check for active incidents
@@ -380,5 +414,22 @@ class PerformSystemHealthChecks extends Command
 
             Log::info("System incident resolved for {$service} service");
         }
+    }
+
+    private function parseMemoryLimit(string $limit): int
+    {
+        if ($limit === '-1') {
+            return PHP_INT_MAX;
+        }
+
+        $value = (int) $limit;
+        $unit = strtolower(substr(trim($limit), -1));
+
+        return match ($unit) {
+            'g'     => $value * 1024 * 1024 * 1024,
+            'm'     => $value * 1024 * 1024,
+            'k'     => $value * 1024,
+            default => $value,
+        };
     }
 }

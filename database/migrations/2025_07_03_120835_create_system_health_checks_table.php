@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->decimal('response_time', 8, 2)->nullable();
             $table->json('metadata')->nullable();
             $table->text('error_message')->nullable();
-            $table->timestamp('checked_at');
+            $table->dateTime('checked_at');
             $table->timestamps();
 
             $table->index(['service', 'checked_at']);

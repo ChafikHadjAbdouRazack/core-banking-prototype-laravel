@@ -20,9 +20,9 @@ return new class () extends Migration {
             $table->boolean('is_revoked')->default(false);
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
-            $table->timestamp('expires_at');
-            $table->timestamp('last_activity_at')->nullable();
-            $table->timestamp('revoked_at')->nullable();
+            $table->dateTime('expires_at');
+            $table->dateTime('last_activity_at')->nullable();
+            $table->dateTime('revoked_at')->nullable();
             $table->timestamps();
 
             $table->index(['agent_id', 'is_revoked']);

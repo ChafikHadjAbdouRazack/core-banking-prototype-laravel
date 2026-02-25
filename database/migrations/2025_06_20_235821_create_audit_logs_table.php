@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->string('ip_address', 45)->nullable();
             $table->string('user_agent')->nullable();
             $table->string('tags')->nullable()->comment('Comma-separated tags for filtering');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             // Indexes for performance
             $table->index('user_uuid');

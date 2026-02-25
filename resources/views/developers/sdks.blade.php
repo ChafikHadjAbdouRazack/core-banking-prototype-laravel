@@ -186,23 +186,23 @@
                     <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>REST API v2.1</span>
+                            <span>REST API v5.2</span>
                         </span>
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>Hardware Wallets</span>
+                            <span>Cross-Chain &amp; DeFi</span>
                         </span>
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>WebSocket Streaming</span>
+                            <span>BaaS Partner SDKs</span>
                         </span>
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>Webhooks Ready</span>
+                            <span>RegTech Compliance</span>
                         </span>
-                        <span class="inline-flex items-center px-4 py-2 bg-yellow-500/20 backdrop-blur-sm rounded-full text-sm">
-                            <span class="w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-                            <span>SDKs Coming Soon</span>
+                        <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
+                            <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                            <span>AI Transaction Query</span>
                         </span>
                     </div>
                     <h1 class="text-5xl md:text-7xl font-bold mb-6">
@@ -511,6 +511,432 @@ console.<span style="color: #89ddff;">log</span>(<span style="color: #82aaff;">r
                         <span class="bg-white px-4 py-2 rounded-lg border border-gray-200">C#/.NET</span>
                         <span class="bg-white px-4 py-2 rounded-lg border border-gray-200">Rust</span>
                         <span class="bg-white px-4 py-2 rounded-lg border border-gray-200">& more</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BaaS SDK Generation via Partner API -->
+        <section id="baas-sdk-generation" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <span class="inline-flex items-center px-4 py-2 bg-green-100 rounded-full text-sm font-medium text-green-700 mb-4">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                        Available Now via Partner API (v2.9+)
+                    </span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">BaaS SDK Generation</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Generate type-safe, versioned SDKs for your partner integration in TypeScript, Python, Java, Go, and PHP -- directly through the Partner API.
+                    </p>
+                </div>
+
+                <!-- Language Cards -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
+                    <div class="sdk-card bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">TypeScript</h4>
+                        <p class="text-xs text-gray-500">@finaegis/sdk</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Available</span>
+                    </div>
+                    <div class="sdk-card bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="w-14 h-14 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">Python</h4>
+                        <p class="text-xs text-gray-500">finaegis-sdk</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Available</span>
+                    </div>
+                    <div class="sdk-card bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">Java</h4>
+                        <p class="text-xs text-gray-500">com.finaegis:sdk</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Available</span>
+                    </div>
+                    <div class="sdk-card bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">Go</h4>
+                        <p class="text-xs text-gray-500">finaegis-go</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Available</span>
+                    </div>
+                    <div class="sdk-card bg-white rounded-xl shadow-lg p-6 text-center">
+                        <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-semibold text-gray-900 mb-1">PHP</h4>
+                        <p class="text-xs text-gray-500">finaegis/sdk</p>
+                        <span class="inline-block mt-2 px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Available</span>
+                    </div>
+                </div>
+
+                <!-- SDK Generation Code Example -->
+                <div class="max-w-4xl mx-auto">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Generate Your SDK via Partner API</h3>
+                    <p class="text-gray-600 mb-6">
+                        When you onboard as a BaaS partner, SDKs are automatically generated for your requested languages.
+                        You can also regenerate or request additional language SDKs at any time.
+                    </p>
+
+                    <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto mb-8">
+<pre><span class="text-gray-500"># Request SDK generation for your partner account</span>
+curl -X POST https://api.finaegis.org/api/v1/partner/sdk/generate \
+  -H "Authorization: Bearer YOUR_PARTNER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "languages": ["typescript", "python", "java", "go", "php"],
+    "api_version": "v5",
+    "include_modules": ["accounts", "transfers", "crosschain", "defi", "compliance"],
+    "options": {
+      "include_types": true,
+      "include_examples": true,
+      "include_tests": true
+    }
+  }'
+
+<span class="text-gray-500"># Response includes download URLs for each SDK</span>
+{
+  "data": {
+    "generation_id": "sdkgen_abc123",
+    "status": "completed",
+    "packages": [
+      {
+        "language": "typescript",
+        "version": "5.0.0",
+        "package_name": "@finaegis/sdk",
+        "download_url": "https://sdk.finaegis.org/packages/typescript/finaegis-sdk-5.0.0.tgz",
+        "install_command": "npm install @finaegis/sdk@5.0.0"
+      },
+      {
+        "language": "python",
+        "version": "5.0.0",
+        "package_name": "finaegis-sdk",
+        "download_url": "https://sdk.finaegis.org/packages/python/finaegis-sdk-5.0.0.tar.gz",
+        "install_command": "pip install finaegis-sdk==5.0.0"
+      },
+      {
+        "language": "java",
+        "version": "5.0.0",
+        "package_name": "com.finaegis:sdk",
+        "download_url": "https://sdk.finaegis.org/packages/java/finaegis-sdk-5.0.0.jar",
+        "install_command": "mvn install com.finaegis:sdk:5.0.0"
+      },
+      {
+        "language": "go",
+        "version": "5.0.0",
+        "package_name": "github.com/finaegis/sdk-go",
+        "download_url": "https://sdk.finaegis.org/packages/go/finaegis-sdk-go-5.2.0.tar.gz",
+        "install_command": "go get github.com/finaegis/sdk-go@v5.2.0"
+      },
+      {
+        "language": "php",
+        "version": "5.0.0",
+        "package_name": "finaegis/sdk",
+        "download_url": "https://sdk.finaegis.org/packages/php/finaegis-sdk-5.0.0.zip",
+        "install_command": "composer require finaegis/sdk:^5.0"
+      }
+    ]
+  }
+}</pre>
+                    </div>
+
+                    <!-- Install Commands Grid -->
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Quick Install</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">TypeScript / JavaScript</p>
+                            <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
+                                <code>npm install @finaegis/sdk@5.0.0</code>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">Python</p>
+                            <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
+                                <code>pip install finaegis-sdk==5.0.0</code>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">Java (Maven)</p>
+                            <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
+                                <code>mvn install com.finaegis:sdk:5.0.0</code>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">Go</p>
+                            <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
+                                <code>go get github.com/finaegis/sdk-go@v5.2.0</code>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">PHP (Composer)</p>
+                            <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
+                                <code>composer require finaegis/sdk:^5.0</code>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partner SDK Integration Guide -->
+        <section id="partner-sdk-guide" class="py-20 bg-gradient-to-br from-amber-50 to-orange-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Partner SDK Integration Guide</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Step-by-step guide to integrating the FinAegis BaaS SDK into your partner application,
+                        covering authentication, module access, and advanced features like Cross-Chain and DeFi.
+                    </p>
+                </div>
+
+                <div class="max-w-5xl mx-auto space-y-8">
+                    <!-- Step 1: Initialize the SDK -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4">
+                            <div class="flex items-center">
+                                <span class="w-8 h-8 bg-white text-blue-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">1</span>
+                                <h3 class="text-lg font-semibold text-white">Initialize the SDK with Your Partner Credentials</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 mb-4">
+                                Use the API key and partner ID from your onboarding response. The SDK auto-configures based on your enabled modules.
+                            </p>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-2">TypeScript</p>
+                                    <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto">
+<pre>import { FinAegis } from '@finaegis/sdk';
+
+const client = new FinAegis({
+  apiKey: process.env.FINAEGIS_PARTNER_KEY,
+  partnerId: 'partner_acme_abc123',
+  environment: 'production', // or 'sandbox'
+  modules: ['accounts', 'transfers',
+    'crosschain', 'defi', 'compliance']
+});</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-700 mb-2">Python</p>
+                                    <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto">
+<pre>from finaegis import FinAegis
+
+client = FinAegis(
+    api_key=os.environ['FINAEGIS_PARTNER_KEY'],
+    partner_id='partner_acme_abc123',
+    environment='production',
+    modules=['accounts', 'transfers',
+        'crosschain', 'defi', 'compliance']
+)</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Use Cross-Chain & DeFi Modules -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-cyan-600 to-teal-600 px-6 py-4">
+                            <div class="flex items-center">
+                                <span class="w-8 h-8 bg-white text-cyan-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">2</span>
+                                <h3 class="text-lg font-semibold text-white">Access Cross-Chain and DeFi Modules (v5.2)</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 mb-4">
+                                The SDK provides typed interfaces for bridge operations (Wormhole, LayerZero, Axelar), DEX aggregation (Uniswap, Aave, Curve, Lido),
+                                cross-chain swaps, and multi-chain portfolio management.
+                            </p>
+                            <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto">
+<pre><span class="text-gray-500">// TypeScript -- Cross-Chain Bridge + DeFi Swap in one workflow</span>
+async function crossChainSwapWorkflow() {
+  <span class="text-gray-500">// Bridge USDC from Ethereum to Polygon</span>
+  const bridgeQuote = await client.crosschain.bridge.quote({
+    source_chain: 'ethereum',
+    destination_chain: 'polygon',
+    token: 'USDC',
+    amount: '5000.00'
+  });
+
+  const bridgeTx = await client.crosschain.bridge.initiate({
+    quote_id: bridgeQuote.data.quote_id,
+    sender_address: '0x1234...abcd',
+    recipient_address: '0x1234...abcd'
+  });
+
+  <span class="text-gray-500">// Wait for bridge completion, then swap on Polygon</span>
+  await client.crosschain.bridge.waitForCompletion(bridgeTx.data.bridge_tx_id);
+
+  const swapQuote = await client.defi.swap.quote({
+    chain: 'polygon',
+    token_in: 'USDC',
+    token_out: 'WMATIC',
+    amount_in: '5000.00'
+  });
+
+  const swap = await client.defi.swap.execute({
+    quote_id: swapQuote.data.quote_id,
+    wallet_address: '0x1234...abcd'
+  });
+
+  <span class="text-gray-500">// Get multi-chain portfolio overview</span>
+  const portfolio = await client.crosschain.portfolio.get({
+    wallet_address: '0x1234...abcd',
+    chains: ['ethereum', 'polygon', 'arbitrum']
+  });
+
+  console.log('Portfolio total value:', portfolio.data.total_value_usd);
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: RegTech Compliance Integration -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-600 to-green-600 px-6 py-4">
+                            <div class="flex items-center">
+                                <span class="w-8 h-8 bg-white text-emerald-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">3</span>
+                                <h3 class="text-lg font-semibold text-white">Integrate RegTech Compliance (v2.8)</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 mb-4">
+                                Built-in compliance modules for MiFID II reporting, MiCA compliance, and FATF Travel Rule -- automatically enforced based on your jurisdiction configuration.
+                            </p>
+                            <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto">
+<pre><span class="text-gray-500">// TypeScript -- Compliance-aware transfer</span>
+async function compliantTransfer(transferParams) {
+  <span class="text-gray-500">// Travel Rule check is automatic for transfers above threshold</span>
+  const complianceResult = await client.regtech.travelRule.check({
+    transfer_id: transferParams.id,
+    originator: transferParams.originator,
+    beneficiary: transferParams.beneficiary,
+    transfer_details: {
+      amount: transferParams.amount,
+      currency: transferParams.currency
+    }
+  });
+
+  if (!complianceResult.data.is_compliant) {
+    throw new Error(
+      `Compliance failed: ${complianceResult.data.compliance_issues
+        .map(i => i.description).join(', ')}`
+    );
+  }
+
+  <span class="text-gray-500">// MiCA compliance for crypto assets</span>
+  const micaCheck = await client.regtech.mica.validate({
+    asset_type: 'crypto',
+    transaction_type: 'transfer',
+    amount: transferParams.amount,
+    jurisdiction: 'EU'
+  });
+
+  <span class="text-gray-500">// Proceed with transfer only if all checks pass</span>
+  return await client.transfers.create(transferParams);
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: AI-Powered Queries -->
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-violet-600 to-purple-600 px-6 py-4">
+                            <div class="flex items-center">
+                                <span class="w-8 h-8 bg-white text-violet-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">4</span>
+                                <h3 class="text-lg font-semibold text-white">Use AI Transaction Queries (v2.8)</h3>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-600 mb-4">
+                                The SDK includes AI-powered transaction search that accepts natural language queries and returns structured, filterable results with risk scoring.
+                            </p>
+                            <div class="bg-gray-900 rounded-lg p-6 font-mono text-green-400 text-sm overflow-x-auto">
+<pre><span class="text-gray-500">// TypeScript -- AI-powered transaction intelligence</span>
+const insights = await client.ai.transactions({
+  query: 'Large DeFi swaps on Ethereum this month with high slippage',
+  account_id: 'acct_primary',
+  options: {
+    include_analytics: true,
+    include_risk_scores: true
+  }
+});
+
+console.log('Interpreted as:', insights.data.interpreted_query);
+console.log('Found:', insights.data.total_results, 'transactions');
+console.log('Total volume:', insights.data.analytics.total_volume);</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SDK Module Reference -->
+                    <div class="bg-white rounded-2xl shadow-lg p-8">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6">SDK Module Reference</h3>
+                        <p class="text-gray-600 mb-6">
+                            Each BaaS partner SDK includes the following modules, based on the modules enabled during onboarding.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.accounts</h4>
+                                <p class="text-sm text-gray-600">Account creation, balances, transactions</p>
+                                <span class="text-xs text-gray-400">v1.0+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.transfers</h4>
+                                <p class="text-sm text-gray-600">Payments, P2P transfers, bulk operations</p>
+                                <span class="text-xs text-gray-400">v1.0+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.wallets</h4>
+                                <p class="text-sm text-gray-600">Blockchain wallets, hardware wallet support</p>
+                                <span class="text-xs text-gray-400">v2.1+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.compliance</h4>
+                                <p class="text-sm text-gray-600">KYC/AML, sanctions screening</p>
+                                <span class="text-xs text-gray-400">v1.0+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.regtech</h4>
+                                <p class="text-sm text-gray-600">MiFID II, MiCA, Travel Rule compliance</p>
+                                <span class="text-xs text-gray-400">v2.8+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.crosschain</h4>
+                                <p class="text-sm text-gray-600">Bridge protocols, multi-chain portfolio</p>
+                                <span class="text-xs text-gray-400">v5.2+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.defi</h4>
+                                <p class="text-sm text-gray-600">DEX aggregation, lending, staking, yield</p>
+                                <span class="text-xs text-gray-400">v5.2+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.ai</h4>
+                                <p class="text-sm text-gray-600">Transaction queries, spending insights</p>
+                                <span class="text-xs text-gray-400">v2.8+</span>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-semibold text-gray-900 mb-1">client.partner</h4>
+                                <p class="text-sm text-gray-600">SDK generation, tenant management, config</p>
+                                <span class="text-xs text-gray-400">v2.9+</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

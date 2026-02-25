@@ -30,7 +30,7 @@ Always run quality tools in this specific order to catch all issues:
 XDEBUG_MODE=off TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
 ```
 - Static analysis for type safety and logic errors
-- Level 5 configured in phpstan.neon
+- Level 8 configured in phpstan.neon
 - Run AFTER style fixes to avoid false positives
 
 ### 4. Tests (Last)

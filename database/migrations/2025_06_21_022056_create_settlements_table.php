@@ -23,9 +23,9 @@ return new class () extends Migration {
             $table->string('external_reference')->nullable();
             $table->text('failure_reason')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('processed_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->timestamps();
 
             // Indexes

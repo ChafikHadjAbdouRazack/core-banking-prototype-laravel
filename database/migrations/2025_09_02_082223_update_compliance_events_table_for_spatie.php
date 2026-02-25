@@ -19,7 +19,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->index('aggregate_uuid');
             $table->index('event_class');

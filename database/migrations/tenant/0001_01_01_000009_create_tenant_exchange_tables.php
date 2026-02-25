@@ -39,8 +39,8 @@ return new class () extends Migration {
             $table->string('created_by')->nullable()->index();
             $table->string('cancelled_by')->nullable();
             $table->timestamps();
-            $table->timestamp('cancelled_at')->nullable();
-            $table->timestamp('filled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
+            $table->dateTime('filled_at')->nullable();
 
             $table->index(['base_currency', 'quote_currency']);
             $table->index(['account_id', 'status']);
@@ -109,7 +109,7 @@ return new class () extends Migration {
             $table->json('context')->nullable();
             $table->boolean('resolved')->default(false);
             $table->string('resolved_by')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->timestamps();
 
             $table->index(['error_type', 'resolved']);

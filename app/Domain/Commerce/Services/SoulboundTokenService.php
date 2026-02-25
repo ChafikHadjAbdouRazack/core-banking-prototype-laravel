@@ -4,14 +4,20 @@ declare(strict_types=1);
 
 namespace App\Domain\Commerce\Services;
 
+use App\Domain\Commerce\Contracts\OnChainSbtServiceInterface;
 use App\Domain\Commerce\Contracts\TokenIssuerInterface;
 use App\Domain\Commerce\Enums\TokenType;
 use App\Domain\Commerce\Events\SoulboundTokenIssued;
+use App\Domain\Commerce\Events\SoulboundTokenMintedOnChain;
 use App\Domain\Commerce\Events\SoulboundTokenRevoked;
+use App\Domain\Commerce\Events\SoulboundTokenRevokedOnChain;
 use App\Domain\Commerce\ValueObjects\SoulboundToken;
 use DateTimeImmutable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Throwable;
 
 /**
  * Service for managing soulbound tokens (SBTs).
@@ -34,6 +40,7 @@ class SoulboundTokenService implements TokenIssuerInterface
 
     public function __construct(
         private readonly string $issuerId = 'finaegis-issuer',
+        private readonly ?OnChainSbtServiceInterface $onChainService = null,
     ) {
     }
 
@@ -76,6 +83,23 @@ class SoulboundTokenService implements TokenIssuerInterface
             recipientId: $recipientId,
             issuedAt: $issuedAt,
         ));
+
+        // Anchor on-chain if enabled
+        $txHash = $this->anchorOnChain($token);
+        if ($txHash !== null) {
+            $metadata['on_chain_tx_hash'] = $txHash;
+
+            // Recreate token with on-chain metadata
+            $token = new SoulboundToken(
+                tokenId: $tokenId,
+                type: $type,
+                issuerId: $this->issuerId,
+                recipientId: $recipientId,
+                metadata: $metadata,
+                issuedAt: $issuedAt,
+                expiresAt: $expiresAt,
+            );
+        }
 
         return $token;
     }
@@ -178,6 +202,8 @@ class SoulboundTokenService implements TokenIssuerInterface
 
     /**
      * Revoke a token.
+     *
+     * Persists revocation in cache to survive process restarts.
      */
     public function revokeToken(string $tokenId, string $reason): bool
     {
@@ -187,10 +213,14 @@ class SoulboundTokenService implements TokenIssuerInterface
 
         $revokedAt = new DateTimeImmutable();
 
-        $this->revocationList[$tokenId] = [
+        $revocationData = [
             'reason'     => $reason,
             'revoked_at' => $revokedAt->format('c'),
         ];
+
+        // Persist in both memory and cache
+        $this->revocationList[$tokenId] = $revocationData;
+        Cache::put("sbt_revoked:{$tokenId}", $revocationData);
 
         Event::dispatch(new SoulboundTokenRevoked(
             tokenId: $tokenId,
@@ -198,15 +228,21 @@ class SoulboundTokenService implements TokenIssuerInterface
             revokedAt: $revokedAt,
         ));
 
+        // Revoke on-chain if enabled and on-chain token exists
+        $this->revokeOnChain($tokenId);
+
         return true;
     }
 
     /**
      * Check if a token is revoked.
+     *
+     * Checks both in-memory cache and persistent cache store.
      */
     public function isRevoked(string $tokenId): bool
     {
-        return isset($this->revocationList[$tokenId]);
+        return isset($this->revocationList[$tokenId])
+            || Cache::has("sbt_revoked:{$tokenId}");
     }
 
     /**
@@ -216,11 +252,106 @@ class SoulboundTokenService implements TokenIssuerInterface
      */
     public function getRevocationDetails(string $tokenId): ?array
     {
-        return $this->revocationList[$tokenId] ?? null;
+        return $this->revocationList[$tokenId]
+            ?? Cache::get("sbt_revoked:{$tokenId}");
     }
 
     /**
-     * Calculate token hash for verification.
+     * Anchor a soulbound token on-chain by minting it on the configured network.
+     *
+     * Returns the transaction hash if successful, null if on-chain anchoring is disabled.
+     */
+    public function anchorOnChain(SoulboundToken $token): ?string
+    {
+        if (! $this->isOnChainAnchoringEnabled()) {
+            return null;
+        }
+
+        if ($this->onChainService === null || ! $this->onChainService->isAvailable()) {
+            Log::warning('On-chain SBT service unavailable, skipping anchoring', [
+                'token_id' => $token->tokenId,
+            ]);
+
+            return null;
+        }
+
+        try {
+            $contractAddress = (string) config('commerce.soulbound_tokens.contract_address', '');
+            $tokenUri = "finaegis://sbt/{$token->tokenId}";
+
+            $result = $this->onChainService->mintToken(
+                contractAddress: $contractAddress,
+                recipientAddress: $token->recipientId,
+                tokenUri: $tokenUri,
+                metadata: $token->metadata,
+            );
+
+            Event::dispatch(new SoulboundTokenMintedOnChain(
+                tokenId: $token->tokenId,
+                onChainTokenId: $result['token_id'],
+                contractAddress: $result['contract_address'],
+                txHash: $result['tx_hash'],
+                network: $result['network'],
+            ));
+
+            return $result['tx_hash'];
+        } catch (Throwable $e) {
+            Log::error('On-chain SBT minting failed', [
+                'token_id' => $token->tokenId,
+                'error'    => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Revoke a token on-chain if on-chain anchoring is enabled.
+     */
+    private function revokeOnChain(string $tokenId): void
+    {
+        if (! $this->isOnChainAnchoringEnabled()) {
+            return;
+        }
+
+        if ($this->onChainService === null || ! $this->onChainService->isAvailable()) {
+            return;
+        }
+
+        try {
+            $contractAddress = (string) config('commerce.soulbound_tokens.contract_address', '');
+            $onChainTokenId = (int) Cache::get("sbt_on_chain_id:{$tokenId}", 0);
+
+            if ($onChainTokenId === 0) {
+                return;
+            }
+
+            $result = $this->onChainService->revokeToken($contractAddress, $onChainTokenId);
+
+            Event::dispatch(new SoulboundTokenRevokedOnChain(
+                tokenId: $tokenId,
+                onChainTokenId: $onChainTokenId,
+                contractAddress: $result['contract_address'],
+                txHash: $result['tx_hash'],
+                network: $result['network'],
+            ));
+        } catch (Throwable $e) {
+            Log::error('On-chain SBT revocation failed', [
+                'token_id' => $tokenId,
+                'error'    => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function isOnChainAnchoringEnabled(): bool
+    {
+        return (bool) config('commerce.soulbound_tokens.on_chain_anchoring', false);
+    }
+
+    /**
+     * Calculate HMAC token hash for verification.
+     *
+     * Includes all token fields to prevent undetected modification.
      */
     private function calculateTokenHash(SoulboundToken $token): string
     {
@@ -230,8 +361,13 @@ class SoulboundTokenService implements TokenIssuerInterface
             'issuer_id'    => $token->issuerId,
             'recipient_id' => $token->recipientId,
             'issued_at'    => $token->issuedAt->format('c'),
+            'metadata'     => $token->metadata,
         ];
 
-        return hash('sha256', json_encode($data, JSON_THROW_ON_ERROR));
+        if ($token->expiresAt !== null) {
+            $data['expires_at'] = $token->expiresAt->format('c');
+        }
+
+        return hash_hmac('sha256', json_encode($data, JSON_THROW_ON_ERROR), config('app.key'));
     }
 }

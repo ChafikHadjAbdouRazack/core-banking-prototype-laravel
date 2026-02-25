@@ -16,10 +16,10 @@ return new class () extends Migration {
                 $table->string('agreement_path')->nullable()->after('certificate_issued_at');
             }
             if (! Schema::hasColumn('cgo_investments', 'agreement_generated_at')) {
-                $table->timestamp('agreement_generated_at')->nullable()->after('agreement_path');
+                $table->dateTime('agreement_generated_at')->nullable()->after('agreement_path');
             }
             if (! Schema::hasColumn('cgo_investments', 'agreement_signed_at')) {
-                $table->timestamp('agreement_signed_at')->nullable()->after('agreement_generated_at');
+                $table->dateTime('agreement_signed_at')->nullable()->after('agreement_generated_at');
             }
             if (! Schema::hasColumn('cgo_investments', 'certificate_path')) {
                 $table->string('certificate_path')->nullable()->after('agreement_signed_at');

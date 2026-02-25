@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->json('data');
             $table->json('result')->nullable();
             $table->text('error_message')->nullable();
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->timestamps();
 
             $table->index('batch_job_uuid');

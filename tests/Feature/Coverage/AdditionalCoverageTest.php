@@ -53,12 +53,12 @@ it('can test asset model methods', function () {
 
 // Test additional controller methods
 it('can test controller class existence', function () {
-    expect(class_exists(App\Http\Controllers\Controller::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\AccountController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\AssetController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\ExchangeRateController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\AccountBalanceController::class))->toBeTrue();
-    expect(class_exists(App\Http\Controllers\Api\TransferController::class))->toBeTrue();
+    expect((new ReflectionClass(App\Http\Controllers\Controller::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AccountController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AssetController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\ExchangeRateController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\AccountBalanceController::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Http\Controllers\Api\TransferController::class))->getName())->not->toBeEmpty();
 });
 
 // Test enum classes
@@ -106,15 +106,15 @@ it('can test account service', function () {
 
 // Test middleware class existence
 it('can test middleware class existence', function () {
-    expect(class_exists(Illuminate\Auth\Middleware\Authenticate::class))->toBeTrue();
-    expect(class_exists(Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class))->toBeTrue();
-    expect(class_exists(Illuminate\Foundation\Http\Middleware\TrimStrings::class))->toBeTrue();
+    expect((new ReflectionClass(Illuminate\Auth\Middleware\Authenticate::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(Illuminate\Foundation\Http\Middleware\TrimStrings::class))->getName())->not->toBeEmpty();
 });
 
 // Test additional domain event classes
 it('can test domain event class existence', function () {
-    expect(class_exists(App\Domain\Account\Events\MoneyAdded::class))->toBeTrue();
-    expect(class_exists(App\Domain\Account\Events\MoneySubtracted::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransactionCreated::class))->toBeTrue();
-    expect(class_exists(App\Domain\Asset\Events\AssetTransferInitiated::class))->toBeTrue();
+    expect((new ReflectionClass(App\Domain\Account\Events\MoneyAdded::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Account\Events\MoneySubtracted::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransactionCreated::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(App\Domain\Asset\Events\AssetTransferInitiated::class))->getName())->not->toBeEmpty();
 });

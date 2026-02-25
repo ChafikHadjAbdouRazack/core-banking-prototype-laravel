@@ -20,7 +20,7 @@ class FilamentTenantMiddlewareTest extends TestCase
     #[Test]
     public function middleware_class_exists(): void
     {
-        $this->assertTrue(class_exists(FilamentTenantMiddleware::class));
+        $this->assertNotEmpty((new ReflectionClass(FilamentTenantMiddleware::class))->getName());
     }
 
     #[Test]

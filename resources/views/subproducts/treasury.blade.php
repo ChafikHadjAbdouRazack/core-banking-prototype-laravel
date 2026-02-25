@@ -146,6 +146,26 @@
             </div>
         </section>
 
+        <!-- Cross-Chain Yield Callout -->
+        <section class="py-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-r from-orange-50 to-teal-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Cross-Chain Yield & Multi-Chain Portfolio</h3>
+                        <p class="text-gray-600 max-w-xl">
+                            Optimize treasury yields across multiple blockchains. Access DeFi lending, staking, and yield farming with automated cross-chain portfolio rebalancing.
+                        </p>
+                    </div>
+                    <a href="{{ route('features.show', 'crosschain-defi') }}" class="mt-4 md:mt-0 inline-flex items-center px-6 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors flex-shrink-0">
+                        Explore Cross-Chain & DeFi
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- CTA Section -->
         <section class="py-20 bg-gray-50">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">

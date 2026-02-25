@@ -14,13 +14,13 @@ class SeoMetaTagsTest extends TestCase
     {
         $pages = [
             '/' => [
-                'title'          => 'FinAegis - The Enterprise Financial Platform',
+                'title'          => 'FinAegis - Open Source Core Banking Platform',
                 'hasDescription' => true,
                 'hasKeywords'    => true,
                 'hasOgTags'      => true,
             ],
             '/about' => [
-                'title'          => 'About FinAegis - Our Mission & Community',
+                'title'          => 'About FinAegis - Open Source Core Banking',
                 'hasDescription' => true,
                 'hasKeywords'    => true,
                 'hasOgTags'      => true,
@@ -159,7 +159,7 @@ class SeoMetaTagsTest extends TestCase
     public function test_meta_descriptions_have_appropriate_length(): void
     {
         $pages = [
-            '/'         => 'FinAegis - The Enterprise Financial Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
+            '/'         => 'FinAegis - Open Source Core Banking Platform Powering the Future of Banking. Experience the Global Currency Unit (GCU) with democratic governance and real bank integration.',
             '/about'    => 'Learn about FinAegis - revolutionizing banking with democratic governance and the Global Currency Unit. Our mission, team, and journey.',
             '/platform' => 'FinAegis Platform - Open-source banking infrastructure for developers. Build, deploy, and scale financial services with our MIT-licensed platform.',
             '/pricing'  => 'FinAegis Pricing - Start with our free open-source community edition. Scale with enterprise support, custom features, and dedicated infrastructure when ready.',

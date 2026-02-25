@@ -21,7 +21,7 @@ return new class () extends Migration {
             $table->unsignedInteger('deadline_days')->default(30);
             $table->time('deadline_time')->nullable();
             $table->date('next_due_date')->nullable();
-            $table->timestamp('last_filed_at')->nullable();
+            $table->dateTime('last_filed_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('auto_generate')->default(false);
             $table->json('notification_settings')->nullable();

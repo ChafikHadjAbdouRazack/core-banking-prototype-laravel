@@ -5,17 +5,13 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\DepositAccountActivity;
 
-it('class exists', function () {
-    expect(class_exists(DepositAccountActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(DepositAccountActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(DepositAccountActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(DepositAccountActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {
@@ -58,9 +54,9 @@ it('can access execute method through reflection', function () {
 });
 
 it('validates all required data objects exist', function () {
-    expect(class_exists(AccountUuid::class))->toBeTrue();
-    expect(class_exists(Money::class))->toBeTrue();
-    expect(class_exists(TransactionAggregate::class))->toBeTrue();
+    expect((new ReflectionClass(AccountUuid::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(Money::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(TransactionAggregate::class))->getName())->not->toBeEmpty();
 });
 
 it('can create data object instances for testing', function () {

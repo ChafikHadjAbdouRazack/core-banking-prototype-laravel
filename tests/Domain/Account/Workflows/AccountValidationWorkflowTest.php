@@ -26,5 +26,5 @@ it('can validate account with all checks', function () {
 });
 
 it('can create workflow stub for account validation', function () {
-    expect(class_exists(AccountValidationWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(AccountValidationWorkflow::class))->getName())->not->toBeEmpty();
 });

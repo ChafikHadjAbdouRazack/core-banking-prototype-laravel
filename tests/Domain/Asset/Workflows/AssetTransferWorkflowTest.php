@@ -14,7 +14,7 @@ beforeEach(function () {
 
 it('can create asset transfer workflow class', function () {
     // Test that the class exists and is properly structured
-    expect(class_exists(AssetTransferWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(AssetTransferWorkflow::class))->getName())->not->toBeEmpty();
     expect(is_subclass_of(AssetTransferWorkflow::class, Workflow\Workflow::class))->toBeTrue();
 });
 
@@ -29,8 +29,8 @@ it('has execute method with correct signature', function () {
 
 it('validates workflow activities exist', function () {
     // Test that all required activities exist
-    expect(class_exists(InitiateAssetTransferActivity::class))->toBeTrue();
-    expect(class_exists(ValidateExchangeRateActivity::class))->toBeTrue();
-    expect(class_exists(CompleteAssetTransferActivity::class))->toBeTrue();
-    expect(class_exists(FailAssetTransferActivity::class))->toBeTrue();
+    expect((new ReflectionClass(InitiateAssetTransferActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(ValidateExchangeRateActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(CompleteAssetTransferActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(FailAssetTransferActivity::class))->getName())->not->toBeEmpty();
 });

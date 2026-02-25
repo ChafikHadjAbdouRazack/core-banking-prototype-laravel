@@ -26,7 +26,7 @@ return new class () extends Migration {
                 $table->string('event_class');
                 $table->jsonb('event_properties');
                 $table->jsonb('meta_data');
-                $table->timestamp('created_at');
+                $table->dateTime('created_at');
 
                 // Indexes for performance
                 $table->index('event_class');

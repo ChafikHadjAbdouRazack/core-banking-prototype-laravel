@@ -30,26 +30,19 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
         // Content Security Policy
-        $csp = $this->getContentSecurityPolicy();
+        $csp = $this->getContentSecurityPolicy($request);
         $response->headers->set('Content-Security-Policy', $csp);
 
         // Permissions Policy (formerly Feature Policy)
         $permissions = $this->getPermissionsPolicy();
         $response->headers->set('Permissions-Policy', $permissions);
 
-        // HSTS - different values for different environments
-        if (app()->environment('production')) {
-            $response->headers->set(
-                'Strict-Transport-Security',
-                'max-age=31536000; includeSubDomains; preload'
-            );
-        } elseif (app()->environment('testing', 'local', 'development')) {
-            // Set a shorter HSTS duration for testing
-            $response->headers->set(
-                'Strict-Transport-Security',
-                'max-age=31536000; includeSubDomains'
-            );
-        }
+        // HSTS - set in all environments with appropriate max-age
+        $hstsMaxAge = app()->environment('production') ? 31536000 : 31536000;
+        $response->headers->set(
+            'Strict-Transport-Security',
+            "max-age={$hstsMaxAge}; includeSubDomains; preload"
+        );
 
         // Remove sensitive headers
         $response->headers->remove('X-Powered-By');
@@ -66,8 +59,26 @@ class SecurityHeaders
     /**
      * Get Content Security Policy directives.
      */
-    private function getContentSecurityPolicy(): string
+    private function getContentSecurityPolicy(Request $request): string
     {
+        // Swagger UI requires relaxed CSP (CDN assets + unsafe-eval for JSON rendering)
+        if ($request->is('api/documentation*') || $request->is('docs*')) {
+            return implode('; ', [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com",
+                "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com https://fonts.bunny.net",
+                "img-src 'self' data: https:",
+                "font-src 'self' https://fonts.bunny.net https://cdn.jsdelivr.net",
+                "connect-src 'self'",
+                "frame-src 'self'",
+                "base-uri 'self'",
+                "form-action 'self'",
+            ]);
+        }
+
+        // Filament admin panel requires unsafe-eval for Alpine.js x-data expressions
+        $needsUnsafeEval = $request->is('admin*') || $request->is('admin');
+
         // Get configured sources
         $fontSources = explode(',', config('security.csp.font_sources', ''));
         $styleSources = explode(',', config('security.csp.style_sources', ''));
@@ -76,10 +87,11 @@ class SecurityHeaders
         $apiEndpoint = config('security.csp.api_endpoint', '');
         $wsEndpoint = config('security.csp.ws_endpoint', '');
 
-        // Build policies
+        // Build production policies (unsafe-eval only for admin panel / Alpine.js)
+        $evalDirective = $needsUnsafeEval ? "'unsafe-eval' " : '';
         $policies = [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' " . implode(' ', $scriptSources),
+            "script-src 'self' 'unsafe-inline' " . $evalDirective . implode(' ', $scriptSources),
             "style-src 'self' 'unsafe-inline' " . implode(' ', $styleSources),
             "img-src 'self' data: https:",
             "font-src 'self' " . implode(' ', $fontSources),
@@ -97,7 +109,7 @@ class SecurityHeaders
             $policies[] = 'upgrade-insecure-requests';
         }
 
-        // In local/development, allow more flexibility
+        // In local/development, allow more flexibility (unsafe-eval needed for Vite HMR)
         if (app()->environment('local', 'development')) {
             // Get local hostnames
             $localHosts = explode(',', config('app.local_hostnames', 'localhost,127.0.0.1'));

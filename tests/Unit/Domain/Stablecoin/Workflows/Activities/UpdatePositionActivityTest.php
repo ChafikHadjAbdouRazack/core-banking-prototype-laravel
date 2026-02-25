@@ -12,7 +12,7 @@ class UpdatePositionActivityTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(UpdatePositionActivity::class));
+        $this->assertNotEmpty((new ReflectionClass(UpdatePositionActivity::class))->getName());
     }
 
     #[Test]
@@ -25,7 +25,7 @@ class UpdatePositionActivityTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(UpdatePositionActivity::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(UpdatePositionActivity::class))->hasMethod('execute'));
     }
 
     #[Test]

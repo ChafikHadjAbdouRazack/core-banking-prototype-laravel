@@ -1,9 +1,9 @@
 # FinAegis Core Banking Platform
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.3-8892BF.svg)](https://php.net/)
+[![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Mobile Ready](https://img.shields.io/badge/mobile-ready-green.svg)](docs/MOBILE_APP_SPECIFICATION.md)
@@ -20,18 +20,81 @@ FinAegis provides the foundation for building digital banking applications. The 
 
 | Challenge | FinAegis Solution |
 |-----------|-------------------|
-| Building financial systems from scratch | 31 production-ready domain modules |
-| Audit trail requirements | Event sourcing captures every state change |
+| Building financial systems from scratch | 42 production-ready domain modules |
+| Audit trail requirements | Event sourcing with domain-specific event tables |
 | Complex multi-step transactions | Saga pattern with automatic compensation |
-| Regulatory compliance | Built-in KYC/AML workflows |
+| Regulatory compliance | Built-in KYC/AML, SOC 2, PCI DSS, GDPR (v3.5.0) |
 | Multi-tenant SaaS deployment | Team-based tenant isolation (v2.0.0) |
 | Hardware wallet security | Ledger/Trezor support with multi-sig (v2.1.0) |
-| Real-time data streaming | WebSocket broadcasting for trading (v2.1.0) |
-| Cloud-native deployment | Kubernetes Helm charts, HPA, Istio (v2.1.0) |
-| Mobile wallet backend | Biometric auth, push notifications, device mgmt (v2.2.0) |
-| Privacy-preserving transactions | Shamir key sharding, ZK-KYC, Proof of Innocence (v2.4.0) |
-| Tap-to-pay with stablecoins | Virtual cards (Apple/Google Pay), Gas abstraction (v2.5.0) |
+| Mobile wallet backend | Biometric auth, passkeys, push notifications (v2.2.0+) |
+| Privacy-preserving transactions | ZK-KYC, Merkle trees, ERC-4337 gas abstraction (v2.4.0-v2.6.0) |
+| Multi-jurisdiction RegTech | MiFID II, MiCA, FATF Travel Rule, 4-jurisdiction adapters (v2.8.0) |
+| Cross-chain & DeFi | Bridge protocols, DEX aggregation, yield optimization (v3.0.0) |
+| Modular plugin architecture | 42 domains with manifests, enable/disable, dependency resolution (v3.2.0) |
+| Compliance certification | SOC 2 Type II, PCI DSS readiness, multi-region deployment (v3.5.0) |
+| GraphQL API | Schema-first Lighthouse PHP, 34 domains, subscriptions (v4.0.0+) |
+| Event Store v2 | Domain routing (34 domains), upcasting, migration tooling (v4.0.0) |
+| Plugin Marketplace | Manager, loader, sandbox, security scanner (v4.0.0) |
+| Event streaming | Redis Streams publisher/consumer, live dashboard (v5.0.0) |
+| API monetization | x402 protocol: HTTP-native micropayments with USDC on Base (v5.2.0) |
 | Learning modern architecture | Complete DDD + CQRS + Event Sourcing example |
+
+---
+
+## Plugin Architecture (v3.2.0)
+
+FinAegis uses a modular plugin system where each domain is a self-contained module:
+
+```bash
+php artisan domain:list              # List all 42 domain modules with status
+php artisan module:enable exchange   # Enable a module
+php artisan module:disable exchange  # Disable a module (preserves data)
+php artisan domain:verify exchange   # Verify module health
+php artisan performance:report       # Generate performance baseline
+```
+
+- **Module manifests** (`module.json`) define dependencies, interfaces, events, and commands
+- **Route isolation** — each domain loads its own `Routes/api.php` via `ModuleRouteLoader`
+- **Admin UI** — Filament page at `/admin/modules` with search, filters, enable/disable actions
+- **REST API** — `GET /api/v2/modules` for programmatic module management
+
+---
+
+## GraphQL API (v4.0.0-v4.3.0)
+
+FinAegis provides a schema-first GraphQL API via [Lighthouse PHP](https://lighthouse-php.com/) covering 34 domains:
+
+```bash
+# Available at /graphql
+# Interactive playground at /graphql-playground
+
+# Example query
+curl -X POST http://localhost:8000/graphql \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ accounts { id name balance currency } }"}'
+```
+
+- **34 domain schemas** — Account, AgentProtocol, AI, Asset, Banking, Basket, Batch, CardIssuance, Cgo, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, FinancialInstitution, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, Product, RegTech, Regulatory, Relayer, Stablecoin, Treasury, TrustCert, User, Wallet, X402
+- **Subscriptions** — Real-time updates via WebSocket (account updates, wallet changes, compliance alerts, order matching)
+- **DataLoaders** — N+1 query prevention with batched loading
+- **Security** — `@guard(with: ["sanctum"])`, query cost analysis, introspection control
+
+---
+
+## Event Streaming (v5.0.0)
+
+Redis Streams-based event streaming for real-time data pipelines:
+
+```bash
+php artisan event-stream:monitor    # Monitor stream health, lag, throughput
+```
+
+- **Event publisher** — Publishes domain events to 15 Redis Streams with XADD
+- **Consumer groups** — XREADGROUP-based consumers with acknowledgement and dead letter handling
+- **Live dashboard** — 5 REST endpoints for real-time metrics (projector lag, event throughput, domain health)
+- **Notification system** — Multi-channel notifications (email, push, in-app, webhook, SMS)
+- **API gateway** — Unified middleware with request ID tracing, timing headers
 
 ---
 
@@ -112,7 +175,7 @@ php artisan serve
 php artisan queue:work --queue=events,ledger,transactions,transfers,webhooks
 ```
 
-**Requirements**: PHP 8.3+, MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+, Redis 6.0+, Node.js 18+
+**Requirements**: PHP 8.4+, MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+, Redis 6.0+, Node.js 18+
 
 ### Modular Installation (v1.3.0+)
 
@@ -170,8 +233,9 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 |--------|-------------|
 | **Governance** | Democratic voting, proposals, asset-weighted strategies |
 | **Lending** | P2P loans, credit scoring, risk assessment |
-| **AI Framework** | MCP server, 20+ banking tools, event-sourced interactions |
+| **AI Framework** | MCP server, 20+ banking tools, natural language queries, pattern analysis (v2.8.0) |
 | **Agent Protocol** | A2A messaging, escrow, reputation system |
+| **RegTech** | MiFID II reporting, MiCA compliance, FATF Travel Rule, 4-jurisdiction adapters (v2.8.0) |
 | **Multi-Tenancy** | Team-based isolation, tenant-aware event sourcing |
 
 ### Mobile Backend (v2.4.0+)
@@ -184,6 +248,17 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 | **Gas Relayer** | ERC-4337 meta-transactions, pay fees in USDC |
 | **TrustCert** | W3C Verifiable Credentials, QR/deep link verification |
 | **Mobile** | Biometric auth, push notifications, device management |
+| **Mobile Payments** | Payment intents, activity feed, receipts, USDC on Solana/Tron (v2.7.0) |
+| **Passkey Auth** | WebAuthn/FIDO2 challenge-response authentication (v2.7.0) |
+| **P2P Transfers** | Address validation, name resolution, fee quotes (v2.7.0) |
+
+### API Monetization (v5.2.0)
+
+| Domain | Capabilities |
+|--------|-------------|
+| **X402 Protocol** | HTTP 402 native micropayments, USDC on Base L2, EIP-3009/Permit2 payment schemes |
+| **Payment Gate** | Middleware-based API monetization, per-endpoint pricing, automatic settlement |
+| **AI Agent Payments** | Autonomous payments for AI agents, spending limits, MCP tool integration |
 
 ---
 
@@ -211,11 +286,13 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 ```
 
 **Key Patterns:**
-- **Event Sourcing** - Complete audit trail, temporal queries, replay capability
+- **Event Sourcing** - Domain-specific event tables with Event Store v2, replay, and upcasting (v4.0.0)
 - **CQRS** - Separated read/write models for optimal performance
 - **Saga Pattern** - Distributed transactions with automatic rollback
-- **DDD** - 31 bounded contexts with clear boundaries
+- **DDD** - 41 bounded contexts with clear boundaries
 - **Multi-Tenancy** - Team-based data isolation with stancl/tenancy v3.9
+- **GraphQL** - Schema-first Lighthouse PHP across 34 domains with subscriptions (v4.0.0+)
+- **Event Streaming** - Redis Streams publisher/consumer with live dashboard (v5.0.0)
 
 See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
 
@@ -227,8 +304,8 @@ See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
 |----------|-------|
 | **Getting Started** | [Quick Start](#quick-start) · [User Guides](docs/05-USER-GUIDES/) |
 | **Architecture** | [Overview](docs/02-ARCHITECTURE/) · [ADRs](docs/ADR/) · [Roadmap](docs/ARCHITECTURAL_ROADMAP.md) |
-| **API** | [REST Reference](docs/04-API/REST_API_REFERENCE.md) · [OpenAPI](/api/documentation) |
-| **Mobile** | [Mobile App Specification](docs/MOBILE_APP_SPECIFICATION.md) · [Version Roadmap](docs/VERSION_ROADMAP.md) |
+| **API** | [REST Reference](docs/04-API/REST_API_REFERENCE.md) · [OpenAPI](/api/documentation) · [GraphQL](/graphql-playground) |
+| **Version History** | [Changelog](CHANGELOG.md) · [Version Roadmap](docs/VERSION_ROADMAP.md) |
 | **Development** | [Contributing](CONTRIBUTING.md) · [Dev Guides](docs/06-DEVELOPMENT/) |
 | **Reference** | [GCU Design](docs/ADR/ADR-004-gcu-basket-design.md) · [Event Sourcing](docs/ADR/ADR-001-event-sourcing.md) |
 
@@ -290,14 +367,15 @@ See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details
 
 | Layer | Technology |
 |-------|------------|
-| **Backend** | Laravel 12, PHP 8.3+ (8.4 supported) |
-| **Event Sourcing** | Spatie Event Sourcing |
+| **Backend** | Laravel 12, PHP 8.4+ |
+| **Event Sourcing** | Spatie Event Sourcing with Event Store v2 (domain routing, upcasting) |
+| **GraphQL** | Lighthouse PHP (schema-first, 34 domains, subscriptions) |
 | **Workflows** | Laravel Workflow (Waterline) |
 | **Multi-Tenancy** | stancl/tenancy v3.9 |
 | **Database** | MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+ |
-| **Cache/Queue** | Redis, Laravel Horizon |
-| **Real-time** | Soketi (Pusher-compatible), Laravel Echo |
-| **Testing** | Pest PHP (parallel, 5,700+ tests), PHPStan Level 5 |
+| **Cache/Queue/Streaming** | Redis (cache, queues, Streams), Laravel Horizon |
+| **Real-time** | Soketi (Pusher-compatible), Laravel Echo, Redis Streams |
+| **Testing** | Pest PHP (parallel, 790+ test files, 6,300+ tests), PHPStan Level 8 |
 | **Admin** | Filament v3 |
 | **Frontend** | Livewire, Tailwind CSS |
 | **Deployment** | Docker, Kubernetes (Helm), Istio |
@@ -314,7 +392,7 @@ This is a **demonstration platform** showcasing modern banking architecture. Use
 - Contributing to open-source fintech
 - Studying GCU as a basket currency reference
 
-**Production Readiness**: The codebase includes production-grade infrastructure (CQRS, event sourcing, multi-tenancy, 50%+ test coverage, PHPStan Level 8, 5,000+ tests). However, **a security audit and compliance review are required** before any production deployment. See [Security Policy](SECURITY.md) for vulnerability reporting.
+**Production Readiness**: The codebase includes production-grade infrastructure (CQRS, event sourcing, multi-tenancy, GraphQL API, event streaming, 50%+ test coverage, PHPStan Level 8, 6,300+ tests). However, **a security audit and compliance review are required** before any production deployment. See [Security Policy](SECURITY.md) for vulnerability reporting.
 
 ---
 

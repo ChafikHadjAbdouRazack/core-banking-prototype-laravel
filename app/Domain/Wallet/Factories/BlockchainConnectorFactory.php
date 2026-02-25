@@ -6,6 +6,8 @@ namespace App\Domain\Wallet\Factories;
 
 use App\Domain\Wallet\Connectors\EthereumConnector;
 use App\Domain\Wallet\Connectors\SimpleBitcoinConnector;
+use App\Domain\Wallet\Connectors\SolanaConnector;
+use App\Domain\Wallet\Connectors\TronConnector;
 use App\Domain\Wallet\Contracts\BlockchainConnector;
 use App\Domain\Wallet\Services\DemoBlockchainService;
 use InvalidArgumentException;
@@ -40,6 +42,15 @@ class BlockchainConnectorFactory
                 'network' => config('blockchain.bitcoin.network', 'mainnet'),
                 'api_key' => config('blockchain.bitcoin.api_key'),
             ]),
+            'solana' => new SolanaConnector(
+                (string) config('blockchain.solana.rpc_url'),
+                (string) config('blockchain.solana.network', 'mainnet-beta'),
+            ),
+            'tron' => new TronConnector(
+                (string) config('blockchain.tron.rpc_url'),
+                (string) config('blockchain.tron.network', 'mainnet'),
+                config('blockchain.tron.api_key'),
+            ),
             default => throw new InvalidArgumentException("Unsupported blockchain: {$chain}"),
         };
     }
@@ -53,6 +64,8 @@ class BlockchainConnectorFactory
             'ethereum' => config('demo.domains.wallet.testnets.ethereum') === 'sepolia' ? '11155111' : '1',
             'polygon'  => config('demo.domains.wallet.testnets.polygon') === 'mumbai' ? '80001' : '137',
             'bitcoin'  => config('demo.domains.wallet.testnets.bitcoin') === 'testnet' ? 'testnet' : 'mainnet',
+            'solana'   => config('demo.domains.wallet.testnets.solana') === 'devnet' ? 'devnet' : 'mainnet-beta',
+            'tron'     => config('demo.domains.wallet.testnets.tron') === 'shasta' ? 'shasta' : 'mainnet',
             default    => '1',
         };
     }

@@ -27,7 +27,7 @@ return new class () extends Migration {
             $table->boolean('is_active')->default(true);
             $table->unsignedInteger('rate_limit_per_minute')->default(60);
             $table->unsignedInteger('timeout_seconds')->default(30);
-            $table->timestamp('last_health_check')->nullable();
+            $table->dateTime('last_health_check')->nullable();
             $table->string('health_status')->default('unknown');
             $table->json('metadata')->nullable();
             $table->timestamps();

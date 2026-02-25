@@ -15,8 +15,8 @@ return new class () extends Migration {
             $table->string('user_id')->unique();
             $table->string('tier_override')->nullable();
             $table->string('reason')->nullable();
-            $table->timestamp('assigned_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('assigned_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->timestamps();
 
             $table->index('user_id');
@@ -33,7 +33,7 @@ return new class () extends Migration {
                     $table->decimal('fee_amount', 36, 18)->nullable()->after('average_price');
                 }
                 if (! Schema::hasColumn('orders', 'executed_at')) {
-                    $table->timestamp('executed_at')->nullable();
+                    $table->dateTime('executed_at')->nullable();
                 }
             });
         }
@@ -44,7 +44,7 @@ return new class () extends Migration {
             $table->string('user_id');
             $table->decimal('discount_rate', 5, 4);
             $table->boolean('active')->default(true);
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->timestamps();
 
             $table->index('user_id');
@@ -58,7 +58,7 @@ return new class () extends Migration {
             $table->string('pool_id');
             $table->decimal('discount_rate', 5, 4);
             $table->boolean('active')->default(true);
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->timestamps();
 
             $table->index('pool_id');

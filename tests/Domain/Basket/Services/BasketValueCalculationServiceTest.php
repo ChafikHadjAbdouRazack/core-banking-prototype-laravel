@@ -243,6 +243,9 @@ it('can get historical values for a basket', function () {
 });
 
 it('can calculate basket performance', function () {
+    // Freeze time to prevent timestamp drift between create and query
+    $this->freezeTime();
+
     $basket = BasketAsset::create([
         'code' => 'PERFORMANCE_BASKET',
         'name' => 'Performance Basket',

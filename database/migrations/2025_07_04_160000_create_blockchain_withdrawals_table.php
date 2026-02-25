@@ -24,7 +24,7 @@ return new class () extends Migration {
             $table->string('transaction_hash')->nullable();
             $table->string('status')->default('pending');
             $table->text('error_message')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->index(['wallet_id', 'status']);

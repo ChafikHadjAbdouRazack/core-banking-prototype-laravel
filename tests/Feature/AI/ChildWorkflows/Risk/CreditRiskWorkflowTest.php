@@ -15,7 +15,7 @@ class CreditRiskWorkflowTest extends TestCase
         #[\PHPUnit\Framework\Attributes\Test]
     public function it_can_create_workflow_stub(): void
     {
-        $this->assertTrue(class_exists(CreditRiskWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(CreditRiskWorkflow::class))->getName());
 
         $workflow = WorkflowStub::make(CreditRiskWorkflow::class);
         $this->assertInstanceOf(WorkflowStub::class, $workflow);

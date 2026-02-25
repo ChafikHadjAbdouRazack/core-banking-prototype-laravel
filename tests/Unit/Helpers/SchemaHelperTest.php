@@ -12,7 +12,7 @@ class SchemaHelperTest extends TestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(SchemaHelper::class));
+        $this->assertNotEmpty((new ReflectionClass(SchemaHelper::class))->getName());
     }
 
     #[Test]
@@ -30,7 +30,7 @@ class SchemaHelperTest extends TestCase
         ];
 
         foreach ($expectedMethods as $method) {
-            $this->assertTrue(method_exists(SchemaHelper::class, $method));
+            $this->assertTrue((new ReflectionClass(SchemaHelper::class))->hasMethod($method));
         }
     }
 

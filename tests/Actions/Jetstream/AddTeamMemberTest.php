@@ -16,7 +16,7 @@ it('implements AddsTeamMembers contract', function () {
 });
 
 it('has validate method', function () {
-    expect(method_exists(AddTeamMember::class, 'add'))->toBeTrue();
+    expect((new ReflectionClass(AddTeamMember::class))->hasMethod('add'))->toBeTrue();
 });
 
 it('has rules method', function () {

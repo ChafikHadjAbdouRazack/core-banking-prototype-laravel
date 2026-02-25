@@ -34,7 +34,7 @@ trait HasApiScopes
     /**
      * Get scopes from request or use defaults.
      *
-     * @param  array|null  $requestedScopes
+     * @param  array<string>|null  $requestedScopes
      * @param  User  $user
      * @return array<string>
      */
@@ -55,7 +55,7 @@ trait HasApiScopes
      *
      * @param  User  $user
      * @param  string  $tokenName
-     * @param  array|null  $requestedScopes
+     * @param  array<string>|null  $requestedScopes
      * @return string
      */
     protected function createTokenWithScopes(User $user, string $tokenName, ?array $requestedScopes = null): string
@@ -75,5 +75,49 @@ trait HasApiScopes
         }
 
         return $token->plainTextToken;
+    }
+
+    /**
+     * Create a refresh token for the given user.
+     *
+     * @param  User  $user
+     * @param  string  $tokenName
+     * @return string
+     */
+    protected function createRefreshToken(User $user, string $tokenName): string
+    {
+        $token = $user->createToken($tokenName . '-refresh', ['refresh']);
+
+        $expirationMinutes = config('sanctum.refresh_token_expiration');
+        if ($expirationMinutes) {
+            $token->accessToken->expires_at = Carbon::now()->addMinutes((int) $expirationMinutes);
+            $token->accessToken->save();
+        }
+
+        return $token->plainTextToken;
+    }
+
+    /**
+     * Create an access/refresh token pair.
+     *
+     * @param  User  $user
+     * @param  string  $tokenName
+     * @param  array<string>|null  $requestedScopes
+     * @return array{access_token: string, refresh_token: string, expires_in: int|null, refresh_expires_in: int|null}
+     */
+    protected function createTokenPair(User $user, string $tokenName, ?array $requestedScopes = null): array
+    {
+        $accessToken = $this->createTokenWithScopes($user, $tokenName, $requestedScopes);
+        $refreshToken = $this->createRefreshToken($user, $tokenName);
+
+        $expirationMinutes = config('sanctum.expiration');
+        $refreshExpirationMinutes = config('sanctum.refresh_token_expiration');
+
+        return [
+            'access_token'       => $accessToken,
+            'refresh_token'      => $refreshToken,
+            'expires_in'         => $expirationMinutes ? (int) $expirationMinutes * 60 : null,
+            'refresh_expires_in' => $refreshExpirationMinutes ? (int) $refreshExpirationMinutes * 60 : null,
+        ];
     }
 }

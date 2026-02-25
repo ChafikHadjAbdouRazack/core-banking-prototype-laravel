@@ -16,19 +16,23 @@
                         </p>
                     </div>
 
+                    <x-demo-banner>
+                        <p>You're in demo mode. Do not send real cryptocurrency to the addresses shown below.</p>
+                    </x-demo-banner>
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <button onclick="selectCrypto('BTC')" class="crypto-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 transition-colors cursor-pointer text-center">
                             <div class="text-3xl mb-2">₿</div>
                             <h4 class="font-semibold">Bitcoin (BTC)</h4>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Network: Bitcoin</p>
                         </button>
-                        
+
                         <button onclick="selectCrypto('ETH')" class="crypto-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 transition-colors cursor-pointer text-center">
                             <div class="text-3xl mb-2">Ξ</div>
                             <h4 class="font-semibold">Ethereum (ETH)</h4>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Network: ERC-20</p>
                         </button>
-                        
+
                         <button onclick="selectCrypto('USDT')" class="crypto-option p-4 border-2 border-gray-200 dark:border-gray-600 rounded-lg hover:border-blue-500 transition-colors cursor-pointer text-center">
                             <div class="text-3xl mb-2">₮</div>
                             <h4 class="font-semibold">Tether (USDT)</h4>
@@ -54,7 +58,7 @@
                         <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
-                                    <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <svg class="h-5 w-5 text-yellow-400" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
                                 </div>
@@ -88,23 +92,25 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     
     <script>
+        const configuredAddresses = @json($cryptoAddresses ?? []);
+
         function selectCrypto(crypto) {
             // Remove active state from all options
             document.querySelectorAll('.crypto-option').forEach(el => {
                 el.classList.remove('border-blue-500');
             });
-            
+
             // Add active state to selected option
             event.target.closest('.crypto-option').classList.add('border-blue-500');
-            
+
             // Show deposit details
             document.getElementById('depositDetails').classList.remove('hidden');
-            
-            // Update crypto-specific details
+
+            // Update crypto-specific details — addresses from server config
             const addresses = {
-                'BTC': '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
-                'ETH': '0x742d35Cc6634C0532925a3b844Bc9e7595f06789',
-                'USDT': 'TN3W4H6rK2UM6GnKms9iFGQfVY73Gmwm7T'
+                'BTC': configuredAddresses.btc || '',
+                'ETH': configuredAddresses.eth || '',
+                'USDT': configuredAddresses.usdt || ''
             };
             
             const minDeposits = {
@@ -120,13 +126,17 @@
             };
             
             const address = addresses[crypto];
-            document.getElementById('cryptoAddress').value = address;
+            document.getElementById('cryptoAddress').value = address || 'Not configured';
             document.getElementById('selectedCrypto').textContent = crypto;
             document.getElementById('minDeposit').textContent = minDeposits[crypto];
             document.getElementById('confirmations').textContent = confirmations[crypto];
-            
-            // Generate QR code
-            generateQRCode(address, crypto);
+
+            // Generate QR code only if address is configured
+            if (address) {
+                generateQRCode(address, crypto);
+            } else {
+                document.getElementById('qrcode').innerHTML = '<div class="text-gray-400 text-sm p-4">Address not configured</div>';
+            }
         }
         
         function generateQRCode(address, crypto) {

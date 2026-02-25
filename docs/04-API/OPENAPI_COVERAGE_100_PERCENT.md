@@ -1,5 +1,7 @@
 # OpenAPI Documentation Coverage - 100% Complete
 
+> **Note:** This coverage assessment was performed at v3.4.0. Additional controllers have been added in v3.5.0-v5.0.0 including Compliance Certification, GraphQL resolvers, Plugin management, and Live Dashboard endpoints.
+
 ## Summary
 
 This document summarizes the complete OpenAPI documentation coverage for all API controllers in the FinAegis platform. We have achieved 100% coverage with comprehensive annotations for all endpoints.

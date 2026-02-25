@@ -253,7 +253,7 @@ class AIInteractionAggregateTest extends TestCase
         // Compare events by class type rather than exact equality
         // since internal properties like firedFromAggregateRoot may differ
         foreach ($originalEvents as $index => $event) {
-            $eventClass = get_class($event);
+            $eventClass = $event::class;
             $this->assertNotFalse($eventClass);
             $this->assertInstanceOf($eventClass, $replayedEvents[$index]);
         }

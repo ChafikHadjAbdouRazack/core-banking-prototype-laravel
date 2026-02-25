@@ -24,7 +24,7 @@ return new class () extends Migration {
             $table->json('capabilities')->nullable();
             $table->json('metadata')->nullable();
             $table->decimal('relay_score', 5, 2)->default(0.00);
-            $table->timestamp('last_activity_at')->nullable();
+            $table->dateTime('last_activity_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -67,7 +67,7 @@ return new class () extends Migration {
             $table->integer('latency_ms')->default(0);
             $table->decimal('bandwidth_mbps', 10, 2)->default(0.00);
             $table->decimal('reliability_score', 5, 2)->default(0.00);
-            $table->timestamp('last_contact_at')->nullable();
+            $table->dateTime('last_contact_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 
@@ -91,11 +91,11 @@ return new class () extends Migration {
             $table->string('reply_to')->nullable();
             $table->boolean('requires_acknowledgment')->default(false);
             $table->integer('acknowledgment_timeout')->nullable();
-            $table->timestamp('acknowledged_at')->nullable();
-            $table->timestamp('delivered_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('acknowledged_at')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->integer('retry_count')->default(0);
-            $table->timestamp('next_retry_at')->nullable()->index();
+            $table->dateTime('next_retry_at')->nullable()->index();
             $table->json('metadata')->nullable();
             $table->timestamps();
 
@@ -113,7 +113,7 @@ return new class () extends Migration {
             $table->string('agent_id')->index();
             $table->string('activity_type')->index();
             $table->json('data')->nullable();
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->index(['agent_id', 'activity_type']);
             $table->foreign('agent_id')->references('agent_id')->on('agents')->onDelete('cascade');
@@ -128,7 +128,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->dateTime('created_at')->useCurrent();
 
             $table->unique(['aggregate_uuid', 'aggregate_version'], 'a2a_msg_events_uuid_ver_unique');
             $table->index('event_class');
@@ -141,7 +141,7 @@ return new class () extends Migration {
             $table->uuid('aggregate_uuid')->index();
             $table->unsignedInteger('aggregate_version');
             $table->json('state');
-            $table->timestamp('created_at')->useCurrent();
+            $table->dateTime('created_at')->useCurrent();
 
             $table->unique(['aggregate_uuid', 'aggregate_version'], 'a2a_msg_snap_uuid_ver_unique');
         });
@@ -155,7 +155,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->dateTime('created_at')->useCurrent();
 
             $table->unique(['aggregate_uuid', 'aggregate_version'], 'agent_cap_events_uuid_ver_unique');
             $table->index('event_class');
@@ -168,7 +168,7 @@ return new class () extends Migration {
             $table->uuid('aggregate_uuid')->index();
             $table->unsignedInteger('aggregate_version');
             $table->json('state');
-            $table->timestamp('created_at')->useCurrent();
+            $table->dateTime('created_at')->useCurrent();
 
             $table->unique(['aggregate_uuid', 'aggregate_version'], 'agent_cap_snap_uuid_ver_unique');
         });

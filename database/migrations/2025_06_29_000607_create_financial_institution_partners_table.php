@@ -69,7 +69,7 @@ return new class () extends Migration {
             $table->integer('active_accounts')->default(0);
             $table->integer('total_transactions')->default(0);
             $table->decimal('total_volume', 20, 2)->default(0);
-            $table->timestamp('last_activity_at')->nullable();
+            $table->dateTime('last_activity_at')->nullable();
 
             // Webhooks
             $table->json('webhook_endpoints')->nullable();
@@ -78,9 +78,9 @@ return new class () extends Migration {
 
             // Metadata
             $table->json('metadata')->nullable();
-            $table->timestamp('activated_at')->nullable();
-            $table->timestamp('suspended_at')->nullable();
-            $table->timestamp('terminated_at')->nullable();
+            $table->dateTime('activated_at')->nullable();
+            $table->dateTime('suspended_at')->nullable();
+            $table->dateTime('terminated_at')->nullable();
             $table->text('suspension_reason')->nullable();
             $table->text('termination_reason')->nullable();
 

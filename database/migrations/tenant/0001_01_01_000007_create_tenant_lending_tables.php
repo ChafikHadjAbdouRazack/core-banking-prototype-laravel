@@ -36,12 +36,12 @@ return new class () extends Migration {
             $table->json('documents')->nullable();
             $table->decimal('approved_amount', 20, 8)->nullable();
             $table->decimal('approved_rate', 8, 4)->nullable();
-            $table->timestamp('submitted_at')->nullable();
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('submitted_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->string('reviewed_by')->nullable();
-            $table->timestamp('approved_at')->nullable();
+            $table->dateTime('approved_at')->nullable();
             $table->string('approved_by')->nullable();
-            $table->timestamp('rejected_at')->nullable();
+            $table->dateTime('rejected_at')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
@@ -77,7 +77,7 @@ return new class () extends Migration {
             $table->unsignedInteger('payments_made')->default(0);
             $table->unsignedInteger('payments_remaining');
             $table->unsignedInteger('days_past_due')->default(0);
-            $table->timestamp('closed_at')->nullable();
+            $table->dateTime('closed_at')->nullable();
             $table->string('closure_reason')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
@@ -100,8 +100,8 @@ return new class () extends Migration {
             $table->string('currency', 10);
             $table->string('status')->default('pledged');
             $table->json('valuation_data')->nullable();
-            $table->timestamp('valued_at')->nullable();
-            $table->timestamp('released_at')->nullable();
+            $table->dateTime('valued_at')->nullable();
+            $table->dateTime('released_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 
@@ -123,7 +123,7 @@ return new class () extends Migration {
             $table->string('currency', 10);
             $table->string('status')->default('scheduled');
             $table->date('due_date');
-            $table->timestamp('paid_at')->nullable();
+            $table->dateTime('paid_at')->nullable();
             $table->string('payment_method')->nullable();
             $table->string('payment_reference')->nullable();
             $table->json('metadata')->nullable();

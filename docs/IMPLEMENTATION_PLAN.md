@@ -1,5 +1,20 @@
 # FinAegis Implementation Plan
 
+> **HISTORICAL DOCUMENT (v1.x Era)**
+>
+> This implementation plan was written during the v1.x development phase and reflects
+> the planning priorities of that time. The project has since evolved significantly
+> through v5.0.0 with 41 domains, Event Sourcing v2, GraphQL API, Plugin Marketplace,
+> Event Streaming, and much more.
+>
+> For current architecture documentation, see:
+> - [Architecture Overview](./02-ARCHITECTURE/ARCHITECTURE.md)
+> - [CLAUDE.md](../CLAUDE.md) (project-level guidance with version status and key services)
+>
+> The content below is preserved for historical reference.
+
+---
+
 ## Overview
 
 This document provides actionable tasks to transform FinAegis into the premier open source core banking platform with GCU as its reference implementation.

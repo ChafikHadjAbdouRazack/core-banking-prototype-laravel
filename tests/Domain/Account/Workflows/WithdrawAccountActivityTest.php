@@ -4,17 +4,13 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\WithdrawAccountActivity;
 
-it('class exists', function () {
-    expect(class_exists(WithdrawAccountActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(WithdrawAccountActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(WithdrawAccountActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(WithdrawAccountActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {

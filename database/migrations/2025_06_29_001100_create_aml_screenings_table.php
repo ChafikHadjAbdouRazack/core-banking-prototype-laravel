@@ -42,17 +42,17 @@ return new class () extends Migration {
 
             // Lists Checked
             $table->json('lists_checked')->nullable(); // OFAC, EU, UN, etc.
-            $table->timestamp('lists_updated_at')->nullable();
+            $table->dateTime('lists_updated_at')->nullable();
 
             // Review Information
             $table->foreignId('reviewed_by')->nullable()->constrained('users');
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->text('review_decision')->nullable(); // clear, escalate, block
             $table->text('review_notes')->nullable();
 
             // Screening Metadata
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->decimal('processing_time', 8, 2)->nullable(); // seconds
             $table->json('api_response')->nullable(); // Raw provider response
 

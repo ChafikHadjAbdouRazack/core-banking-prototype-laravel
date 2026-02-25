@@ -42,6 +42,52 @@ class SmartAccountControllerTest extends TestCase
         $response->assertUnprocessable();
     }
 
+    public function test_create_account_without_owner_address_derives_from_user(): void
+    {
+        $response = $this->withToken($this->token)
+            ->postJson('/api/v1/relayer/account', [
+                'network' => 'polygon',
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'id',
+                    'owner_address',
+                    'account_address',
+                    'network',
+                    'deployed',
+                    'nonce',
+                    'pending_ops',
+                ],
+            ]);
+
+        $data = $response->json('data');
+        $this->assertEquals('polygon', $data['network']);
+        $this->assertStringStartsWith('0x', $data['owner_address']);
+        $this->assertStringStartsWith('0x', $data['account_address']);
+    }
+
+    public function test_create_account_without_owner_address_is_idempotent(): void
+    {
+        $response1 = $this->withToken($this->token)
+            ->postJson('/api/v1/relayer/account', [
+                'network' => 'polygon',
+            ]);
+
+        $response2 = $this->withToken($this->token)
+            ->postJson('/api/v1/relayer/account', [
+                'network' => 'polygon',
+            ]);
+
+        $this->assertEquals(
+            $response1->json('data.id'),
+            $response2->json('data.id')
+        );
+    }
+
     public function test_create_account_validates_owner_address_format(): void
     {
         $response = $this->withToken($this->token)

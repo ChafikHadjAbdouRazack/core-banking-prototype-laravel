@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->uuid('user_uuid');
             $table->json('selected_options'); // Array of selected option IDs
             $table->integer('voting_power')->default(1);
-            $table->timestamp('voted_at');
+            $table->dateTime('voted_at');
             $table->string('signature', 255)->nullable(); // For vote verification
             $table->json('metadata')->nullable(); // Additional vote data
             $table->timestamps();

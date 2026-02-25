@@ -12,7 +12,7 @@ return new class () extends Migration {
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('has_completed_onboarding')->default(false)->after('data_retention_consent');
-            $table->timestamp('onboarding_completed_at')->nullable()->after('has_completed_onboarding');
+            $table->dateTime('onboarding_completed_at')->nullable()->after('has_completed_onboarding');
         });
     }
 

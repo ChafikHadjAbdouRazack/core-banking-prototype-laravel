@@ -45,11 +45,11 @@ return new class () extends Migration {
             }
 
             if (! in_array('payment_pending_at', $existingColumns)) {
-                $table->timestamp('payment_pending_at')->nullable();
+                $table->dateTime('payment_pending_at')->nullable();
             }
 
             if (! in_array('failed_at', $existingColumns)) {
-                $table->timestamp('failed_at')->nullable();
+                $table->dateTime('failed_at')->nullable();
             }
 
             if (! in_array('failure_reason', $existingColumns)) {

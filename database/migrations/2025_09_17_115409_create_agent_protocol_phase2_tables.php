@@ -86,10 +86,10 @@ return new class () extends Migration {
             $table->string('currency', 3)->default('USD');
             $table->decimal('funded_amount', 20, 2)->default(0);
             $table->json('conditions')->nullable();
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
             $table->string('status'); // created, funded, released, disputed, resolved, expired, cancelled
             $table->boolean('is_disputed')->default(false);
-            $table->timestamp('released_at')->nullable();
+            $table->dateTime('released_at')->nullable();
             $table->string('released_by')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
@@ -116,7 +116,7 @@ return new class () extends Migration {
             $table->string('status'); // open, investigating, resolved, escalated
             $table->string('resolution_method'); // automated, arbitration, voting
             $table->string('resolved_by')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->string('resolution_type')->nullable(); // release_to_receiver, return_to_sender, split, arbitrated
             $table->json('resolution_allocation')->nullable();
             $table->json('resolution_details')->nullable();

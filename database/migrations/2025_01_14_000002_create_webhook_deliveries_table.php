@@ -22,8 +22,8 @@ return new class () extends Migration {
             $table->json('response_headers')->nullable();
             $table->integer('duration_ms')->nullable();
             $table->text('error_message')->nullable();
-            $table->timestamp('delivered_at')->nullable();
-            $table->timestamp('next_retry_at')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->dateTime('next_retry_at')->nullable();
             $table->timestamps();
 
             $table->foreign('webhook_uuid')->references('uuid')->on('webhooks')->onDelete('cascade');

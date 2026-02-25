@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->jsonb('event_properties');
             $table->jsonb('meta_data');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             // Indexes for performance
             $table->index('event_class');
@@ -34,7 +34,7 @@ return new class () extends Migration {
             $table->uuid('aggregate_uuid');
             $table->unsignedInteger('aggregate_version');
             $table->jsonb('state');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->index('aggregate_uuid');
             $table->index(['aggregate_uuid', 'aggregate_version']);

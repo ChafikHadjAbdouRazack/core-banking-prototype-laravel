@@ -37,6 +37,10 @@ class SmartAccountController extends Controller
      * The account is computed deterministically but not deployed on-chain
      * until the first transaction.
      *
+     * If owner_address is omitted, the server derives a deterministic address
+     * from the authenticated user, enabling initial account creation during
+     * onboarding when the user has no wallet yet.
+     *
      * @OA\Post(
      *     path="/api/v1/relayer/account",
      *     summary="Create or retrieve a smart account",
@@ -45,8 +49,8 @@ class SmartAccountController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"owner_address", "network"},
-     *             @OA\Property(property="owner_address", type="string", example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e"),
+     *             required={"network"},
+     *             @OA\Property(property="owner_address", type="string", nullable=true, example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e", description="EOA owner address. If omitted, derived from authenticated user."),
      *             @OA\Property(property="network", type="string", enum={"polygon", "base", "arbitrum"}, example="polygon")
      *         )
      *     ),
@@ -67,13 +71,14 @@ class SmartAccountController extends Controller
      *         )
      *     ),
      *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=401, description="Unauthorized")
+     *     @OA\Response(response=401, description="Unauthorized"),
+     *     @OA\Response(response=422, description="Validation error")
      * )
      */
     public function createAccount(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'owner_address' => 'required|string|regex:/^0x[a-fA-F0-9]{40}$/',
+            'owner_address' => 'nullable|string|regex:/^0x[a-fA-F0-9]{40}$/',
             'network'       => 'required|string|in:polygon,base,arbitrum',
         ]);
 
@@ -81,9 +86,13 @@ class SmartAccountController extends Controller
             /** @var User $user */
             $user = $request->user();
 
+            // Derive owner address from user if not provided (onboarding flow)
+            $ownerAddress = $validated['owner_address']
+                ?? $this->deriveOwnerAddress($user);
+
             $account = $this->smartAccountService->getOrCreateAccount(
                 $user,
-                $validated['owner_address'],
+                $ownerAddress,
                 $validated['network']
             );
 
@@ -101,8 +110,9 @@ class SmartAccountController extends Controller
             ], $e->httpStatusCode);
         } catch (Throwable $e) {
             Log::error('Smart account creation failed', [
-                'error'         => $e->getMessage(),
-                'owner_address' => $validated['owner_address'],
+                'error'   => $e->getMessage(),
+                'user_id' => $user->id ?? null,
+                'network' => $validated['network'],
             ]);
 
             return response()->json([
@@ -312,5 +322,20 @@ class SmartAccountController extends Controller
             'success' => true,
             'data'    => $accounts->map(fn ($account) => $account->toApiResponse()),
         ]);
+    }
+
+    /**
+     * Derive a deterministic EOA-like address from a user's identity.
+     *
+     * Used during onboarding when the user has no external wallet.
+     * The address is computed as keccak256(user_id + app_key)[12:] to produce
+     * a valid 20-byte Ethereum address deterministically.
+     */
+    private function deriveOwnerAddress(User $user): string
+    {
+        $seed = $user->id . ':' . config('app.key');
+        $hash = hash('sha3-256', $seed);
+
+        return '0x' . substr($hash, 24); // Last 20 bytes (40 hex chars)
     }
 }

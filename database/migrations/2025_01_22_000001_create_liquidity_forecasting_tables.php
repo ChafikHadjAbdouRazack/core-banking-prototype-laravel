@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->decimal('confidence_level', 3, 2);
             $table->json('recommendations')->nullable();
             $table->string('status')->default('active');
-            $table->timestamp('generated_at');
+            $table->dateTime('generated_at');
             $table->string('generated_by');
             $table->timestamps();
 
@@ -42,9 +42,9 @@ return new class () extends Migration {
             $table->decimal('threshold', 20, 4)->nullable();
             $table->boolean('action_required')->default(false);
             $table->string('status')->default('active'); // active, acknowledged, resolved
-            $table->timestamp('acknowledged_at')->nullable();
+            $table->dateTime('acknowledged_at')->nullable();
             $table->string('acknowledged_by')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->string('resolved_by')->nullable();
             $table->text('resolution_notes')->nullable();
             $table->timestamps();
@@ -65,7 +65,7 @@ return new class () extends Migration {
             $table->string('recipient');
             $table->text('description')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->timestamps();
 
             $table->index(['treasury_id', 'due_date', 'status']);
@@ -83,7 +83,7 @@ return new class () extends Migration {
             $table->string('source');
             $table->text('description')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('received_at')->nullable();
+            $table->dateTime('received_at')->nullable();
             $table->timestamps();
 
             $table->index(['treasury_id', 'expected_date', 'status']);
@@ -119,8 +119,8 @@ return new class () extends Migration {
             $table->string('status')->default('pending'); // pending, in_progress, completed, failed
             $table->decimal('expected_impact', 20, 4)->nullable();
             $table->decimal('actual_impact', 20, 4)->nullable();
-            $table->timestamp('initiated_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('initiated_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->string('initiated_by');
             $table->text('outcome_notes')->nullable();
             $table->timestamps();

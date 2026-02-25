@@ -16,7 +16,7 @@
                 <p>Cookies are small text files that are stored on your device when you visit our website. They help us provide you with a better experience by remembering your preferences and enabling essential functionality.</p>
 
                 <h2>2. How We Use Cookies</h2>
-                <p>FinAegis uses cookies for several purposes:</p>
+                <p>{{ config('brand.name') }} uses cookies for several purposes:</p>
 
                 <h3>2.1 Essential Cookies</h3>
                 <p>These cookies are necessary for the website to function properly:</p>
@@ -68,7 +68,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             <tr>
-                                <td class="py-2 font-mono">finaegis_session</td>
+                                <td class="py-2 font-mono">{{ config('session.cookie', 'laravel_session') }}</td>
                                 <td class="py-2">User authentication and session management</td>
                                 <td class="py-2">Session</td>
                                 <td class="py-2">Essential</td>
@@ -196,8 +196,8 @@
                 <p>If you have questions about our use of cookies, please contact us:</p>
                 <div class="bg-gray-50 p-6 rounded-lg mt-6">
                     <p><strong>Data Protection Officer</strong><br>
-                    Email: privacy@finaegis.org<br>
-                    Address: Vilnius, Lithuania</p>
+                    Email: {{ config('brand.privacy_email') }}<br>
+                    Address: {{ config('brand.legal_jurisdiction') }}</p>
                 </div>
 
                 <div class="bg-green-50 border border-green-200 rounded-lg p-6 mt-8">

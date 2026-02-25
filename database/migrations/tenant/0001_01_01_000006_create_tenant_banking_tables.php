@@ -29,9 +29,9 @@ return new class () extends Migration {
             $table->string('status')->default('pending');
             // SECURITY: Use Laravel's encrypted cast in model for this field
             $table->text('access_data_encrypted')->nullable()->comment('Encrypted OAuth/API tokens');
-            $table->timestamp('authorized_at')->nullable();
-            $table->timestamp('expires_at')->nullable();
-            $table->timestamp('last_synced_at')->nullable();
+            $table->dateTime('authorized_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
+            $table->dateTime('last_synced_at')->nullable();
             $table->json('metadata')->nullable();
 
             // Audit fields
@@ -70,11 +70,11 @@ return new class () extends Migration {
 
             $table->string('status')->default('active');
             $table->boolean('is_primary')->default(false);
-            $table->timestamp('last_synced_at')->nullable();
+            $table->dateTime('last_synced_at')->nullable();
 
             // AML/Compliance
             $table->boolean('aml_verified')->default(false);
-            $table->timestamp('aml_verified_at')->nullable();
+            $table->dateTime('aml_verified_at')->nullable();
             $table->string('verification_status')->default('pending');
 
             $table->json('metadata')->nullable();
@@ -118,23 +118,23 @@ return new class () extends Migration {
             $table->date('value_date')->nullable()->index();
             $table->date('processing_date')->nullable();
 
-            $table->timestamp('initiated_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('initiated_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
 
             // AML/Sanctions screening
             $table->string('aml_status')->default('pending');
-            $table->timestamp('aml_screened_at')->nullable();
+            $table->dateTime('aml_screened_at')->nullable();
             $table->string('sanctions_status')->default('pending');
-            $table->timestamp('sanctions_checked_at')->nullable();
+            $table->dateTime('sanctions_checked_at')->nullable();
 
             $table->json('metadata')->nullable();
 
             // Audit fields
             $table->string('initiated_by')->nullable()->index();
             $table->string('authorized_by')->nullable();
-            $table->timestamp('authorized_at')->nullable();
+            $table->dateTime('authorized_at')->nullable();
             $table->text('authorization_notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -163,7 +163,7 @@ return new class () extends Migration {
 
             // Reconciliation
             $table->string('reconciliation_status')->default('pending');
-            $table->timestamp('reconciled_at')->nullable();
+            $table->dateTime('reconciled_at')->nullable();
             $table->string('reconciled_by')->nullable();
             $table->decimal('discrepancy_amount', 20, 8)->nullable();
             $table->text('discrepancy_notes')->nullable();

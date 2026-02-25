@@ -210,7 +210,7 @@ class CoinbaseCommerceService
 
         // Send confirmation email
         try {
-            Mail::to($investment->email)->send(new \App\Mail\CgoInvestmentReceived($investment));
+            Mail::to($investment->email)->send(new \App\Domain\Cgo\Mail\CgoInvestmentReceived($investment));
         } catch (Exception $e) {
             Log::error(
                 'Failed to send investment confirmation email',

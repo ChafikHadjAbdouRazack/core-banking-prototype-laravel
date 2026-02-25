@@ -21,5 +21,5 @@ it('can reverse a debit transaction', function () {
 });
 
 it('can create workflow stub for transaction reversal', function () {
-    expect(class_exists(TransactionReversalWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(TransactionReversalWorkflow::class))->getName())->not->toBeEmpty();
 });

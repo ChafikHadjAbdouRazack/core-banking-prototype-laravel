@@ -16,8 +16,8 @@ return new class () extends Migration {
             $table->string('type', 50);
             $table->json('data');
             $table->integer('retry_count')->default(0);
-            $table->timestamp('next_retry_at')->nullable()->index();
-            $table->timestamp('delivered_at')->nullable();
+            $table->dateTime('next_retry_at')->nullable()->index();
+            $table->dateTime('delivered_at')->nullable();
             $table->string('delivery_status', 20)->default('pending'); // pending, delivered, failed
             $table->text('last_error')->nullable();
             $table->timestamps();

@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->json('context')->nullable();
             $table->boolean('acknowledged')->default(false);
             $table->unsignedBigInteger('acknowledged_by')->nullable();
-            $table->timestamp('acknowledged_at')->nullable();
+            $table->dateTime('acknowledged_at')->nullable();
             $table->timestamps();
 
             $table->index('severity');

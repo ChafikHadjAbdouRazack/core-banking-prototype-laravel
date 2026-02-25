@@ -48,6 +48,14 @@ class TransactionRateLimitMiddleware
             'amount_limit'      => 500000, // $5000 per hour (in cents)
             'progressive_delay' => false,
         ],
+        'x402' => [
+            'limit'             => 30,          // 30 x402 payments per hour
+            'window'            => 3600,       // 1 hour
+            'daily_limit'       => 200,   // 200 x402 payments per day
+            'daily_window'      => 86400, // 24 hours
+            'amount_limit'      => 1000000, // $10,000 per hour (in cents)
+            'progressive_delay' => false,
+        ],
         'vote' => [
             'limit'             => 100,         // 100 votes per day
             'window'            => 86400,      // 24 hours
@@ -289,7 +297,7 @@ class TransactionRateLimitMiddleware
      */
     private function incrementCounters(int $userId, string $transactionType, Request $request): void
     {
-        $config = self::TRANSACTION_LIMITS[$transactionType];
+        $config = self::TRANSACTION_LIMITS[$transactionType] ?? self::TRANSACTION_LIMITS['transfer'];
 
         // Increment hourly counter
         $hourlyKey = "tx_rate_limit:{$userId}:{$transactionType}:hourly";

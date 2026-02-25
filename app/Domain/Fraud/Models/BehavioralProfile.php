@@ -95,6 +95,15 @@ class BehavioralProfile extends Model
         'is_established',
         'ml_feature_vector',
         'ml_features_updated_at',
+        // v2.9.0 Anomaly Detection columns
+        'adaptive_thresholds',
+        'segment_tags',
+        'drift_metrics',
+        'seasonal_patterns',
+        'sliding_window_stats',
+        'user_segment',
+        'drift_score',
+        'last_drift_check_at',
     ];
 
     protected $casts = [
@@ -129,6 +138,14 @@ class BehavioralProfile extends Model
         'last_suspicious_activity'   => 'datetime',
         'profile_established_at'     => 'datetime',
         'ml_features_updated_at'     => 'datetime',
+        // v2.9.0 Anomaly Detection casts
+        'adaptive_thresholds'  => 'array',
+        'segment_tags'         => 'array',
+        'drift_metrics'        => 'array',
+        'seasonal_patterns'    => 'array',
+        'sliding_window_stats' => 'array',
+        'drift_score'          => 'decimal:2',
+        'last_drift_check_at'  => 'datetime',
     ];
 
     // Relationships

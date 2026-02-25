@@ -1,0 +1,66 @@
+name: Feature Request
+description: Suggest a new feature for FinAegis
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem description
+      description: What problem does this solve?
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the solution you'd like.
+      placeholder: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe any alternative solutions or features you've considered.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain Module
+      description: Which domain module does this relate to?
+      options:
+        - Account
+        - Exchange
+        - Lending
+        - Wallet
+        - Compliance
+        - Treasury
+        - Mobile
+        - Privacy
+        - Commerce
+        - TrustCert
+        - Relayer
+        - MobilePayment
+        - RegTech
+        - CrossChain
+        - DeFi
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I've searched existing issues
+          required: true
+        - label: I've read CONTRIBUTING.md
+          required: true
+        - label: This isn't a breaking change
+          required: false

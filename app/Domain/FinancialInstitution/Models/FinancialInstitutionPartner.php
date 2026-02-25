@@ -475,6 +475,16 @@ class FinancialInstitutionPartner extends Model
     }
 
     /**
+     * Get the marketplace integrations for this partner.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<PartnerIntegration, $this>
+     */
+    public function integrations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PartnerIntegration::class, 'partner_id');
+    }
+
+    /**
      * Get usage records for this partner.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany

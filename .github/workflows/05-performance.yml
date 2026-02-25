@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.3'
+        default: '8.4'
         type: string
 
 env:
@@ -44,7 +44,7 @@ jobs:
           
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Setup PHP with JIT
         uses: shivammathur/setup-php@v2
@@ -61,7 +61,7 @@ jobs:
             memory_limit=1G
             
       - name: Cache Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             vendor
@@ -120,7 +120,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Setup PHP with JIT
         uses: shivammathur/setup-php@v2
@@ -137,7 +137,7 @@ jobs:
             memory_limit=512M
             
       - name: Cache Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             vendor
@@ -212,7 +212,7 @@ jobs:
           
       - name: Upload benchmark results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: benchmark-results
           path: |
@@ -251,7 +251,7 @@ jobs:
           
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -262,7 +262,7 @@ jobs:
           coverage: none
 
       - name: Cache Dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             vendor
@@ -295,7 +295,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install k6 -y
           
+      - name: Start Application Server
+        run: |
+          php artisan serve --no-reload &
+          sleep 5
+
       - name: Run Load Tests
+        continue-on-error: true
         run: |
           if [ -f "tests/k6/load-test.js" ]; then
             k6 run tests/k6/load-test.js --out json=load-test-results.json

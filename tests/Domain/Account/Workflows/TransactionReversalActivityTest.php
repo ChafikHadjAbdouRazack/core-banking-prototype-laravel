@@ -4,17 +4,13 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Workflows\TransactionReversalActivity;
 
-it('class exists', function () {
-    expect(class_exists(TransactionReversalActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(TransactionReversalActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(TransactionReversalActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(TransactionReversalActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {
@@ -84,5 +80,5 @@ it('can create data object instances for reversal testing', function () {
 
     expect($uuid->getUuid())->toBe('reversal-test-uuid');
     expect($money->getAmount())->toBe(3000);
-    expect(class_exists(TransactionReversalActivity::class))->toBeTrue();
+    expect((new ReflectionClass(TransactionReversalActivity::class))->getName())->not->toBeEmpty();
 });

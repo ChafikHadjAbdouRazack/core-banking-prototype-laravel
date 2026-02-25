@@ -21,27 +21,27 @@ class RegisterControllerTest extends ControllerTestCase
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'message',
-                'user' => [
-                    'id',
-                    'name',
-                    'email',
-                    'email_verified_at',
+                'success',
+                'data' => [
+                    'user' => [
+                        'id',
+                        'name',
+                        'email',
+                    ],
+                    'access_token',
+                    'refresh_token',
+                    'token_type',
+                    'expires_in',
+                    'refresh_expires_in',
                 ],
-                'access_token',
-                'token_type',
             ])
-            ->assertJson([
-                'message' => 'User registered successfully',
-                'user'    => [
-                    'name'              => 'John Doe',
-                    'email'             => 'john@example.com',
-                    'email_verified_at' => null,
-                ],
-                'token_type' => 'Bearer',
-            ]);
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.user.name', 'John Doe')
+            ->assertJsonPath('data.user.email', 'john@example.com')
+            ->assertJsonPath('data.token_type', 'Bearer');
 
-        $this->assertNotEmpty($response->json('access_token'));
+        $this->assertNotEmpty($response->json('data.access_token'));
+        $this->assertNotEmpty($response->json('data.refresh_token'));
 
         // Verify user was created
         $this->assertDatabaseHas('users', [
@@ -219,7 +219,7 @@ class RegisterControllerTest extends ControllerTestCase
         ]);
 
         $response->assertStatus(201)
-            ->assertJsonPath('user.email_verified_at', null);
+            ->assertJsonPath('data.user.email_verified_at', null);
     }
 
     #[Test]

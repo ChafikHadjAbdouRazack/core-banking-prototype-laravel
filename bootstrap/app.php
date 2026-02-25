@@ -1,5 +1,8 @@
 <?php
 
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024-2026 FinAegis Contributors
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::group([], base_path('routes/console.php'));
 
             if ($isApiSubdomain) {
-                // For api.finaegis.org, ONLY load API routes without /api prefix
+                // For api.* subdomain, ONLY load API routes without /api prefix
                 Route::middleware('api')
                     ->group(base_path('routes/api.php'));
 
@@ -67,8 +70,18 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.agent'       => App\Http\Middleware\AuthenticateAgentDID::class,
             'agent.scope'      => App\Http\Middleware\CheckAgentScope::class,
             'agent.capability' => App\Http\Middleware\CheckAgentCapability::class,
+            // BaaS partner authentication middleware
+            'partner.auth' => App\Http\Middleware\PartnerAuthMiddleware::class,
             // Multi-tenancy middleware
             'tenant' => App\Http\Middleware\InitializeTenancyByTeam::class,
+            // Performance monitoring middleware
+            'query.performance' => App\Http\Middleware\QueryPerformanceMiddleware::class,
+            // Structured logging middleware (v3.3.0)
+            'structured.logging' => App\Http\Middleware\StructuredLoggingMiddleware::class,
+            // API versioning middleware (v3.4.0)
+            'api.version' => App\Http\Middleware\ApiVersionMiddleware::class,
+            // X402 Payment Protocol middleware (v5.2.0)
+            'x402.payment' => App\Http\Middleware\X402PaymentGateMiddleware::class,
         ]);
 
         // Prepend CORS middleware to handle it before other middleware
@@ -83,6 +96,7 @@ return Application::configure(basePath: dirname(__DIR__))
             Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             Illuminate\Routing\Middleware\SubstituteBindings::class,
             App\Http\Middleware\SecurityHeaders::class,
+            App\Http\Middleware\ApiVersionMiddleware::class,
         ]);
 
         // Apply security headers to web routes
@@ -97,8 +111,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Apply demo middleware to web routes in demo environment
-        // Check if we're in demo environment (APP_ENV=demo)
-        if (config('app.env') === 'demo') {
+        // Note: env() is used here because config() is not available during middleware registration
+        if (env('APP_ENV') === 'demo') {
             $middleware->appendToGroup('web', App\Http\Middleware\DemoMode::class);
         }
     })

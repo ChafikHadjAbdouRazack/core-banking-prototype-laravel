@@ -6,7 +6,7 @@ use App\Domain\Asset\Workflows\AssetDepositWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for asset deposit', function () {
-    expect(class_exists(AssetDepositWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(AssetDepositWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(AssetDepositWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

@@ -27,11 +27,11 @@ it('has view property', function () {
 });
 
 it('has getWidgets method', function () {
-    expect(method_exists(Dashboard::class, 'getWidgets'))->toBeTrue();
+    expect((new ReflectionClass(Dashboard::class))->hasMethod('getWidgets'))->toBeTrue();
 });
 
 it('has getColumns method', function () {
-    expect(method_exists(Dashboard::class, 'getColumns'))->toBeTrue();
+    expect((new ReflectionClass(Dashboard::class))->hasMethod('getColumns'))->toBeTrue();
 });
 
 it('getWidgets returns array of widget classes', function () {

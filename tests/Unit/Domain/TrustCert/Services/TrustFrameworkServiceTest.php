@@ -7,12 +7,14 @@ use App\Domain\TrustCert\Enums\TrustLevel;
 use App\Domain\TrustCert\Events\IssuerRegistered;
 use App\Domain\TrustCert\Events\TrustLevelChanged;
 use App\Domain\TrustCert\Services\TrustFrameworkService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 uses(Tests\TestCase::class);
 
 describe('TrustFrameworkService', function (): void {
     beforeEach(function (): void {
+        Cache::flush();
         Event::fake();
         $this->service = new TrustFrameworkService();
     });

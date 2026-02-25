@@ -1,254 +1,292 @@
 <?php
 
-namespace Tests\Unit\Domain\Stablecoin\Services;
+declare(strict_types=1);
 
 use App\Domain\Stablecoin\Contracts\OracleConnector;
 use App\Domain\Stablecoin\Services\OracleAggregator;
 use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;
-use Illuminate\Support\Collection;
-use PHPUnit\Framework\Attributes\Test;
-use ReflectionClass;
-use ReflectionMethod;
-use Tests\TestCase;
+use App\Domain\Stablecoin\ValueObjects\PriceData;
+use Illuminate\Support\Facades\Cache;
 
-class OracleAggregatorTest extends TestCase
-{
-    private OracleAggregator $aggregator;
+uses(Tests\TestCase::class);
 
-    protected function setUp(): void
-    {
-        parent::setUp();
+describe('OracleAggregator', function () {
+    beforeEach(function () {
         $this->aggregator = new OracleAggregator();
-    }
+        Cache::flush();
+    });
 
-    #[Test]
-    public function test_class_exists(): void
-    {
-        $this->assertTrue(class_exists(OracleAggregator::class));
-    }
+    describe('registerOracle', function () {
+        it('returns self for fluent chaining', function () {
+            $oracle = Mockery::mock(OracleConnector::class);
+            $oracle->shouldReceive('getPriority')->andReturn(1);
 
-    #[Test]
-    public function test_constructor_initializes_oracles_collection(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $constructor = $reflection->getConstructor();
+            $result = $this->aggregator->registerOracle($oracle);
 
-        $this->assertNotNull($constructor);
-        $this->assertEquals(0, $constructor->getNumberOfParameters());
-    }
+            expect($result)->toBe($this->aggregator);
+        });
 
-    #[Test]
-    public function test_has_private_properties(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
+        it('sorts oracles by priority after registration', function () {
+            $lowPriority = Mockery::mock(OracleConnector::class);
+            $lowPriority->shouldReceive('getPriority')->andReturn(10);
+            $lowPriority->shouldReceive('getSourceName')->andReturn('low');
+            $lowPriority->shouldReceive('isHealthy')->andReturn(true);
+            $lowPriority->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'low', now())
+            );
 
-        $this->assertTrue($reflection->hasProperty('oracles'));
-        $this->assertTrue($reflection->hasProperty('minOracles'));
-        $this->assertTrue($reflection->hasProperty('maxDeviation'));
+            $highPriority = Mockery::mock(OracleConnector::class);
+            $highPriority->shouldReceive('getPriority')->andReturn(1);
+            $highPriority->shouldReceive('getSourceName')->andReturn('high');
+            $highPriority->shouldReceive('isHealthy')->andReturn(true);
+            $highPriority->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'high', now())
+            );
 
-        $oraclesProperty = $reflection->getProperty('oracles');
-        $this->assertTrue($oraclesProperty->isPrivate());
-        $this->assertEquals(Collection::class, $oraclesProperty->getType()?->getName());
+            // Register low priority first, then high
+            $this->aggregator->registerOracle($lowPriority);
+            $this->aggregator->registerOracle($highPriority);
 
-        $minOraclesProperty = $reflection->getProperty('minOracles');
-        $this->assertTrue($minOraclesProperty->isPrivate());
-        $this->assertEquals('int', $minOraclesProperty->getType()?->getName());
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-        $maxDeviationProperty = $reflection->getProperty('maxDeviation');
-        $this->assertTrue($maxDeviationProperty->isPrivate());
-        $this->assertEquals('float', $maxDeviationProperty->getType()?->getName());
-    }
+            // Both oracles should have been queried (test they were registered)
+            expect($result)->toBeInstanceOf(AggregatedPrice::class);
+            expect($result->getSourceCount())->toBe(2);
+        });
+    });
 
-    #[Test]
-    public function test_default_property_values(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
+    describe('getAggregatedPrice', function () {
+        it('throws when insufficient oracle responses', function () {
+            $oracle = Mockery::mock(OracleConnector::class);
+            $oracle->shouldReceive('getPriority')->andReturn(1);
+            $oracle->shouldReceive('getSourceName')->andReturn('test');
+            $oracle->shouldReceive('isHealthy')->andReturn(false);
 
-        $minOraclesProperty = $reflection->getProperty('minOracles');
-        $minOraclesProperty->setAccessible(true);
-        $this->assertEquals(2, $minOraclesProperty->getValue($this->aggregator));
+            $this->aggregator->registerOracle($oracle);
 
-        $maxDeviationProperty = $reflection->getProperty('maxDeviation');
-        $maxDeviationProperty->setAccessible(true);
-        $this->assertEquals(0.02, $maxDeviationProperty->getValue($this->aggregator));
-    }
+            expect(fn () => $this->aggregator->getAggregatedPrice('ETH', 'USD'))
+                ->toThrow(RuntimeException::class, 'Insufficient oracle responses');
+        });
 
-    #[Test]
-    public function test_has_register_oracle_method(): void
-    {
-        $this->assertTrue(method_exists($this->aggregator, 'registerOracle'));
-    }
+        it('returns aggregated price from multiple oracles', function () {
+            $oracle1 = Mockery::mock(OracleConnector::class);
+            $oracle1->shouldReceive('getPriority')->andReturn(1);
+            $oracle1->shouldReceive('getSourceName')->andReturn('oracle1');
+            $oracle1->shouldReceive('isHealthy')->andReturn(true);
+            $oracle1->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'oracle1', now())
+            );
 
-    #[Test]
-    public function test_register_oracle_method_signature(): void
-    {
-        $reflection = new ReflectionMethod(OracleAggregator::class, 'registerOracle');
+            $oracle2 = Mockery::mock(OracleConnector::class);
+            $oracle2->shouldReceive('getPriority')->andReturn(2);
+            $oracle2->shouldReceive('getSourceName')->andReturn('oracle2');
+            $oracle2->shouldReceive('isHealthy')->andReturn(true);
+            $oracle2->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2001.00', 'oracle2', now())
+            );
 
-        $this->assertEquals(1, $reflection->getNumberOfParameters());
-        $this->assertTrue($reflection->isPublic());
+            $this->aggregator->registerOracle($oracle1);
+            $this->aggregator->registerOracle($oracle2);
 
-        $parameter = $reflection->getParameters()[0];
-        $this->assertEquals('oracle', $parameter->getName());
-        $this->assertEquals(OracleConnector::class, $parameter->getType()?->getName());
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-        $this->assertEquals('self', $reflection->getReturnType()?->getName());
-    }
+            expect($result)->toBeInstanceOf(AggregatedPrice::class);
+            expect($result->base)->toBe('ETH');
+            expect($result->quote)->toBe('USD');
+            expect($result->aggregationMethod)->toBe('median');
+            expect($result->getSourceCount())->toBe(2);
+        });
 
-    #[Test]
-    public function test_has_get_aggregated_price_method(): void
-    {
-        $this->assertTrue(method_exists($this->aggregator, 'getAggregatedPrice'));
-    }
+        it('calculates median price from odd number of oracles', function () {
+            $prices = ['2000.00', '2005.00', '2010.00'];
 
-    #[Test]
-    public function test_get_aggregated_price_method_signature(): void
-    {
-        $reflection = new ReflectionMethod(OracleAggregator::class, 'getAggregatedPrice');
+            foreach ($prices as $i => $price) {
+                $oracle = Mockery::mock(OracleConnector::class);
+                $oracle->shouldReceive('getPriority')->andReturn($i);
+                $oracle->shouldReceive('getSourceName')->andReturn("oracle{$i}");
+                $oracle->shouldReceive('isHealthy')->andReturn(true);
+                $oracle->shouldReceive('getPrice')->andReturn(
+                    new PriceData('BTC', 'USD', $price, "oracle{$i}", now())
+                );
+                $this->aggregator->registerOracle($oracle);
+            }
 
-        $this->assertEquals(2, $reflection->getNumberOfParameters());
-        $this->assertTrue($reflection->isPublic());
+            $result = $this->aggregator->getAggregatedPrice('BTC', 'USD');
 
-        $parameters = $reflection->getParameters();
+            // Median of [2000, 2005, 2010] = 2005
+            expect($result->price)->toBe('2005.00000000');
+        });
 
-        $this->assertEquals('base', $parameters[0]->getName());
-        $this->assertEquals('string', $parameters[0]->getType()?->getName());
+        it('calculates median price from even number of oracles', function () {
+            $prices = ['2000.00', '2002.00', '2004.00', '2006.00'];
 
-        $this->assertEquals('quote', $parameters[1]->getName());
-        $this->assertEquals('string', $parameters[1]->getType()?->getName());
+            foreach ($prices as $i => $price) {
+                $oracle = Mockery::mock(OracleConnector::class);
+                $oracle->shouldReceive('getPriority')->andReturn($i);
+                $oracle->shouldReceive('getSourceName')->andReturn("oracle{$i}");
+                $oracle->shouldReceive('isHealthy')->andReturn(true);
+                $oracle->shouldReceive('getPrice')->andReturn(
+                    new PriceData('BTC', 'USD', $price, "oracle{$i}", now())
+                );
+                $this->aggregator->registerOracle($oracle);
+            }
 
-        $this->assertEquals(AggregatedPrice::class, $reflection->getReturnType()?->getName());
-    }
+            $result = $this->aggregator->getAggregatedPrice('BTC', 'USD');
 
-    #[Test]
-    public function test_service_imports(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
+            // Median of [2000, 2002, 2004, 2006] = (2002 + 2004) / 2 = 2003
+            expect($result->price)->toBe('2003.00000000');
+        });
 
-        $fileName = $reflection->getFileName();
-        $fileContent = file_get_contents($fileName);
+        it('skips unhealthy oracles', function () {
+            $healthyOracle1 = Mockery::mock(OracleConnector::class);
+            $healthyOracle1->shouldReceive('getPriority')->andReturn(1);
+            $healthyOracle1->shouldReceive('getSourceName')->andReturn('healthy1');
+            $healthyOracle1->shouldReceive('isHealthy')->andReturn(true);
+            $healthyOracle1->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'healthy1', now())
+            );
 
-        $this->assertStringContainsString('use App\Domain\Stablecoin\Contracts\OracleConnector;', $fileContent);
-        $this->assertStringContainsString('use App\Domain\Stablecoin\ValueObjects\AggregatedPrice;', $fileContent);
-        $this->assertStringContainsString('use Brick\Math\BigDecimal;', $fileContent);
-        $this->assertStringContainsString('use Brick\Math\RoundingMode;', $fileContent);
-        $this->assertStringContainsString('use Illuminate\Support\Collection;', $fileContent);
-        $this->assertStringContainsString('use Illuminate\Support\Facades\Cache;', $fileContent);
-        $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
-    }
+            $unhealthyOracle = Mockery::mock(OracleConnector::class);
+            $unhealthyOracle->shouldReceive('getPriority')->andReturn(2);
+            $unhealthyOracle->shouldReceive('getSourceName')->andReturn('unhealthy');
+            $unhealthyOracle->shouldReceive('isHealthy')->andReturn(false);
 
-    #[Test]
-    public function test_register_oracle_sorts_by_priority(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $method = $reflection->getMethod('registerOracle');
+            $healthyOracle2 = Mockery::mock(OracleConnector::class);
+            $healthyOracle2->shouldReceive('getPriority')->andReturn(3);
+            $healthyOracle2->shouldReceive('getSourceName')->andReturn('healthy2');
+            $healthyOracle2->shouldReceive('isHealthy')->andReturn(true);
+            $healthyOracle2->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2001.00', 'healthy2', now())
+            );
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            $this->aggregator->registerOracle($healthyOracle1);
+            $this->aggregator->registerOracle($unhealthyOracle);
+            $this->aggregator->registerOracle($healthyOracle2);
 
-        // Should push oracle to collection
-        $this->assertStringContainsString('$this->oracles->push($oracle);', $source);
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-        // Should sort by priority
-        $this->assertStringContainsString('sortBy(fn ($o) => $o->getPriority())', $source);
+            expect($result->getSourceCount())->toBe(2);
+        });
 
-        // Should return self for chaining
-        $this->assertStringContainsString('return $this;', $source);
-    }
+        it('skips stale prices', function () {
+            $freshOracle1 = Mockery::mock(OracleConnector::class);
+            $freshOracle1->shouldReceive('getPriority')->andReturn(1);
+            $freshOracle1->shouldReceive('getSourceName')->andReturn('fresh1');
+            $freshOracle1->shouldReceive('isHealthy')->andReturn(true);
+            $freshOracle1->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'fresh1', now())
+            );
 
-    #[Test]
-    public function test_get_aggregated_price_uses_caching(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $method = $reflection->getMethod('getAggregatedPrice');
+            $staleOracle = Mockery::mock(OracleConnector::class);
+            $staleOracle->shouldReceive('getPriority')->andReturn(2);
+            $staleOracle->shouldReceive('getSourceName')->andReturn('stale');
+            $staleOracle->shouldReceive('isHealthy')->andReturn(true);
+            $staleOracle->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '1900.00', 'stale', now()->subMinutes(10))
+            );
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            $freshOracle2 = Mockery::mock(OracleConnector::class);
+            $freshOracle2->shouldReceive('getPriority')->andReturn(3);
+            $freshOracle2->shouldReceive('getSourceName')->andReturn('fresh2');
+            $freshOracle2->shouldReceive('isHealthy')->andReturn(true);
+            $freshOracle2->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2001.00', 'fresh2', now())
+            );
 
-        // Should use cache
-        $this->assertStringContainsString('Cache::remember', $source);
-        $this->assertStringContainsString('$cacheKey = "oracle_price_{$base}_{$quote}"', $source);
-        $this->assertStringContainsString('60,', $source); // Cache duration
-    }
+            $this->aggregator->registerOracle($freshOracle1);
+            $this->aggregator->registerOracle($staleOracle);
+            $this->aggregator->registerOracle($freshOracle2);
 
-    #[Test]
-    public function test_get_aggregated_price_validates_minimum_oracles(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $method = $reflection->getMethod('getAggregatedPrice');
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            expect($result->getSourceCount())->toBe(2);
+        });
 
-        // Should check minimum oracle count
-        $this->assertStringContainsString('if ($prices->count() < $this->minOracles)', $source);
-        $this->assertStringContainsString('throw new RuntimeException', $source);
-        $this->assertStringContainsString('Insufficient oracle responses', $source);
-    }
+        it('gracefully handles oracle exceptions', function () {
+            $workingOracle1 = Mockery::mock(OracleConnector::class);
+            $workingOracle1->shouldReceive('getPriority')->andReturn(1);
+            $workingOracle1->shouldReceive('getSourceName')->andReturn('working1');
+            $workingOracle1->shouldReceive('isHealthy')->andReturn(true);
+            $workingOracle1->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'working1', now())
+            );
 
-    #[Test]
-    public function test_has_collect_prices_method(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
+            $brokenOracle = Mockery::mock(OracleConnector::class);
+            $brokenOracle->shouldReceive('getPriority')->andReturn(2);
+            $brokenOracle->shouldReceive('getSourceName')->andReturn('broken');
+            $brokenOracle->shouldReceive('isHealthy')->andReturn(true);
+            $brokenOracle->shouldReceive('getPrice')->andThrow(new Exception('Oracle down'));
 
-        // Should have collectPrices method (referenced in getAggregatedPrice)
-        $method = $reflection->getMethod('getAggregatedPrice');
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            $workingOracle2 = Mockery::mock(OracleConnector::class);
+            $workingOracle2->shouldReceive('getPriority')->andReturn(3);
+            $workingOracle2->shouldReceive('getSourceName')->andReturn('working2');
+            $workingOracle2->shouldReceive('isHealthy')->andReturn(true);
+            $workingOracle2->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2001.00', 'working2', now())
+            );
 
-        $this->assertStringContainsString('$this->collectPrices($base, $quote)', $source);
-    }
+            $this->aggregator->registerOracle($workingOracle1);
+            $this->aggregator->registerOracle($brokenOracle);
+            $this->aggregator->registerOracle($workingOracle2);
 
-    #[Test]
-    public function test_namespace_is_correct(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $this->assertEquals('App\Domain\Stablecoin\Services', $reflection->getNamespaceName());
-    }
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-    #[Test]
-    public function test_constructor_initializes_empty_collection(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $constructor = $reflection->getConstructor();
+            expect($result->getSourceCount())->toBe(2);
+        });
 
-        $fileName = $reflection->getFileName();
-        $startLine = $constructor->getStartLine();
-        $endLine = $constructor->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+        it('caches the aggregated price', function () {
+            $oracle1 = Mockery::mock(OracleConnector::class);
+            $oracle1->shouldReceive('getPriority')->andReturn(1);
+            $oracle1->shouldReceive('getSourceName')->andReturn('oracle1');
+            $oracle1->shouldReceive('isHealthy')->andReturn(true);
+            $oracle1->shouldReceive('getPrice')->once()->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'oracle1', now())
+            );
 
-        // Should initialize oracles as empty collection
-        $this->assertStringContainsString('$this->oracles = collect();', $source);
-    }
+            $oracle2 = Mockery::mock(OracleConnector::class);
+            $oracle2->shouldReceive('getPriority')->andReturn(2);
+            $oracle2->shouldReceive('getSourceName')->andReturn('oracle2');
+            $oracle2->shouldReceive('isHealthy')->andReturn(true);
+            $oracle2->shouldReceive('getPrice')->once()->andReturn(
+                new PriceData('ETH', 'USD', '2001.00', 'oracle2', now())
+            );
 
-    #[Test]
-    public function test_fluent_interface(): void
-    {
-        // Test that registerOracle returns self
-        $oracle = $this->createMock(OracleConnector::class);
-        $oracle->method('getPriority')->willReturn(1);
+            $this->aggregator->registerOracle($oracle1);
+            $this->aggregator->registerOracle($oracle2);
 
-        $result = $this->aggregator->registerOracle($oracle);
-        $this->assertSame($this->aggregator, $result);
-    }
+            // First call fetches from oracles
+            $result1 = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-    #[Test]
-    public function test_max_deviation_comment(): void
-    {
-        $reflection = new ReflectionClass(OracleAggregator::class);
-        $property = $reflection->getProperty('maxDeviation');
+            // Second call should use cache (oracles called only once)
+            $result2 = $this->aggregator->getAggregatedPrice('ETH', 'USD');
 
-        $fileName = $reflection->getFileName();
-        $fileContent = file_get_contents($fileName);
+            expect($result1->price)->toBe($result2->price);
+        });
 
-        // Should have comment explaining the percentage
-        $this->assertStringContainsString('// 2% max deviation', $fileContent);
-    }
-}
+        it('returns high confidence when prices agree closely', function () {
+            $oracle1 = Mockery::mock(OracleConnector::class);
+            $oracle1->shouldReceive('getPriority')->andReturn(1);
+            $oracle1->shouldReceive('getSourceName')->andReturn('oracle1');
+            $oracle1->shouldReceive('isHealthy')->andReturn(true);
+            $oracle1->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.00', 'oracle1', now())
+            );
+
+            $oracle2 = Mockery::mock(OracleConnector::class);
+            $oracle2->shouldReceive('getPriority')->andReturn(2);
+            $oracle2->shouldReceive('getSourceName')->andReturn('oracle2');
+            $oracle2->shouldReceive('isHealthy')->andReturn(true);
+            $oracle2->shouldReceive('getPrice')->andReturn(
+                new PriceData('ETH', 'USD', '2000.01', 'oracle2', now())
+            );
+
+            $this->aggregator->registerOracle($oracle1);
+            $this->aggregator->registerOracle($oracle2);
+
+            $result = $this->aggregator->getAggregatedPrice('ETH', 'USD');
+
+            expect($result->confidence)->toBeGreaterThan(0.9);
+            expect($result->isHighConfidence())->toBeTrue();
+        });
+    });
+});

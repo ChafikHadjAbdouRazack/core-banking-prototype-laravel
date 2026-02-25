@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->string('service')->nullable();
             $table->enum('impact', ['minor', 'major', 'critical']);
             $table->enum('status', ['identified', 'in_progress', 'resolved']);
-            $table->timestamp('started_at');
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('started_at');
+            $table->dateTime('resolved_at')->nullable();
             $table->json('affected_services')->nullable();
             $table->timestamps();
 

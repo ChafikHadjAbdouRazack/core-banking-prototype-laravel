@@ -107,12 +107,7 @@ class HsmIntegrationService
     {
         $providerType = config('keymanagement.hsm.provider', 'demo');
 
-        return match ($providerType) {
-            'demo'  => new DemoHsmProvider(),
-            'aws'   => throw new RuntimeException('AWS KMS provider not yet implemented'),
-            'azure' => throw new RuntimeException('Azure Key Vault provider not yet implemented'),
-            default => throw new RuntimeException("Unknown HSM provider: {$providerType}"),
-        };
+        return (new HsmProviderFactory())->create((string) $providerType);
     }
 
     private function getKeyId(): string

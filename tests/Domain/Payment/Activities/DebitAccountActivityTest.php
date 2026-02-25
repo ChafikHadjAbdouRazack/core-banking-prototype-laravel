@@ -2,17 +2,13 @@
 
 use App\Domain\Payment\Activities\DebitAccountActivity;
 
-it('class exists', function () {
-    expect(class_exists(DebitAccountActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(DebitAccountActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(DebitAccountActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(DebitAccountActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {

@@ -34,10 +34,10 @@ return new class () extends Migration {
             $table->json('fraud_checks')->nullable();
             $table->decimal('latest_risk_score', 5, 2)->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('signed_at')->nullable();
-            $table->timestamp('encrypted_at')->nullable();
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('fraud_checked_at')->nullable();
+            $table->dateTime('signed_at')->nullable();
+            $table->dateTime('encrypted_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('fraud_checked_at')->nullable();
             $table->timestamps();
 
             $table->index(['transaction_id', 'status']);
@@ -71,7 +71,7 @@ return new class () extends Migration {
             $table->string('performed_by')->nullable();
             $table->ipAddress('ip_address')->nullable();
             $table->string('user_agent')->nullable();
-            $table->timestamp('occurred_at');
+            $table->dateTime('occurred_at');
             $table->timestamps();
 
             $table->index(['agent_id', 'occurred_at']);
@@ -120,10 +120,10 @@ return new class () extends Migration {
             $table->integer('key_size')->nullable();
             $table->string('algorithm')->nullable();
             $table->enum('status', ['active', 'rotating', 'archived', 'revoked'])->default('active');
-            $table->timestamp('activated_at');
-            $table->timestamp('expires_at')->nullable();
-            $table->timestamp('rotated_at')->nullable();
-            $table->timestamp('revoked_at')->nullable();
+            $table->dateTime('activated_at');
+            $table->dateTime('expires_at')->nullable();
+            $table->dateTime('rotated_at')->nullable();
+            $table->dateTime('revoked_at')->nullable();
             $table->string('revoked_reason')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
@@ -150,10 +150,10 @@ return new class () extends Migration {
             $table->json('time_analysis')->nullable();
             $table->boolean('manual_review_required')->default(false);
             $table->string('reviewed_by')->nullable();
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
             $table->string('review_decision')->nullable();
             $table->text('review_notes')->nullable();
-            $table->timestamp('analyzed_at');
+            $table->dateTime('analyzed_at');
             $table->timestamps();
 
             $table->index(['transaction_id', 'decision']);
@@ -184,8 +184,8 @@ return new class () extends Migration {
             $table->json('alert_data')->nullable();
             $table->enum('status', ['open', 'acknowledged', 'investigating', 'resolved', 'false_positive'])->default('open');
             $table->string('assigned_to')->nullable();
-            $table->timestamp('acknowledged_at')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('acknowledged_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->text('resolution_notes')->nullable();
             $table->json('actions_taken')->nullable();
             $table->timestamps();

@@ -8,11 +8,13 @@ includes:
     - phpstan-baseline-regtech-unit-tests.neon
     - phpstan-baseline-baas-models.neon
     - phpstan-baseline-baas-unit-tests.neon
+    - phpstan-baseline-baas-v2-tests.neon
     - phpstan-baseline-keymanagement.neon
     - phpstan-baseline-privacy.neon
     - phpstan-baseline-commerce.neon
     - phpstan-baseline-trustcert.neon
     - phpstan-baseline-compliance-projector.neon
+    - phpstan-baseline-fraud.neon
     - phpstan-baseline-level6.neon
     - phpstan-baseline-level7.neon
     - phpstan-baseline-level8.neon
@@ -32,7 +34,8 @@ parameters:
     ignoreErrors:
         # Mockery methods
         - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::with\(\)#'
-        - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(once|twice|times|never|andReturn|andReturnTrue|andReturnFalse)\(\)#'
+        - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(once|twice|times|never|andReturn|andReturnTrue|andReturnFalse|andThrow|byDefault)\(\)#'
+        - '#Call to an undefined method Mockery\\ExpectationInterface::(byDefault|andThrow)\(\)#'
         # Eloquent model magic methods
         - '#Call to an undefined static method App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::#'
         - '#Access to an undefined property App\\Domain\\[a-zA-Z\\]+\\Projections\\[a-zA-Z]+::\$#'
@@ -125,7 +128,7 @@ parameters:
         - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<TRelatedModel of Illuminate\\Database\\Eloquent\\Model>::where\(\) expects .* ''user_uuid'' given\.$#'
         
         # Column names in where clauses for relationships
-        - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::where\(\) expects .* ''(asset_code|balance|is_primary|id|uuid|account_uuid|type|status|treasury_id)'' given\.$#'
+        - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::where\(\) expects .* ''(asset_code|balance|is_primary|id|uuid|account_uuid|type|status|treasury_id|user_uuid)'' given\.$#'
         - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::orderBy\(\) expects .* ''(amount|created_at)'' given\.$#'
         - '#Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder<Illuminate\\Database\\Eloquent\\Model>::whereIn\(\) expects .* ''uuid'' given\.$#'
         - '#Parameter \#1 \$column of static method Spatie\\EventSourcing\\StoredEvents\\Models\\EloquentStoredEventQueryBuilder<App\\Domain\\Account\\Models\\Transaction>::where\(\) expects .* ''account_uuid'' given\.$#'
@@ -151,13 +154,34 @@ parameters:
 
         # Pest PHP specific ignores
         - '#Call to an undefined method PHPUnit\\Framework\\TestCase::(browse|artisan|actingAs|get|post|put|patch|delete|json|getJson|postJson|putJson|patchJson|deleteJson|assertAuthenticated|assertGuest|assertDatabaseHas|assertDatabaseMissing|assertDatabaseCount|assertModelExists|assertModelMissing|assertSoftDeleted|assertNotSoftDeleted|assertStatus|assertOk|assertCreated|assertNoContent|assertNotFound|assertForbidden|assertUnauthorized|assertUnprocessable|assertSuccessful|assertServerError|assertRedirect|assertHeader|assertHeaderMissing|assertLocation|assertContent|assertSee|assertSeeInOrder|assertSeeText|assertSeeTextInOrder|assertDontSee|assertDontSeeText|assertJson|assertJsonCount|assertJsonFragment|assertJsonMissing|assertJsonMissingExact|assertJsonPath|assertJsonMissingPath|assertJsonStructure|assertJsonValidationErrors|assertJsonMissingValidationErrors|assertJsonIsArray|assertJsonIsObject|assertExactJson|assertSimilarJson|assertJsonStringEqualsJsonString|assertJsonStringNotEqualsJsonString|assertCookie|assertCookieMissing|assertCookieNotExpired|assertCookieExpired|assertPlainCookie|assertSessionHas|assertSessionHasAll|assertSessionHasInput|assertSessionHasErrors|assertSessionHasErrorsIn|assertSessionHasNoErrors|assertSessionDoesntHaveErrors|assertSessionMissing|assertViewHas|assertViewHasAll|assertViewMissing|assertViewIs|assertValid|assertInvalid|expectsEvents|doesntExpectEvents|expectsJobs|doesntExpectJobs|withServerVariables|withoutMiddleware|withMiddleware|withCookie|withCookies|withUnencryptedCookie|withUnencryptedCookies|withSession|followingRedirects|disableCookieEncryption|from|assertAuthenticated|assertGuest|be|seed|withoutExceptionHandling|withExceptionHandling|handleValidationExceptions|travel|travelTo|travelBack|freezeTime|freezeSecond|withHeaders|withHeader|withToken|flushHeaders|withoutVite|withViewErrors|shareFormRequests|withCredentials|withPrefetch|actingAs|be|assertAuthenticatedAs|assertCredentials|assertInvalidCredentials|hasUser|forgetGuards|assertAuthenticated|assertGuest|assertAuthenticatedAs|actingAs)\(\)#'
-        - '#Access to an undefined property PHPUnit\\Framework\\TestCase::\$(app|user|business_user|account|positionId|ownerId)#'
+        # Mockery mock type mismatches in test constructors (standard testing pattern)
+        - '#Parameter (\#\d+ )?\$[a-zA-Z]+ of class App\\Domain\\[a-zA-Z\\]+\\(Services|HSM)\\[a-zA-Z]+Service constructor expects .+, Mockery\\(MockInterface|LegacyMockInterface) given#'
+        - '#Parameter (\#\d+ )?\$[a-zA-Z]+ of class App\\Domain\\[a-zA-Z\\]+\\MCP\\Tools\\[a-zA-Z\\]+\\[a-zA-Z]+ constructor expects .+, Mockery\\MockInterface given#'
+        # Null-safe property access on firstWhere/first results in tests
+        - '#Cannot access property \$[a-zA-Z_]+ on App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+\|null#'
+        - '#Access to an undefined property PHPUnit\\Framework\\TestCase::\$[a-zA-Z_]+#'
         - '#Call to an undefined static method PHPUnit\\Framework\\TestCase::uses\(\)#'
         - '#Call to function (it|test|expect|beforeEach|afterEach|beforeAll|afterAll|dataset|uses|covers|group|skip|todo)\(\) not found#'
         - '#Function method_exists\(\) with .* and .* will always evaluate to true#'
         - '#Function is_callable\(\) with .* will always evaluate to true#'
         - '#Call to method (atLeast|times|andReturn|shouldReceive|withArgs|with|once|never|zeroOrMoreTimes|getMock|shouldNotReceive|shouldHaveReceived|shouldNotHaveReceived|between|ordered|byDefault) on an unknown type#'
         - '#Method Mockery\\ExpectationInterface::atLeast\(\) invoked with 1 parameter, 0 required#'
+
+        # Mockery LegacyMockInterface property access and method calls in tests
+        - '#Access to an undefined property Mockery\\LegacyMockInterface::\$[a-zA-Z_]+#'
+        - '#Call to an undefined method Mockery\\LegacyMockInterface::[a-zA-Z]+\(\)#'
+
+        # Pest expectation chain issues (PHPStan cannot resolve Pest's $not property)
+        - '#Access to an undefined property Pest\\Mixins\\Expectation<mixed>::\$not#'
+
+        # ReflectionType|null issues in tests using expect()
+        - '#Cannot call method getName\(\) on ReflectionType\|null#'
+
+        # Unable to resolve template type in Pest expect() calls
+        - '#Unable to resolve the template type TValue in call to function expect#'
+
+        # Array offset access on nullable arrays in test assertions
+        - '#Offset .+ might not exist on array<string, mixed>\|null#'
 
         # Factory return type compatibility with PHPStan strict checking
         - '#Return type \(array<string, mixed>\) of method Database\\Factories\\[a-zA-Z]+Factory::definition\(\) should be compatible with return type#'

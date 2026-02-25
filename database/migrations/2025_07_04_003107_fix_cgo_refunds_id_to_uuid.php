@@ -43,35 +43,35 @@ return new class () extends Migration {
             // Status tracking
             $table->string('status')->default('pending');
             $table->foreignId('initiated_by')->constrained('users');
-            $table->timestamp('requested_at')->nullable();
+            $table->dateTime('requested_at')->nullable();
 
             // Approval/Rejection
             $table->uuid('approved_by')->nullable();
             $table->text('approval_notes')->nullable();
-            $table->timestamp('approved_at')->nullable();
+            $table->dateTime('approved_at')->nullable();
             $table->uuid('rejected_by')->nullable();
             $table->text('rejection_reason')->nullable();
-            $table->timestamp('rejected_at')->nullable();
+            $table->dateTime('rejected_at')->nullable();
 
             // Processing details
             $table->string('payment_processor')->nullable();
             $table->string('processor_refund_id')->nullable();
             $table->string('processor_status')->nullable();
             $table->json('processor_response')->nullable();
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->string('processor_reference')->nullable();
             $table->text('processing_notes')->nullable();
 
             // Completion
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
 
             // Failure tracking
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
 
             // Cancellation tracking
             $table->uuid('cancelled_by')->nullable();
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->text('cancellation_reason')->nullable();
 
             // Additional fields for manual refunds
@@ -116,13 +116,13 @@ return new class () extends Migration {
             $table->enum('status', ['pending', 'processing', 'completed', 'failed', 'cancelled'])
                 ->default('pending');
             $table->foreignId('initiated_by')->constrained('users');
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->string('processor_reference')->nullable();
             $table->json('processor_response')->nullable();
             $table->text('processing_notes')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->text('cancellation_reason')->nullable();
             $table->string('refund_address')->nullable();
             $table->json('bank_details')->nullable();

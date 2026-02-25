@@ -6,7 +6,7 @@ use App\Domain\Asset\Workflows\AssetWithdrawWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for asset withdraw', function () {
-    expect(class_exists(AssetWithdrawWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(AssetWithdrawWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(AssetWithdrawWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

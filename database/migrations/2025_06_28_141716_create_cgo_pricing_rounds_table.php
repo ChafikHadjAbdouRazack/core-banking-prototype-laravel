@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->decimal('max_shares_available', 15, 4);
             $table->decimal('shares_sold', 15, 4)->default(0);
             $table->decimal('total_raised', 15, 2)->default(0);
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at')->nullable();
+            $table->dateTime('started_at');
+            $table->dateTime('ended_at')->nullable();
             $table->boolean('is_active')->default(false);
             $table->timestamps();
 

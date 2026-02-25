@@ -27,9 +27,9 @@ return new class () extends Migration {
             $table->string('bank_routing_number')->nullable();
             $table->string('bank_account_name')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('initiated_at');
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('initiated_at');
+            $table->dateTime('completed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failed_reason')->nullable();
             $table->timestamps();
 

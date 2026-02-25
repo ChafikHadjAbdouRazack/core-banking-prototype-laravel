@@ -1,6 +1,6 @@
 # FinAegis Testing Guide
 
-**Last Updated:** 2024-09-07  
+**Last Updated:** 2026-02-13  
 **Version:** 1.0  
 **Test Framework:** Pest PHP
 

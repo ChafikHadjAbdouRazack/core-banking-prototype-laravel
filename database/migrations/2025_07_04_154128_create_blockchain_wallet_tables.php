@@ -57,7 +57,7 @@ return new class () extends Migration {
             $table->integer('confirmations')->default(0);
             $table->bigInteger('block_number')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('confirmed_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
             $table->timestamps();
 
             $table->index(['wallet_id', 'status']);

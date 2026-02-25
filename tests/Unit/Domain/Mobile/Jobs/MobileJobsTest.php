@@ -210,7 +210,7 @@ class MobileJobsTest extends TestCase
             $tags = $job->tags();
             $this->assertContains('tenant-aware', $tags, sprintf(
                 '%s should have tenant-aware tag',
-                get_class($job)
+                $job::class
             ));
         }
     }
@@ -228,7 +228,7 @@ class MobileJobsTest extends TestCase
         foreach ($jobs as $job) {
             $this->assertFalse(
                 $job->requiresTenantContext(),
-                sprintf('%s should not require tenant context', get_class($job))
+                sprintf('%s should not require tenant context', $job::class)
             );
         }
     }
@@ -246,7 +246,7 @@ class MobileJobsTest extends TestCase
         foreach ($jobs as $job) {
             $this->assertNull(
                 $job->dispatchedTenantId,
-                sprintf('%s should have null tenant id', get_class($job))
+                sprintf('%s should have null tenant id', $job::class)
             );
         }
     }

@@ -36,6 +36,21 @@ return [
             'kyc_tier'         => env('ZK_VERIFIER_KYC', '0x0000000000000000000000000000000000000000'),
             'sanctions_clear'  => env('ZK_VERIFIER_SANCTIONS', '0x0000000000000000000000000000000000000000'),
         ],
+
+        // snarkjs CLI settings (for production ZK proving)
+        'snarkjs_binary'          => env('SNARKJS_BINARY', 'snarkjs'),
+        'circuit_directory'       => env('SNARKJS_CIRCUIT_DIR', storage_path('app/circuits')),
+        'snarkjs_timeout_seconds' => (int) env('SNARKJS_TIMEOUT', 120),
+
+        // ProofType → circuit name mapping
+        'circuit_mapping' => [
+            'age_verification'    => env('ZK_CIRCUIT_AGE', 'age_check'),
+            'residency'           => env('ZK_CIRCUIT_RESIDENCY', 'residency_check'),
+            'kyc_tier'            => env('ZK_CIRCUIT_KYC', 'kyc_tier_check'),
+            'accredited_investor' => env('ZK_CIRCUIT_ACCREDITED', 'accredited_check'),
+            'sanctions_clear'     => env('ZK_CIRCUIT_SANCTIONS', 'sanctions_check'),
+            'income_range'        => env('ZK_CIRCUIT_INCOME', 'income_range_check'),
+        ],
     ],
 
     /*
@@ -157,6 +172,9 @@ return [
     'merkle' => [
         // Default provider for Merkle tree operations
         'provider' => env('MERKLE_PROVIDER', 'demo'),
+
+        // Hash algorithm for Merkle tree: 'sha3-256' or 'poseidon'
+        'hash_algorithm' => env('MERKLE_HASH_ALGORITHM', 'sha3-256'),
 
         // Sync interval in seconds
         'sync_interval_seconds' => (int) env('MERKLE_SYNC_INTERVAL', 30),

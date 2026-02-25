@@ -39,6 +39,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Deposit Crypto Addresses
+    |--------------------------------------------------------------------------
+    |
+    | Configure cryptocurrency deposit addresses for the wallet deposit page.
+    | These are the addresses shown to users for direct crypto deposits.
+    |
+    | WARNING: Never hardcode third-party addresses. Always configure via env.
+    |
+    */
+
+    'deposit_addresses' => [
+        'btc'  => env('DEPOSIT_BTC_ADDRESS', ''),
+        'eth'  => env('DEPOSIT_ETH_ADDRESS', ''),
+        'usdt' => env('DEPOSIT_USDT_ADDRESS', ''),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Production Crypto Enable Flag
     |--------------------------------------------------------------------------
     |
@@ -60,7 +78,7 @@ return [
     */
 
     'bank_details' => [
-        'bank_name'      => env('CGO_BANK_NAME', 'Example Bank Ltd.'),
+        'bank_name'      => env('CGO_BANK_NAME', 'FinAegis Banking'),
         'account_name'   => env('CGO_BANK_ACCOUNT_NAME', 'FinAegis CGO Holdings'),
         'account_number' => env('CGO_BANK_ACCOUNT_NUMBER', ''),
         'routing_number' => env('CGO_BANK_ROUTING_NUMBER', ''),

@@ -8,7 +8,7 @@ it('extends WaterlineApplicationServiceProvider', function () {
 });
 
 it('has gate method', function () {
-    expect(method_exists(WaterlineServiceProvider::class, 'gate'))->toBeTrue();
+    expect((new ReflectionClass(WaterlineServiceProvider::class))->hasMethod('gate'))->toBeTrue();
 });
 
 it('gate method is protected', function () {

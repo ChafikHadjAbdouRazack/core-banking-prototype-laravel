@@ -12,7 +12,7 @@ class MintStablecoinWorkflowTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(MintStablecoinWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(MintStablecoinWorkflow::class))->getName());
     }
 
     #[Test]
@@ -25,7 +25,7 @@ class MintStablecoinWorkflowTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(MintStablecoinWorkflow::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(MintStablecoinWorkflow::class))->hasMethod('execute'));
     }
 
     #[Test]
@@ -73,8 +73,8 @@ class MintStablecoinWorkflowTest extends DomainTestCase
         $reflection = new ReflectionClass(MintStablecoinWorkflow::class);
 
         // Check if the workflow has compensation methods
-        $this->assertTrue(method_exists(MintStablecoinWorkflow::class, 'addCompensation'));
-        $this->assertTrue(method_exists(MintStablecoinWorkflow::class, 'compensate'));
+        $this->assertTrue((new ReflectionClass(MintStablecoinWorkflow::class))->hasMethod('addCompensation'));
+        $this->assertTrue((new ReflectionClass(MintStablecoinWorkflow::class))->hasMethod('compensate'));
     }
 
     #[Test]

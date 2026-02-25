@@ -94,7 +94,7 @@ describe('Feature Name', function () {
 
 ## Code Quality Tools
 
-### PHPStan (Level 5)
+### PHPStan (Level 8)
 ```bash
 TMPDIR=/tmp/phpstan-$$ vendor/bin/phpstan analyse --memory-limit=2G
 ```

@@ -29,7 +29,7 @@ return new class () extends Migration {
             $table->string('wallet_address')->nullable();
 
             // Audit and verification
-            $table->timestamp('last_verified_at')->nullable();
+            $table->dateTime('last_verified_at')->nullable();
             $table->string('verification_source')->nullable(); // e.g., 'chainlink', 'internal', 'audit_firm'
             $table->string('verification_tx_hash')->nullable();
             $table->json('verification_metadata')->nullable();
@@ -70,7 +70,7 @@ return new class () extends Migration {
             $table->text('reason')->nullable();
             $table->json('metadata')->nullable();
 
-            $table->timestamp('executed_at');
+            $table->dateTime('executed_at');
             $table->timestamps();
 
             // Indexes

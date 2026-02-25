@@ -6,9 +6,11 @@ namespace App\Domain\Relayer\Services;
 
 use App\Domain\Relayer\Contracts\BundlerInterface;
 use App\Domain\Relayer\Contracts\PaymasterInterface;
+use App\Domain\Relayer\Contracts\WalletBalanceProviderInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
 use App\Domain\Relayer\Events\TransactionSponsored;
 use App\Domain\Relayer\ValueObjects\UserOperation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -18,12 +20,19 @@ use RuntimeException;
  *
  * This service enables users to execute blockchain transactions without
  * holding native gas tokens (ETH/MATIC). Instead, they pay fees in stablecoins.
+ *
+ * Balance Checking:
+ * - In production: Uses WalletBalanceProvider to query ERC-20 contracts via RPC
+ * - In demo mode: Falls back to always returning true (NOT for production)
+ *
+ * @see WalletBalanceProviderInterface
  */
 class GasStationService
 {
     public function __construct(
         private readonly PaymasterInterface $paymaster,
         private readonly BundlerInterface $bundler,
+        private readonly ?WalletBalanceProviderInterface $balanceProvider = null,
     ) {
     }
 
@@ -77,7 +86,7 @@ class GasStationService
         $feeAmount = $feeToken === 'USDC' ? $feeEstimate['fee_usdc'] : $feeEstimate['fee_usdt'];
 
         // 5. Check if user has sufficient balance
-        if (! $this->hasSufficientBalance($userAddress, $feeToken, $feeAmount)) {
+        if (! $this->hasSufficientBalance($userAddress, $feeToken, $feeAmount, $network)) {
             throw new RuntimeException("Insufficient {$feeToken} balance for gas fee");
         }
 
@@ -95,34 +104,36 @@ class GasStationService
             signature: $signature,
         );
 
-        // 8. Submit to bundler
-        $userOpHash = $this->bundler->submitUserOperation($finalUserOp, $network);
+        // 8. Submit to bundler and deduct fee atomically
+        return DB::transaction(function () use ($finalUserOp, $network, $userAddress, $feeToken, $feeAmount, $gasEstimate, $isDeployment): array {
+            $userOpHash = $this->bundler->submitUserOperation($finalUserOp, $network);
 
-        // 9. Deduct fee from user's stablecoin balance
-        $this->deductFee($userAddress, $feeToken, $feeAmount);
+            // 9. Deduct fee from user's stablecoin balance
+            $this->deductFee($userAddress, $feeToken, $feeAmount, $network);
 
-        Log::info('Transaction sponsored successfully', [
-            'user_op_hash' => $userOpHash,
-            'fee_charged'  => $feeAmount,
-            'fee_token'    => $feeToken,
-        ]);
+            Log::info('Transaction sponsored successfully', [
+                'user_op_hash' => $userOpHash,
+                'fee_charged'  => $feeAmount,
+                'fee_token'    => $feeToken,
+            ]);
 
-        Event::dispatch(new TransactionSponsored(
-            userAddress: $userAddress,
-            userOpHash: $userOpHash,
-            network: $network,
-            feeAmount: $feeAmount,
-            feeToken: $feeToken,
-        ));
+            Event::dispatch(new TransactionSponsored(
+                userAddress: $userAddress,
+                userOpHash: $userOpHash,
+                network: $network,
+                feeAmount: $feeAmount,
+                feeToken: $feeToken,
+            ));
 
-        return [
-            'tx_hash'       => '', // Will be available after bundler processes
-            'user_op_hash'  => $userOpHash,
-            'gas_used'      => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
-            'fee_charged'   => number_format($feeAmount, 6),
-            'fee_currency'  => $feeToken,
-            'is_deployment' => $isDeployment,
-        ];
+            return [
+                'tx_hash'       => '', // Will be available after bundler processes
+                'user_op_hash'  => $userOpHash,
+                'gas_used'      => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
+                'fee_charged'   => number_format($feeAmount, 6),
+                'fee_currency'  => $feeToken,
+                'is_deployment' => $isDeployment,
+            ];
+        });
     }
 
     /**
@@ -179,26 +190,101 @@ class GasStationService
 
     /**
      * Check if user has sufficient stablecoin balance.
-     * Demo implementation - always returns true.
+     *
+     * Uses WalletBalanceProvider in production mode to query actual ERC-20 balances.
+     * Falls back to demo mode with a warning if provider not available.
+     *
+     * @throws RuntimeException if balance provider is missing in production
      */
-    private function hasSufficientBalance(string $userAddress, string $token, float $amount): bool
-    {
-        // In production, check actual wallet balance
+    private function hasSufficientBalance(
+        string $userAddress,
+        string $token,
+        float $amount,
+        SupportedNetwork $network = SupportedNetwork::POLYGON
+    ): bool {
+        // Production mode: Use balance provider
+        if ($this->balanceProvider !== null) {
+            return $this->balanceProvider->hasBalance($userAddress, $token, $amount, $network);
+        }
+
+        // Reject in production environment without a balance provider
+        if (app()->environment('production')) {
+            Log::critical('Balance provider not configured in production environment', [
+                'user'   => $userAddress,
+                'token'  => $token,
+                'amount' => $amount,
+            ]);
+
+            throw new RuntimeException('Balance verification unavailable. Contact support.');
+        }
+
+        // Demo mode: Allow in non-production with warning
+        Log::warning('Using demo balance check (always true) - NOT suitable for production', [
+            'user'        => $userAddress,
+            'token'       => $token,
+            'amount'      => $amount,
+            'environment' => app()->environment(),
+        ]);
+
         return true;
     }
 
     /**
-     * Deduct fee from user's stablecoin balance.
-     * Demo implementation - no-op.
+     * Get the balance for a user's wallet.
+     *
+     * @return string Balance in token decimals (e.g., "100.000000")
      */
-    private function deductFee(string $userAddress, string $token, float $amount): void
-    {
-        // In production, create a debit transaction
+    public function getBalance(
+        string $userAddress,
+        string $token,
+        SupportedNetwork $network = SupportedNetwork::POLYGON
+    ): string {
+        if ($this->balanceProvider !== null) {
+            return $this->balanceProvider->getBalance($userAddress, $token, $network);
+        }
+
+        // Demo mode: Return default balance
+        return '1000.000000';
+    }
+
+    /**
+     * Invalidate cached balance for a user.
+     * Call this after fee deduction to ensure fresh balance on next check.
+     */
+    public function invalidateBalanceCache(
+        string $userAddress,
+        string $token,
+        SupportedNetwork $network
+    ): void {
+        if ($this->balanceProvider !== null) {
+            $this->balanceProvider->invalidateCache($userAddress, $token, $network);
+        }
+    }
+
+    /**
+     * Deduct fee from user's stablecoin balance.
+     *
+     * In production, this will be replaced with actual fee deduction service
+     * (see PR #4: Production Fee Deduction).
+     *
+     * @todo PR #4: Implement actual fee deduction via FeeDeductionInterface
+     */
+    private function deductFee(
+        string $userAddress,
+        string $token,
+        float $amount,
+        SupportedNetwork $network = SupportedNetwork::POLYGON
+    ): void {
+        // In production, create a debit transaction via FeeDeductionService
         Log::debug('Fee deducted', [
-            'user'   => $userAddress,
-            'token'  => $token,
-            'amount' => $amount,
+            'user'    => $userAddress,
+            'token'   => $token,
+            'amount'  => $amount,
+            'network' => $network->value,
         ]);
+
+        // Invalidate cached balance after deduction
+        $this->invalidateBalanceCache($userAddress, $token, $network);
     }
 
     /**

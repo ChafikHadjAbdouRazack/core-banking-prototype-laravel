@@ -13,11 +13,6 @@ return [
                  * Route for accessing api documentation interface
                  */
                 'api' => 'api/documentation',
-
-                /*
-                 * Route for accessing parsed swagger annotations.
-                 */
-                'docs' => 'docs',
             ],
             'paths' => [
                 /*
@@ -36,11 +31,6 @@ return [
                 'docs_json' => 'api-docs.json',
 
                 /*
-                 * Absolute path to file containing the swagger annotations
-                 */
-                'docs_url' => '/docs/api-docs.json',
-
-                /*
                  * File name of the generated YAML documentation file
                  */
                 'docs_yaml' => 'api-docs.yaml',
@@ -57,6 +47,18 @@ return [
                     base_path('app/Http/Controllers/Api'),
                     base_path('app/Http/Controllers/Api/V2'),
                     base_path('app/Http/Controllers/Api/Documentation'),
+                    base_path('app/Http/Controllers/Api/CrossChain'),
+                    base_path('app/Http/Controllers/Api/DeFi'),
+                    base_path('app/Http/Controllers/Api/RegTech'),
+                    base_path('app/Http/Controllers/Api/MobilePayment'),
+                    base_path('app/Http/Controllers/Api/Partner'),
+                    base_path('app/Http/Controllers/Api/AI'),
+                    base_path('app/Http/Controllers/Api/Auth'),
+                    base_path('app/Http/Controllers/Api/Commerce'),
+                    base_path('app/Http/Controllers/Api/Privacy'),
+                    base_path('app/Http/Controllers/Api/Relayer'),
+                    base_path('app/Http/Controllers/Api/TrustCert'),
+                    base_path('app/Http/Controllers/Api/Wallet'),
                     base_path('app/Http/Resources'),
                 ],
             ],
@@ -64,11 +66,6 @@ return [
     ],
     'defaults' => [
         'routes' => [
-            /*
-             * Route for accessing parsed swagger annotations.
-             */
-            'docs' => 'docs',
-
             /*
              * Route for Oauth2 authentication callback.
              */
@@ -134,7 +131,9 @@ return [
             ],
 
             /**
-             * analyser: defaults to \OpenApi\StaticAnalyser .
+             * analyser: Set to null here so the config is serializable for caching.
+             * The actual ReflectionAnalyser with DocBlock + Attribute support is
+             * registered in AppServiceProvider (or the l5-swagger service provider).
              *
              * @see OpenApi\scan
              */

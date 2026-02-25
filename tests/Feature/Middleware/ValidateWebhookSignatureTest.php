@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Middleware;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -196,6 +197,9 @@ class ValidateWebhookSignatureTest extends TestCase
     #[Test]
     public function it_allows_mock_custodian_webhook_without_signature()
     {
+        // Fake the queue so dispatched jobs don't run synchronously and fail
+        Queue::fake();
+
         $payload = ['type' => 'balance.updated', 'id' => 'mock_123'];
 
         $response = $this->postJson('/api/webhooks/custodian/mock', $payload);

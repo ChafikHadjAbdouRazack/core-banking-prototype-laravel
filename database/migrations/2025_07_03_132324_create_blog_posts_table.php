@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->string('icon_svg')->nullable();
             $table->boolean('is_featured')->default(false);
             $table->boolean('is_published')->default(true);
-            $table->timestamp('published_at')->nullable();
+            $table->dateTime('published_at')->nullable();
             $table->timestamps();
 
             $table->index('slug');

@@ -215,10 +215,46 @@
                         Implementation of Google's A2A protocol for AI agent commerce. Agents can register, negotiate, and execute transactions with escrow services and reputation tracking.
                     </p>
                 </div>
-                <div class="timeline-item">
+                <div class="timeline-item mb-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Banking API Patterns</h3>
                     <p class="text-gray-600">
                         Mock connectors demonstrating Open Banking integration patterns. See how real banking APIs could connect to a core banking system.
+                    </p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Cross-Chain & DeFi</h3>
+                    <p class="text-gray-600">
+                        Bridge protocols (Wormhole, LayerZero, Axelar), DEX aggregation via Uniswap/Aave/Curve/Lido, cross-chain swaps, and multi-chain portfolio management.
+                    </p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Privacy & Identity</h3>
+                    <p class="text-gray-600">
+                        ZK-KYC proofs, Merkle tree commitments, soulbound tokens, W3C verifiable credentials, Shamir secret sharing, and delegated proof verification.
+                    </p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">GraphQL API</h3>
+                    <p class="text-gray-600">
+                        Lighthouse-powered GraphQL covering 33 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination alongside REST/OpenAPI.
+                    </p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Plugin Marketplace</h3>
+                    <p class="text-gray-600">
+                        Extensible plugin system with sandboxed execution, static security scanning, hook-based integration points, and a manager UI for discovering and installing plugins.
+                    </p>
+                </div>
+                <div class="timeline-item mb-12">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Event Streaming</h3>
+                    <p class="text-gray-600">
+                        Redis Streams-powered event streaming with a live dashboard, consumer groups, backpressure handling, and dead-letter queues for reliable event processing.
+                    </p>
+                </div>
+                <div class="timeline-item">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Compliance Certification</h3>
+                    <p class="text-gray-600">
+                        SOC 2 Type II and PCI DSS readiness tooling, GDPR enhanced privacy (ROPA, DPIA, breach notification, consent v2), and multi-region deployment support.
                     </p>
                 </div>
             </div>

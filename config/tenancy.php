@@ -16,10 +16,14 @@ return [
      *
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
-    'central_domains' => [
-        '127.0.0.1',
-        'localhost',
-    ],
+    'central_domains' => array_filter(array_merge(
+        [
+            '127.0.0.1',
+            'localhost',
+        ],
+        // Additional central domains from environment (comma-separated)
+        array_map('trim', explode(',', env('TENANCY_CENTRAL_DOMAINS', 'finaegis.org,finaegis.local'))),
+    )),
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.

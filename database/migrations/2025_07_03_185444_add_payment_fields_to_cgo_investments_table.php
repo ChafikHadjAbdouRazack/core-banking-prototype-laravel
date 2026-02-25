@@ -24,10 +24,10 @@ return new class () extends Migration {
                 $table->string('payment_status')->default('pending');
             }
             if (! in_array('payment_completed_at', $columns)) {
-                $table->timestamp('payment_completed_at')->nullable();
+                $table->dateTime('payment_completed_at')->nullable();
             }
             if (! in_array('payment_failed_at', $columns)) {
-                $table->timestamp('payment_failed_at')->nullable();
+                $table->dateTime('payment_failed_at')->nullable();
             }
             if (! in_array('payment_failure_reason', $columns)) {
                 $table->text('payment_failure_reason')->nullable();
@@ -39,7 +39,7 @@ return new class () extends Migration {
                 $table->string('bank_transfer_reference')->nullable();
             }
             if (! in_array('cancelled_at', $columns)) {
-                $table->timestamp('cancelled_at')->nullable();
+                $table->dateTime('cancelled_at')->nullable();
             }
         });
     }

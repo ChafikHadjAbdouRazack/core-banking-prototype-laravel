@@ -2,17 +2,13 @@
 
 use App\Domain\Account\Workflows\BatchProcessingActivity;
 
-it('class exists', function () {
-    expect(class_exists(BatchProcessingActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(BatchProcessingActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(BatchProcessingActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(BatchProcessingActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {
@@ -54,7 +50,7 @@ it('has batch operation methods', function () {
     ];
 
     foreach ($methods as $method) {
-        expect(method_exists(BatchProcessingActivity::class, $method))->toBeTrue();
+        expect((new ReflectionClass(BatchProcessingActivity::class))->hasMethod($method))->toBeTrue();
     }
 });
 
@@ -133,7 +129,7 @@ it('validates all batch processing methods exist', function () {
 });
 
 it('can verify batch processing class structure', function () {
-    expect(class_exists(BatchProcessingActivity::class))->toBeTrue();
+    expect((new ReflectionClass(BatchProcessingActivity::class))->getName())->not->toBeEmpty();
 
     $reflection = new ReflectionClass(BatchProcessingActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');

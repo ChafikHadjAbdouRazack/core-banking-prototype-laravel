@@ -57,7 +57,7 @@ The project includes comprehensive GitHub Actions workflows:
 # - Pushes to main branch
 
 # Test Workflow (.github/workflows/test.yml):
-# - Sets up PHP 8.3, MySQL 8.0, Redis 7, Node.js 20
+# - Sets up PHP 8.4+, MySQL 8.0, Redis 7, Node.js 20
 # - Installs Composer and NPM dependencies
 # - Builds frontend assets
 # - Runs database migrations and seeders
@@ -410,7 +410,7 @@ ActivityStub::make(ValidateLiquidityActivity::class)
 
 ## Architecture Overview
 
-### Domain-Driven Design Structure
+### Domain-Driven Design Structure (41 domains)
 - **Account Domain** (`app/Domain/Account/`): Core banking account management with multi-asset support
 - **Asset Domain** (`app/Domain/Asset/`): Multi-asset ledger, exchange rates, and asset management
 - **Basket Domain** (`app/Domain/Basket/`): Basket asset management with rebalancing services
@@ -419,6 +419,10 @@ ActivityStub::make(ValidateLiquidityActivity::class)
 - **Compliance Domain** (`app/Domain/Compliance/`): KYC, AML, and regulatory reporting
 - **Governance Domain** (`app/Domain/Governance/`): Democratic governance and polling system
 - **Payment Domain** (`app/Domain/Payment/`): Transfer and payment processing
+- **CrossChain Domain** (`app/Domain/CrossChain/`): Bridge protocols (Wormhole/LayerZero/Axelar), cross-chain swaps, multi-chain portfolio (v3.0.0)
+- **DeFi Domain** (`app/Domain/DeFi/`): DEX aggregation, lending, staking, yield optimization (v3.0.0)
+- **RegTech Domain** (`app/Domain/RegTech/`): MiFID II, MiCA, Travel Rule, jurisdiction adapters (v2.8.0)
+- **Monitoring Domain** (`app/Domain/Monitoring/`): Observability dashboards, structured logging, deep health checks (v3.3.0)
 - Each domain has Aggregates, Events, Workflows, Activities, Projectors, Reactors, and Services
 
 ### Caching Architecture
@@ -437,6 +441,30 @@ ActivityStub::make(ValidateLiquidityActivity::class)
 - **Events**: `AccountCreated`, `MoneyAdded`, `MoneySubtracted`, `MoneyTransferred`, `AssetBalanceAdded`, `AssetBalanceSubtracted`, `AssetTransferred`, `AssetTransactionCreated`, `AssetTransferInitiated/Completed/Failed`, `ExchangeRateUpdated`
 - **Projectors**: Build read models from events (`AccountProjector`, `TurnoverProjector`, `TransactionProjector`, `AssetTransactionProjector`, `AssetTransferProjector`, `ExchangeRateProjector`)
 - **Reactors**: Handle side effects (`SnapshotTransactionsReactor`, `SnapshotTransfersReactor`)
+
+### GraphQL API (v4.0.0-v5.1.0)
+The platform provides a GraphQL API via Lighthouse PHP alongside the REST API:
+- **33 domain schemas**: Account, AgentProtocol, AI, Asset, Banking, Basket, Batch, CardIssuance, Cgo, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, FinancialInstitution, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, Product, RegTech, Regulatory, Relayer, Stablecoin, Treasury, TrustCert, User, Wallet
+- **Schema files**: `graphql/*.graphql`
+- **Resolvers**: `app/GraphQL/Queries/`, `app/GraphQL/Mutations/`, `app/GraphQL/Subscriptions/`
+- **Access**: POST `/graphql`, GET `/graphql-playground`
+- **Subscriptions**: accountUpdated, walletUpdated, orderMatched, portfolioRebalanced, paymentStatusChanged
+
+### Event Streaming (v5.0.0)
+Redis Streams-based event streaming for real-time event distribution:
+- **Publisher**: `app/Domain/Shared/EventSourcing/EventStreamPublisher.php`
+- **Consumer**: `app/Domain/Shared/EventSourcing/EventStreamConsumer.php`
+- **Config**: `config/event-streaming.php`
+- **Monitor**: `php artisan event-stream:monitor`
+- **Live Dashboard**: `/api/v1/monitoring/live-dashboard/*` (5 endpoints)
+
+### Plugin System (v4.0.0)
+Plugin marketplace with sandboxing and security scanning:
+- **Manager**: `app/Infrastructure/Plugins/PluginManager.php`
+- **Sandbox**: `app/Infrastructure/Plugins/PluginSandbox.php`
+- **Security Scanner**: `app/Infrastructure/Plugins/PluginSecurityScanner.php`
+- **Example plugins**: `plugins/WebhookNotifier/`, `plugins/AuditExporter/`, `plugins/DashboardWidget/`
+- **Commands**: `php artisan plugin:install`, `php artisan plugin:scan`
 
 ### Workflow Orchestration (Saga Pattern)
 - **Account Management**: `CreateAccountWorkflow`, `FreezeAccountWorkflow`, `UnfreezeAccountWorkflow`, `DestroyAccountWorkflow`
@@ -2080,6 +2108,14 @@ $user->assignRole('customer_business');
 - Workflow Engine: `app/Infrastructure/Workflow/`
 - External Connectors: `app/Infrastructure/Exchange/Connectors/`
 - Blockchain Services: `app/Infrastructure/Blockchain/`
+- Plugin Manager: `app/Infrastructure/Plugins/PluginManager.php`
+- Plugin Sandbox: `app/Infrastructure/Plugins/PluginSandbox.php`
+
+### Key Services (v4.0.0-v5.0.0)
+- Event Stream Publisher: `app/Domain/Shared/EventSourcing/EventStreamPublisher.php`
+- Event Stream Consumer: `app/Domain/Shared/EventSourcing/EventStreamConsumer.php`
+- Live Metrics Service: `app/Domain/Monitoring/Services/LiveMetricsService.php`
+- Notification Service: `app/Domain/Shared/Notifications/NotificationService.php`
 
 ### Frontend
 - Vue Components: `resources/js/Components/`
@@ -2087,8 +2123,16 @@ $user->assignRole('customer_business');
 - Shared Utilities: `resources/js/utils/`
 - API Client: `resources/js/api/`
 
+### GraphQL & Plugin System (v4.0.0+)
+- GraphQL schemas: `graphql/*.graphql`
+- GraphQL resolvers: `app/GraphQL/`
+- Plugin manifests: `plugins/*/manifest.json`
+- Plugin infrastructure: `app/Infrastructure/Plugins/`
+- Event streaming config: `config/event-streaming.php`
+
 ### Configuration
 - Event Sourcing: `config/event-sourcing.php`
+- Event Streaming: `config/event-streaming.php`
 - Workflow: `config/workflow.php`
 - Exchange: `config/exchange.php`
 - Blockchain: `config/blockchain.php`
@@ -2101,6 +2145,6 @@ $user->assignRole('customer_business');
 
 ---
 
-**Last Updated**: 2024-09-07  
-**Version**: 8.0  
-**Status**: Production Ready - All Phase 8 Features Implemented
+**Last Updated**: 2026-02-21
+**Version**: 5.1.5
+**Status**: Production Ready - v5.1.5 with Dependency Cleanup (l5-swagger 10, swagger-php 6), PSR-4 Plugin Fix, Production Env Template

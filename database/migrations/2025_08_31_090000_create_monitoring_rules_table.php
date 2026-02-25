@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->integer('priority')->default(50);
             $table->decimal('effectiveness_score', 5, 2)->default(50.0);
             $table->decimal('false_positive_rate', 5, 2)->default(0.0);
-            $table->timestamp('last_triggered_at')->nullable();
+            $table->dateTime('last_triggered_at')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->string('crypto_address')->nullable();
             $table->string('crypto_tx_hash')->nullable();
             $table->string('certificate_number')->nullable();
-            $table->timestamp('certificate_issued_at')->nullable();
+            $table->dateTime('certificate_issued_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 

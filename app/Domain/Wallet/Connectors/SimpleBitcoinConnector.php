@@ -11,6 +11,7 @@ use App\Domain\Wallet\ValueObjects\TransactionData;
 use App\Domain\Wallet\ValueObjects\TransactionResult;
 use Exception;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SimpleBitcoinConnector implements BlockchainConnector
 {
@@ -107,6 +108,7 @@ class SimpleBitcoinConnector implements BlockchainConnector
 
     public function broadcastTransaction(SignedTransaction $transaction): TransactionResult
     {
+        /** @var \Illuminate\Http\Client\Response $response */
         $response = Http::post(
             "{$this->apiUrl}/txs/push",
             [
@@ -115,7 +117,11 @@ class SimpleBitcoinConnector implements BlockchainConnector
         );
 
         if (! $response->successful()) {
-            throw new Exception('Failed to broadcast transaction: ' . $response->body());
+            Log::error('Bitcoin transaction broadcast failed', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            throw new Exception('Failed to broadcast transaction. Please try again later.');
         }
 
         $data = $response->json();

@@ -31,4 +31,7 @@
     
     <!-- Exclude bootstrap/cache -->
     <exclude-pattern>bootstrap/cache/</exclude-pattern>
+
+    <!-- Exclude non-PHP files (k6 JavaScript tests) -->
+    <exclude-pattern>tests/k6/</exclude-pattern>
 </ruleset>

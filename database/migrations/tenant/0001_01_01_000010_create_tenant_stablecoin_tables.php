@@ -80,8 +80,8 @@ return new class () extends Migration {
 
             // Position status
             $table->enum('status', ['active', 'liquidated', 'closed'])->default('active');
-            $table->timestamp('last_interaction_at')->nullable();
-            $table->timestamp('liquidated_at')->nullable();
+            $table->dateTime('last_interaction_at')->nullable();
+            $table->dateTime('liquidated_at')->nullable();
 
             // Risk management
             $table->boolean('auto_liquidation_enabled')->default(true);
@@ -120,8 +120,8 @@ return new class () extends Migration {
 
             // Audit fields
             $table->string('approved_by')->nullable();
-            $table->timestamp('approved_at')->nullable();
-            $table->timestamp('executed_at')->nullable();
+            $table->dateTime('approved_at')->nullable();
+            $table->dateTime('executed_at')->nullable();
             $table->timestamps();
 
             $table->index('type');

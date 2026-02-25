@@ -57,8 +57,8 @@ return new class () extends Migration {
             $table->string('block_reason')->nullable();
 
             // Activity Tracking
-            $table->timestamp('first_seen_at');
-            $table->timestamp('last_seen_at');
+            $table->dateTime('first_seen_at');
+            $table->dateTime('last_seen_at');
             $table->integer('successful_logins')->default(0);
             $table->integer('failed_logins')->default(0);
             $table->integer('suspicious_activities')->default(0);

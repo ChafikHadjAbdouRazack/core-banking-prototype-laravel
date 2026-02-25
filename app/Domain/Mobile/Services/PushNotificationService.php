@@ -8,21 +8,26 @@ use App\Domain\Mobile\Models\MobileDevice;
 use App\Domain\Mobile\Models\MobilePushNotification;
 use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Kreait\Firebase\Contract\Messaging;
+use Kreait\Firebase\Exception\Messaging\InvalidMessage;
+use Kreait\Firebase\Exception\Messaging\NotFound;
+use Kreait\Firebase\Exception\MessagingException;
+use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 
 /**
  * Service for sending push notifications to mobile devices.
  *
- * Supports Firebase Cloud Messaging (FCM) for Android and iOS.
- * APNS direct integration can be added if needed.
+ * Supports Firebase Cloud Messaging (FCM) HTTP v1 API for Android and iOS
+ * via the kreait/firebase-php SDK.
  */
 class PushNotificationService
 {
-    /**
-     * FCM API endpoint.
-     */
-    private const FCM_ENDPOINT = 'https://fcm.googleapis.com/fcm/send';
+    public function __construct(
+        private readonly ?Messaging $messaging = null,
+    ) {
+    }
 
     /**
      * Send a push notification to a user on all their devices.
@@ -133,7 +138,7 @@ class PushNotificationService
     }
 
     /**
-     * Send a notification via FCM.
+     * Send a notification via FCM HTTP v1 API.
      *
      * @return array<string, mixed>
      */
@@ -150,12 +155,8 @@ class PushNotificationService
             ];
         }
 
-        // Check if FCM is configured
-        $serverKey = config('services.firebase.server_key');
-        $projectId = config('services.firebase.project_id');
-
-        if (! $serverKey && ! $projectId) {
-            // Log but don't fail - useful for development
+        // Check if FCM is configured (Messaging is null when credentials are absent)
+        if (! $this->messaging) {
             Log::warning('FCM not configured, notification not sent', [
                 'notification_id' => $notification->id,
             ]);
@@ -173,29 +174,46 @@ class PushNotificationService
         try {
             $response = $this->sendViaFcm($device, $notification);
 
-            if ($response['success']) {
-                $notification->markAsSent($response['message_id'] ?? uniqid());
+            $notification->markAsSent($response['name'] ?? uniqid());
 
-                return [
-                    'status'          => 'sent',
-                    'message_id'      => $response['message_id'] ?? null,
-                    'notification_id' => $notification->id,
-                ];
-            } else {
-                $notification->markAsFailed($response['error'] ?? 'Unknown error');
+            return [
+                'status'          => 'sent',
+                'message_id'      => $response['name'] ?? null,
+                'notification_id' => $notification->id,
+            ];
+        } catch (NotFound $e) {
+            Log::info('Cleared invalid push token (not found)', ['device_id' => $device->id]);
+            $device->update(['push_token' => null]);
+            $notification->markAsFailed('Invalid token: not found');
 
-                // Handle invalid token
-                if ($this->isInvalidTokenError($response['error'] ?? '')) {
-                    $device->update(['push_token' => null]);
-                    Log::info('Cleared invalid push token', ['device_id' => $device->id]);
-                }
+            return [
+                'status'          => 'failed',
+                'error'           => 'Invalid token: not found',
+                'notification_id' => $notification->id,
+            ];
+        } catch (InvalidMessage $e) {
+            Log::info('Cleared invalid push token (invalid message)', ['device_id' => $device->id]);
+            $device->update(['push_token' => null]);
+            $notification->markAsFailed('Invalid token: ' . $e->getMessage());
 
-                return [
-                    'status'          => 'failed',
-                    'error'           => $response['error'] ?? 'Unknown error',
-                    'notification_id' => $notification->id,
-                ];
-            }
+            return [
+                'status'          => 'failed',
+                'error'           => 'Invalid token: ' . $e->getMessage(),
+                'notification_id' => $notification->id,
+            ];
+        } catch (MessagingException $e) {
+            Log::error('FCM messaging error', [
+                'notification_id' => $notification->id,
+                'error'           => $e->getMessage(),
+            ]);
+
+            $notification->markAsFailed($e->getMessage());
+
+            return [
+                'status'          => 'failed',
+                'error'           => $e->getMessage(),
+                'notification_id' => $notification->id,
+            ];
         } catch (Exception $e) {
             Log::error('Push notification error', [
                 'notification_id' => $notification->id,
@@ -213,90 +231,50 @@ class PushNotificationService
     }
 
     /**
-     * Send notification via FCM legacy HTTP API.
+     * Send notification via FCM HTTP v1 API using kreait/firebase-php.
      *
      * @return array<string, mixed>
      */
     private function sendViaFcm(MobileDevice $device, MobilePushNotification $notification): array
     {
-        $serverKey = config('services.firebase.server_key');
+        assert($this->messaging !== null);
 
-        $payload = [
-            'to'           => $device->push_token,
-            'notification' => [
-                'title' => $notification->title,
-                'body'  => $notification->body,
-                'sound' => 'default',
-                'badge' => 1,
-            ],
-            'data' => array_merge($notification->data ?? [], [
-                'notification_id'   => $notification->id,
-                'notification_type' => $notification->notification_type,
-                'click_action'      => 'FLUTTER_NOTIFICATION_CLICK',
-            ]),
-            'priority' => 'high',
-        ];
+        /** @var array<non-empty-string, string> $dataPayload */
+        $dataPayload = array_map('strval', array_merge($notification->data ?? [], [
+            'notification_id'   => (string) $notification->id,
+            'notification_type' => $notification->notification_type,
+            'click_action'      => 'FLUTTER_NOTIFICATION_CLICK',
+        ]));
 
-        // Platform-specific options
+        /** @var non-empty-string $token */
+        $token = (string) $device->push_token;
+
+        $message = CloudMessage::new()
+            ->withToken($token)
+            ->withNotification(Notification::create($notification->title, $notification->body))
+            ->withData($dataPayload)
+            ->withHighestPossiblePriority()
+            ->withDefaultSounds();
+
+        // Platform-specific configuration
         if ($device->platform === 'android') {
-            $payload['android'] = [
-                'priority'     => 'high',
+            $message = $message->withAndroidConfig([
                 'notification' => [
                     'channel_id' => 'finaegis_default',
                 ],
-            ];
+            ]);
         } elseif ($device->platform === 'ios') {
-            $payload['apns'] = [
+            $message = $message->withApnsConfig([
                 'payload' => [
                     'aps' => [
-                        'sound' => 'default',
                         'badge' => 1,
                     ],
                 ],
-            ];
+            ]);
         }
 
-        $response = Http::withHeaders([
-            'Authorization' => 'key=' . $serverKey,
-            'Content-Type'  => 'application/json',
-        ])->post(self::FCM_ENDPOINT, $payload);
-
-        if ($response->successful()) {
-            $body = $response->json();
-            if (isset($body['success']) && $body['success'] > 0) {
-                return [
-                    'success'    => true,
-                    'message_id' => $body['results'][0]['message_id'] ?? null,
-                ];
-            } else {
-                $error = $body['results'][0]['error'] ?? 'Unknown FCM error';
-
-                return [
-                    'success' => false,
-                    'error'   => $error,
-                ];
-            }
-        }
-
-        return [
-            'success' => false,
-            'error'   => 'FCM request failed: ' . $response->status(),
-        ];
-    }
-
-    /**
-     * Check if error indicates invalid token.
-     */
-    private function isInvalidTokenError(string $error): bool
-    {
-        $invalidTokenErrors = [
-            'NotRegistered',
-            'InvalidRegistration',
-            'MissingRegistration',
-            'InvalidApnsCredential',
-        ];
-
-        return in_array($error, $invalidTokenErrors);
+        /** @var array<string, mixed> */
+        return $this->messaging->send($message);
     }
 
     /**

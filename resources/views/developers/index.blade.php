@@ -140,7 +140,7 @@
                 <div class="text-center">
                     <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm mb-6">
                         <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                        <span>v2.1 Documentation</span>
+                        <span>v5.2 Documentation -- 42 Domains, 1,200+ Routes, GraphQL + REST + x402</span>
                     </div>
                     <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
                         Built for Developers
@@ -174,14 +174,14 @@
         </section>
 
         <!-- Status Alert -->
-        <section class="py-6 bg-amber-50 border-b border-amber-200">
+        <section class="py-6 bg-green-50 border-b border-green-200">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-center text-amber-800">
+                <div class="flex items-center justify-center text-green-800">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span class="font-medium">Alpha Version:</span>
-                    <span class="ml-2">Limited API endpoints available. Full API coming soon.</span>
+                    <span class="font-medium">v5.2 Released:</span>
+                    <span class="ml-2">42 DDD domains, 1,200+ API routes with GraphQL API (34 domains), x402 Protocol, Event Streaming, Plugin Marketplace, CrossChain, DeFi, RegTech, and Partner BaaS.</span>
                 </div>
             </div>
         </section>
@@ -433,6 +433,187 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Platform API Area Cards -->
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2 text-center">Platform API Areas</h3>
+                    <p class="text-gray-600 text-center mb-8">Explore the full breadth of the FinAegis platform across 42 DDD domains</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                        <!-- CrossChain -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#crosschain" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">CrossChain</h4>
+                                        <span class="text-xs text-gray-500">7 routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Bridge protocols (Wormhole, LayerZero, Axelar), cross-chain swaps, fee comparison, and multi-chain portfolio tracking.</p>
+                                <span class="text-cyan-600 text-sm font-medium group-hover:text-cyan-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- DeFi -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#defi" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">DeFi</h4>
+                                        <span class="text-xs text-gray-500">8 routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">DEX aggregation (Uniswap, Curve), lending (Aave), staking (Lido), yield optimization, flash loans, and portfolio management.</p>
+                                <span class="text-emerald-600 text-sm font-medium group-hover:text-emerald-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- RegTech -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#regtech" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">RegTech</h4>
+                                        <span class="text-xs text-gray-500">12 routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">MiFID II reporting, MiCA compliance, Travel Rule enforcement, jurisdiction adapters, and regulatory orchestration.</p>
+                                <span class="text-amber-600 text-sm font-medium group-hover:text-amber-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- MobilePayment -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#mobile-payment" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">Mobile Payment</h4>
+                                        <span class="text-xs text-gray-500">25+ routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Payment intents, receipts, activity feeds, receive addresses, P2P transfers, passkey auth, and biometric JWT.</p>
+                                <span class="text-violet-600 text-sm font-medium group-hover:text-violet-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- Partner / BaaS -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#partner-baas" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">Partner / BaaS</h4>
+                                        <span class="text-xs text-gray-500">24 routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Banking-as-a-Service partner onboarding, SDK generation, white-label configuration, and tenant provisioning.</p>
+                                <span class="text-rose-600 text-sm font-medium group-hover:text-rose-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- AI -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#ai" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-gray-700 to-gray-900 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">AI Query</h4>
+                                        <span class="text-xs text-gray-500">2 routes</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Natural language transaction queries and AI-powered financial insights via the intelligent query interface.</p>
+                                <span class="text-gray-600 text-sm font-medium group-hover:text-gray-800">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- GraphQL API -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#graphql" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-blue-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v3m0 12v3m9-9h-3M6 12H3m15.364-6.364l-2.121 2.121M8.757 15.243l-2.121 2.121m12.728 0l-2.121-2.121M8.757 8.757L6.636 6.636"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">GraphQL API</h4>
+                                        <span class="text-xs text-gray-500">34 domains</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Schema-first GraphQL via Lighthouse PHP with queries, mutations, subscriptions, and DataLoaders across 34 domain schemas.</p>
+                                <span class="text-sky-600 text-sm font-medium group-hover:text-sky-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- Event Streaming -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#event-streaming" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-lime-500 to-green-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">Event Streaming</h4>
+                                        <span class="text-xs text-gray-500">5 endpoints</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">Redis Streams-based event publishing, consumer groups, live metrics dashboard with projector lag and throughput monitoring.</p>
+                                <span class="text-lime-600 text-sm font-medium group-hover:text-lime-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                        <!-- x402 Protocol -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#x402" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-900">x402 Protocol</h4>
+                                        <span class="text-xs text-gray-500">15+ endpoints</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-3">HTTP-native micropayments. Monetize APIs with USDC on Base. GraphQL + REST with AI agent payment support.</p>
+                                <span class="text-emerald-600 text-sm font-medium group-hover:text-emerald-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -507,14 +688,23 @@
         <!-- Stats -->
         <section class="py-20 bg-indigo-900 text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
                     <div>
-                        <div class="text-4xl md:text-5xl font-bold mb-2">{{ config('platform.statistics.api_endpoints') }}</div>
+                        <div class="text-4xl md:text-5xl font-bold mb-2">1,200+</div>
                         <p class="text-indigo-200 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            API Endpoints
+                            API Routes
+                        </p>
+                    </div>
+                    <div>
+                        <div class="text-4xl md:text-5xl font-bold mb-2">42</div>
+                        <p class="text-indigo-200 flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            DDD Domains
                         </p>
                     </div>
                     <div>
@@ -543,6 +733,97 @@
                             </svg>
                             Support
                         </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Partner API Key Authentication -->
+        <section id="partner-auth" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Partner API Authentication</h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        BaaS partners and third-party integrators use dedicated Partner API keys with scoped permissions
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Partner Key Overview -->
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="p-8">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold">Partner API Keys</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">
+                                Partner keys provide scoped access to BaaS endpoints, tenant provisioning, SDK generation, and white-label configuration. Keys are issued during partner onboarding.
+                            </p>
+                            <div class="bg-gray-50 rounded-lg p-6 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Key Prefix</span>
+                                    <code class="text-sm bg-gray-200 px-2 py-1 rounded">fpk_</code>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Scopes</span>
+                                    <span class="text-sm text-gray-600">baas, tenants, sdk, config</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">Rate Limit</span>
+                                    <span class="text-sm text-gray-600">5,000 req/hour</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-700 font-medium">IP Whitelist</span>
+                                    <span class="text-sm text-gray-600">Required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Partner Auth Code Example -->
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                        <div class="p-8">
+                            <div class="flex items-center mb-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-lg flex items-center justify-center text-white mr-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-semibold">Partner Request Example</h3>
+                            </div>
+                            <p class="text-gray-600 mb-6">
+                                Include the Partner API key in the <code class="bg-gray-100 px-1 rounded">X-Partner-Key</code> header alongside your standard Bearer token.
+                            </p>
+                            <div class="code-container">
+                                <div class="code-header">
+                                    <div class="flex items-center gap-2">
+                                        <span class="terminal-dot bg-red-500"></span>
+                                        <span class="terminal-dot bg-yellow-500"></span>
+                                        <span class="terminal-dot bg-green-500"></span>
+                                        <span>cURL</span>
+                                    </div>
+                                    <button class="copy-button" onclick="copyCode(this, 'code-partner-auth')">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <span>Copy</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 font-mono text-sm">
+                                    <div id="code-partner-auth">
+                                        <div><span class="text-gray-500">$</span> <span class="text-green-400">curl</span> <span class="text-blue-400">-X</span> <span class="text-purple-400">POST</span> <span class="text-yellow-400">"https://api.finaegis.org/v2/partner/tenants"</span> <span class="text-gray-400">\</span></div>
+                                        <div>  <span class="text-blue-400">-H</span> <span class="text-yellow-400">"Authorization: Bearer YOUR_API_KEY"</span> <span class="text-gray-400">\</span></div>
+                                        <div>  <span class="text-blue-400">-H</span> <span class="text-yellow-400">"X-Partner-Key: fpk_your_partner_key"</span> <span class="text-gray-400">\</span></div>
+                                        <div>  <span class="text-blue-400">-H</span> <span class="text-yellow-400">"Content-Type: application/json"</span> <span class="text-gray-400">\</span></div>
+                                        <div>  <span class="text-blue-400">-d</span> <span class="text-yellow-400">'{"name": "Acme Bank", "plan": "enterprise"}'</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

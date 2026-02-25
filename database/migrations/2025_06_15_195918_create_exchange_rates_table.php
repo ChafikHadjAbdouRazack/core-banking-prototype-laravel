@@ -16,8 +16,8 @@ return new class () extends Migration {
             $table->string('to_asset_code', 10);
             $table->decimal('rate', 20, 10);
             $table->string('source', 50)->default('manual');
-            $table->timestamp('valid_at');
-            $table->timestamp('expires_at')->nullable();
+            $table->dateTime('valid_at');
+            $table->dateTime('expires_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->json('metadata')->nullable();
             $table->timestamps();

@@ -14,7 +14,7 @@ class StablecoinEventRepositoryTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(StablecoinEventRepository::class));
+        $this->assertNotEmpty((new ReflectionClass(StablecoinEventRepository::class))->getName());
     }
 
     #[Test]
@@ -151,10 +151,10 @@ class StablecoinEventRepositoryTest extends DomainTestCase
         $repository = new StablecoinEventRepository();
 
         // Test that it inherits all necessary methods from parent
-        $this->assertTrue(method_exists($repository, 'find'));
-        $this->assertTrue(method_exists($repository, 'persist'));
-        $this->assertTrue(method_exists($repository, 'persistMany'));
-        $this->assertTrue(method_exists($repository, 'update'));
+        $this->assertTrue((new ReflectionClass($repository))->hasMethod('find'));
+        $this->assertTrue((new ReflectionClass($repository))->hasMethod('persist'));
+        $this->assertTrue((new ReflectionClass($repository))->hasMethod('persistMany'));
+        $this->assertTrue((new ReflectionClass($repository))->hasMethod('update'));
     }
 
     #[Test]

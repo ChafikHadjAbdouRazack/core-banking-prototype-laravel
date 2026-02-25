@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CGO Terms and Conditions - FinAegis</title>
+    <title>CGO Terms and Conditions - {{ config('brand.name') }}</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -33,18 +33,18 @@
                         <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8">
                             <p class="text-sm font-semibold text-yellow-800 mb-2">IMPORTANT NOTICE</p>
                             <p class="text-sm text-yellow-700">
-                                This is a contribution to support the development of the FinAegis platform and movement for democratic banking. 
+                                This is a contribution to support the development of the {{ config('brand.name') }} platform and movement for democratic banking. 
                                 This is NOT an investment in securities, and contributors should not expect financial returns. 
                                 Please read these terms carefully before participating.
                             </p>
                         </div>
 
                         <h2 class="text-2xl font-bold mt-8 mb-4">1. Nature of Contribution</h2>
-                        <p>By participating in the FinAegis Continuous Growth Offering (CGO), you acknowledge and agree that:</p>
+                        <p>By participating in the {{ config('brand.name') }} Continuous Growth Offering (CGO), you acknowledge and agree that:</p>
                         <ul class="list-disc pl-6 mb-4">
-                            <li>Your contribution is a <strong>donation to support development</strong> of the FinAegis platform and the democratic banking movement</li>
+                            <li>Your contribution is a <strong>donation to support development</strong> of the {{ config('brand.name') }} platform and the democratic banking movement</li>
                             <li>This is <strong>NOT an investment</strong> in securities or any financial instrument</li>
-                            <li>You are <strong>NOT purchasing equity</strong>, shares, or any ownership interest in FinAegis Ltd. or any affiliated entity</li>
+                            <li>You are <strong>NOT purchasing equity</strong>, shares, or any ownership interest in {{ config('brand.legal_entity') }} Ltd. or any affiliated entity</li>
                             <li>You should <strong>NOT expect financial returns</strong>, dividends, or profit from your contribution</li>
                             <li>The certificates and benefits provided are <strong>symbolic recognition</strong> of your support</li>
                         </ul>
@@ -89,7 +89,7 @@
                         <h2 class="text-2xl font-bold mt-8 mb-4">4. No Guarantee of Success</h2>
                         <p>You acknowledge that:</p>
                         <ul class="list-disc pl-6 mb-4">
-                            <li>The FinAegis platform is in development and success is not guaranteed</li>
+                            <li>The {{ config('brand.name') }} platform is in development and success is not guaranteed</li>
                             <li>Regulatory approval for banking operations is not assured</li>
                             <li>The platform may pivot, change direction, or cease operations</li>
                             <li>Benefits described may be modified or discontinued</li>
@@ -118,7 +118,7 @@
 
                         <h2 class="text-2xl font-bold mt-8 mb-4">8. Intellectual Property</h2>
                         <p>
-                            All intellectual property developed using CGO contributions remains the property of FinAegis Ltd. 
+                            All intellectual property developed using CGO contributions remains the property of {{ config('brand.legal_entity') }} Ltd.
                             Contributors receive no ownership rights to any intellectual property.
                         </p>
 
@@ -130,7 +130,7 @@
 
                         <h2 class="text-2xl font-bold mt-8 mb-4">10. Limitation of Liability</h2>
                         <p>
-                            TO THE MAXIMUM EXTENT PERMITTED BY LAW, FINAEGIS LTD. SHALL NOT BE LIABLE FOR ANY INDIRECT, 
+                            TO THE MAXIMUM EXTENT PERMITTED BY LAW, {{ Str::upper(config('brand.legal_entity')) }} LTD. SHALL NOT BE LIABLE FOR ANY INDIRECT,
                             INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR CONTRIBUTION.
                         </p>
 
@@ -148,8 +148,8 @@
                         <h2 class="text-2xl font-bold mt-8 mb-4">13. Contact Information</h2>
                         <p>
                             For questions about these terms or the CGO program, please contact:<br>
-                            Email: info@finaegis.org<br>
-                            Address: [To be determined]
+                            Email: {{ config('brand.support_email') }}<br>
+                            Address: {{ config('brand.legal_jurisdiction') }}
                         </p>
 
                         <div class="bg-gray-100 p-6 rounded-lg mt-8">

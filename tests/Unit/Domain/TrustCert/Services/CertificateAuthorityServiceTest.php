@@ -6,12 +6,14 @@ use App\Domain\TrustCert\Enums\CertificateStatus;
 use App\Domain\TrustCert\Events\CertificateIssued;
 use App\Domain\TrustCert\Events\CertificateRevoked;
 use App\Domain\TrustCert\Services\CertificateAuthorityService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 uses(Tests\TestCase::class);
 
 describe('CertificateAuthorityService', function (): void {
     beforeEach(function (): void {
+        Cache::flush();
         Event::fake();
         $this->service = new CertificateAuthorityService('test-ca', 'test-signing-key');
     });

@@ -2,10 +2,6 @@
 
 namespace Tests\Feature\Exchange;
 
-// TODO: These tests need to be rewritten to match the current exchange implementation
-return;
-
-use App\Domain\Account\Models\Account;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\ControllerTestCase;
@@ -20,24 +16,8 @@ class ExchangeControllerTest extends ControllerTestCase
     {
         parent::setUp();
 
-        // Create user
-        $this->user = User::factory()->create();
-
-        // Create account for the user
-        $account = Account::factory()->create([
-            'user_uuid' => $this->user->uuid,
-            'name'      => 'Test Trading Account',
-            'type'      => 'personal',
-            'status'    => 'active',
-        ]);
-
-        $this->accountId = $account->uuid;
-
-        // Initialize order books
-        $btcUsdOrderBookId = OrderBook::generateId('BTC', 'USD');
-        OrderBook::retrieve($btcUsdOrderBookId)
-            ->initialize($btcUsdOrderBookId, 'BTC', 'USD')
-            ->persist();
+        // TODO: These tests need to be rewritten to match the current exchange implementation
+        $this->markTestSkipped('Exchange tests need rewrite to match current implementation');
     }
 
     #[Test]

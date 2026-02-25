@@ -170,16 +170,28 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="bg-white rounded-lg p-4">
-                            <h4 class="font-semibold text-gray-900 mb-2">Data Protection</h4>
-                            <p class="text-sm text-gray-600">GDPR compliant data handling and user privacy protection</p>
+                            <h4 class="font-semibold text-gray-900 mb-2">GDPR Enhanced</h4>
+                            <p class="text-sm text-gray-600">ROPA, DPIA, breach notification, consent management v2, and data retention policies (v3.5.0)</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2">SOC 2 Type II</h4>
+                            <p class="text-sm text-gray-600">Continuous control monitoring, evidence collection, and audit readiness tooling (v3.5.0)</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2">PCI DSS Readiness</h4>
+                            <p class="text-sm text-gray-600">Payment card industry compliance with scoping, gap analysis, and remediation tracking (v3.5.0)</p>
                         </div>
                         <div class="bg-white rounded-lg p-4">
                             <h4 class="font-semibold text-gray-900 mb-2">Financial Compliance</h4>
-                            <p class="text-sm text-gray-600">KYC/AML procedures and regulatory reporting</p>
+                            <p class="text-sm text-gray-600">KYC/AML procedures, MiFID II, MiCA, and Travel Rule regulatory reporting</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2">Multi-Region Deployment</h4>
+                            <p class="text-sm text-gray-600">Data sovereignty compliance with multi-region deployment support (v3.5.0)</p>
                         </div>
                         <div class="bg-white rounded-lg p-4">
                             <h4 class="font-semibold text-gray-900 mb-2">Industry Standards</h4>
-                            <p class="text-sm text-gray-600">PCI DSS compliance for payment processing</p>
+                            <p class="text-sm text-gray-600">ISO 27001 readiness and comprehensive security framework alignment</p>
                         </div>
                     </div>
                 </div>
@@ -199,7 +211,7 @@
             <div class="mb-16">
                 <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">
                     <span class="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full">
-                        ✅ Currently Implemented
+                        Currently Implemented
                     </span>
                 </h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -215,7 +227,7 @@
                             Near real-time system monitoring with 5-minute granularity, tracking performance metrics and system health.
                         </p>
                     </div>
-                    
+
                     <!-- 2FA -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8">
                         <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
@@ -228,7 +240,7 @@
                             Available for all users with enhanced security options for administrative accounts.
                         </p>
                     </div>
-                    
+
                     <!-- Rate Limiting -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8">
                         <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
@@ -238,10 +250,10 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-4">Advanced Rate Limiting</h3>
                         <p class="text-gray-600">
-                            Dynamic rate limiting with user trust levels, protecting against DDoS and brute force attacks.
+                            Dynamic rate limiting with user trust levels and tier-aware throttling, protecting against DDoS and brute force attacks.
                         </p>
                     </div>
-                    
+
                     <!-- IP Blocking -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8">
                         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
@@ -254,7 +266,7 @@
                             Automatic IP blocking after 10 failed attempts, with temporary and permanent blacklist support.
                         </p>
                     </div>
-                    
+
                     <!-- Session Management -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8">
                         <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mb-6">
@@ -267,7 +279,7 @@
                             Maximum 5 concurrent sessions per user with automatic cleanup of old sessions.
                         </p>
                     </div>
-                    
+
                     <!-- Audit Logging -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8">
                         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6">
@@ -280,59 +292,87 @@
                             Comprehensive audit trails for all transactions and security-relevant events.
                         </p>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Roadmap Features -->
-            <div>
-                <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">
-                    <span class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full">
-                        🚧 On Our Roadmap
-                    </span>
-                </h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
                     <!-- Biometric Auth -->
-                    <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
-                        <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="security-feature bg-white rounded-xl shadow-lg p-8">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Biometric Authentication</h3>
-                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full mb-3">Planned</span>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-3">Implemented v2.2.0</span>
                         <p class="text-gray-600">
-                            Support for fingerprint and facial recognition authentication methods.
+                            Fingerprint and facial recognition authentication via BiometricAuthenticationService with JWT-based biometric tokens.
                         </p>
                     </div>
-                    
-                    <!-- Hardware Security -->
-                    <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
-                        <div class="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <!-- Hardware Security Keys -->
+                    <div class="security-feature bg-white rounded-xl shadow-lg p-8">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Hardware Security Keys</h3>
-                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full mb-3">Future</span>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-3">Implemented v2.1.0</span>
                         <p class="text-gray-600">
-                            Support for FIDO2/WebAuthn hardware security keys.
+                            FIDO2/WebAuthn hardware wallet support via HardwareWalletManager with Ledger and Trezor signing services.
                         </p>
                     </div>
-                    
-                    <!-- Zero Knowledge -->
-                    <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
-                        <div class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <!-- Zero-Knowledge Proofs -->
+                    <div class="security-feature bg-white rounded-xl shadow-lg p-8">
+                        <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Zero-Knowledge Proofs</h3>
-                        <span class="inline-block px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full mb-3">Research</span>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-3">Implemented v2.4.0</span>
                         <p class="text-gray-600">
-                            Privacy-preserving authentication and transaction verification.
+                            Privacy-preserving ZK-KYC verification, Proof of Innocence, Merkle tree commitments, and delegated proofs.
                         </p>
                     </div>
-                    
+
+                    <!-- Passkey Authentication -->
+                    <div class="security-feature bg-white rounded-xl shadow-lg p-8">
+                        <div class="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Passkey Authentication</h3>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-3">Implemented v2.7.0</span>
+                        <p class="text-gray-600">
+                            Passwordless authentication using FIDO2 passkeys via PasskeyAuthenticationService for seamless, phishing-resistant login.
+                        </p>
+                    </div>
+
+                    <!-- SOC 2 Type II -->
+                    <div class="security-feature bg-white rounded-xl shadow-lg p-8">
+                        <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">SOC 2 Type II Compliance</h3>
+                        <span class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full mb-3">Implemented v3.5.0</span>
+                        <p class="text-gray-600">
+                            SOC 2 Type II certification tooling with continuous control monitoring, evidence collection, and audit readiness.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roadmap Features -->
+            <div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">
+                    <span class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full">
+                        On Our Roadmap
+                    </span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- AI Fraud Detection -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
                         <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-6">
@@ -346,7 +386,7 @@
                             Machine learning models for real-time fraud detection and prevention.
                         </p>
                     </div>
-                    
+
                     <!-- 24/7 SOC -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
                         <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
@@ -360,7 +400,7 @@
                             Dedicated security operations center for incident response.
                         </p>
                     </div>
-                    
+
                     <!-- Real-time Monitoring Upgrade -->
                     <div class="security-feature bg-white rounded-xl shadow-lg p-8 opacity-75">
                         <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6">

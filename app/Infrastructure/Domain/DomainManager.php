@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// SPDX-License-Identifier: Apache-2.0
+// Copyright (c) 2024-2026 FinAegis Contributors
+
 namespace App\Infrastructure\Domain;
 
 use App\Infrastructure\Domain\DataObjects\DependencyNode;
@@ -36,6 +39,8 @@ class DomainManager
 
     private const INSTALLED_DOMAINS_KEY = 'domain_manager_installed';
 
+    private const DISABLED_DOMAINS_KEY = 'domain_manager_disabled';
+
     /**
      * @var array<string, ModuleManifest>|null
      */
@@ -61,9 +66,14 @@ class DomainManager
             $domainId = $manifest->getDomainId();
             $fullName = $manifest->name;
 
-            $status = in_array($fullName, $installed, true)
-                ? DomainStatus::INSTALLED
-                : DomainStatus::AVAILABLE;
+            // Check disabled status first
+            if ($this->isDisabled($fullName)) {
+                $status = DomainStatus::DISABLED;
+            } elseif (in_array($fullName, $installed, true)) {
+                $status = DomainStatus::INSTALLED;
+            } else {
+                $status = DomainStatus::AVAILABLE;
+            }
 
             // Check for missing dependencies
             if ($status === DomainStatus::AVAILABLE) {
@@ -437,7 +447,112 @@ class DomainManager
     {
         Cache::forget(self::CACHE_KEY);
         Cache::forget(self::INSTALLED_DOMAINS_KEY);
+        Cache::forget(self::DISABLED_DOMAINS_KEY);
         $this->manifestCache = null;
+    }
+
+    /**
+     * Enable a previously disabled domain.
+     */
+    public function enable(string $domain): InstallResult
+    {
+        $normalizedName = $this->normalizeDomainName($domain);
+        $manifests = $this->loadAllManifests();
+
+        if (! isset($manifests[$normalizedName])) {
+            return InstallResult::failure($domain, ["Domain not found: {$domain}"]);
+        }
+
+        if (! $this->isDisabled($normalizedName)) {
+            return InstallResult::success($domain, [], [], [], ['Domain is already enabled']);
+        }
+
+        // Remove from disabled list
+        $disabled = $this->getDisabledDomains();
+        $disabled = array_values(array_filter($disabled, fn ($d) => $d !== $normalizedName));
+        Cache::put(self::DISABLED_DOMAINS_KEY, $disabled, self::CACHE_TTL);
+
+        // Mark as installed
+        $installed = $this->getInstalledDomains();
+        if (! in_array($normalizedName, $installed, true)) {
+            $installed[] = $normalizedName;
+            Cache::put(self::INSTALLED_DOMAINS_KEY, array_unique($installed), self::CACHE_TTL);
+        }
+
+        Log::info('Domain enabled', ['domain' => $normalizedName]);
+
+        return InstallResult::success($domain, [], [], [], ['Domain enabled successfully']);
+    }
+
+    /**
+     * Disable a domain without reverting migrations.
+     */
+    public function disable(string $domain): RemoveResult
+    {
+        $normalizedName = $this->normalizeDomainName($domain);
+        $manifests = $this->loadAllManifests();
+
+        if (! isset($manifests[$normalizedName])) {
+            return RemoveResult::failure($domain, ["Domain not found: {$domain}"]);
+        }
+
+        $manifest = $manifests[$normalizedName];
+
+        // Cannot disable core domains
+        if ($manifest->type === DomainType::CORE) {
+            return RemoveResult::failure($domain, [
+                'Cannot disable core domain. Core domains are required for the system to function.',
+            ]);
+        }
+
+        if ($this->isDisabled($normalizedName)) {
+            return RemoveResult::success($domain, [], [], ['Domain is already disabled']);
+        }
+
+        // Add to disabled list
+        $disabled = $this->getDisabledDomains();
+        $disabled[] = $normalizedName;
+        Cache::put(self::DISABLED_DOMAINS_KEY, array_unique($disabled), self::CACHE_TTL);
+
+        // Remove from installed list
+        $installed = $this->getInstalledDomains();
+        $installed = array_values(array_filter($installed, fn ($d) => $d !== $normalizedName));
+        Cache::put(self::INSTALLED_DOMAINS_KEY, $installed, self::CACHE_TTL);
+
+        Log::info('Domain disabled', ['domain' => $normalizedName]);
+
+        return RemoveResult::success($domain, [], [], ['Domain disabled (migrations preserved)']);
+    }
+
+    /**
+     * Check if a domain is disabled.
+     */
+    public function isDisabled(string $domain): bool
+    {
+        $normalizedName = $this->normalizeDomainName($domain);
+        $disabled = $this->getDisabledDomains();
+
+        return in_array($normalizedName, $disabled, true);
+    }
+
+    /**
+     * Get list of disabled domains.
+     *
+     * @return array<string>
+     */
+    public function getDisabledDomains(): array
+    {
+        /** @var array<string> $cached */
+        $cached = Cache::get(self::DISABLED_DOMAINS_KEY, []);
+        if (! empty($cached)) {
+            return $cached;
+        }
+
+        // Fall back to config
+        /** @var array<string> $configDisabled */
+        $configDisabled = config('modules.disabled', []);
+
+        return array_filter($configDisabled);
     }
 
     /**

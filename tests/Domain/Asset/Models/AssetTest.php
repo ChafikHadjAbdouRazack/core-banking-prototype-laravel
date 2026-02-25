@@ -66,26 +66,26 @@ describe('Asset Model', function () {
 
     it('has account balances relationship defined', function () {
         $asset = new Asset();
-        expect(method_exists($asset, 'accountBalances'))->toBeTrue();
+        expect((new ReflectionClass($asset))->hasMethod('accountBalances'))->toBeTrue();
     });
 
     it('has exchange rates from relationship defined', function () {
         $asset = new Asset();
-        expect(method_exists($asset, 'exchangeRatesFrom'))->toBeTrue();
+        expect((new ReflectionClass($asset))->hasMethod('exchangeRatesFrom'))->toBeTrue();
     });
 
     it('has exchange rates to relationship defined', function () {
         $asset = new Asset();
-        expect(method_exists($asset, 'exchangeRatesTo'))->toBeTrue();
+        expect((new ReflectionClass($asset))->hasMethod('exchangeRatesTo'))->toBeTrue();
     });
 
     it('has active scope', function () {
         $asset = new Asset();
-        expect(method_exists($asset, 'scopeActive'))->toBeTrue();
+        expect((new ReflectionClass($asset))->hasMethod('scopeActive'))->toBeTrue();
     });
 
     it('has of type scope', function () {
         $asset = new Asset();
-        expect(method_exists($asset, 'scopeOfType'))->toBeTrue();
+        expect((new ReflectionClass($asset))->hasMethod('scopeOfType'))->toBeTrue();
     });
 });

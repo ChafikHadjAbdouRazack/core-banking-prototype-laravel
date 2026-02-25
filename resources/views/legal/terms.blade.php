@@ -13,10 +13,10 @@
             <div class="prose prose-lg max-w-none">
                 
                 <h2>1. Acceptance of Terms</h2>
-                <p>By accessing and using the FinAegis platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
+                <p>By accessing and using the {{ config('brand.name') }} platform ("Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
 
                 <h2>2. Description of Service</h2>
-                <p>FinAegis provides a multi-asset banking platform that enables users to:</p>
+                <p>{{ config('brand.name') }} provides a multi-asset banking platform that enables users to:</p>
                 <ul>
                     <li>Hold and manage multiple currencies and digital assets</li>
                     <li>Transfer funds between accounts and to external recipients</li>
@@ -37,7 +37,7 @@
 
                 <h2>4. Financial Services</h2>
                 <h3>4.1 Deposits and Withdrawals</h3>
-                <p>FinAegis partners with licensed financial institutions to hold your funds. Your deposits are distributed across multiple banks to maximize deposit insurance coverage and reduce risk.</p>
+                <p>{{ config('brand.name') }} partners with licensed financial institutions to hold your funds. Your deposits are distributed across multiple banks to maximize deposit insurance coverage and reduce risk.</p>
 
                 <h3>4.2 Transaction Fees</h3>
                 <p>Current fees are displayed on our pricing page and may be updated from time to time. You will be notified of any fee changes in advance.</p>
@@ -72,26 +72,26 @@
                 <p>We are committed to protecting your personal data in accordance with applicable privacy laws. Please review our Privacy Policy for detailed information about how we collect, use, and protect your data.</p>
 
                 <h2>8. Intellectual Property</h2>
-                <p>The Service and its original content, features, and functionality are and will remain the exclusive property of FinAegis and its licensors. The Service is protected by copyright, trademark, and other laws.</p>
+                <p>The Service and its original content, features, and functionality are and will remain the exclusive property of {{ config('brand.legal_entity') }} and its licensors. The Service is protected by copyright, trademark, and other laws.</p>
 
                 <h2>9. Limitation of Liability</h2>
-                <p>To the maximum extent permitted by law, FinAegis shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+                <p>To the maximum extent permitted by law, {{ config('brand.legal_entity') }} shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
 
                 <h2>10. Indemnification</h2>
-                <p>You agree to defend, indemnify, and hold harmless FinAegis and its affiliates from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees arising out of or relating to your violation of these Terms or your use of the Service.</p>
+                <p>You agree to defend, indemnify, and hold harmless {{ config('brand.legal_entity') }} and its affiliates from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees arising out of or relating to your violation of these Terms or your use of the Service.</p>
 
                 <h2>11. Termination</h2>
                 <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, you may withdraw your funds in accordance with our procedures.</p>
 
                 <h2>12. Governing Law</h2>
-                <p>These Terms shall be interpreted and governed by the laws of Lithuania, without regard to its conflict of law provisions. Any legal action or proceeding arising under these Terms will be brought exclusively in the courts of Lithuania.</p>
+                <p>These Terms shall be interpreted and governed by the laws of the jurisdiction in which {{ config('brand.legal_entity') }} is incorporated. Any legal action or proceeding arising under these Terms will be brought exclusively in the courts of that jurisdiction.</p>
 
                 <h2>13. Changes to Terms</h2>
                 <p>We reserve the right to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days notice prior to any new terms taking effect.</p>
 
                 <h2>14. Dispute Resolution</h2>
                 <h3>14.1 Binding Arbitration</h3>
-                <p>Any dispute, claim, or controversy arising out of or relating to these Terms shall be settled by binding arbitration in accordance with the rules of the Lithuanian Court of Commercial Arbitration.</p>
+                <p>Any dispute, claim, or controversy arising out of or relating to these Terms shall be settled by binding arbitration in accordance with the applicable arbitration rules of the jurisdiction in which {{ config('brand.legal_entity') }} is incorporated.</p>
 
                 <h3>14.2 Class Action Waiver</h3>
                 <p>You agree that any dispute resolution proceedings will be conducted only on an individual basis and not in a class, consolidated, or representative action.</p>
@@ -102,9 +102,9 @@
                 <h2>16. Contact Information</h2>
                 <p>If you have any questions about these Terms, please contact us at:</p>
                 <div class="bg-gray-50 p-6 rounded-lg mt-6">
-                    <p><strong>FinAegis Legal Department</strong><br>
-                    Email: legal@finaegis.org<br>
-                    Address: Vilnius, Lithuania</p>
+                    <p><strong>{{ config('brand.legal_entity') }} Legal Department</strong><br>
+                    Email: {{ config('brand.legal_email') }}<br>
+                    Address: {{ config('brand.legal_jurisdiction') }}</p>
                 </div>
 
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">

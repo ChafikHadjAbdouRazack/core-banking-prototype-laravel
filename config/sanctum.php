@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
+    'stateful' => explode(',', (string) env('SANCTUM_STATEFUL_DOMAINS', sprintf(
         '%s%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort()
@@ -47,6 +47,19 @@ return [
     */
 
     'expiration' => env('SANCTUM_TOKEN_EXPIRATION', 1440), // 24 hours (1440 minutes) by default
+
+    /*
+    |--------------------------------------------------------------------------
+    | Refresh Token Expiration Minutes
+    |--------------------------------------------------------------------------
+    |
+    | This value controls the number of minutes until a refresh token will be
+    | considered expired. Refresh tokens are long-lived tokens used to obtain
+    | new access tokens after they expire.
+    |
+    */
+
+    'refresh_token_expiration' => env('SANCTUM_REFRESH_TOKEN_EXPIRATION', 43200), // 30 days
 
     /*
     |--------------------------------------------------------------------------

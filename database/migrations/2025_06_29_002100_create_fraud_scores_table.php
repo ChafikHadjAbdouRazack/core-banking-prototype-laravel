@@ -34,14 +34,14 @@ return new class () extends Migration {
             // Decision
             $table->string('decision'); // allow, block, challenge, review
             $table->json('decision_factors'); // What influenced the decision
-            $table->timestamp('decision_at');
+            $table->dateTime('decision_at');
             $table->boolean('is_override')->default(false); // Manual override
             $table->foreignId('override_by')->nullable()->constrained('users');
             $table->text('override_reason')->nullable();
 
             // Feedback Loop
             $table->string('outcome')->nullable(); // fraud, legitimate, unknown
-            $table->timestamp('outcome_confirmed_at')->nullable();
+            $table->dateTime('outcome_confirmed_at')->nullable();
             $table->foreignId('confirmed_by')->nullable()->constrained('users');
             $table->text('outcome_notes')->nullable();
 

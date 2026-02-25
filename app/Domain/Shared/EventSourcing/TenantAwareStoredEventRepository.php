@@ -13,6 +13,8 @@ use Spatie\EventSourcing\StoredEvents\Repositories\EloquentStoredEventRepository
  *
  * This repository ensures events are stored in the tenant database
  * using the TenantAwareStoredEvent model or its subclasses.
+ * When domain partitioning is active, the EventRouter determines
+ * which table to use based on the event's domain namespace.
  *
  * Usage:
  * ```php
@@ -38,5 +40,24 @@ class TenantAwareStoredEventRepository extends EloquentStoredEventRepository
                 "The class {$this->storedEventModel} must extend EloquentStoredEvent"
             );
         }
+    }
+
+    /**
+     * Resolve the event table using the EventRouter when domain partitioning is active.
+     */
+    public function resolveEventTable(string $eventClass): ?string
+    {
+        if (config('event-store.partitioning.strategy') !== 'domain') {
+            return null;
+        }
+
+        /** @var EventRouterInterface|null $router */
+        $router = app(EventRouterInterface::class);
+
+        if (! $router) {
+            return null;
+        }
+
+        return $router->resolveTableForEvent($eventClass);
     }
 }

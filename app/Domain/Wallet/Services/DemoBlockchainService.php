@@ -322,6 +322,14 @@ class DemoBlockchainService implements BlockchainConnector
                 || preg_match('/^bc1[a-z0-9]{39,59}$/', $address) === 1;
         }
 
+        if ($this->chain === 'solana') {
+            return preg_match('/^[1-9A-HJ-NP-Za-km-z]{32,44}$/', $address) === 1;
+        }
+
+        if ($this->chain === 'tron') {
+            return preg_match('/^T[1-9A-HJ-NP-Za-km-z]{33}$/', $address) === 1;
+        }
+
         return false;
     }
 
@@ -351,6 +359,22 @@ class DemoBlockchainService implements BlockchainConnector
             return '1' . substr(strtoupper($hash), 0, 33);
         }
 
+        if ($this->chain === 'solana') {
+            // Generate a base58-like Solana address (32-44 chars)
+            $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+            $result = '';
+            for ($i = 0; $i < 44 && $i < strlen($hash); $i++) {
+                $result .= $alphabet[ord($hash[$i]) % strlen($alphabet)];
+            }
+
+            return $result;
+        }
+
+        if ($this->chain === 'tron') {
+            // Tron addresses start with T, 34 chars total
+            return 'T' . substr(strtoupper($hash), 0, 33);
+        }
+
         return substr($hash, 0, 42);
     }
 
@@ -360,6 +384,8 @@ class DemoBlockchainService implements BlockchainConnector
             'ethereum' => 'ETH',
             'polygon'  => 'MATIC',
             'bitcoin'  => 'BTC',
+            'solana'   => 'SOL',
+            'tron'     => 'TRX',
             default    => 'DEMO',
         };
     }
@@ -369,6 +395,8 @@ class DemoBlockchainService implements BlockchainConnector
         return match ($this->chain) {
             'ethereum', 'polygon' => 18,
             'bitcoin' => 8,
+            'solana'  => 9,
+            'tron'    => 6,
             default   => 18,
         };
     }
@@ -378,6 +406,8 @@ class DemoBlockchainService implements BlockchainConnector
         return match ($this->chain) {
             'ethereum', 'polygon' => '100000000000000000', // 0.1 ETH/MATIC
             'bitcoin' => '10000000', // 0.1 BTC
+            'solana'  => '1000000000', // 1 SOL
+            'tron'    => '100000000', // 100 TRX
             default   => '1000000',
         };
     }

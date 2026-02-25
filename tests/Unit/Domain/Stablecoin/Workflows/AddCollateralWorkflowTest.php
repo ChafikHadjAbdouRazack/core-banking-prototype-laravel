@@ -12,7 +12,7 @@ class AddCollateralWorkflowTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(AddCollateralWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(AddCollateralWorkflow::class))->getName());
     }
 
     #[Test]
@@ -25,7 +25,7 @@ class AddCollateralWorkflowTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(AddCollateralWorkflow::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(AddCollateralWorkflow::class))->hasMethod('execute'));
     }
 
     #[Test]
@@ -66,8 +66,8 @@ class AddCollateralWorkflowTest extends DomainTestCase
         $reflection = new ReflectionClass(AddCollateralWorkflow::class);
 
         // Check if the workflow has compensation methods
-        $this->assertTrue(method_exists(AddCollateralWorkflow::class, 'addCompensation'));
-        $this->assertTrue(method_exists(AddCollateralWorkflow::class, 'compensate'));
+        $this->assertTrue((new ReflectionClass(AddCollateralWorkflow::class))->hasMethod('addCompensation'));
+        $this->assertTrue((new ReflectionClass(AddCollateralWorkflow::class))->hasMethod('compensate'));
     }
 
     #[Test]

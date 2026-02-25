@@ -9,8 +9,26 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * @OA\Tag(
+ *     name="System Status",
+ *     description="System status and health monitoring"
+ * )
+ */
 class StatusController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/status",
+     *     operationId="systemStatusIndex",
+     *     tags={"System Status"},
+     *     summary="System status page",
+     *     description="Returns the system status page",
+     *
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function index()
     {
         $status = $this->checkSystemStatus();
@@ -21,6 +39,18 @@ class StatusController extends Controller
         return view('status', compact('status', 'services', 'incidents', 'uptime'));
     }
 
+    /**
+     * @OA\Get(
+     *     path="/status/api",
+     *     operationId="systemStatusApi",
+     *     tags={"System Status"},
+     *     summary="API status endpoint",
+     *     description="Returns the API health status as JSON",
+     *
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
+     */
     public function api()
     {
         $status = $this->checkSystemStatus();
@@ -200,26 +230,57 @@ class StatusController extends Controller
             'web' => [
                 'name'        => 'Web Application',
                 'description' => 'Main platform interface',
+                'category'    => 'Core Platform',
+            ],
+            'auth' => [
+                'name'        => 'Authentication',
+                'description' => 'Login, registration, and session management',
+                'category'    => 'Core Platform',
             ],
             'api' => [
-                'name'        => 'API Services',
+                'name'        => 'REST API',
                 'description' => 'REST API endpoints and webhooks',
+                'category'    => 'API Services',
+            ],
+            'graphql' => [
+                'name'        => 'GraphQL API',
+                'description' => 'Schema-first API with 34 domain schemas',
+                'category'    => 'API Services',
+            ],
+            'x402' => [
+                'name'        => 'x402 Payment Gate',
+                'description' => 'HTTP-native micropayment protocol',
+                'category'    => 'API Services',
             ],
             'database' => [
-                'name'        => 'Database Cluster',
+                'name'        => 'Database',
                 'description' => 'Primary and replica databases',
-            ],
-            'queue' => [
-                'name'        => 'Queue Workers',
-                'description' => 'Background job processing',
+                'category'    => 'Infrastructure',
             ],
             'cache' => [
-                'name'        => 'CDN & Cache',
-                'description' => 'Content delivery and caching',
+                'name'        => 'Cache',
+                'description' => 'Redis cache layer',
+                'category'    => 'Infrastructure',
+            ],
+            'queue' => [
+                'name'        => 'Queue',
+                'description' => 'Background job processing',
+                'category'    => 'Infrastructure',
+            ],
+            'storage' => [
+                'name'        => 'Storage',
+                'description' => 'File and object storage',
+                'category'    => 'Infrastructure',
             ],
             'email' => [
-                'name'        => 'Email Service',
+                'name'        => 'Email',
                 'description' => 'Transactional email delivery',
+                'category'    => 'Integrations',
+            ],
+            'blockchain' => [
+                'name'        => 'Blockchain (Demo)',
+                'description' => 'On-chain settlement and smart accounts',
+                'category'    => 'Integrations',
             ],
         ];
 
@@ -236,6 +297,7 @@ class StatusController extends Controller
             $result[] = [
                 'name'        => $serviceInfo['name'],
                 'description' => $serviceInfo['description'],
+                'category'    => $serviceInfo['category'],
                 'status'      => $status,
                 'uptime'      => $uptime . '%',
             ];
@@ -282,7 +344,7 @@ class StatusController extends Controller
     private function calculateUptime()
     {
         // Calculate overall platform uptime based on all services
-        $services = ['web', 'api', 'database', 'queue', 'cache', 'email'];
+        $services = ['web', 'auth', 'api', 'graphql', 'x402', 'database', 'cache', 'queue', 'storage', 'email', 'blockchain'];
         $totalUptime = 0;
         $serviceCount = 0;
 

@@ -28,13 +28,13 @@ return new class () extends Migration {
                 $table->string('external_reference')->nullable()->after('reference');
             }
             if (! Schema::hasColumn('transaction_projections', 'cancelled_at')) {
-                $table->timestamp('cancelled_at')->nullable();
+                $table->dateTime('cancelled_at')->nullable();
             }
             if (! Schema::hasColumn('transaction_projections', 'cancelled_by')) {
                 $table->uuid('cancelled_by')->nullable();
             }
             if (! Schema::hasColumn('transaction_projections', 'retried_at')) {
-                $table->timestamp('retried_at')->nullable();
+                $table->dateTime('retried_at')->nullable();
             }
             if (! Schema::hasColumn('transaction_projections', 'retry_transaction_id')) {
                 $table->uuid('retry_transaction_id')->nullable();

@@ -134,7 +134,64 @@
                             {{ __('Lending') }}
                         </div>
                     </x-nav-link>
-                    
+
+                    <!-- Web3 Dropdown -->
+                    <div class="hidden sm:flex sm:items-center">
+                        <x-dropdown align="left" width="48">
+                            <x-slot name="trigger">
+                                <button class="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition duration-150 ease-in-out">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                                        </svg>
+                                        {{ __('Web3') }}
+                                    </div>
+                                    <div class="ms-1">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link href="{{ route('crosschain.index') }}">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                                        </svg>
+                                        {{ __('Cross-Chain') }}
+                                    </div>
+                                </x-dropdown-link>
+                                <x-dropdown-link href="{{ route('defi.index') }}">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        {{ __('DeFi') }}
+                                    </div>
+                                </x-dropdown-link>
+                                <div class="border-t border-gray-200 dark:border-gray-600"></div>
+                                <x-dropdown-link href="{{ route('privacy.index') }}">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path>
+                                        </svg>
+                                        {{ __('Privacy') }}
+                                    </div>
+                                </x-dropdown-link>
+                                <x-dropdown-link href="{{ route('trustcert.index') }}">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                        {{ __('Certificates') }}
+                                    </div>
+                                </x-dropdown-link>
+                            </x-slot>
+                        </x-dropdown>
+                    </div>
+
                     @if(auth()->user()->hasRole(['customer_business', 'developer', 'super_admin', 'bank_admin']))
                         <x-nav-link href="{{ route('api-keys.index') }}" :active="request()->routeIs('api-keys.*')">
                             <div class="flex items-center">
@@ -399,6 +456,22 @@
             <div class="border-t border-gray-200 dark:border-gray-600"></div>
             <x-responsive-nav-link href="{{ route('wallet.voting') }}" :active="request()->routeIs('wallet.voting')">
                 {{ __('Governance') }}
+            </x-responsive-nav-link>
+
+            <!-- Web3 Section -->
+            <div class="border-t border-gray-200 dark:border-gray-600"></div>
+            <div class="block px-4 py-2 text-xs text-gray-400">{{ __('Web3') }}</div>
+            <x-responsive-nav-link href="{{ route('crosschain.index') }}" :active="request()->routeIs('crosschain.*')">
+                {{ __('Cross-Chain') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('defi.index') }}" :active="request()->routeIs('defi.*')">
+                {{ __('DeFi') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('privacy.index') }}" :active="request()->routeIs('privacy.*')">
+                {{ __('Privacy') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="{{ route('trustcert.index') }}" :active="request()->routeIs('trustcert.*')">
+                {{ __('Certificates') }}
             </x-responsive-nav-link>
         </div>
 

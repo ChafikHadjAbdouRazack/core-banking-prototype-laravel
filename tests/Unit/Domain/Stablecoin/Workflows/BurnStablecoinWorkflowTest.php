@@ -12,7 +12,7 @@ class BurnStablecoinWorkflowTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(BurnStablecoinWorkflow::class));
+        $this->assertNotEmpty((new ReflectionClass(BurnStablecoinWorkflow::class))->getName());
     }
 
     #[Test]
@@ -25,7 +25,7 @@ class BurnStablecoinWorkflowTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(BurnStablecoinWorkflow::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(BurnStablecoinWorkflow::class))->hasMethod('execute'));
     }
 
     #[Test]
@@ -74,8 +74,8 @@ class BurnStablecoinWorkflowTest extends DomainTestCase
         $reflection = new ReflectionClass(BurnStablecoinWorkflow::class);
 
         // Check if the workflow has compensation methods
-        $this->assertTrue(method_exists(BurnStablecoinWorkflow::class, 'addCompensation'));
-        $this->assertTrue(method_exists(BurnStablecoinWorkflow::class, 'compensate'));
+        $this->assertTrue((new ReflectionClass(BurnStablecoinWorkflow::class))->hasMethod('addCompensation'));
+        $this->assertTrue((new ReflectionClass(BurnStablecoinWorkflow::class))->hasMethod('compensate'));
     }
 
     #[Test]

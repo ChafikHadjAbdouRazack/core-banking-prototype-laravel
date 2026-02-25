@@ -26,8 +26,8 @@ return new class () extends Migration {
             $table->json('related_accounts')->nullable(); // Array of account UUIDs
             $table->text('description')->nullable();
             $table->json('evidence')->nullable(); // Supporting evidence/data
-            $table->timestamp('detected_at');
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('detected_at');
+            $table->dateTime('resolved_at')->nullable();
             $table->uuid('assigned_to')->nullable(); // Analyst assigned
             $table->json('actions_taken')->nullable(); // Log of actions
             $table->text('resolution_notes')->nullable();

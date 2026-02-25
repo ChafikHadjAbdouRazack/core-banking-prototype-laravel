@@ -110,7 +110,7 @@ return [
 
     'banks' => [
         'paysera' => [
-            'enabled'       => env('BANK_PAYSERA_ENABLED', true),
+            'enabled'       => env('BANK_PAYSERA_ENABLED', false),
             'client_id'     => env('BANK_PAYSERA_CLIENT_ID'),
             'client_secret' => env('BANK_PAYSERA_CLIENT_SECRET'),
             'base_url'      => env('BANK_PAYSERA_BASE_URL', 'https://bank.paysera.com/rest/v1'),
@@ -118,14 +118,14 @@ return [
         ],
 
         'deutsche' => [
-            'enabled'       => env('BANK_DEUTSCHE_ENABLED', true),
+            'enabled'       => env('BANK_DEUTSCHE_ENABLED', false),
             'client_id'     => env('BANK_DEUTSCHE_CLIENT_ID'),
             'client_secret' => env('BANK_DEUTSCHE_CLIENT_SECRET'),
             'base_url'      => env('BANK_DEUTSCHE_BASE_URL', 'https://api.db.com/v2'),
         ],
 
         'santander' => [
-            'enabled'       => env('BANK_SANTANDER_ENABLED', true),
+            'enabled'       => env('BANK_SANTANDER_ENABLED', false),
             'client_id'     => env('BANK_SANTANDER_CLIENT_ID'),
             'client_secret' => env('BANK_SANTANDER_CLIENT_SECRET'),
             'base_url'      => env('BANK_SANTANDER_BASE_URL', 'https://api.santander.com/v2'),
@@ -142,6 +142,15 @@ return [
             'enabled'  => env('BANK_WISE_ENABLED', false),
             'api_key'  => env('BANK_WISE_API_KEY'),
             'base_url' => env('BANK_WISE_BASE_URL', 'https://api.wise.com/v2'),
+        ],
+
+        'flutterwave' => [
+            'enabled'        => env('FLUTTERWAVE_ENABLED', false),
+            'secret_key'     => env('FLUTTERWAVE_SECRET_KEY'),
+            'public_key'     => env('FLUTTERWAVE_PUBLIC_KEY'),
+            'encryption_key' => env('FLUTTERWAVE_ENCRYPTION_KEY'),
+            'environment'    => env('FLUTTERWAVE_ENVIRONMENT', 'sandbox'),
+            'webhook_secret' => env('FLUTTERWAVE_WEBHOOK_SECRET'),
         ],
     ],
 
@@ -174,10 +183,36 @@ return [
     |
     */
 
+    'smileid' => [
+        'partner_id'    => env('SMILEID_PARTNER_ID'),
+        'api_key'       => env('SMILEID_API_KEY'),
+        'signature_key' => env('SMILEID_SIGNATURE_KEY'),
+        'environment'   => env('SMILEID_ENVIRONMENT', 'sandbox'),
+        'callback_url'  => env('SMILEID_CALLBACK_URL'),
+    ],
+
     'firebase' => [
-        'server_key'  => env('FIREBASE_SERVER_KEY'),
         'project_id'  => env('FIREBASE_PROJECT_ID'),
         'credentials' => env('FIREBASE_CREDENTIALS', storage_path('firebase-credentials.json')),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chainalysis Sanctions Screening Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Chainalysis provides blockchain analytics and sanctions screening.
+    | When enabled, it replaces the internal simulated sanctions screening
+    | with real-time API checks against Chainalysis sanctions lists.
+    |
+    */
+
+    'chainalysis' => [
+        'api_key'        => env('CHAINALYSIS_API_KEY'),
+        'base_url'       => env('CHAINALYSIS_BASE_URL', 'https://api.chainalysis.com/api/sanctions/v2'),
+        'enabled'        => env('CHAINALYSIS_ENABLED', false),
+        'timeout'        => env('CHAINALYSIS_TIMEOUT', 30),
+        'retry_attempts' => env('CHAINALYSIS_RETRY_ATTEMPTS', 3),
     ],
 
 ];

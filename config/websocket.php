@@ -158,6 +158,16 @@ return [
                 'merkle.updated',
             ],
         ],
+
+        // Monitoring & observability (v3.3.0)
+        'monitoring' => [
+            'suffix' => 'monitoring',
+            'events' => [
+                'metrics.updated',
+                'health.changed',
+                'alert.triggered',
+            ],
+        ],
     ],
 
     /*

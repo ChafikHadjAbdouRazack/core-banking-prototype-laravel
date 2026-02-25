@@ -135,8 +135,8 @@ describe('metrics endpoint', function () {
                 'timestamp',
                 'count',
             ])
-            ->assertJsonPath('metrics.http_requests_total', '100')
-            ->assertJsonPath('metrics.cache_hits', '50');
+            ->assertJsonPath('metrics.http_requests_total', fn ($v) => (int) $v === 100)
+            ->assertJsonPath('metrics.cache_hits', fn ($v) => (int) $v === 50);
     });
 });
 

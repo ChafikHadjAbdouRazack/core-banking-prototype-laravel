@@ -19,8 +19,8 @@ return new class () extends Migration {
             $table->json('tags')->nullable(); // for segmentation
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
-            $table->timestamp('confirmed_at')->nullable();
-            $table->timestamp('unsubscribed_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
+            $table->dateTime('unsubscribed_at')->nullable();
             $table->string('unsubscribe_reason')->nullable();
             $table->timestamps();
 

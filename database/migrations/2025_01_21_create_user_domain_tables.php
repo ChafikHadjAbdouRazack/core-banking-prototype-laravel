@@ -28,9 +28,9 @@ return new class () extends Migration {
             $table->json('preferences')->nullable();
             $table->json('notification_preferences')->nullable();
             $table->json('privacy_settings')->nullable();
-            $table->timestamp('suspended_at')->nullable();
+            $table->dateTime('suspended_at')->nullable();
             $table->text('suspension_reason')->nullable();
-            $table->timestamp('last_activity_at')->nullable();
+            $table->dateTime('last_activity_at')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
 
@@ -46,7 +46,7 @@ return new class () extends Migration {
             $table->string('user_id');
             $table->string('activity');
             $table->json('context')->nullable();
-            $table->timestamp('tracked_at');
+            $table->dateTime('tracked_at');
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->string('session_id')->nullable();
@@ -67,7 +67,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->unique(['aggregate_uuid', 'aggregate_version']);
             $table->index('aggregate_uuid');

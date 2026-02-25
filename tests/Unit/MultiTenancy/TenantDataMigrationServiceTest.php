@@ -21,7 +21,7 @@ class TenantDataMigrationServiceTest extends TestCase
     #[Test]
     public function service_class_exists(): void
     {
-        $this->assertTrue(class_exists(TenantDataMigrationService::class));
+        $this->assertNotEmpty((new ReflectionClass(TenantDataMigrationService::class))->getName());
     }
 
     #[Test]

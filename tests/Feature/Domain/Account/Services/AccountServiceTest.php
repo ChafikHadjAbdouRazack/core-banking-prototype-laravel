@@ -9,6 +9,7 @@ use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Services\AccountService;
 use App\Models\User;
 use PHPUnit\Framework\Attributes\Test;
+use ReflectionClass;
 use ReflectionMethod;
 use Tests\ServiceTestCase;
 
@@ -47,10 +48,10 @@ class AccountServiceTest extends ServiceTestCase
     #[Test]
     public function test_account_service_has_required_methods()
     {
-        $this->assertTrue(method_exists($this->accountService, 'create'));
-        $this->assertTrue(method_exists($this->accountService, 'destroy'));
-        $this->assertTrue(method_exists($this->accountService, 'deposit'));
-        $this->assertTrue(method_exists($this->accountService, 'withdraw'));
+        $this->assertTrue((new ReflectionClass($this->accountService))->hasMethod('create'));
+        $this->assertTrue((new ReflectionClass($this->accountService))->hasMethod('destroy'));
+        $this->assertTrue((new ReflectionClass($this->accountService))->hasMethod('deposit'));
+        $this->assertTrue((new ReflectionClass($this->accountService))->hasMethod('withdraw'));
     }
 
     #[Test]
@@ -58,23 +59,12 @@ class AccountServiceTest extends ServiceTestCase
     {
         $user = User::factory()->create();
 
-        // Test creating AccountDataObject if it exists
-        if (class_exists(AccountDataObject::class)) {
-            $accountData = new AccountDataObject(
-                name: 'Test Account',
-                userUuid: $user->uuid
-            );
+        $accountData = new AccountDataObject(
+            name: 'Test Account',
+            userUuid: $user->uuid
+        );
 
-            $this->assertInstanceOf(AccountDataObject::class, $accountData);
-        } else {
-            // If DataObject doesn't exist, just use array
-            $accountData = [
-                'name'      => 'Test Account',
-                'user_uuid' => $user->uuid,
-            ];
-
-            $this->assertIsArray($accountData);
-        }
+        $this->assertInstanceOf(AccountDataObject::class, $accountData);
     }
 
     #[Test]

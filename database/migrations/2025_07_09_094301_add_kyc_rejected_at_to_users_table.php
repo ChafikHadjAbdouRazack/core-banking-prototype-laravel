@@ -11,7 +11,7 @@ return new class () extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->timestamp('kyc_rejected_at')->nullable()->after('kyc_approved_at');
+            $table->dateTime('kyc_rejected_at')->nullable()->after('kyc_approved_at');
         });
     }
 

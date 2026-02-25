@@ -19,22 +19,18 @@ return [
 
     'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 
-    'allowed_origins' => [
-        env('FRONTEND_URL', 'http://localhost:3000'),
-        'http://localhost:3000',
-        'http://localhost:8080',
-        'http://localhost:5173',
-        // Production origins
-        'https://finaegis.org',
-        'https://www.finaegis.org',
-        'https://api.finaegis.org',
-        'https://app.finaegis.org',
-        'https://dashboard.finaegis.org',
-    ],
+    'allowed_origins' => array_filter(array_merge(
+        // Production origins (env-driven for multi-domain deployment)
+        array_filter(explode(',', env('CORS_PRODUCTION_ORIGINS', 'https://finaegis.org,https://www.finaegis.org,https://api.finaegis.org,https://app.finaegis.org,https://dashboard.finaegis.org'))),
+        // Frontend URL (configurable per environment)
+        array_filter([env('FRONTEND_URL')]),
+        // Local development origins (set to empty string in production to disable)
+        explode(',', env('CORS_LOCAL_ORIGINS', 'http://localhost:3000,http://localhost:8080,http://localhost:5173,http://localhost:8081'))
+    )),
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-TOKEN', 'Accept', 'Origin'],
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-TOKEN', 'Accept', 'Origin', 'X-Client-Platform', 'X-Client-Version'],
 
     'exposed_headers' => [],
 

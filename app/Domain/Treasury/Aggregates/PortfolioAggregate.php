@@ -91,21 +91,23 @@ class PortfolioAggregate extends AggregateRoot
             throw new InvalidArgumentException('Asset allocations must sum to 100%');
         }
 
-        // Convert allocation data to AssetAllocation value objects
-        $assetAllocations = [];
+        // Convert allocation data to AssetAllocation value objects for validation,
+        // but store as arrays in the event to ensure proper JSON serialization
+        $assetAllocationArrays = [];
         foreach ($allocations as $allocation) {
-            $assetAllocations[] = new AssetAllocation(
+            $vo = new AssetAllocation(
                 $allocation['assetClass'],
                 $allocation['targetWeight'],
                 $allocation['currentWeight'] ?? 0.0,
                 $allocation['drift'] ?? 0.0
             );
+            $assetAllocationArrays[] = $vo->toArray();
         }
 
         $this->recordThat(new AssetsAllocated(
             $this->portfolioId,
             $allocationId,
-            $assetAllocations,
+            $assetAllocationArrays,
             $totalAmount,
             $allocatedBy
         ));
@@ -233,7 +235,23 @@ class PortfolioAggregate extends AggregateRoot
 
     protected function applyAssetsAllocated(AssetsAllocated $event): void
     {
-        $this->assetAllocations = $event->allocations;
+        // Convert to AssetAllocation value objects for internal use
+        // Allocations may be arrays (from DB deserialization) or already VOs (in-memory)
+        $this->assetAllocations = array_map(
+            function ($alloc) {
+                if ($alloc instanceof AssetAllocation) {
+                    return $alloc;
+                }
+
+                return new AssetAllocation(
+                    $alloc['assetClass'],
+                    $alloc['targetWeight'],
+                    $alloc['currentWeight'] ?? 0.0,
+                    $alloc['drift'] ?? 0.0
+                );
+            },
+            $event->allocations
+        );
         $this->totalValue = $event->totalAmount;
         $this->isRebalancing = false;
     }

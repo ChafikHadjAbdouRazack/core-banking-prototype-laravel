@@ -21,7 +21,7 @@ return new class () extends Migration {
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->enum('status', ['pending', 'responded', 'closed'])->default('pending');
-            $table->timestamp('responded_at')->nullable();
+            $table->dateTime('responded_at')->nullable();
             $table->text('response_notes')->nullable();
             $table->timestamps();
 

@@ -2,10 +2,10 @@
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Payment\Services\TransferService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Workflow\WorkflowStub;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 beforeEach(function () {
     WorkflowStub::fake();
@@ -13,7 +13,7 @@ beforeEach(function () {
 });
 
 it('has transfer method', function () {
-    expect(method_exists($this->transferService, 'transfer'))->toBeTrue();
+    expect((new ReflectionClass($this->transferService))->hasMethod('transfer'))->toBeTrue();
 });
 
 it('can be instantiated from container', function () {

@@ -8,7 +8,7 @@ it('implements ResetsUserPasswords contract', function () {
 });
 
 it('has reset method', function () {
-    expect(method_exists(ResetUserPassword::class, 'reset'))->toBeTrue();
+    expect((new ReflectionClass(ResetUserPassword::class))->hasMethod('reset'))->toBeTrue();
 });
 
 it('can be instantiated', function () {

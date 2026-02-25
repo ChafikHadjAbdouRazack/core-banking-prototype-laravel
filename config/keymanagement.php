@@ -30,16 +30,27 @@ return [
         'provider' => env('HSM_PROVIDER', 'demo'),
         'key_id'   => env('HSM_KEY_ID', 'default'),
 
+        // Signing key ID for ECDSA operations
+        'signing_key_id' => env('HSM_SIGNING_KEY_ID', 'signing-default'),
+
         // AWS KMS settings
         'aws' => [
-            'region'  => env('AWS_KMS_REGION', 'us-east-1'),
-            'key_arn' => env('AWS_KMS_KEY_ARN'),
+            'region'          => env('AWS_KMS_REGION', 'us-east-1'),
+            'key_arn'         => env('AWS_KMS_KEY_ARN'),
+            'signing_key_arn' => env('AWS_KMS_SIGNING_KEY_ARN'),
+            'access_key'      => env('AWS_KMS_ACCESS_KEY'),
+            'secret_key'      => env('AWS_KMS_SECRET_KEY'),
+            'endpoint'        => env('AWS_KMS_ENDPOINT'), // For LocalStack testing
         ],
 
         // Azure Key Vault settings
         'azure' => [
-            'vault_url' => env('AZURE_KEY_VAULT_URL'),
-            'key_name'  => env('AZURE_KEY_VAULT_KEY_NAME'),
+            'vault_url'        => env('AZURE_KEY_VAULT_URL'),
+            'key_name'         => env('AZURE_KEY_VAULT_KEY_NAME'),
+            'signing_key_name' => env('AZURE_KEY_VAULT_SIGNING_KEY_NAME'),
+            'tenant_id'        => env('AZURE_TENANT_ID'),
+            'client_id'        => env('AZURE_CLIENT_ID'),
+            'client_secret'    => env('AZURE_CLIENT_SECRET'),
         ],
     ],
 

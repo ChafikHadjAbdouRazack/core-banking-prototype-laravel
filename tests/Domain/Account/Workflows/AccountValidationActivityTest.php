@@ -3,17 +3,13 @@
 use App\Domain\Account\DataObjects\AccountUuid;
 use App\Domain\Account\Workflows\AccountValidationActivity;
 
-it('class exists', function () {
-    expect(class_exists(AccountValidationActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(AccountValidationActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(AccountValidationActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(AccountValidationActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {
@@ -57,7 +53,7 @@ it('has validation check methods', function () {
     ];
 
     foreach ($methods as $method) {
-        expect(method_exists(AccountValidationActivity::class, $method))->toBeTrue();
+        expect((new ReflectionClass(AccountValidationActivity::class))->hasMethod($method))->toBeTrue();
     }
 });
 
@@ -128,5 +124,5 @@ it('can create data object instances for validation testing', function () {
     $uuid = new AccountUuid('validation-test-uuid');
 
     expect($uuid->getUuid())->toBe('validation-test-uuid');
-    expect(class_exists(AccountValidationActivity::class))->toBeTrue();
+    expect((new ReflectionClass(AccountValidationActivity::class))->getName())->not->toBeEmpty();
 });

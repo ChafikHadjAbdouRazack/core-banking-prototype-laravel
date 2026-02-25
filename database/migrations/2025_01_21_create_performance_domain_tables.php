@@ -19,7 +19,7 @@ return new class () extends Migration {
             $table->decimal('value', 20, 6);
             $table->string('type', 50);
             $table->json('tags')->nullable();
-            $table->timestamp('recorded_at');
+            $table->dateTime('recorded_at');
             $table->timestamps();
 
             $table->index(['name', 'recorded_at']);
@@ -40,8 +40,8 @@ return new class () extends Migration {
             $table->decimal('threshold', 20, 6);
             $table->string('severity');
             $table->text('message');
-            $table->timestamp('triggered_at');
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('triggered_at');
+            $table->dateTime('resolved_at')->nullable();
             $table->timestamps();
 
             $table->index(['metric_name', 'triggered_at']);
@@ -56,9 +56,9 @@ return new class () extends Migration {
             $table->string('system_id');
             $table->string('report_type');
             $table->json('report_data');
-            $table->timestamp('from_date');
-            $table->timestamp('to_date');
-            $table->timestamp('generated_at');
+            $table->dateTime('from_date');
+            $table->dateTime('to_date');
+            $table->dateTime('generated_at');
             $table->timestamps();
 
             $table->index(['report_type', 'generated_at']);
@@ -74,7 +74,7 @@ return new class () extends Migration {
             $table->string('event_class');
             $table->json('event_properties');
             $table->json('meta_data');
-            $table->timestamp('created_at');
+            $table->dateTime('created_at');
 
             $table->unique(['aggregate_uuid', 'aggregate_version']);
             $table->index('aggregate_uuid');

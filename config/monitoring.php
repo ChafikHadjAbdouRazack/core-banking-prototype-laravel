@@ -77,10 +77,13 @@ return [
     ],
 
     'logging' => [
-        'structured'       => env('STRUCTURED_LOGGING', true),
-        'include_trace_id' => env('LOG_TRACE_ID', true),
-        'include_span_id'  => env('LOG_SPAN_ID', true),
-        'elk'              => [
+        'structured'         => env('STRUCTURED_LOGGING', true),
+        'include_trace_id'   => env('LOG_TRACE_ID', true),
+        'include_span_id'    => env('LOG_SPAN_ID', true),
+        'include_request_id' => env('LOG_REQUEST_ID', true),
+        'include_domain'     => env('LOG_DOMAIN_CONTEXT', true),
+        'format'             => env('LOG_FORMAT', 'json'),
+        'elk'                => [
             'enabled'            => env('ELK_ENABLED', false),
             'elasticsearch_host' => env('ELASTICSEARCH_HOST', 'http://localhost:9200'),
             'logstash_host'      => env('LOGSTASH_HOST', 'localhost'),

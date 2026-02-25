@@ -40,7 +40,7 @@ return new class () extends Migration {
         // Add biometric security columns to mobile_devices
         Schema::table('mobile_devices', function (Blueprint $table) {
             $table->unsignedSmallInteger('biometric_failure_count')->default(0)->after('biometric_enabled_at');
-            $table->timestamp('biometric_blocked_until')->nullable()->after('biometric_failure_count');
+            $table->dateTime('biometric_blocked_until')->nullable()->after('biometric_failure_count');
 
             // Index for checking blocked devices
             $table->index('biometric_blocked_until', 'mobile_devices_biometric_blocked');

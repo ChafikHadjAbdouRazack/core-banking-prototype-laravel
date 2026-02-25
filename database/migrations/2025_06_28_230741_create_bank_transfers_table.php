@@ -25,8 +25,8 @@ return new class () extends Migration {
             $table->text('description')->nullable();
             $table->json('fees')->nullable();
             $table->json('exchange_rate')->nullable();
-            $table->timestamp('executed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('executed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('failure_reason')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();

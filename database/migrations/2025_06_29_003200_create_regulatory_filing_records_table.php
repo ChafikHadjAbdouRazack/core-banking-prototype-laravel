@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->integer('filing_attempt')->default(1);
 
             // Submission details
-            $table->timestamp('filed_at');
+            $table->dateTime('filed_at');
             $table->string('filed_by'); // User who filed
             $table->json('filing_credentials')->nullable(); // Encrypted credentials used
             $table->string('filing_reference')->nullable(); // External reference
@@ -32,7 +32,7 @@ return new class () extends Migration {
             $table->text('response_message')->nullable();
 
             // Acknowledgment
-            $table->timestamp('acknowledged_at')->nullable();
+            $table->dateTime('acknowledged_at')->nullable();
             $table->string('acknowledgment_number')->nullable();
             $table->json('acknowledgment_details')->nullable();
 
@@ -43,7 +43,7 @@ return new class () extends Migration {
 
             // Retry information
             $table->boolean('requires_retry')->default(false);
-            $table->timestamp('retry_after')->nullable();
+            $table->dateTime('retry_after')->nullable();
             $table->integer('retry_count')->default(0);
             $table->integer('max_retries')->default(3);
 

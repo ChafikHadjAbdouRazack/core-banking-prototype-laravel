@@ -1,8 +1,19 @@
 # FinAegis Backend Upgrade Plan for Mobile App v2.4.0
 
+## Status: COMPLETED
+
+> v2.4.0 (Privacy & Identity) has been released and fully implemented. The four domains
+> planned in this document -- Privacy, Commerce, TrustCert, and KeyManagement -- are all
+> part of the production codebase. For current architecture documentation covering these
+> domains, see [CLAUDE.md](../CLAUDE.md) and [Architecture Overview](./02-ARCHITECTURE/ARCHITECTURE.md).
+>
+> The content below is preserved for historical reference as the original planning document.
+
+---
+
 **Version**: 2.4.0
 **Theme**: Privacy-Preserving Commerce & TrustCert
-**Target**: Q3 2026
+**Target**: Q3 2026 (COMPLETED)
 **Estimated Duration**: 20-24 weeks
 
 ---

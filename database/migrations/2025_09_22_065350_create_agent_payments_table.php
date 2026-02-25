@@ -24,8 +24,8 @@ return new class () extends Migration {
             $table->decimal('fees', 20, 8)->default(0);
             $table->string('escrow_id')->nullable()->index();
             $table->json('metadata')->nullable();
-            $table->timestamp('completed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
             $table->text('error_message')->nullable();
             $table->timestamps();
 

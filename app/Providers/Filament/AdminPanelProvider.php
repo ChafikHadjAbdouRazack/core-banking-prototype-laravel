@@ -75,11 +75,11 @@ class AdminPanelProvider extends PanelProvider
      */
     protected function getBrandName(): string
     {
-        // Show GCU if enabled, otherwise show FinAegis
+        // Show GCU if enabled, otherwise use brand config
         if (config('app.gcu_enabled', false)) {
             return config('app.gcu_basket_name', 'Global Currency Unit');
         }
 
-        return 'FinAegis Admin';
+        return config('brand.name', 'FinAegis') . ' Admin';
     }
 }

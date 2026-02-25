@@ -33,7 +33,7 @@ return new class () extends Migration {
             // KYC linkage
             $table->string('linked_user_uuid')->nullable()->index();
             $table->string('kyc_level')->nullable();
-            $table->timestamp('kyc_verified_at')->nullable();
+            $table->dateTime('kyc_verified_at')->nullable();
 
             // Audit fields
             $table->string('created_by')->nullable()->index();
@@ -91,7 +91,7 @@ return new class () extends Migration {
 
             // Audit fields
             $table->string('initiated_by')->nullable()->index();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->index('type');
@@ -109,10 +109,10 @@ return new class () extends Migration {
             $table->string('currency', 3)->default('USD');
             $table->decimal('funded_amount', 20, 2)->default(0);
             $table->json('conditions')->nullable();
-            $table->timestamp('expires_at')->nullable()->index();
+            $table->dateTime('expires_at')->nullable()->index();
             $table->string('status')->index(); // created, funded, released, disputed, resolved, expired, cancelled
             $table->boolean('is_disputed')->default(false);
-            $table->timestamp('released_at')->nullable();
+            $table->dateTime('released_at')->nullable();
             $table->string('released_by')->nullable();
             $table->json('metadata')->nullable();
 
@@ -136,7 +136,7 @@ return new class () extends Migration {
             $table->string('status')->index(); // open, investigating, resolved, escalated
             $table->string('resolution_method'); // automated, arbitration, voting
             $table->string('resolved_by')->nullable();
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->string('resolution_type')->nullable(); // release_to_receiver, return_to_sender, split, arbitrated
             $table->json('resolution_allocation')->nullable();
             $table->json('resolution_details')->nullable();

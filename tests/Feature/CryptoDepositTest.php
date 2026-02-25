@@ -72,20 +72,42 @@ class CryptoDepositTest extends TestCase
     }
 
     #[Test]
-    public function test_crypto_deposit_page_has_correct_addresses()
+    public function test_crypto_deposit_page_uses_config_driven_addresses(): void
     {
+        config(['cgo.deposit_addresses' => [
+            'btc'  => 'tb1qtest_btc_address',
+            'eth'  => '0xtest_eth_address',
+            'usdt' => 'Ttest_usdt_address',
+        ]]);
+
         $response = $this->get('/wallet/deposit/crypto');
 
         $response->assertStatus(200);
 
-        // Check BTC address
-        $response->assertSee('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', false);
+        // Verify config addresses are rendered in the JS (via @json)
+        $response->assertSee('tb1qtest_btc_address', false);
+        $response->assertSee('0xtest_eth_address', false);
+        $response->assertSee('Ttest_usdt_address', false);
 
-        // Check ETH address
-        $response->assertSee('0x742d35Cc6634C0532925a3b844Bc9e7595f06789', false);
+        // Verify no hardcoded third-party addresses
+        $response->assertDontSee('1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa', false);
+    }
 
-        // Check USDT address
-        $response->assertSee('TN3W4H6rK2UM6GnKms9iFGQfVY73Gmwm7T', false);
+    #[Test]
+    public function test_crypto_deposit_page_handles_empty_addresses(): void
+    {
+        config(['cgo.deposit_addresses' => [
+            'btc'  => '',
+            'eth'  => '',
+            'usdt' => '',
+        ]]);
+
+        $response = $this->get('/wallet/deposit/crypto');
+
+        $response->assertStatus(200);
+
+        // Should show "Not configured" fallback in JS logic
+        $response->assertSee('Not configured', false);
     }
 
     #[Test]

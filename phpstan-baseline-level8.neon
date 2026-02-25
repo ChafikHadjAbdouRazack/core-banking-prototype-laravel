@@ -3957,7 +3957,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$expires_at on Laravel\\Sanctum\\PersonalAccessToken\|null\.$#'
 			identifier: property.nonObject
-			count: 3
+			count: 4
 			path: tests/Feature/Security/TokenExpirationTest.php
 
 		-

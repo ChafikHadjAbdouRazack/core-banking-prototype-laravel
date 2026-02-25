@@ -9,6 +9,12 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Mail;
 
+/**
+ * @OA\Tag(
+ *     name="CGO Payment Verification",
+ *     description="CGO payment verification and tracking"
+ * )
+ */
 class CgoPaymentVerificationController extends Controller
 {
     protected PaymentVerificationService $verificationService;
@@ -19,7 +25,17 @@ class CgoPaymentVerificationController extends Controller
     }
 
     /**
-     * Display payment verification dashboard for investors.
+     * @OA\Get(
+     *     path="/cgo/payments",
+     *     operationId="cGOPaymentVerificationIndex",
+     *     tags={"CGO Payment Verification"},
+     *     summary="List payment verifications",
+     *     description="Returns payment verification status page",
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function index()
     {
@@ -32,7 +48,19 @@ class CgoPaymentVerificationController extends Controller
     }
 
     /**
-     * Check payment status for a specific investment.
+     * @OA\Get(
+     *     path="/cgo/payments/{id}/status",
+     *     operationId="cGOPaymentVerificationCheckStatus",
+     *     tags={"CGO Payment Verification"},
+     *     summary="Check payment status",
+     *     description="Checks the verification status of a payment",
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function checkStatus(CgoInvestment $investment)
     {
@@ -91,7 +119,19 @@ class CgoPaymentVerificationController extends Controller
     }
 
     /**
-     * Resend payment instructions.
+     * @OA\Post(
+     *     path="/cgo/payments/{id}/resend",
+     *     operationId="cGOPaymentVerificationResendInstructions",
+     *     tags={"CGO Payment Verification"},
+     *     summary="Resend payment instructions",
+     *     description="Resends payment instructions to the user",
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *
+     *     @OA\Response(response=201, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function resendInstructions(CgoInvestment $investment)
     {
@@ -117,12 +157,12 @@ class CgoPaymentVerificationController extends Controller
             switch ($investment->payment_method) {
                 case 'bank_transfer':
                     // Send bank transfer instructions
-                    Mail::to($user->email)->send(new \App\Mail\CgoBankTransferInstructions($investment));
+                    Mail::to($user->email)->send(new \App\Domain\Cgo\Mail\CgoBankTransferInstructions($investment));
                     break;
 
                 case 'crypto':
                     // Send crypto payment instructions
-                    Mail::to($user->email)->send(new \App\Mail\CgoCryptoPaymentInstructions($investment));
+                    Mail::to($user->email)->send(new \App\Domain\Cgo\Mail\CgoCryptoPaymentInstructions($investment));
                     break;
             }
 
@@ -144,7 +184,19 @@ class CgoPaymentVerificationController extends Controller
     }
 
     /**
-     * Get payment timeline for an investment.
+     * @OA\Get(
+     *     path="/cgo/payments/{id}/timeline",
+     *     operationId="cGOPaymentVerificationTimeline",
+     *     tags={"CGO Payment Verification"},
+     *     summary="Get payment timeline",
+     *     description="Returns the payment verification timeline",
+     *     security={{"sanctum":{}}},
+     *
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
+     *
+     *     @OA\Response(response=200, description="Successful operation"),
+     *     @OA\Response(response=500, description="Server error")
+     * )
      */
     public function timeline(CgoInvestment $investment)
     {

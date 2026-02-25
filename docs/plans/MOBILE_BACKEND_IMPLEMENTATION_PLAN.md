@@ -20,7 +20,7 @@ This plan addresses critical gaps in the mobile backend infrastructure identifie
 |-------|----------|--------|
 | Device takeover vulnerability | **CRITICAL** | Must Fix |
 | Biometric rate limiting insufficient | **CRITICAL** | Must Fix |
-| FCM server key exposure | HIGH | Must Fix |
+| ~~FCM server key exposure~~ | ~~HIGH~~ | Resolved (v5.3.1: migrated to FCM HTTP v1 API with service account JSON) |
 | Missing CORS/Origin validation | HIGH | Must Fix |
 | No encryption of public keys at rest | MEDIUM | Should Fix |
 | Push notification data injection | MEDIUM | Should Fix |

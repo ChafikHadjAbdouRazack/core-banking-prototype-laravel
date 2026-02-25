@@ -39,6 +39,8 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 - [BIAN API](04-API/BIAN_API_DOCUMENTATION.md) - Banking industry standard
 - [Webhook Integration](04-API/WEBHOOK_INTEGRATION.md) - Event notifications
 - [CQRS Implementation](04-API/CQRS_IMPLEMENTATION.md) - Command/Query separation
+- [GraphQL API](../graphql-playground) - GraphQL API (33 domains)
+- [Event Streaming](../config/event-streaming.php) - Event Streaming configuration
 
 ### User Guides
 - [Getting Started](05-USER-GUIDES/GETTING-STARTED.md) - First steps
@@ -94,16 +96,36 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ## Platform Status
 
-- **Version**: 2.6.0 (Privacy Layer & ERC-4337 Relayer)
-- **Status**: Demonstration Prototype
-- **Last Updated**: February 2, 2026
+- **Version**: 5.1.5 (Dependency Cleanup & Production Readiness)
+- **Status**: Demonstration Prototype / Production Mobile Backend
+- **Last Updated**: February 21, 2026
 
-### Current Release Features (v2.6.0)
-- **Privacy Pool**: Merkle Tree infrastructure, Delegated proof generation
-- **Relayer**: ERC-4337 Smart Accounts, Gas abstraction, UserOp signing
-- **Mobile Support**: SRS manifest for ZK circuits, WebSocket Merkle updates
+### Current Release Features (v5.1.5)
+- **v5.1.5**: Dependency cleanup — l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example` for mobile backend deployment, passkey test fix
+- **v5.1.4**: Refresh token mechanism — proper access/refresh token pairs with rotation, PHPStan fix, OpenAPI docs update
+- **v5.1.3**: Mobile API compat — optional `owner_address` for smart account onboarding, auth response standardization, token refresh & logout-all endpoints, rate limiter fix
+- **v5.1.2**: Production CSS fix for `/app` landing page — standalone pre-compiled Tailwind CSS (CSP-compliant, Vite-independent)
+- **v5.1.1**: Mobile app landing page (`/app`) with email signup, flaky Azure HSM test fix
+- **v5.1.0**: 21 mobile API endpoints, GraphQL 33-domain full coverage, blockchain address models, CI hardening
+- **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution
+- **Live Dashboard**: 5 metrics endpoints for real-time platform monitoring
+- **Multi-Channel Notification System**: Email, push, in-app, webhook, SMS notification channels
+- **API Gateway Middleware**: Request ID tracing, timing headers for observability
+- **GraphQL Schema Expansion**: 33 domain schemas (up from 14 in v4.3.0)
 
 ### Previous Releases
+- v4.3.0: Developer Experience (GraphQL Fraud/Banking/Mobile/TrustCert, CLI commands, security hardening)
+- v4.2.0: Real-time Platform (GraphQL subscriptions, plugin hook system, webhook/audit plugins)
+- v4.1.0: GraphQL Expansion (6 new domains, event replay filtering, projector health monitoring)
+- v4.0.0: Architecture Evolution (Event Store v2, GraphQL API foundation, Plugin Marketplace)
+- v3.5.0: Compliance Certification (SOC 2, PCI DSS, multi-region, GDPR enhanced)
+- v3.4.0: API Maturity & DX (API versioning, rate limiting, SDK generation, OpenAPI)
+- v3.3.0: Event Store Optimization & Observability
+- v3.2.0: Production Readiness & Plugin Architecture
+- v3.1.0: Consolidation & Documentation
+- v3.0.0: Cross-Chain & DeFi
+- v2.8.0-v2.9.0: AI, RegTech, BaaS, ML Fraud Detection
+- v2.6.0: Privacy Layer & ERC-4337 (Merkle Trees, Smart Accounts, Gas Station, UserOp Signing)
 - v2.5.0: Mobile App Launch (Expo/React Native, separate repository)
 - v2.4.0: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)
 - v2.3.0: AI-Powered Banking, RegTech Automation, Embedded Finance (BaaS)

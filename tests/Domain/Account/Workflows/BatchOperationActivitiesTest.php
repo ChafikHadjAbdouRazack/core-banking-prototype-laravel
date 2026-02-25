@@ -10,9 +10,9 @@ beforeEach(function () {
 });
 
 it('has all required batch operation activities', function () {
-    expect(class_exists(SingleBatchOperationActivity::class))->toBeTrue();
-    expect(class_exists(ReverseBatchOperationActivity::class))->toBeTrue();
-    expect(class_exists(CreateBatchSummaryActivity::class))->toBeTrue();
+    expect((new ReflectionClass(SingleBatchOperationActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(ReverseBatchOperationActivity::class))->getName())->not->toBeEmpty();
+    expect((new ReflectionClass(CreateBatchSummaryActivity::class))->getName())->not->toBeEmpty();
 });
 
 it('single batch operation activity handles all required operations', function () {

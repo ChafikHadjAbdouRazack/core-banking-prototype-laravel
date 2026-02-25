@@ -45,11 +45,11 @@ return new class () extends Migration {
 
             // Compliance
             $table->string('aml_status')->default('not_required');
-            $table->timestamp('aml_screened_at')->nullable();
+            $table->dateTime('aml_screened_at')->nullable();
             $table->string('regulatory_reference')->nullable(); // For cross-border
 
             $table->json('metadata')->nullable();
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
 
             // Audit fields
             $table->string('created_by')->nullable()->index();
@@ -85,7 +85,7 @@ return new class () extends Migration {
             $table->string('reference')->nullable()->index();
             $table->string('description')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('processed_at')->nullable();
+            $table->dateTime('processed_at')->nullable();
             $table->timestamps();
 
             $table->index(['account_uuid', 'status']);

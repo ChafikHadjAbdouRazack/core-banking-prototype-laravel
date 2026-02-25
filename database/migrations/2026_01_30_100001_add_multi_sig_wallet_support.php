@@ -78,8 +78,8 @@ return new class () extends Migration {
             $table->string('transaction_hash')->nullable()->comment('Hash after broadcast');
             $table->text('error_message')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('expires_at');
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('expires_at');
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -104,7 +104,7 @@ return new class () extends Migration {
             $table->string('public_key')->nullable();
             $table->text('rejection_reason')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('decided_at')->nullable();
+            $table->dateTime('decided_at')->nullable();
             $table->timestamps();
 
             $table->foreign('approval_request_id')

@@ -32,7 +32,7 @@ return new class () extends Migration {
             $table->boolean('is_active')->default(true);
             $table->boolean('is_frozen')->default(false);
             $table->string('frozen_reason')->nullable();
-            $table->timestamp('frozen_at')->nullable();
+            $table->dateTime('frozen_at')->nullable();
             $table->string('status')->default('active');
 
             // Interest & Fee tier
@@ -41,12 +41,12 @@ return new class () extends Migration {
             $table->decimal('interest_earned_ytd', 20, 8)->default(0);
 
             // Balance verification
-            $table->timestamp('last_balance_verified_at')->nullable();
+            $table->dateTime('last_balance_verified_at')->nullable();
             $table->string('balance_verification_status')->default('unverified');
 
             // AML/Compliance
             $table->string('aml_status')->default('pending');
-            $table->timestamp('aml_verified_at')->nullable();
+            $table->dateTime('aml_verified_at')->nullable();
 
             $table->json('metadata')->nullable();
 

@@ -21,9 +21,9 @@ return new class () extends Migration {
             $table->boolean('is_active')->default(true);
             $table->integer('retry_attempts')->default(3);
             $table->integer('timeout_seconds')->default(30);
-            $table->timestamp('last_triggered_at')->nullable();
-            $table->timestamp('last_success_at')->nullable();
-            $table->timestamp('last_failure_at')->nullable();
+            $table->dateTime('last_triggered_at')->nullable();
+            $table->dateTime('last_success_at')->nullable();
+            $table->dateTime('last_failure_at')->nullable();
             $table->integer('consecutive_failures')->default(0);
             $table->timestamps();
 

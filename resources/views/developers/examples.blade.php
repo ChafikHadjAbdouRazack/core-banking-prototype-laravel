@@ -160,6 +160,46 @@
                     <h3 class="font-semibold text-gray-900 mb-2">MCP Tools</h3>
                     <p class="text-gray-600 text-sm">Model Context Protocol integration</p>
                 </a>
+
+                <a href="#crosschain-defi" class="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 hover:transform hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-cyan-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-cyan-200 transition-colors">
+                        <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Cross-Chain &amp; DeFi</h3>
+                    <p class="text-gray-600 text-sm">Bridge protocols, DEX swaps, and multi-chain operations</p>
+                </a>
+
+                <a href="#regtech-compliance" class="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 hover:transform hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-emerald-200 transition-colors">
+                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">RegTech &amp; Compliance</h3>
+                    <p class="text-gray-600 text-sm">Travel Rule, MiFID II, MiCA compliance checks</p>
+                </a>
+
+                <a href="#baas-partner" class="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 hover:transform hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-amber-200 transition-colors">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">BaaS &amp; Partner API</h3>
+                    <p class="text-gray-600 text-sm">Partner onboarding and Banking-as-a-Service integration</p>
+                </a>
+
+                <a href="#ai-transactions" class="group bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 hover:transform hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-violet-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-violet-200 transition-colors">
+                        <svg class="w-6 h-6 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">AI Transaction Query</h3>
+                    <p class="text-gray-600 text-sm">Natural language transaction search and analysis</p>
+                </a>
             </div>
         </div>
     </section>
@@ -1758,6 +1798,1088 @@ processLoanApplication('cust_456', {
   purpose: 'debt_consolidation'
 });
                             </x-code-block>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cross-Chain & DeFi -->
+            <div id="crosschain-defi" class="mb-20">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">Cross-Chain &amp; DeFi</h2>
+
+                <div class="space-y-12">
+                    <!-- Cross-Chain Bridge Quote + Initiate -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-cyan-50 to-blue-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">Cross-Chain Bridge: Quote and Initiate</h3>
+                                    <p class="text-gray-600 mt-1">Get a bridge quote across chains (Wormhole, LayerZero, Axelar) and initiate the transfer</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-cyan-100 text-cyan-700 rounded-full text-xs font-medium">v3.0</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'bridge-curl')" class="code-tab active">cURL</button>
+                                <button onclick="switchTab(event, 'bridge-js')" class="code-tab">JavaScript</button>
+                                <button onclick="switchTab(event, 'bridge-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'bridge-response')" class="code-tab">Response</button>
+                            </div>
+
+                            <!-- cURL -->
+                            <div id="bridge-curl" class="tab-content active animate-fade-in">
+                                <x-code-block language="bash">
+# Step 1: Get a bridge quote
+curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/quote \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source_chain": "ethereum",
+    "destination_chain": "polygon",
+    "token": "USDC",
+    "amount": "1000.00",
+    "preferred_bridge": "wormhole"
+  }'
+
+# Step 2: Initiate the bridge transfer using the quote_id
+curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/initiate \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "quote_id": "quote_br_abc123def456",
+    "sender_address": "0x1234...abcd",
+    "recipient_address": "0x5678...efgh",
+    "slippage_tolerance": 0.005,
+    "deadline_minutes": 30
+  }'
+                                </x-code-block>
+                            </div>
+
+                            <!-- JavaScript -->
+                            <div id="bridge-js" class="tab-content animate-fade-in">
+                                <x-code-block language="javascript">
+import { FinAegis } from '@finaegis/sdk';
+
+const client = new FinAegis({
+  apiKey: process.env.FINAEGIS_API_KEY,
+  baseURL: 'https://api.finaegis.org'
+});
+
+async function bridgeTokens(sourceChain, destChain, token, amount) {
+  try {
+    // Step 1: Get a bridge quote comparing protocols
+    const quote = await client.crosschain.bridge.quote({
+      source_chain: sourceChain,
+      destination_chain: destChain,
+      token: token,
+      amount: amount,
+      preferred_bridge: 'wormhole' // or 'layerzero', 'axelar'
+    });
+
+    console.log('Bridge Quote:');
+    console.log(`  Protocol: ${quote.data.bridge_protocol}`);
+    console.log(`  Estimated output: ${quote.data.estimated_receive_amount} ${token}`);
+    console.log(`  Fee: ${quote.data.fee_amount} ${quote.data.fee_currency}`);
+    console.log(`  Estimated time: ${quote.data.estimated_duration_seconds}s`);
+
+    // Step 2: Initiate the bridge transfer
+    const transfer = await client.crosschain.bridge.initiate({
+      quote_id: quote.data.quote_id,
+      sender_address: '0x1234...abcd',
+      recipient_address: '0x5678...efgh',
+      slippage_tolerance: 0.005,
+      deadline_minutes: 30
+    });
+
+    console.log('Bridge initiated:', transfer.data.bridge_tx_id);
+    console.log('Status:', transfer.data.status);
+
+    return transfer;
+  } catch (error) {
+    console.error('Bridge failed:', error.message);
+    throw error;
+  }
+}
+
+// Bridge 1000 USDC from Ethereum to Polygon
+bridgeTokens('ethereum', 'polygon', 'USDC', '1000.00');
+                                </x-code-block>
+                            </div>
+
+                            <!-- Python -->
+                            <div id="bridge-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+from finaegis import FinAegis
+import os
+
+client = FinAegis(
+    api_key=os.environ['FINAEGIS_API_KEY'],
+    base_url='https://api.finaegis.org'
+)
+
+def bridge_tokens(source_chain, dest_chain, token, amount):
+    try:
+        # Step 1: Get a bridge quote
+        quote = client.crosschain.bridge.quote(
+            source_chain=source_chain,
+            destination_chain=dest_chain,
+            token=token,
+            amount=amount,
+            preferred_bridge='wormhole'
+        )
+
+        print(f'Bridge Quote:')
+        print(f'  Protocol: {quote.data.bridge_protocol}')
+        print(f'  Estimated output: {quote.data.estimated_receive_amount} {token}')
+        print(f'  Fee: {quote.data.fee_amount} {quote.data.fee_currency}')
+        print(f'  Estimated time: {quote.data.estimated_duration_seconds}s')
+
+        # Step 2: Initiate the bridge transfer
+        transfer = client.crosschain.bridge.initiate(
+            quote_id=quote.data.quote_id,
+            sender_address='0x1234...abcd',
+            recipient_address='0x5678...efgh',
+            slippage_tolerance=0.005,
+            deadline_minutes=30
+        )
+
+        print(f'Bridge initiated: {transfer.data.bridge_tx_id}')
+        print(f'Status: {transfer.data.status}')
+
+        return transfer
+    except Exception as error:
+        print(f'Bridge failed: {error}')
+        raise
+
+# Bridge 1000 USDC from Ethereum to Polygon
+bridge_tokens('ethereum', 'polygon', 'USDC', '1000.00')
+                                </x-code-block>
+                            </div>
+
+                            <!-- Response -->
+                            <div id="bridge-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+// POST /api/v1/crosschain/bridge/quote response
+{
+  "data": {
+    "quote_id": "quote_br_abc123def456",
+    "bridge_protocol": "wormhole",
+    "source_chain": "ethereum",
+    "destination_chain": "polygon",
+    "token": "USDC",
+    "input_amount": "1000.00",
+    "estimated_receive_amount": "998.50",
+    "fee_amount": "1.50",
+    "fee_currency": "USDC",
+    "exchange_rate": "1.0000",
+    "estimated_duration_seconds": 180,
+    "quote_expires_at": "2026-01-15T12:15:00Z",
+    "alternative_quotes": [
+      {
+        "bridge_protocol": "layerzero",
+        "estimated_receive_amount": "997.80",
+        "fee_amount": "2.20",
+        "estimated_duration_seconds": 120
+      },
+      {
+        "bridge_protocol": "axelar",
+        "estimated_receive_amount": "998.00",
+        "fee_amount": "2.00",
+        "estimated_duration_seconds": 240
+      }
+    ]
+  }
+}
+
+// POST /api/v1/crosschain/bridge/initiate response
+{
+  "data": {
+    "bridge_tx_id": "btx_xyz789012345",
+    "quote_id": "quote_br_abc123def456",
+    "status": "pending",
+    "source_chain": "ethereum",
+    "destination_chain": "polygon",
+    "source_tx_hash": null,
+    "destination_tx_hash": null,
+    "sender_address": "0x1234...abcd",
+    "recipient_address": "0x5678...efgh",
+    "amount": "1000.00",
+    "token": "USDC",
+    "bridge_protocol": "wormhole",
+    "created_at": "2026-01-15T12:05:30Z",
+    "estimated_completion_at": "2026-01-15T12:08:30Z"
+  }
+}
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DeFi Swap Quote + Execute -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-teal-50 to-green-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">DeFi Swap: Quote and Execute</h3>
+                                    <p class="text-gray-600 mt-1">Aggregate DEX quotes (Uniswap, Curve, SushiSwap) and execute optimal swaps</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-teal-100 text-teal-700 rounded-full text-xs font-medium">v3.0</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'swap-curl')" class="code-tab active">cURL</button>
+                                <button onclick="switchTab(event, 'swap-js')" class="code-tab">JavaScript</button>
+                                <button onclick="switchTab(event, 'swap-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'swap-response')" class="code-tab">Response</button>
+                            </div>
+
+                            <!-- cURL -->
+                            <div id="swap-curl" class="tab-content active animate-fade-in">
+                                <x-code-block language="bash">
+# Step 1: Get a swap quote with DEX aggregation
+curl -X POST https://api.finaegis.org/api/v1/defi/swap/quote \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "chain": "ethereum",
+    "token_in": "WETH",
+    "token_out": "USDC",
+    "amount_in": "2.5",
+    "slippage_tolerance": 0.005,
+    "dex_sources": ["uniswap_v3", "curve", "sushiswap"]
+  }'
+
+# Step 2: Execute the swap with the best route
+curl -X POST https://api.finaegis.org/api/v1/defi/swap/execute \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "quote_id": "quote_sw_def456ghi789",
+    "wallet_address": "0xABCD...1234",
+    "max_gas_price_gwei": 50,
+    "deadline_minutes": 20
+  }'
+                                </x-code-block>
+                            </div>
+
+                            <!-- JavaScript -->
+                            <div id="swap-js" class="tab-content animate-fade-in">
+                                <x-code-block language="javascript">
+async function swapTokens(chain, tokenIn, tokenOut, amountIn) {
+  try {
+    // Step 1: Get aggregated swap quote from multiple DEXes
+    const quote = await client.defi.swap.quote({
+      chain: chain,
+      token_in: tokenIn,
+      token_out: tokenOut,
+      amount_in: amountIn,
+      slippage_tolerance: 0.005,
+      dex_sources: ['uniswap_v3', 'curve', 'sushiswap']
+    });
+
+    console.log('Swap Quote:');
+    console.log(`  Best DEX: ${quote.data.best_route.dex}`);
+    console.log(`  Input: ${amountIn} ${tokenIn}`);
+    console.log(`  Output: ${quote.data.estimated_output} ${tokenOut}`);
+    console.log(`  Price impact: ${quote.data.price_impact_percent}%`);
+    console.log(`  Gas estimate: ${quote.data.estimated_gas_usd} USD`);
+
+    // Step 2: Execute the swap
+    const execution = await client.defi.swap.execute({
+      quote_id: quote.data.quote_id,
+      wallet_address: '0xABCD...1234',
+      max_gas_price_gwei: 50,
+      deadline_minutes: 20
+    });
+
+    console.log('Swap executed:', execution.data.tx_hash);
+    console.log('Status:', execution.data.status);
+
+    return execution;
+  } catch (error) {
+    console.error('Swap failed:', error.message);
+    throw error;
+  }
+}
+
+// Swap 2.5 WETH for USDC on Ethereum
+swapTokens('ethereum', 'WETH', 'USDC', '2.5');
+                                </x-code-block>
+                            </div>
+
+                            <!-- Python -->
+                            <div id="swap-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+def swap_tokens(chain, token_in, token_out, amount_in):
+    try:
+        # Step 1: Get aggregated swap quote
+        quote = client.defi.swap.quote(
+            chain=chain,
+            token_in=token_in,
+            token_out=token_out,
+            amount_in=amount_in,
+            slippage_tolerance=0.005,
+            dex_sources=['uniswap_v3', 'curve', 'sushiswap']
+        )
+
+        print(f'Swap Quote:')
+        print(f'  Best DEX: {quote.data.best_route.dex}')
+        print(f'  Input: {amount_in} {token_in}')
+        print(f'  Output: {quote.data.estimated_output} {token_out}')
+        print(f'  Price impact: {quote.data.price_impact_percent}%')
+        print(f'  Gas estimate: {quote.data.estimated_gas_usd} USD')
+
+        # Step 2: Execute the swap
+        execution = client.defi.swap.execute(
+            quote_id=quote.data.quote_id,
+            wallet_address='0xABCD...1234',
+            max_gas_price_gwei=50,
+            deadline_minutes=20
+        )
+
+        print(f'Swap executed: {execution.data.tx_hash}')
+        print(f'Status: {execution.data.status}')
+
+        return execution
+    except Exception as error:
+        print(f'Swap failed: {error}')
+        raise
+
+# Swap 2.5 WETH for USDC on Ethereum
+swap_tokens('ethereum', 'WETH', 'USDC', '2.5')
+                                </x-code-block>
+                            </div>
+
+                            <!-- Response -->
+                            <div id="swap-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+// POST /api/v1/defi/swap/quote response
+{
+  "data": {
+    "quote_id": "quote_sw_def456ghi789",
+    "chain": "ethereum",
+    "token_in": "WETH",
+    "token_out": "USDC",
+    "amount_in": "2.5",
+    "estimated_output": "4875.32",
+    "price_impact_percent": "0.12",
+    "estimated_gas_usd": "8.45",
+    "best_route": {
+      "dex": "uniswap_v3",
+      "path": ["WETH", "USDC"],
+      "pools": ["0x8ad5...pool1"],
+      "fee_tier": "0.05%"
+    },
+    "alternative_routes": [
+      {
+        "dex": "curve",
+        "estimated_output": "4870.18",
+        "price_impact_percent": "0.15"
+      },
+      {
+        "dex": "sushiswap",
+        "estimated_output": "4865.90",
+        "price_impact_percent": "0.18"
+      }
+    ],
+    "quote_expires_at": "2026-01-15T12:10:00Z"
+  }
+}
+
+// POST /api/v1/defi/swap/execute response
+{
+  "data": {
+    "swap_id": "swap_mno345pqr678",
+    "quote_id": "quote_sw_def456ghi789",
+    "status": "submitted",
+    "tx_hash": "0x9f8e7d6c5b4a3...transaction_hash",
+    "chain": "ethereum",
+    "token_in": "WETH",
+    "token_out": "USDC",
+    "amount_in": "2.5",
+    "expected_output": "4875.32",
+    "dex": "uniswap_v3",
+    "gas_price_gwei": "35",
+    "created_at": "2026-01-15T12:06:00Z"
+  }
+}
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RegTech & Compliance -->
+            <div id="regtech-compliance" class="mb-20">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">RegTech &amp; Compliance</h2>
+
+                <div class="space-y-12">
+                    <!-- Travel Rule Compliance Check -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">Travel Rule Compliance Check</h3>
+                                    <p class="text-gray-600 mt-1">Validate FATF Travel Rule compliance before executing cross-border or virtual asset transfers</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">v2.8</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'travel-curl')" class="code-tab active">cURL</button>
+                                <button onclick="switchTab(event, 'travel-js')" class="code-tab">JavaScript</button>
+                                <button onclick="switchTab(event, 'travel-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'travel-response')" class="code-tab">Response</button>
+                            </div>
+
+                            <!-- cURL -->
+                            <div id="travel-curl" class="tab-content active animate-fade-in">
+                                <x-code-block language="bash">
+# Run a Travel Rule compliance check before a transfer
+curl -X POST https://api.finaegis.org/api/v1/regtech/travel-rule/check \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transfer_id": "txfr_abc123def456",
+    "originator": {
+      "name": "Alice Johnson",
+      "account_number": "acct_1234567890",
+      "institution_name": "FinAegis",
+      "institution_country": "US"
+    },
+    "beneficiary": {
+      "name": "Bob Smith",
+      "account_number": "ext_0987654321",
+      "institution_name": "Partner Bank",
+      "institution_country": "DE"
+    },
+    "transfer_details": {
+      "amount": "15000.00",
+      "currency": "USD",
+      "asset_type": "fiat",
+      "purpose": "business_payment"
+    },
+    "jurisdiction": "EU"
+  }'
+                                </x-code-block>
+                            </div>
+
+                            <!-- JavaScript -->
+                            <div id="travel-js" class="tab-content animate-fade-in">
+                                <x-code-block language="javascript">
+async function checkTravelRuleCompliance(transferData) {
+  try {
+    const result = await client.regtech.travelRule.check({
+      transfer_id: transferData.transferId,
+      originator: {
+        name: 'Alice Johnson',
+        account_number: transferData.fromAccount,
+        institution_name: 'FinAegis',
+        institution_country: 'US'
+      },
+      beneficiary: {
+        name: transferData.recipientName,
+        account_number: transferData.toAccount,
+        institution_name: transferData.recipientInstitution,
+        institution_country: transferData.recipientCountry
+      },
+      transfer_details: {
+        amount: transferData.amount,
+        currency: transferData.currency,
+        asset_type: transferData.assetType || 'fiat',
+        purpose: transferData.purpose || 'business_payment'
+      },
+      jurisdiction: transferData.jurisdiction || 'EU'
+    });
+
+    console.log('Travel Rule Check:');
+    console.log(`  Compliant: ${result.data.is_compliant}`);
+    console.log(`  Risk level: ${result.data.risk_level}`);
+    console.log(`  Jurisdiction: ${result.data.applicable_jurisdiction}`);
+
+    if (!result.data.is_compliant) {
+      console.log('  Issues:');
+      result.data.compliance_issues.forEach(issue => {
+        console.log(`    - ${issue.code}: ${issue.description}`);
+      });
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Compliance check failed:', error.message);
+    throw error;
+  }
+}
+
+// Check compliance before a cross-border transfer
+checkTravelRuleCompliance({
+  transferId: 'txfr_abc123def456',
+  fromAccount: 'acct_1234567890',
+  recipientName: 'Bob Smith',
+  toAccount: 'ext_0987654321',
+  recipientInstitution: 'Partner Bank',
+  recipientCountry: 'DE',
+  amount: '15000.00',
+  currency: 'USD',
+  jurisdiction: 'EU'
+});
+                                </x-code-block>
+                            </div>
+
+                            <!-- Python -->
+                            <div id="travel-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+def check_travel_rule_compliance(transfer_data):
+    try:
+        result = client.regtech.travel_rule.check(
+            transfer_id=transfer_data['transfer_id'],
+            originator={
+                'name': 'Alice Johnson',
+                'account_number': transfer_data['from_account'],
+                'institution_name': 'FinAegis',
+                'institution_country': 'US'
+            },
+            beneficiary={
+                'name': transfer_data['recipient_name'],
+                'account_number': transfer_data['to_account'],
+                'institution_name': transfer_data['recipient_institution'],
+                'institution_country': transfer_data['recipient_country']
+            },
+            transfer_details={
+                'amount': transfer_data['amount'],
+                'currency': transfer_data['currency'],
+                'asset_type': transfer_data.get('asset_type', 'fiat'),
+                'purpose': transfer_data.get('purpose', 'business_payment')
+            },
+            jurisdiction=transfer_data.get('jurisdiction', 'EU')
+        )
+
+        print(f'Travel Rule Check:')
+        print(f'  Compliant: {result.data.is_compliant}')
+        print(f'  Risk level: {result.data.risk_level}')
+        print(f'  Jurisdiction: {result.data.applicable_jurisdiction}')
+
+        if not result.data.is_compliant:
+            print('  Issues:')
+            for issue in result.data.compliance_issues:
+                print(f'    - {issue.code}: {issue.description}')
+
+        return result
+    except Exception as error:
+        print(f'Compliance check failed: {error}')
+        raise
+
+# Check compliance before a cross-border transfer
+check_travel_rule_compliance({
+    'transfer_id': 'txfr_abc123def456',
+    'from_account': 'acct_1234567890',
+    'recipient_name': 'Bob Smith',
+    'to_account': 'ext_0987654321',
+    'recipient_institution': 'Partner Bank',
+    'recipient_country': 'DE',
+    'amount': '15000.00',
+    'currency': 'USD',
+    'jurisdiction': 'EU'
+})
+                                </x-code-block>
+                            </div>
+
+                            <!-- Response -->
+                            <div id="travel-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+{
+  "data": {
+    "check_id": "trc_mno345pqr678",
+    "transfer_id": "txfr_abc123def456",
+    "is_compliant": true,
+    "risk_level": "low",
+    "applicable_jurisdiction": "EU",
+    "applicable_regulations": [
+      "FATF_Recommendation_16",
+      "EU_Transfer_of_Funds_Regulation",
+      "MiCA_Article_76"
+    ],
+    "originator_verified": true,
+    "beneficiary_verified": true,
+    "threshold_analysis": {
+      "amount_usd": "15000.00",
+      "exceeds_threshold": true,
+      "threshold_amount": "1000.00",
+      "full_identification_required": true
+    },
+    "sanctions_screening": {
+      "originator_cleared": true,
+      "beneficiary_cleared": true,
+      "screening_provider": "internal",
+      "screened_at": "2026-01-15T12:00:05Z"
+    },
+    "compliance_issues": [],
+    "recommendations": [
+      "Enhanced due diligence recommended for transfers above 10000 USD"
+    ],
+    "checked_at": "2026-01-15T12:00:05Z",
+    "valid_until": "2026-01-15T12:30:05Z"
+  }
+}
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BaaS & Partner API -->
+            <div id="baas-partner" class="mb-20">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">BaaS &amp; Partner API</h2>
+
+                <div class="space-y-12">
+                    <!-- Partner Onboarding -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-amber-50 to-yellow-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">BaaS Partner Onboarding</h3>
+                                    <p class="text-gray-600 mt-1">Onboard a new partner organization onto the Banking-as-a-Service platform with API keys and SDK access</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">v2.9</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'partner-curl')" class="code-tab active">cURL</button>
+                                <button onclick="switchTab(event, 'partner-js')" class="code-tab">JavaScript</button>
+                                <button onclick="switchTab(event, 'partner-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'partner-response')" class="code-tab">Response</button>
+                            </div>
+
+                            <!-- cURL -->
+                            <div id="partner-curl" class="tab-content active animate-fade-in">
+                                <x-code-block language="bash">
+# Onboard a new BaaS partner
+curl -X POST https://api.finaegis.org/api/v1/partner/onboard \
+  -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "organization_name": "Acme Fintech",
+    "contact_email": "integration@acmefintech.com",
+    "tier": "growth",
+    "modules": ["accounts", "transfers", "compliance", "crosschain"],
+    "sdk_languages": ["typescript", "python"],
+    "webhook_url": "https://acmefintech.com/webhooks/finaegis",
+    "ip_whitelist": ["203.0.113.0/24"],
+    "rate_limit_override": 5000,
+    "metadata": {
+      "use_case": "neobank",
+      "expected_monthly_volume": "500000"
+    }
+  }'
+                                </x-code-block>
+                            </div>
+
+                            <!-- JavaScript -->
+                            <div id="partner-js" class="tab-content animate-fade-in">
+                                <x-code-block language="javascript">
+async function onboardPartner(partnerDetails) {
+  try {
+    const partner = await client.partner.onboard({
+      organization_name: partnerDetails.name,
+      contact_email: partnerDetails.email,
+      tier: partnerDetails.tier || 'growth', // starter, growth, enterprise
+      modules: partnerDetails.modules,
+      sdk_languages: partnerDetails.sdkLanguages || ['typescript', 'python'],
+      webhook_url: partnerDetails.webhookUrl,
+      ip_whitelist: partnerDetails.ipWhitelist || [],
+      rate_limit_override: partnerDetails.rateLimit,
+      metadata: partnerDetails.metadata || {}
+    });
+
+    console.log('Partner Onboarded:');
+    console.log(`  Partner ID: ${partner.data.partner_id}`);
+    console.log(`  API Key: ${partner.data.api_credentials.api_key}`);
+    console.log(`  Sandbox Key: ${partner.data.api_credentials.sandbox_key}`);
+    console.log(`  Tier: ${partner.data.tier}`);
+    console.log(`  SDK Download URLs:`);
+    partner.data.sdk_packages.forEach(sdk => {
+      console.log(`    ${sdk.language}: ${sdk.download_url}`);
+    });
+
+    return partner;
+  } catch (error) {
+    console.error('Partner onboarding failed:', error.message);
+    throw error;
+  }
+}
+
+// Onboard a new fintech partner
+onboardPartner({
+  name: 'Acme Fintech',
+  email: 'integration@acmefintech.com',
+  tier: 'growth',
+  modules: ['accounts', 'transfers', 'compliance', 'crosschain'],
+  sdkLanguages: ['typescript', 'python'],
+  webhookUrl: 'https://acmefintech.com/webhooks/finaegis',
+  ipWhitelist: ['203.0.113.0/24'],
+  rateLimit: 5000,
+  metadata: {
+    use_case: 'neobank',
+    expected_monthly_volume: '500000'
+  }
+});
+                                </x-code-block>
+                            </div>
+
+                            <!-- Python -->
+                            <div id="partner-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+def onboard_partner(partner_details):
+    try:
+        partner = client.partner.onboard(
+            organization_name=partner_details['name'],
+            contact_email=partner_details['email'],
+            tier=partner_details.get('tier', 'growth'),
+            modules=partner_details['modules'],
+            sdk_languages=partner_details.get('sdk_languages', ['typescript', 'python']),
+            webhook_url=partner_details['webhook_url'],
+            ip_whitelist=partner_details.get('ip_whitelist', []),
+            rate_limit_override=partner_details.get('rate_limit'),
+            metadata=partner_details.get('metadata', {})
+        )
+
+        print(f'Partner Onboarded:')
+        print(f'  Partner ID: {partner.data.partner_id}')
+        print(f'  API Key: {partner.data.api_credentials.api_key}')
+        print(f'  Sandbox Key: {partner.data.api_credentials.sandbox_key}')
+        print(f'  Tier: {partner.data.tier}')
+        print(f'  SDK Download URLs:')
+        for sdk in partner.data.sdk_packages:
+            print(f'    {sdk.language}: {sdk.download_url}')
+
+        return partner
+    except Exception as error:
+        print(f'Partner onboarding failed: {error}')
+        raise
+
+# Onboard a new fintech partner
+onboard_partner({
+    'name': 'Acme Fintech',
+    'email': 'integration@acmefintech.com',
+    'tier': 'growth',
+    'modules': ['accounts', 'transfers', 'compliance', 'crosschain'],
+    'sdk_languages': ['typescript', 'python'],
+    'webhook_url': 'https://acmefintech.com/webhooks/finaegis',
+    'ip_whitelist': ['203.0.113.0/24'],
+    'rate_limit': 5000,
+    'metadata': {
+        'use_case': 'neobank',
+        'expected_monthly_volume': '500000'
+    }
+})
+                                </x-code-block>
+                            </div>
+
+                            <!-- Response -->
+                            <div id="partner-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+{
+  "data": {
+    "partner_id": "partner_acme_abc123",
+    "organization_name": "Acme Fintech",
+    "status": "active",
+    "tier": "growth",
+    "modules_enabled": [
+      "accounts",
+      "transfers",
+      "compliance",
+      "crosschain"
+    ],
+    "api_credentials": {
+      "api_key": "pk_live_xxxxxxxxxxxxxxxxxxxxxxxx",
+      "sandbox_key": "pk_test_xxxxxxxxxxxxxxxxxxxxxxxx",
+      "webhook_secret": "whsec_xxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    "sdk_packages": [
+      {
+        "language": "typescript",
+        "version": "3.0.0",
+        "package_name": "@finaegis/sdk",
+        "download_url": "https://sdk.finaegis.org/packages/typescript/finaegis-sdk-3.0.0.tgz",
+        "docs_url": "https://docs.finaegis.org/sdk/typescript"
+      },
+      {
+        "language": "python",
+        "version": "3.0.0",
+        "package_name": "finaegis-sdk",
+        "download_url": "https://sdk.finaegis.org/packages/python/finaegis-sdk-3.0.0.tar.gz",
+        "docs_url": "https://docs.finaegis.org/sdk/python"
+      }
+    ],
+    "rate_limits": {
+      "requests_per_minute": 5000,
+      "burst_limit": 500
+    },
+    "sandbox_url": "https://sandbox.finaegis.org",
+    "dashboard_url": "https://partners.finaegis.org/acme-fintech",
+    "created_at": "2026-01-15T12:00:00Z",
+    "onboarding_checklist": {
+      "api_key_generated": true,
+      "webhook_configured": true,
+      "sdk_generated": true,
+      "sandbox_tested": false,
+      "compliance_review": "pending"
+    }
+  }
+}
+                                </x-code-block>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Transaction Query -->
+            <div id="ai-transactions" class="mb-20">
+                <h2 class="text-3xl font-bold text-gray-900 mb-8">AI Transaction Query</h2>
+
+                <div class="space-y-12">
+                    <!-- AI Transaction Search -->
+                    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                        <div class="bg-gradient-to-r from-violet-50 to-purple-50 px-6 py-5 border-b">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-gray-900">AI-Powered Transaction Search</h3>
+                                    <p class="text-gray-600 mt-1">Query transactions using natural language -- the AI engine translates to structured filters</p>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">v2.8</span>
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
+                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">AI</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            <!-- Tabs -->
+                            <div class="code-tabs">
+                                <button onclick="switchTab(event, 'aitx-curl')" class="code-tab active">cURL</button>
+                                <button onclick="switchTab(event, 'aitx-js')" class="code-tab">JavaScript</button>
+                                <button onclick="switchTab(event, 'aitx-py')" class="code-tab">Python</button>
+                                <button onclick="switchTab(event, 'aitx-response')" class="code-tab">Response</button>
+                            </div>
+
+                            <!-- cURL -->
+                            <div id="aitx-curl" class="tab-content active animate-fade-in">
+                                <x-code-block language="bash">
+# Query transactions with natural language
+curl -X POST https://api.finaegis.org/api/v1/ai/transactions \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Show me all cross-chain transfers over $5000 in the last 7 days that had compliance flags",
+    "account_id": "acct_1234567890",
+    "options": {
+      "include_analytics": true,
+      "include_risk_scores": true,
+      "max_results": 50,
+      "format": "detailed"
+    }
+  }'
+                                </x-code-block>
+                            </div>
+
+                            <!-- JavaScript -->
+                            <div id="aitx-js" class="tab-content animate-fade-in">
+                                <x-code-block language="javascript">
+async function queryTransactionsWithAI(naturalLanguageQuery, accountId) {
+  try {
+    const result = await client.ai.transactions({
+      query: naturalLanguageQuery,
+      account_id: accountId,
+      options: {
+        include_analytics: true,
+        include_risk_scores: true,
+        max_results: 50,
+        format: 'detailed'
+      }
+    });
+
+    console.log('AI Query Interpretation:');
+    console.log(`  Parsed filters: ${JSON.stringify(result.data.interpreted_query)}`);
+    console.log(`  Confidence: ${result.data.interpretation_confidence}`);
+    console.log(`  Results found: ${result.data.total_results}`);
+
+    result.data.transactions.forEach(tx => {
+      console.log(`  ${tx.created_at}: ${tx.type} ${tx.amount} ${tx.currency}`);
+      console.log(`    Status: ${tx.status} | Risk: ${tx.risk_score}`);
+      if (tx.compliance_flags.length > 0) {
+        console.log(`    Flags: ${tx.compliance_flags.join(', ')}`);
+      }
+    });
+
+    if (result.data.analytics) {
+      console.log('\nAnalytics Summary:');
+      console.log(`  Total volume: ${result.data.analytics.total_volume}`);
+      console.log(`  Average amount: ${result.data.analytics.avg_amount}`);
+      console.log(`  Flagged count: ${result.data.analytics.flagged_count}`);
+    }
+
+    return result;
+  } catch (error) {
+    console.error('AI query failed:', error.message);
+    throw error;
+  }
+}
+
+// Natural language transaction search
+queryTransactionsWithAI(
+  'Show me all cross-chain transfers over $5000 in the last 7 days that had compliance flags',
+  'acct_1234567890'
+);
+                                </x-code-block>
+                            </div>
+
+                            <!-- Python -->
+                            <div id="aitx-py" class="tab-content animate-fade-in">
+                                <x-code-block language="python">
+def query_transactions_with_ai(natural_language_query, account_id):
+    try:
+        result = client.ai.transactions(
+            query=natural_language_query,
+            account_id=account_id,
+            options={
+                'include_analytics': True,
+                'include_risk_scores': True,
+                'max_results': 50,
+                'format': 'detailed'
+            }
+        )
+
+        print(f'AI Query Interpretation:')
+        print(f'  Parsed filters: {result.data.interpreted_query}')
+        print(f'  Confidence: {result.data.interpretation_confidence}')
+        print(f'  Results found: {result.data.total_results}')
+
+        for tx in result.data.transactions:
+            print(f'  {tx.created_at}: {tx.type} {tx.amount} {tx.currency}')
+            print(f'    Status: {tx.status} | Risk: {tx.risk_score}')
+            if tx.compliance_flags:
+                print(f'    Flags: {", ".join(tx.compliance_flags)}')
+
+        if result.data.analytics:
+            print(f'\nAnalytics Summary:')
+            print(f'  Total volume: {result.data.analytics.total_volume}')
+            print(f'  Average amount: {result.data.analytics.avg_amount}')
+            print(f'  Flagged count: {result.data.analytics.flagged_count}')
+
+        return result
+    except Exception as error:
+        print(f'AI query failed: {error}')
+        raise
+
+# Natural language transaction search
+query_transactions_with_ai(
+    'Show me all cross-chain transfers over $5000 in the last 7 days that had compliance flags',
+    'acct_1234567890'
+)
+                                </x-code-block>
+                            </div>
+
+                            <!-- Response -->
+                            <div id="aitx-response" class="tab-content animate-fade-in">
+                                <x-code-block language="json">
+{
+  "data": {
+    "query_id": "aiq_stu901vwx234",
+    "original_query": "Show me all cross-chain transfers over $5000 in the last 7 days that had compliance flags",
+    "interpreted_query": {
+      "type": ["cross_chain_transfer"],
+      "amount_min": 5000,
+      "currency": "USD",
+      "date_range": {
+        "from": "2026-01-08T00:00:00Z",
+        "to": "2026-01-15T23:59:59Z"
+      },
+      "has_compliance_flags": true
+    },
+    "interpretation_confidence": 0.96,
+    "total_results": 3,
+    "transactions": [
+      {
+        "uuid": "tx_cross_001",
+        "type": "cross_chain_transfer",
+        "amount": "7500.00",
+        "currency": "USDC",
+        "status": "completed",
+        "source_chain": "ethereum",
+        "destination_chain": "arbitrum",
+        "bridge_protocol": "wormhole",
+        "risk_score": 0.35,
+        "compliance_flags": ["high_value_transfer"],
+        "created_at": "2026-01-12T14:30:00Z"
+      },
+      {
+        "uuid": "tx_cross_002",
+        "type": "cross_chain_transfer",
+        "amount": "12000.00",
+        "currency": "USDT",
+        "status": "completed",
+        "source_chain": "polygon",
+        "destination_chain": "ethereum",
+        "bridge_protocol": "layerzero",
+        "risk_score": 0.62,
+        "compliance_flags": ["high_value_transfer", "new_destination"],
+        "created_at": "2026-01-10T09:15:00Z"
+      },
+      {
+        "uuid": "tx_cross_003",
+        "type": "cross_chain_transfer",
+        "amount": "25000.00",
+        "currency": "USDC",
+        "status": "pending_review",
+        "source_chain": "ethereum",
+        "destination_chain": "bsc",
+        "bridge_protocol": "axelar",
+        "risk_score": 0.78,
+        "compliance_flags": ["high_value_transfer", "jurisdiction_mismatch", "velocity_alert"],
+        "created_at": "2026-01-09T16:45:00Z"
+      }
+    ],
+    "analytics": {
+      "total_volume": "44500.00",
+      "avg_amount": "14833.33",
+      "median_amount": "12000.00",
+      "flagged_count": 3,
+      "avg_risk_score": 0.58,
+      "chains_involved": ["ethereum", "polygon", "arbitrum", "bsc"],
+      "bridges_used": ["wormhole", "layerzero", "axelar"]
+    }
+  }
+}
+                                </x-code-block>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\CardIssuance\Contracts;
 
+use App\Domain\CardIssuance\Enums\CardNetwork;
 use App\Domain\CardIssuance\Enums\WalletType;
 use App\Domain\CardIssuance\ValueObjects\ProvisioningData;
 use App\Domain\CardIssuance\ValueObjects\VirtualCard;
@@ -21,7 +22,9 @@ interface CardIssuerInterface
     public function createCard(
         string $userId,
         string $cardholderName,
-        array $metadata = []
+        array $metadata = [],
+        ?CardNetwork $network = null,
+        ?string $label = null,
     ): VirtualCard;
 
     /**

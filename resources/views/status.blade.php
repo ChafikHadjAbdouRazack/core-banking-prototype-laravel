@@ -5,225 +5,120 @@
 @section('seo')
     @include('partials.seo', [
         'title' => 'System Status - FinAegis',
-        'description' => 'Real-time status of FinAegis prototype platform services and functionality.',
+        'description' => 'Real-time status of FinAegis platform services and infrastructure.',
         'keywords' => 'FinAegis status, system status, platform uptime, service availability',
     ])
 @endsection
 
 @section('content')
-    <div class="bg-white">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-600 to-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-700">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <div class="text-center">
-                    <div class="flex justify-center items-center mb-4">
-                        <div class="w-4 h-4 bg-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-400 rounded-full animate-pulse mr-3"></div>
-                        <span class="text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-100 text-lg font-medium">
-                            @if($status['overall'] === 'operational')
-                                All Systems Operational
-                            @elseif($status['overall'] === 'degraded')
-                                Some Systems Degraded
-                            @else
-                                Major Outage
-                            @endif
-                        </span>
+    <div class="bg-gray-50 min-h-screen">
+        <!-- Status Header -->
+        <div class="bg-white border-b border-gray-200">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        @if($status['overall'] === 'operational')
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                            </div>
+                        @elseif($status['overall'] === 'degraded')
+                            <div class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path>
+                                </svg>
+                            </div>
+                        @else
+                            <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                        @endif
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">
+                                @if($status['overall'] === 'operational')
+                                    All Systems Operational
+                                @elseif($status['overall'] === 'degraded')
+                                    Some Systems Degraded
+                                @else
+                                    Major Outage
+                                @endif
+                            </h1>
+                            <p class="text-sm text-gray-500">Updated {{ $status['last_checked']->diffForHumans() }}</p>
+                        </div>
                     </div>
-                    <h1 class="text-4xl font-bold text-white sm:text-5xl">
-                        System Status
-                    </h1>
-                    <p class="mt-4 text-xl text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-100">
-                        Real-time status of FinAegis prototype platform
-                    </p>
-                    <p class="mt-2 text-sm text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-200">
-                        Last updated: {{ $status['last_checked']->diffForHumans() }}
-                    </p>
+                    <div class="hidden sm:flex items-center gap-6 text-sm text-gray-500">
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-gray-900">{{ $uptime['percentage'] }}%</div>
+                            <div>Uptime</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-lg font-bold text-gray-900">{{ $status['response_time'] }}ms</div>
+                            <div>Avg Response</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Current Status Overview -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                    <div class="w-12 h-12 bg-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Platform Status</h3>
-                    <p class="text-2xl font-bold text-{{ $status['overall'] === 'operational' ? 'green' : ($status['overall'] === 'degraded' ? 'yellow' : 'red') }}-600 mt-2 capitalize">{{ $status['overall'] }}</p>
-                </div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Services grouped by category -->
+            @php
+                $grouped = collect($services)->groupBy('category');
+            @endphp
 
-                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Uptime</h3>
-                    <p class="text-2xl font-bold text-green-600 mt-2">{{ $uptime['percentage'] }}%</p>
-                    <p class="text-xs text-gray-500 mt-1">Last {{ $uptime['period'] }}</p>
-                </div>
-
-                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Response Time</h3>
-                    <p class="text-2xl font-bold text-blue-600 mt-2">{{ $status['response_time'] }}ms</p>
-                </div>
-
-                <div class="bg-white rounded-lg border border-gray-200 p-6 text-center">
-                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-gray-900">Security Status</h3>
-                    <p class="text-2xl font-bold text-purple-600 mt-2">Secure</p>
-                </div>
-            </div>
-
-            <!-- Prototype Notice -->
-            <div class="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-12">
-                <div class="flex items-start">
-                    <svg class="w-6 h-6 text-amber-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <h3 class="text-lg font-semibold text-amber-900 mb-2">Prototype Platform</h3>
-                        <p class="text-amber-800">
-                            This is a demonstration of FinAegis core banking functionality. The status page shows actual prototype system health and available features.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Service Status -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-12">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">Prototype Services</h2>
-                </div>
-                <div class="divide-y divide-gray-200">
-                    @foreach($services as $service)
-                    <div class="px-6 py-4 flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="w-3 h-3 bg-{{ $service['status'] === 'operational' ? 'green' : ($service['status'] === 'degraded' ? 'yellow' : 'red') }}-400 rounded-full mr-4"></div>
+            @foreach($grouped as $category => $categoryServices)
+            <div class="mb-6">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-1">{{ $category }}</h2>
+                <div class="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+                    @foreach($categoryServices as $service)
+                    <div class="px-5 py-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2.5 h-2.5 rounded-full {{ $service['status'] === 'operational' ? 'bg-green-500' : ($service['status'] === 'degraded' ? 'bg-yellow-500' : 'bg-red-500') }}"></div>
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900">{{ $service['name'] }}</h3>
-                                <p class="text-gray-600">{{ $service['description'] }}</p>
+                                <span class="text-sm font-medium text-gray-900">{{ $service['name'] }}</span>
+                                <span class="text-sm text-gray-400 ml-2 hidden sm:inline">{{ $service['description'] }}</span>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-{{ $service['status'] === 'operational' ? 'green' : ($service['status'] === 'degraded' ? 'yellow' : 'red') }}-100 text-{{ $service['status'] === 'operational' ? 'green' : ($service['status'] === 'degraded' ? 'yellow' : 'red') }}-800">
+                        <div class="flex items-center gap-4">
+                            <span class="text-xs text-gray-400 hidden sm:inline">{{ $service['uptime'] }} uptime</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $service['status'] === 'operational' ? 'bg-green-50 text-green-700' : ($service['status'] === 'degraded' ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700') }}">
                                 {{ ucfirst($service['status']) }}
                             </span>
-                            <p class="text-xs text-gray-500 mt-1">{{ $service['uptime'] }} uptime</p>
                         </div>
                     </div>
                     @endforeach
                 </div>
             </div>
+            @endforeach
 
-            <!-- Available Features -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-12">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">Available Features</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">User Authentication</h4>
-                                <p class="text-gray-600">Registration, login, and session management</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">Account Management</h4>
-                                <p class="text-gray-600">Create and manage banking accounts</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">Transaction Processing</h4>
-                                <p class="text-gray-600">Deposits, withdrawals, and transfers</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">API Access</h4>
-                                <p class="text-gray-600">RESTful API with authentication</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">Multi-Currency Support</h4>
-                                <p class="text-gray-600">GCU and traditional currencies</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start">
-                            <svg class="w-6 h-6 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                            </svg>
-                            <div>
-                                <h4 class="text-lg font-medium text-gray-900">Ledger System</h4>
-                                <p class="text-gray-600">Double-entry bookkeeping</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Checks -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-12">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">System Health Checks</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- System Health Checks -->
+            <div class="mb-6">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-1">System Health</h2>
+                <div class="bg-white rounded-lg border border-gray-200">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
                         @foreach($status['checks'] as $check => $result)
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0">
-                                @if($result['status'] === 'operational')
-                                    <svg class="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                                    </svg>
-                                @elseif($result['status'] === 'degraded')
-                                    <svg class="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                                    </svg>
-                                @else
-                                    <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                                    </svg>
-                                @endif
-                            </div>
-                            <div class="ml-3">
-                                <h4 class="text-lg font-medium text-gray-900 capitalize">{{ str_replace('_', ' ', $check) }}</h4>
-                                <p class="text-gray-600">{{ $result['message'] }}</p>
+                        <div class="px-5 py-4 flex items-start gap-3">
+                            @if($result['status'] === 'operational')
+                                <svg class="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                            @elseif($result['status'] === 'degraded')
+                                <svg class="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            @else
+                                <svg class="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                            @endif
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 capitalize">{{ str_replace('_', ' ', $check) }}</div>
+                                <div class="text-xs text-gray-500">{{ $result['message'] }}</div>
                                 @if(isset($result['response_time']))
-                                    <p class="text-sm text-gray-500 mt-1">Response time: {{ $result['response_time'] }}ms</p>
-                                @endif
-                                @if(isset($result['usage']))
-                                    <p class="text-sm text-gray-500 mt-1">Usage: {{ $result['usage'] }}</p>
+                                    <div class="text-xs text-gray-400 mt-0.5">{{ $result['response_time'] }}ms</div>
                                 @endif
                             </div>
                         </div>
@@ -234,41 +129,35 @@
 
             <!-- Recent Incidents -->
             @if(count($incidents) > 0)
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-semibold text-gray-900">Recent Incidents</h2>
-                </div>
-                <div class="divide-y divide-gray-200">
+            <div class="mb-6">
+                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-1">Recent Incidents</h2>
+                <div class="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
                     @foreach($incidents as $incident)
-                    <div class="p-6">
-                        <div class="flex items-start justify-between">
+                    <div class="px-5 py-4">
+                        <div class="flex items-start justify-between mb-2">
                             <div>
-                                <h3 class="text-lg font-medium text-gray-900">{{ $incident['title'] }}</h3>
-                                <p class="text-sm text-gray-500 mt-1">
-                                    {{ $incident['started_at']->format('M d, Y H:i') }} - 
+                                <h3 class="text-sm font-medium text-gray-900">{{ $incident['title'] }}</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    {{ $incident['started_at']->format('M d, Y H:i') }}
                                     @if($incident['resolved_at'])
-                                        {{ $incident['resolved_at']->format('M d, Y H:i') }}
+                                        &mdash; {{ $incident['resolved_at']->format('M d, Y H:i') }}
                                     @else
-                                        Ongoing
+                                        &mdash; Ongoing
                                     @endif
                                 </p>
                             </div>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-{{ $incident['status'] === 'resolved' ? 'green' : ($incident['status'] === 'in_progress' ? 'yellow' : 'red') }}-100 text-{{ $incident['status'] === 'resolved' ? 'green' : ($incident['status'] === 'in_progress' ? 'yellow' : 'red') }}-800">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                {{ $incident['status'] === 'resolved' ? 'bg-green-50 text-green-700' : ($incident['status'] === 'in_progress' ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700') }}">
                                 {{ ucfirst(str_replace('_', ' ', $incident['status'])) }}
                             </span>
                         </div>
-                        
+
                         @if(count($incident['updates']) > 0)
-                        <div class="mt-4 space-y-3">
+                        <div class="ml-4 border-l-2 border-gray-200 pl-4 mt-3 space-y-2">
                             @foreach($incident['updates'] as $update)
-                            <div class="flex items-start">
-                                <div class="flex-shrink-0">
-                                    <div class="w-2 h-2 bg-gray-400 rounded-full mt-2"></div>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm text-gray-600">{{ $update['message'] }}</p>
-                                    <p class="text-xs text-gray-500 mt-1">{{ $update['created_at']->format('M d, Y H:i') }}</p>
-                                </div>
+                            <div>
+                                <p class="text-xs text-gray-600">{{ $update['message'] }}</p>
+                                <p class="text-xs text-gray-400">{{ $update['created_at']->format('M d, H:i') }}</p>
                             </div>
                             @endforeach
                         </div>
@@ -279,10 +168,10 @@
             </div>
             @endif
 
-            <!-- API Status Link -->
-            <div class="mt-12 text-center">
-                <p class="text-gray-600">
-                    Need programmatic access? Check our 
+            <!-- Footer -->
+            <div class="text-center py-8">
+                <p class="text-sm text-gray-500">
+                    Programmatic access:
                     <a href="{{ route('status.api') }}" class="text-indigo-600 hover:text-indigo-700 font-medium">Status API</a>
                 </p>
             </div>

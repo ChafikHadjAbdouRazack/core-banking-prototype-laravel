@@ -31,6 +31,10 @@ class KeyReconstructionService
         string $deviceShardData,
         string $sessionToken
     ): ReconstructedKey {
+        if (! $this->canReconstruct($userUuid)) {
+            throw new RuntimeException('Rate limit exceeded for key reconstruction');
+        }
+
         // Get the auth shard from database
         $authShardRecord = KeyShardRecord::query()
             ->forUser($userUuid)
@@ -70,6 +74,10 @@ class KeyReconstructionService
         string $deviceShardData,
         string $recoveryShardData
     ): ReconstructedKey {
+        if (! $this->canReconstruct($userUuid)) {
+            throw new RuntimeException('Rate limit exceeded for key reconstruction');
+        }
+
         $deviceShard = new KeyShard(
             type: ShardType::DEVICE,
             data: $deviceShardData,

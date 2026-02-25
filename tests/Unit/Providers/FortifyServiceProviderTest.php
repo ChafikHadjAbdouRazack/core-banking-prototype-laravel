@@ -27,5 +27,5 @@ it('has register method that can be called', function () {
 
 it('has boot method', function () {
     // Just test that the boot method exists
-    expect(method_exists($this->provider, 'boot'))->toBeTrue();
+    expect((new ReflectionClass($this->provider))->hasMethod('boot'))->toBeTrue();
 });

@@ -14,14 +14,14 @@ class SyntaxHighlighterTest extends TestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(SyntaxHighlighter::class));
+        $this->assertNotEmpty((new ReflectionClass(SyntaxHighlighter::class))->getName());
     }
 
     #[Test]
     public function test_has_static_methods(): void
     {
-        $this->assertTrue(method_exists(SyntaxHighlighter::class, 'highlight'));
-        $this->assertTrue(method_exists(SyntaxHighlighter::class, 'getLanguageClass'));
+        $this->assertTrue((new ReflectionClass(SyntaxHighlighter::class))->hasMethod('highlight'));
+        $this->assertTrue((new ReflectionClass(SyntaxHighlighter::class))->hasMethod('getLanguageClass'));
     }
 
     #[Test]

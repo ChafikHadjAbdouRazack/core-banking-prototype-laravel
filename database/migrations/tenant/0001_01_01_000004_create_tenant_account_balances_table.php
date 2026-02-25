@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->decimal('available_balance', 20, 8)->default(0);
             $table->decimal('pending_balance', 20, 8)->default(0);
             $table->decimal('reserved_balance', 20, 8)->default(0);
-            $table->timestamp('last_transaction_at')->nullable();
+            $table->dateTime('last_transaction_at')->nullable();
             $table->timestamps();
 
             $table->unique(['account_uuid', 'currency']);

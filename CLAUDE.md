@@ -20,8 +20,32 @@ git status && git branch --show-current
 ### Version Status
 | Version | Status | Key Changes |
 |---------|--------|-------------|
-| v2.7.0 | 📋 Planned | AI Query Endpoints, RegTech Adapters, SDK Generation, BaaS Implementation |
-| v2.6.0 | ✅ Released | Privacy Layer & ERC-4337: Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing |
+| v5.3.1 | ✅ Released | Firebase FCM v1 Migration: kreait/laravel-firebase SDK, legacy HTTP API removal, service account auth, graceful null-messaging fallback |
+| v5.2.0 | ✅ Released | X402 Protocol: HTTP-native micropayments (USDC on Base), payment gate middleware, facilitator integration, AI agent payments, spending limits, GraphQL/REST APIs, MCP tool |
+| v5.1.6 | ✅ Released | Security Hardening: copyright year, accessibility improvements, CSP headers, email config defaults |
+| v5.1.5 | ✅ Released | Dependency Cleanup: l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example`, passkey test fix |
+| v5.1.4 | ✅ Released | Refresh Token Mechanism: proper access/refresh token pairs with rotation, PHPStan fix, OpenAPI docs update |
+| v5.1.3 | ✅ Released | Mobile API Compat: optional `owner_address` for smart account onboarding, auth response standardization, token refresh/logout-all endpoints, rate limiter 500 fix |
+| v5.1.2 | ✅ Released | Production Landing Page Fix: standalone pre-compiled CSS for `/app` (CSP-compliant, Vite-independent) |
+| v5.1.1 | ✅ Released | Mobile App Landing Page: `/app` teaser with email signup, feature showcase, flaky Azure HSM test fix |
+| v5.1.0 | ✅ Released | Mobile API Completeness: 21 mobile endpoints (Privacy, Commerce, Card, Wallet, Mobile), GraphQL 33-domain full coverage, blockchain address models, CI hardening, axios CVE fix |
+| v5.0.1 | ✅ Released | Platform Hardening: GraphQL CQRS alignment (21 mutations), OpenAPI 100% coverage (52 controllers), Plugin Marketplace UI, PHP 8.4 CI, 97 test conversions, documentation refresh |
+| v5.0.0 | ✅ Released | Streaming Architecture (MAJOR): Event streaming (Redis Streams publisher/consumer), live dashboard (5 metrics endpoints), notification system (5 channels), API gateway middleware |
+| v4.3.0 | ✅ Released | Developer Experience: 4 new GraphQL domains (Fraud, Mobile, MobilePayment, TrustCert), dashboard widget plugin, CLI commands (schema-check, plugin-verify, domain-status), GraphQL rate limiting + query cost analysis |
+| v4.2.0 | ✅ Released | Real-time Platform: GraphQL subscriptions (4 new), plugin hook system (17 hooks), webhook-notifier + audit-exporter plugins, core domain mutations (8 new) |
+| v4.1.0 | ✅ Released | GraphQL Expansion: 6 new domains (Treasury, Payment, Lending, Stablecoin, CrossChain, DeFi), event replay filtering, projector health monitoring |
+| v4.0.0 | ✅ Released | Architecture Evolution: Event Store v2 (domain routing, migration tooling, upcasting), GraphQL API (lighthouse-php, 4 domains, subscriptions, DataLoaders), Plugin Marketplace (manager, sandbox, security scanner) |
+| v3.5.0 | ✅ Released | Compliance Certification: SOC 2 Type II, PCI DSS readiness, multi-region deployment, GDPR enhanced (ROPA, DPIA, breach notification, consent v2, retention) |
+| v3.4.0 | ✅ Released | API Maturity & DX: API versioning, tier-aware rate limiting, SDK generation, OpenAPI annotations (143+ endpoints) |
+| v3.3.0 | ✅ Released | Event Store Optimization & Observability: Event replay/rebuild/stats/cleanup commands, observability dashboards, structured logging, deep health checks, event archival/compaction |
+| v3.2.0 | ✅ Released | Production Readiness & Plugin Architecture: Module manifests, enable/disable, modular routes, module admin API/UI, k6 load tests, query performance middleware, open-source templates |
+| v3.1.0 | ✅ Released | Consolidation, Documentation & UI Completeness: Swagger annotations, 7 feature pages, 15 Filament admin resources, 4 user-facing views, developer portal update |
+| v3.0.0 | ✅ Released | Cross-Chain & DeFi: Bridge protocols (Wormhole/LayerZero/Axelar), DeFi connectors (Uniswap/Aave/Curve/Lido), cross-chain swaps, multi-chain portfolio |
+| v2.10.0 | ✅ Released | Mobile API Compatibility: Wallet, TrustCert, Commerce, Relayer mobile endpoints |
+| v2.9.0 | ✅ Released | BaaS Implementation, SDK Generation, Production Hardening |
+| v2.8.0 | ✅ Released | AI Query Endpoints, RegTech Adapters, MiFID II/MiCA/Travel Rule Services |
+| v2.7.0 | ✅ Released | Mobile Payment API, Passkey Auth, P2P Transfer Helpers, TrustCert Export, Security Hardening |
+| v2.6.0 | ✅ Released | Privacy Layer & ERC-4337: Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing with Biometric JWT, Production-Ready Gas Station |
 | v2.5.0 | ✅ Released | Mobile App Launch (Expo/React Native, separate repo) |
 | v2.4.0 | ✅ Released | Privacy & Identity: Key Management, Privacy Layer, Commerce, TrustCert |
 | v2.3.0 | ✅ Released | AI Framework, RegTech Foundation, BaaS Configuration |
@@ -83,7 +107,7 @@ php artisan tenants:export-data <id> --format=json       # Export data
 
 ```
 app/
-├── Domain/           # DDD bounded contexts (30+ domains)
+├── Domain/           # DDD bounded contexts (42 domains)
 │   ├── Account/      # Account management
 │   ├── Exchange/     # Trading engine
 │   ├── Lending/      # P2P lending
@@ -96,6 +120,11 @@ app/
 │   ├── Commerce/     # SBT, Merchants, Attestations (v2.4.0)
 │   ├── TrustCert/    # W3C VCs, Certificate Authority (v2.4.0)
 │   ├── Relayer/      # ERC-4337 Gas Abstraction, Smart Accounts (v2.6.0)
+│   ├── MobilePayment/# Payment Intents, Receipts, Activity Feed (v2.7.0)
+│   ├── RegTech/      # MiFID II, MiCA, Travel Rule, Jurisdiction Adapters (v2.8.0)
+│   ├── X402/         # HTTP 402 Protocol, Payment Gate, AI Agent Payments (v5.2.0)
+│   ├── CrossChain/   # Bridge protocols, cross-chain swaps, multi-chain portfolio (v3.0.0)
+│   ├── DeFi/         # DEX aggregation, lending, staking, yield optimization (v3.0.0)
 │   └── Shared/       # CQRS interfaces, events
 ├── Infrastructure/   # CQRS bus implementations
 ├── Http/Controllers/ # REST API
@@ -108,10 +137,18 @@ app/
 - **CQRS**: Command/Query Bus with read/write separation
 - **Sagas**: Laravel Workflow with compensation
 - **Multi-Tenancy**: Team-based isolation with `UsesTenantConnection` trait
+- **GraphQL API**: Lighthouse PHP with schema-first design, 34 domain schemas
+- **Event Streaming**: Redis Streams publisher/consumer with domain routing
 
 ### Key Services (DON'T RECREATE)
 | Need | Existing Service |
 |------|------------------|
+| X402 Payment Gate | `X402PaymentGateMiddleware` (X402) |
+| X402 Settlement | `X402SettlementService` (X402) |
+| X402 Client | `X402ClientService` (X402) |
+| X402 Verification | `X402PaymentVerificationService` (X402) |
+| X402 Pricing | `X402PricingService` (X402) |
+| X402 MCP Tool | `X402PaymentTool` (AI/MCP) |
 | Hardware Wallets | `HardwareWalletManager` (Wallet) |
 | Ledger Signing | `LedgerSignerService` (Wallet) |
 | Trezor Signing | `TrezorSignerService` (Wallet) |
@@ -121,6 +158,7 @@ app/
 | Mobile Devices | `MobileDeviceService` (Mobile) |
 | Biometric Auth | `BiometricAuthenticationService` (Mobile) |
 | Push Notifications | `PushNotificationService` (Mobile) |
+| Firebase Messaging | `kreait/laravel-firebase` → `Kreait\Firebase\Contract\Messaging` |
 | Mobile Sessions | `MobileSessionService` (Mobile) |
 | Key Sharding | `ShamirService` (KeyManagement) |
 | ZK-KYC | `ZkKycService` (Privacy) |
@@ -133,9 +171,42 @@ app/
 | Smart Accounts | `SmartAccountService` (Relayer) |
 | Gas Station | `GasStationService` (Relayer) |
 | UserOp Signing | `UserOperationSigningService` (Relayer) |
+| Wallet Balance | `WalletBalanceService` (Relayer) |
+| Biometric JWT | `BiometricJWTService` (Mobile) |
 | Merkle Trees | `MerkleTreeService` (Privacy) |
 | Delegated Proofs | `DelegatedProofService` (Privacy) |
 | SRS Manifest | `SrsManifestService` (Privacy) |
+| Payment Intents | `PaymentIntentService` (MobilePayment) |
+| Receipts | `ReceiptService` (MobilePayment) |
+| Activity Feed | `ActivityFeedService` (MobilePayment) |
+| Receive Address | `ReceiveAddressService` (MobilePayment) |
+| Network Status | `NetworkAvailabilityService` (MobilePayment) |
+| Passkey Auth | `PasskeyAuthenticationService` (Mobile) |
+| Wallet Transfer | `WalletTransferService` (Wallet) |
+| Certificate Export | `CertificateExportService` (TrustCert) |
+| MiFID II Reporting | `MifidReportingService` (RegTech) |
+| MiCA Compliance | `MicaComplianceService` (RegTech) |
+| Travel Rule | `TravelRuleService` (RegTech) |
+| RegTech Orchestration | `RegTechOrchestrationService` (RegTech) |
+| AI Transaction Query | `TransactionQueryTool` (AI) |
+| Bridge Orchestration | `BridgeOrchestratorService` (CrossChain) |
+| Bridge Fee Comparison | `BridgeFeeComparisonService` (CrossChain) |
+| Cross-Chain Swap | `CrossChainSwapService` (CrossChain) |
+| Multi-Chain Portfolio | `MultiChainPortfolioService` (CrossChain) |
+| Cross-Chain Yield | `CrossChainYieldService` (CrossChain) |
+| Swap Aggregation | `SwapAggregatorService` (DeFi) |
+| Swap Routing | `SwapRouterService` (DeFi) |
+| DeFi Portfolio | `DeFiPortfolioService` (DeFi) |
+| DeFi Positions | `DeFiPositionTrackerService` (DeFi) |
+| Flash Loans | `FlashLoanService` (DeFi) |
+| Event Stream Publishing | `EventStreamPublisher` (Shared/EventSourcing) |
+| Event Stream Consuming | `EventStreamConsumer` (Shared/EventSourcing) |
+| Live Metrics | `LiveMetricsService` (Monitoring) |
+| Notifications | `NotificationService` (Shared/Notifications) |
+| Plugin Management | `PluginManager` (Infrastructure/Plugins) |
+| Plugin Sandbox | `PluginSandbox` (Infrastructure/Plugins) |
+| Plugin Security | `PluginSecurityScanner` (Infrastructure/Plugins) |
+| Projector Health | `ProjectorHealthService` (Monitoring) |
 
 ---
 
@@ -201,7 +272,7 @@ Before marking any task complete:
 
 | Category | Files |
 |----------|-------|
-| Config | `.env.example`, `phpunit.xml`, `phpstan.neon`, `.php-cs-fixer.php` |
+| Config | `.env.example`, `.env.production.example`, `phpunit.xml`, `phpstan.neon`, `.php-cs-fixer.php` |
 | CI/CD | `.github/workflows/ci-pipeline.yml`, `.github/workflows/security.yml` |
 | Docs | `docs/`, `README.md` |
 

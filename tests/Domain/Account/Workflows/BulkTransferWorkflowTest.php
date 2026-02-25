@@ -21,5 +21,5 @@ it('can execute bulk transfers successfully', function () {
 });
 
 it('can create workflow stub for bulk transfer', function () {
-    expect(class_exists(BulkTransferWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(BulkTransferWorkflow::class))->getName())->not->toBeEmpty();
 });

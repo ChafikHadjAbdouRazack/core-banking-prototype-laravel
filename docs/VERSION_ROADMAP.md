@@ -1098,8 +1098,32 @@ main ─────────●─────────●─────
 | **v2.2.0** | Mobile Backend | Device Mgmt, Biometrics, Push Notifications, WebSocket | ✅ Released 2026-01-31 |
 | **v2.3.0** | Industry Leadership | AI Framework, RegTech Foundation, BaaS Config | ✅ Released 2026-02-01 |
 | **v2.4.0** | Privacy & Identity | Key Management, Privacy, Commerce, TrustCert | ✅ Released 2026-02-01 |
-| **v2.5.0** | Mobile App Launch | Mobile Frontend (Expo/React Native), App Store Release | 🚧 In Progress |
-| **v2.6.0** | Platform Completion | AI Queries, RegTech Adapters, SDK Generation | 📋 Planned |
+| **v2.5.0** | Mobile App Launch | Mobile Frontend (Expo/React Native), App Store Release | ✅ Released |
+| **v2.6.0** | Privacy Layer & ERC-4337 | Merkle Trees, Smart Accounts, Delegated Proofs, Gas Station | ✅ Released 2026-02-02 |
+| **v2.7.0** | Mobile Payment API | Payment Intents, Receipts, Passkey Auth, P2P Transfers | ✅ Released 2026-02-08 |
+| **v2.8.0** | AI Query & RegTech | AI Transaction Queries, MiFID II, MiCA, Travel Rule | ✅ Released 2026-02-08 |
+| **v2.9.0** | BaaS & Production Hardening | ML Anomaly Detection, BaaS Implementation, SDK Generation | ✅ Released 2026-02-10 |
+| **v2.9.1** | Production Hardening | On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault, Security Audit | ✅ Released 2026-02-10 |
+| **v2.10.0** | Mobile API Compatibility | ~30 mobile-facing API endpoints, response envelope consistency, wallet/TrustCert/commerce/relayer mobile APIs | ✅ Released 2026-02-10 |
+| **v3.0.0** | Cross-Chain & DeFi | CrossChain bridges (Wormhole/LayerZero/Axelar), DeFi protocols (Uniswap/Aave/Curve/Lido), cross-chain swaps, multi-chain portfolio | ✅ Released 2026-02-10 |
+| **v3.1.0** | Consolidation & UI | Documentation refresh, Swagger coverage, website features, admin UI (15 domains), user UI, developer portal | ✅ Released 2026-02-11 |
+| **v3.2.0** | Production Readiness & Plugin Architecture | Module manifests, enable/disable, modular routes, admin API/UI, k6 tests, query middleware, open-source templates | ✅ Released 2026-02-11 |
+| **v3.2.1** | Patch: GitLeaks & Dependencies | GitLeaks false positives fix, 14 dependency updates | ✅ Released 2026-02-12 |
+| **v3.3.0** | Event Store & Observability | Event replay/rebuild, real-time dashboards, structured logging, deep health checks | ✅ Released 2026-02-12 |
+| **v3.4.0** | API Maturity & DX | API versioning, rate limiting per tier, SDK auto-generation, OpenAPI 100% | ✅ Released 2026-02-12 |
+| **v3.5.0** | Compliance Certification | SOC 2, PCI DSS, multi-region, GDPR tooling | ✅ Released 2026-02-12 |
+| **v4.0.0** | Architecture Evolution | Event Store v2, GraphQL API, Plugin Marketplace | ✅ Released 2026-02-13 |
+| **v4.1.0** | GraphQL Expansion | 6 new GraphQL domains (Treasury, Payment, Lending, Stablecoin, CrossChain, DeFi), event replay filters, projector health monitoring | ✅ Released 2026-02-13 |
+| **v4.2.0** | Real-time Platform | GraphQL subscriptions (4 new), plugin hook system (17 hooks), example plugins, 8 core domain mutations | ✅ Released 2026-02-13 |
+| **v4.3.0** | Developer Experience | 4 new GraphQL domains, dashboard widget plugin, CLI commands, GraphQL security hardening | ✅ Released 2026-02-13 |
+| **v5.0.0** | Streaming Architecture | Event streaming (Redis Streams), live dashboard, notification system, API gateway, GraphQL schema expansion (33 domains) | ✅ Released 2026-02-13 |
+| **v5.0.1** | Platform Hardening | GraphQL CQRS alignment (21 mutations), OpenAPI 100%, Plugin Marketplace UI, PHP 8.4 CI, 97 test conversions, doc refresh | ✅ Released 2026-02-13 |
+| **v5.1.0** | Mobile API Completeness | 21 mobile endpoints, GraphQL 33-domain full coverage, blockchain models, CI hardening, axios CVE fix | ✅ Released 2026-02-16 |
+| **v5.1.1** | Mobile App Landing Page | Landing page at `/app` with email signup, flaky Azure HSM test fix | ✅ Released 2026-02-16 |
+| **v5.1.2** | Production Landing Page Fix | Standalone pre-compiled CSS for `/app` (CSP-compliant, Vite-independent) | ✅ Released 2026-02-16 |
+| **v5.1.3** | Mobile API Compatibility | Auth response standardization, token refresh/logout-all endpoints, rate limiter fix | ✅ Released 2026-02-17 |
+| **v5.1.4** | Refresh Token Mechanism | Proper access/refresh token pairs, token rotation, PHPStan fix, OpenAPI docs update | ✅ Released 2026-02-18 |
+| **v5.1.5** | Dependency Cleanup & Production Readiness | l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example` for mobile backend, passkey test fix | ✅ Released 2026-02-21 |
 
 ---
 
@@ -1194,7 +1218,7 @@ main ─────────●─────────●─────
 
 ---
 
-## Version 2.5.0 - Mobile App Launch (IN PROGRESS)
+## Version 2.5.0 - Mobile App Launch ✅ COMPLETED
 
 **Target**: Q1 2026
 **Theme**: Consumer-Ready Mobile Experience
@@ -1303,62 +1327,569 @@ GET    /api/v1/trustcert/verify/{token} # Verify presentation
 
 ---
 
-## Version 2.6.0 - Platform Completion (PLANNED)
+## Version 2.6.0 - Privacy Layer & ERC-4337 Relayer ✅ COMPLETED
 
-**Target**: Q2 2026
-**Theme**: Complete v2.3.0 Deferred Features + Production Hardening
+**Release Date**: February 2, 2026
+**Theme**: Mobile Backend Privacy & Account Abstraction
 
-### Phase 1: AI Query Endpoints
+### Achievements
 
-| Component | Description | Status |
-|-----------|-------------|--------|
-| `TransactionQueryTool` | Natural language transaction queries | 📋 |
-| API Endpoints | `/api/ai/query/transactions`, `/api/ai/query/balances` | 📋 |
-| Query Explanation | Explain AI interpretation of queries | 📋 |
+| Category | Deliverables |
+|----------|--------------|
+| Privacy Domain | Merkle Trees, Delegated Proofs, SRS Manifest |
+| Relayer Domain | Smart Accounts, Gas Station, UserOp Signing |
+| Security | Biometric JWT, HSM ECDSA, Balance Checking |
+| Quality | Security audit hardening, comprehensive tests |
 
-### Phase 2: ML Anomaly Detection
-
-| Component | Description | Status |
-|-----------|-------------|--------|
-| `StatisticalAnomalyActivity` | Z-score, IQR-based detection | 📋 |
-| `BehavioralProfileActivity` | User baseline comparison | 📋 |
-| `VelocityAnomalyActivity` | Transaction frequency analysis | 📋 |
-| `GeolocationAnomalyActivity` | Location-based anomalies | 📋 |
-| Database | `user_behavioral_profiles`, `anomaly_detections` | 📋 |
-
-### Phase 3: RegTech Adapters
-
-| Component | Description | Status |
-|-----------|-------------|--------|
-| `FinCENAdapter` | BSA E-Filing integration | 📋 |
-| `ESMAAdapter` | FIRDS, MiFID reporting | 📋 |
-| `FCAAdapter` | Gabriel system integration | 📋 |
-| `MASAdapter` | MAS Gateway integration | 📋 |
-| MiFID II Services | Transaction reporting (Article 26) | 📋 |
-| MiCA Services | CASP authorization, Travel Rule | 📋 |
-
-### Phase 4: BaaS Implementation
-
-| Component | Description | Status |
-|-----------|-------------|--------|
-| `SDKGeneratorService` | Auto-generate TypeScript, Python, Java, Go SDKs | 📋 |
-| Embeddable Widgets | Payment, Checkout, Balance, Transfer widgets | 📋 |
-| `PartnerUsageMeteringService` | API usage tracking | 📋 |
-| `PartnerBillingService` | Invoice generation | 📋 |
-| Partner Marketplace | Integration connectors | 📋 |
-
-### Phase 5: Production Hardening
-
-| Component | Description | Status |
-|-----------|-------------|--------|
-| Smart Contracts | Deploy TrustCert SBT on Polygon | 📋 |
-| ZK Circuits | Production snarkjs integration | 📋 |
-| HSM Integration | Real HSM provider (AWS CloudHSM/Azure) | 📋 |
-| Security Audit | Third-party audit (Trail of Bits) | 📋 |
+### Delivered Features
+- **MerkleTreeService** - Real-time privacy pool state synchronization
+- **DelegatedProofService** - Server-side ZK proof generation for mobile
+- **SrsManifestService** - ZK circuit SRS file management
+- **SmartAccountService** - ERC-4337 smart account deployment
+- **GasStationService** - Enhanced with initCode support
+- **UserOperationSigningService** - Auth shard signing with biometric verification
+- **BiometricJWTService** - JWT token verification for UserOp signing
+- **WalletBalanceService** - Production-ready balance checking
 
 ---
 
-*Document Version: 2.5*
+## Version 2.7.0 - Mobile Payment API & Enhanced Authentication ✅ COMPLETED
+
+**Release Date**: February 8, 2026
+**Theme**: Complete Mobile Payment Infrastructure
+
+### Achievements
+
+| Category | Deliverables |
+|----------|--------------|
+| MobilePayment Domain | Payment Intents, Receipts, Activity Feed, Network Status |
+| Authentication | WebAuthn/Passkey challenge-response endpoints |
+| Wallet | P2P transfer helpers (address validation, name resolution, fee quotes) |
+| TrustCert | Certificate details and PDF export for mobile |
+| Security | Response shape alignment, race condition fixes, idempotency |
+| Tests | 17 WalletTransfer + 10 Passkey + 78 MobilePayment tests |
+
+### Delivered Features
+
+#### MobilePayment Domain (NEW - 10 PRs)
+- **PaymentIntentService** - Full payment lifecycle with state machine
+- **ReceiptService** - Shareable receipts with Redis caching and share URLs
+- **ActivityFeedService** - Cursor-paginated feed with type filters
+- **ReceiveAddressService** - Deposit address generation per network/asset
+- **NetworkAvailabilityService** - Real-time network status
+- **FeeEstimationService** - Gas cost estimation with shield surcharges
+- **CertificateExportService** - Mobile-spec certificate details and PDF export
+
+#### Authentication
+- **PasskeyAuthenticationService** - WebAuthn/FIDO2 with ECDSA P-256 verification
+- Passkey registration and credential management on MobileDevice model
+
+#### Wallet P2P Transfer
+- **WalletTransferService** - Address validation, ENS/SNS resolution, fee quoting
+- Base58 address validation for Solana and Tron networks
+
+### API Endpoints (v2.7.0)
+
+| Category | Endpoints |
+|----------|-----------|
+| Payment Intents | `POST /v1/payments/intents`, `GET /{id}`, `POST /{id}/submit`, `POST /{id}/cancel` |
+| Activity Feed | `GET /v1/activity` |
+| Transactions | `GET /v1/transactions/{txId}`, `POST /{txId}/receipt` |
+| Wallet | `GET /v1/wallet/receive`, `GET /v1/wallet/validate-address`, `POST /v1/wallet/resolve-name`, `POST /v1/wallet/quote` |
+| Network | `GET /v1/networks/status` |
+| Passkey | `POST /v1/auth/passkey/challenge`, `POST /v1/auth/passkey/authenticate` |
+| TrustCert | `GET /v1/trustcert/{certId}/certificate`, `POST /{certId}/export-pdf` |
+
+---
+
+## Version 2.8.0 - AI Query & Regulatory Technology ✅ COMPLETED
+
+**Release Date**: February 8, 2026
+**Theme**: AI-Powered Queries + Multi-Jurisdiction RegTech
+
+### Delivered Features
+
+| Feature | Status | PRs |
+|---------|--------|-----|
+| AI Transaction Query Tools | ✅ Complete | #397 |
+| AI Query API Endpoints | ✅ Complete | #398 |
+| RegTech Jurisdiction Adapters (FinCEN, ESMA, FCA, MAS) | ✅ Complete | #399 |
+| MiFID II, MiCA, Travel Rule Services + API | ✅ Complete | #400 |
+
+### AI Query Endpoints
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `TransactionQueryTool` | Natural language transaction queries | ✅ |
+| `BalanceQueryTool` | Multi-currency balance aggregation | ✅ |
+| `PatternAnalysisTool` | Spending pattern detection | ✅ |
+| API Endpoints | `/api/ai/query/transactions`, `/balances`, `/patterns` | ✅ |
+| MCP Tools | Model Context Protocol integration | ✅ |
+
+### RegTech Adapters & Services
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `FinCENAdapter` | US BSA E-Filing (CTR, SAR, CMIR, FBAR) | ✅ |
+| `ESMAAdapter` | EU FIRDS/TREM (MiFID, EMIR, SFTR) | ✅ |
+| `FCAAdapter` | UK Gabriel (MiFID, REP-CRIM, SUP16) | ✅ |
+| `MASAdapter` | SG eServices Gateway (MAS Returns, STR) | ✅ |
+| `MifidReportingService` | Transaction reporting (RTS 25), best execution (RTS 27/28) | ✅ |
+| `MicaComplianceService` | CASP authorization, whitepaper validation, reserves | ✅ |
+| `TravelRuleService` | FATF Rec 16, jurisdiction thresholds | ✅ |
+| RegTech API | 11 endpoints under `/api/regtech` | ✅ |
+
+### Scope Decisions
+
+| Item | Decision |
+|------|----------|
+| ML Anomaly Detection | Deferred to v2.9.0 (requires behavioral profiling DB schema) |
+| BaaS Implementation | Deferred to v2.9.0 (SDK generation + partner metering) |
+| Production Hardening | Deferred to v2.9.0 (smart contracts, ZK circuits, HSM) |
+
+---
+
+## Version 2.9.0 - BaaS & Production Hardening ✅ RELEASED
+
+**Release Date**: February 10, 2026
+**Theme**: Banking-as-a-Service + Production Readiness
+
+### Phase 1: ML Anomaly Detection ✅ COMPLETE
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `StatisticalAnomalyActivity` | Z-score, IQR-based detection | ✅ |
+| `BehavioralProfileActivity` | User baseline comparison | ✅ |
+| `VelocityAnomalyActivity` | Transaction frequency analysis | ✅ |
+| `GeolocationAnomalyActivity` | Location-based anomalies | ✅ |
+| Database | `user_behavioral_profiles`, `anomaly_detections` | ✅ |
+
+### Phase 2: BaaS Implementation ✅ COMPLETE
+
+| Component | Description | Status | PR |
+|-----------|-------------|--------|-----|
+| `PartnerUsageMeteringService` | API usage tracking + auth middleware | ✅ | #429 |
+| `PartnerBillingService` | Invoice generation with overage + discounts | ✅ | #430 |
+| `SdkGeneratorService` | Auto-generate TypeScript, Python, Java, Go, PHP SDKs | ✅ | #431 |
+| `EmbeddableWidgetService` | Payment, Checkout, Balance, Transfer, Account widgets | ✅ | #432 |
+| `PartnerMarketplaceService` | Integration connectors + `PartnerIntegration` model | ✅ | #433 |
+| Partner API Controllers | 5 controllers, 26 endpoints under `/api/partner/v1` | ✅ | #434 |
+| Integration Tests | End-to-end BaaS workflow tests | ✅ | #435 |
+
+### Phase 3: Production Hardening ✅ COMPLETE (v2.9.1)
+
+| Component | Description | Status | PR |
+|-----------|-------------|--------|-----|
+| On-Chain SBT | ERC-5192 Soulbound Token on Polygon via JSON-RPC | ✅ | #441 |
+| ZK Circuits | SnarkjsProverService, PoseidonHasher, ProductionMerkleTreeService | ✅ | #442 |
+| HSM Providers | AWS KMS + Azure Key Vault providers with HsmProviderFactory | ✅ | #443 |
+| Security Audit | `php artisan security:audit` with 8 OWASP checks | ✅ | #444 |
+
+---
+
+## Version 2.9.1 - Production Hardening ✅ RELEASED
+
+**Release Date**: February 10, 2026
+**Theme**: Production-grade implementations for smart contracts, ZK circuits, HSM, and security
+
+### Delivered
+
+| Feature | Description | PR |
+|---------|-------------|-----|
+| On-Chain SBT | ERC-5192 Soulbound Token minting/revoking on Polygon, opt-in via config | #441 |
+| snarkjs Integration | SnarkjsProverService wraps CLI for ZK proof generation, PoseidonHasher for Merkle hashing | #442 |
+| AWS KMS & Azure Key Vault | AwsKmsHsmProvider + AzureKeyVaultHsmProvider implementing HsmProviderInterface | #443 |
+| Security Audit Tooling | `php artisan security:audit` command with 8 OWASP Top 10 automated checks | #444 |
+
+---
+
+## Version 2.10.0 - Mobile API Compatibility ✅ RELEASED
+
+**Release Date**: February 10, 2026
+**Theme**: Mobile-Facing API Endpoints & Response Consistency
+
+### Delivered Features
+
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Mobile Commerce API | Merchant listings, QR code parsing/generation, payment requests, payment processing | ✅ |
+| Mobile Relayer API | Relayer status, gas estimation, UserOp building/submission/tracking, paymaster data | ✅ |
+| Mobile Wallet API | Token list, balances, addresses, wallet state, transaction history, send flow | ✅ |
+| Mobile TrustCert API | Trust level status, requirements, limits, certificate application CRUD | ✅ |
+| Auth Compatibility | Response envelope wrapping, /auth/me alias, account deletion, passkey registration | ✅ |
+| CORS Headers | X-Client-Platform and X-Client-Version headers allowed | ✅ |
+| Handover Documentation | Mobile API compatibility handover document (docs/MOBILE_API_COMPATIBILITY.md) | ✅ |
+
+### Summary
+
+Adds approximately 30 new mobile-facing API endpoints across wallet, TrustCert, commerce, and relayer domains. Ensures response envelope consistency (`{ success, data }`) for mobile client consumption. Includes comprehensive handover documentation for frontend integration.
+
+---
+
+## Version 3.0.0 - Cross-Chain & DeFi ✅ COMPLETED
+
+**Release Date**: February 10, 2026
+**GitHub Release**: https://github.com/FinAegis/core-banking-prototype-laravel/releases/tag/v3.0.0
+**Theme**: Cross-Chain Bridges & DeFi Protocol Integration
+
+### Delivered Features
+
+| Feature | Status | PRs |
+|---------|--------|-----|
+| CrossChain Domain (Bridge Protocols) | ✅ Complete | #454 |
+| DeFi Domain (DEX & Lending Connectors) | ✅ Complete | #454 |
+| Code Review Fixes | ✅ Complete | #455 |
+
+### CrossChain Domain
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `BridgeOrchestratorService` | Multi-provider bridge orchestration (Wormhole, LayerZero, Axelar) | ✅ |
+| `BridgeFeeComparisonService` | Cross-provider fee/time comparison with weighted ranking | ✅ |
+| `CrossChainAssetRegistryService` | Token address mapping across 9 chains | ✅ |
+| `BridgeTransactionTracker` | Cache-based bridge transaction lifecycle tracking | ✅ |
+| `CrossChainSwapService` | Atomic cross-chain swaps (bridge + swap in optimal order) | ✅ |
+| `CrossChainSwapSaga` | Compensation-based saga for bridge+swap failure recovery | ✅ |
+| `CrossChainYieldService` | Best yield discovery across chains with bridge cost analysis | ✅ |
+| `MultiChainPortfolioService` | Aggregated portfolio across all chains with DeFi positions | ✅ |
+
+### DeFi Domain
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `UniswapV3Connector` | Multi-fee-tier swaps, L2 gas optimization, price impact estimation | ✅ |
+| `AaveV3Connector` | Supply/borrow/repay/withdraw with market data and health factor | ✅ |
+| `CurveConnector` | Stablecoin-optimized swaps with lower fees (0.04%) | ✅ |
+| `LidoConnector` | ETH staking with stETH derivatives and withdrawal queue | ✅ |
+| `SwapAggregatorService` | Multi-DEX quote aggregation with best-price routing | ✅ |
+| `SwapRouterService` | Optimal route selection across DEXs with price impact validation | ✅ |
+| `FlashLoanService` | Aave V3 flash loan orchestration with 0.05% fee | ✅ |
+| `DeFiPortfolioService` | Aggregated portfolio with protocol/chain/type breakdowns | ✅ |
+| `DeFiPositionTrackerService` | DeFi position tracking with health factor monitoring | ✅ |
+
+### API Endpoints (v3.0.0)
+
+| Category | Endpoints |
+|----------|-----------|
+| CrossChain | `GET /chains`, `POST /bridge/quote`, `POST /bridge/initiate`, `GET /bridge/{id}/status`, `POST /swap/quote`, `POST /swap/execute` |
+| DeFi | `GET /protocols`, `POST /swap/quote`, `POST /swap/execute`, `GET /lending/markets`, `GET /portfolio`, `GET /positions`, `POST /staking/stake`, `GET /yield/best` |
+
+---
+
+## Version 3.1.0 - Consolidation, Documentation & UI Completeness ✅ COMPLETED
+
+**Target**: February 2026
+**Theme**: Consolidation, Documentation & UI Completeness
+
+### Context
+
+After 18 releases (v1.1.0 → v3.0.0), the platform has grown to 41 domains, 266+ services, 167 controllers, and 1,150+ routes. v3.1.0 focuses on filling gaps in documentation, admin UI, user-facing UI, and internal docs to match the feature set.
+
+### Plan: 8 Phases
+
+| Phase | Description | Status | PR |
+|-------|-------------|--------|-----|
+| 1. Internal Docs & Housekeeping | VERSION_ROADMAP, ARCHITECTURAL_ROADMAP, Serena memories, git hygiene | ✅ | #456 |
+| 2. Swagger/OpenAPI Documentation | Fix L5-Swagger config, add @OA annotations to undocumented controllers | ✅ | #457, #458 |
+| 3. Website Feature Pages | Landing page update, 7 new feature pages for v2.0+ features | ✅ | #459 |
+| 4. Developer Portal | Update all 6 developer portal pages with v2.0+ API areas | ✅ | #460, #461 |
+| 5. Admin UI Phase 1 | Filament resources for CrossChain, DeFi, RegTech, Fraud, Wallet, Treasury, Lending | ✅ | #462 |
+| 6. Admin UI Phase 2 | Filament resources for Privacy, Commerce, TrustCert, KeyMgmt, Relayer, MobilePayment, Mobile, Partner | ✅ | #463 |
+| 7. User UI | Blade views for cross-chain, DeFi, privacy, trust certificates | ✅ | #464 |
+| 8. Quality & Forward Planning | CHANGELOG, roadmap update, Serena memory updates | ✅ | #465 |
+
+### Deliverables Summary
+
+| Category | Count | Details |
+|----------|-------|---------|
+| Swagger Annotations | ~80 routes | CrossChain, DeFi, RegTech, MobilePayment, Partner, AI controllers |
+| Website Feature Pages | 7 new | crosschain-defi, privacy-identity, mobile-payments, regtech, baas, ai, multi-tenancy |
+| Developer Portal Pages | 6 updated | index, api-docs, examples, sdks, webhooks, postman |
+| Filament Admin Resources | 15 new | Covering 15 previously-unrepresented domains |
+| User-Facing Views | 4 new | crosschain, defi, privacy, trustcert |
+| New Eloquent Models | 3 | BridgeTransaction, DeFiPosition, Certificate |
+| New Migrations | 3 | bridge_transactions, defi_positions, certificates |
+
+---
+
+## v3.2.0 — Production Readiness & Plugin Architecture ✅ COMPLETED
+
+**Released**: February 11, 2026
+**Theme**: Open-Source Readiness, Plugin System, Performance
+
+### Delivered (6 Phases, PRs #466-#470)
+
+| Phase | Branch | Deliverables |
+|-------|--------|-------------|
+| 1 | `feature/v3.2.0-module-manifests` | 12 new module.json manifests, enable/disable commands, config/modules.php |
+| 2 | `feature/v3.2.0-modular-routes` | ModuleRouteLoader, 24 per-domain route files, api.php reduced from 1,646 to ~240 lines |
+| 3 | `feature/v3.2.0-module-admin` | ModuleController REST API, Filament Modules page, ModuleHealthWidget |
+| 4 | `feature/v3.2.0-performance` | k6 load tests (smoke/load/stress), QueryPerformanceMiddleware, performance:report command |
+| 5 | `feature/v3.2.0-open-source` | Dependabot, issue/PR templates, SPDX headers, README/CONTRIBUTING updates |
+| 6 | `chore/v3.2.0-release` | Integration tests, CHANGELOG, release documentation |
+
+---
+
+## v3.3.0 — Event Store Optimization & Observability ✅ COMPLETED
+
+**Released**: February 12, 2026
+**Theme**: Production Operations Tooling
+
+### Delivered (6 Phases, PRs #493-#498)
+
+| Phase | Branch | Deliverables |
+|-------|--------|-------------|
+| 1 | `feature/v3.3.0-event-store-commands` | EventStoreService, event:stats/replay/rebuild commands, snapshot:cleanup |
+| 2 | `feature/v3.3.0-observability-dashboards` | EventStoreDashboard Filament page, 4 widgets, MonitoringMetricsUpdated broadcast |
+| 3 | `feature/v3.3.0-structured-logging` | StructuredJsonFormatter, StructuredLoggingMiddleware, LogsWithDomainContext trait |
+| 4 | `feature/v3.3.0-deep-health-checks` | EventStoreHealthCheck service, checkDeep/checkDomain on HealthChecker, --deep flag, DomainHealthWidget |
+| 5 | `feature/v3.3.0-event-store-partitioning` | EventArchivalService, event:archive/compact commands, archived_events table, event-store config |
+| 6 | `feature/v3.3.0-release` | 3 integration test suites, CHANGELOG, documentation updates |
+
+---
+
+## v3.4.0 — API Maturity & Developer Experience ✅ COMPLETED
+
+**Released**: February 12, 2026
+**Theme**: API Polish & SDK Ecosystem
+
+### Delivered (PRs #499-#510)
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Formal API Versioning | ✅ | v1/v2/v3 strategy with deprecation headers and sunset dates |
+| Rate Limiting per Tier | ✅ | Partner tier-based rate limiting (Starter/Growth/Enterprise) |
+| SDK Auto-Generation CI | ✅ | Automated SDK builds on release (TypeScript, Python, Go) |
+| OpenAPI 143+ Endpoints | ✅ | Swagger annotations for 143+ endpoints across all domains |
+
+---
+
+## v3.5.0 — Compliance Certification Readiness ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: Enterprise Compliance & Security
+
+### Delivered (4 Phases, PRs #511-#516)
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| SOC 2 Type II Preparation | ✅ | Audit trail, access controls, evidence collection, 14 control families |
+| PCI DSS Readiness | ✅ | Cardholder data isolation, encryption, 12 requirement assessments |
+| Multi-Region Deployment | ✅ | Geographic distribution, data residency, region health monitoring |
+| GDPR Enhanced Compliance | ✅ | Article 30 ROPA, DPIA, breach notification, consent v2, retention policies |
+
+---
+
+## v4.0.0 — Architecture Evolution ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: Event Store v2, GraphQL API, Plugin Marketplace
+
+### Delivered (7 Phases, PRs #517-#523)
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Event Store v2 — Domain Tables | ✅ | EventRouter for namespace-based domain table routing (21 domains) |
+| Event Store v2 — Migration Tooling | ✅ | Batch migration from shared to domain tables with validation |
+| Event Store v2 — Versioning & Upcasting | ✅ | Schema evolution with chained upcasters (v1→v2→v3) |
+| GraphQL API — Foundation | ✅ | Lighthouse-PHP integration, Account domain, custom @tenant directive |
+| GraphQL API — Core Domains | ✅ | Wallet, Exchange, Compliance schemas, DataLoaders, subscriptions |
+| Plugin Marketplace — Foundation | ✅ | PluginManager, dependency resolver, 6 Artisan commands, scaffold generator |
+| Plugin Marketplace — Sandboxing | ✅ | Permission system, security scanner, marketplace API, Filament admin |
+
+---
+
+## v4.1.0 — GraphQL Expansion + Platform Hardening ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: GraphQL Coverage Expansion, Event Replay Filtering, Projector Health Monitoring
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| GraphQL — Treasury Domain | ✅ | AssetAllocation type, portfolio queries, createPortfolio/rebalancePortfolio mutations |
+| GraphQL — Payment Domain | ✅ | PaymentTransaction type, payment queries, initiatePayment mutation |
+| GraphQL — Lending Domain | ✅ | LoanApplication type, loan queries, applyForLoan/approveLoan mutations |
+| GraphQL — Stablecoin Domain | ✅ | StablecoinReserve type, reserve queries, mintStablecoin/redeemStablecoin mutations |
+| GraphQL — CrossChain Domain | ✅ | BridgeTransaction type, bridge queries, initiateBridgeTransfer mutation |
+| GraphQL — DeFi Domain | ✅ | DeFiPosition type, position queries, openPosition/closePosition mutations |
+| Event Replay Filtering | ✅ | --event-type and --aggregate-id filter options for selective replay |
+| Projector Health Monitoring | ✅ | ProjectorHealthService, projector:health command, REST endpoint |
+| Integration Tests | ✅ | 8 test files covering all new GraphQL domains, event replay, projector health |
+
+**GraphQL Coverage**: 10/41 domains (up from 4/41 in v4.0.0)
+
+---
+
+## v4.2.0 — Real-time Platform + Plugin Ecosystem ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: Real-time Subscriptions, Plugin Hook System, Core Mutations
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| GraphQL Subscriptions | ✅ | 4 new subscriptions (orderMatched, portfolioRebalanced, paymentStatusChanged, bridgeTransferCompleted) |
+| Plugin Hook System | ✅ | PluginHookInterface contract, PluginHookManager with priority dispatch, 17 hook points |
+| Example Plugins | ✅ | Webhook Notifier (HMAC-signed HTTP webhooks), Audit Exporter (JSON/CSV export) |
+| Core Domain Mutations | ✅ | 8 new mutations: freeze/unfreeze account, create wallet, transfer funds, place/cancel order, submit KYC, trigger AML |
+
+---
+
+## v4.3.0 — Developer Experience + Extended GraphQL ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: Developer Tools, GraphQL Security, Extended Domain Coverage
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| GraphQL — Fraud Domain | ✅ | FraudCase type, queries, escalateFraudCase mutation |
+| GraphQL — Mobile Domain | ✅ | MobileDevice type, device queries |
+| GraphQL — MobilePayment Domain | ✅ | PaymentIntent type, queries, createPaymentIntent mutation |
+| GraphQL — TrustCert Domain | ✅ | Certificate type, queries |
+| Dashboard Widget Plugin | ✅ | Filament StatsOverviewWidget with cached domain health counts |
+| CLI Commands | ✅ | graphql:schema-check, plugin:verify, domain:status |
+| GraphQL Security | ✅ | Rate limiting middleware, query cost analysis, introspection control |
+
+**GraphQL Coverage**: 14/41 domains (up from 10/41 in v4.1.0; later expanded to 33/41 in v5.0.0)
+
+---
+
+## v5.0.0 — Streaming Architecture + API Gateway (MAJOR) ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: Event Streaming, Live Dashboard, Notification System, API Gateway
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Event Streaming Foundation | ✅ | EventStreamPublisher (Redis Streams XADD, batch publish, MAXLEN trimming), EventStreamConsumer (XREADGROUP, XACK, XAUTOCLAIM, consumer groups) |
+| Event Streaming Config | ✅ | 15 domain stream mappings, retention policy, consumer group settings |
+| Event Stream Monitor | ✅ | `event-stream:monitor` command with --domain filter and --json output |
+| Live Dashboard | ✅ | LiveMetricsService (domain health, event throughput, stream status, projector lag), 5 REST endpoints |
+| Notification System | ✅ | Multi-channel (email, push, in-app, webhook, SMS), pluggable handlers, batch queue/flush, 7 event triggers |
+| API Gateway | ✅ | ApiGatewayMiddleware with X-Request-Id tracing, timing, version headers |
+| GraphQL Schema Expansion | ✅ | 10 new domain schemas (Custodian, KeyManagement, Banking, Commerce, Asset, RegTech, AI, Governance, Privacy, Relayer), bringing total to 24 domains; later expanded to 33 domains with AgentProtocol, Basket, Batch, CardIssuance, Cgo, FinancialInstitution, Product, Regulatory, User |
+| Tests | ✅ | 29+ new tests across 6+ test files |
+
+### Breaking Changes
+- **MAJOR version**: Introduces streaming architecture patterns
+- Redis Streams dependency for event streaming (requires Redis 5.0+)
+
+---
+
+## v5.0.1 — Platform Hardening + Documentation Refresh ✅ COMPLETED
+
+**Released**: February 13, 2026
+**Theme**: GraphQL CQRS Alignment, OpenAPI Coverage, DX Improvements, Documentation Accuracy
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| GraphQL CQRS Alignment | ✅ | All 21 GraphQL mutations refactored from direct Eloquent to WorkflowStub/Service patterns |
+| OpenAPI 100% Coverage | ✅ | `@OA` annotations added to 52 remaining controllers (143+ total endpoints) |
+| Plugin Marketplace UI | ✅ | Filament admin page with search, filter, enable/disable, security scan |
+| PHP 8.4 CI Upgrade | ✅ | 10 workflow files + composer.json updated from PHP 8.3 to 8.4 |
+| Structural Test Conversion | ✅ | 97 test files converted from class_exists stubs to ReflectionClass assertions |
+| Documentation Refresh | ✅ | 12+ docs files updated, GraphQL count 14→24→33 across docs |
+| Website Updates | ✅ | Sub-products, SDKs, feature pages, prototype disclaimers |
+
+---
+
+## v5.1.0 — Mobile API Completeness & GraphQL Full Coverage ✅ COMPLETED
+
+**Released**: February 16, 2026
+**Theme**: Mobile Integration Readiness, GraphQL 33-Domain Coverage, CI/CD Hardening
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Mobile API Endpoints | ✅ | 21 missing endpoints across Privacy (11), Commerce (4), Card Issuance (3), Mobile (2), Wallet (1) |
+| GraphQL Full Coverage | ✅ | 9 remaining domain schemas added, completing 33-domain coverage |
+| GraphQL Integration Tests | ✅ | 14-domain integration test suite |
+| Blockchain Models | ✅ | BlockchainAddress/Transaction Eloquent models with UUID, migration, controller |
+| Test Quality | ✅ | 42 new feature tests, 9 pre-existing failures fixed, behavioral test conversions |
+| CI Hardening | ✅ | k6 non-blocking, per-scenario thresholds, PHPStan bootstrap, PHPCS fixes |
+| Security | ✅ | axios CVE fix, PHPStan generic types, MariaDB timestamp fixes |
+
+---
+
+## v5.1.1 — Mobile App Landing Page ✅ COMPLETED
+
+**Released**: February 16, 2026
+**Theme**: Mobile App Teaser, CI Test Stability
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Mobile App Landing Page | ✅ | Futuristic dark-theme page at `/app` with email signup, feature cards, Shamir's SSS explainer, platform architecture section, FAQ |
+| Azure HSM Test Fix | ✅ | Resolved flaky OAuth token caching test — race condition with parallel Redis in CI |
+
+---
+
+## v5.1.4 — Refresh Token Mechanism ✅ COMPLETED
+
+**Released**: February 18, 2026
+**Theme**: Proper Access/Refresh Token Pairs, Tech Debt, Documentation
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Refresh token mechanism | ✅ | Access tokens (short-lived, role-based) paired with refresh tokens (`['refresh']` ability, 30-day default) via Sanctum `abilities` column — no DB migration |
+| Token rotation | ✅ | `POST /api/auth/refresh` revokes old access+refresh pair, issues new pair; prevents replay attacks |
+| Public refresh endpoint | ✅ | `/refresh` route moved out of `auth:sanctum` middleware — works after access tokens expire; accepts token via body or `Authorization: Bearer` |
+| Auth response enrichment | ✅ | `refresh_token` and `refresh_expires_in` in login, register, passkey auth, and refresh responses |
+| Session limit fix | ✅ | `enforceSessionLimits()` now excludes refresh tokens from concurrent session count |
+| PHPStan config fix | ✅ | `config/sanctum.php` `explode()` type error resolved with `(string)` cast |
+| OpenAPI docs update | ✅ | Swagger annotations for login and register endpoints now include `refresh_token` and `refresh_expires_in` |
+| Security tests | ✅ | 5 new tests: refresh after expiry, reject access tokens for refresh, reject expired refresh tokens, token rotation, missing token |
+
+---
+
+## v5.1.3 — Mobile API Compatibility ✅ COMPLETED
+
+**Released**: February 17, 2026
+**Theme**: Mobile Onboarding Fixes, Auth Response Standardization, Token Refresh
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Optional `owner_address` | ✅ | `POST /api/v1/relayer/account` no longer requires `owner_address` — derives deterministic address from authenticated user during onboarding |
+| Auth response standardization | ✅ | Register endpoint now returns standard `{ success, data }` envelope with full User model, matching login format |
+| Token refresh endpoint | ✅ | `POST /api/auth/refresh` implemented — revokes current token, issues new one with fresh expiration |
+| Logout-all endpoint | ✅ | `POST /api/auth/logout-all` implemented — revokes all tokens across all devices |
+| Passkey auth response | ✅ | `authenticate` now returns `user` object and `expires_in` for consistent mobile session handling |
+| Rate limiter crash fix | ✅ | `TransactionRateLimitMiddleware.incrementCounters()` no longer crashes on unknown transaction types (`relayer`) |
+
+---
+
+## v5.1.2 — Production Landing Page Fix ✅ COMPLETED
+
+**Released**: February 16, 2026
+**Theme**: Production CSS Fix, CSP Compliance
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Standalone Tailwind CSS | ✅ | Pre-compiled `public/css/app-landing.css` via Tailwind CLI — no Vite dependency |
+| CSP Compliance | ✅ | Self-hosted CSS instead of CDN script — no CSP `script-src` changes needed |
+
+### Root Cause
+The `/app` landing page rendered correctly locally but broke in production because `public/build/` is gitignored. The Vite-compiled CSS on production was built before `app.blade.php` existed, so Tailwind purged all its utility classes. Initial CDN fix was blocked by Content Security Policy. Final solution: pre-compiled standalone CSS committed to git.
+
+---
+
+*Document Version: 5.1.5*
 *Created: January 11, 2026*
-*Updated: February 1, 2026 (v2.4.0 Released)*
-*Next Review: v2.5.0 Implementation*
+*Updated: February 21, 2026 (v5.1.5 Dependency Cleanup & Production Readiness released)*

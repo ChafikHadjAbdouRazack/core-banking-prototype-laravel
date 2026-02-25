@@ -20,5 +20,5 @@ it('can perform balance inquiry', function () {
 });
 
 it('can create workflow stub for balance inquiry', function () {
-    expect(class_exists(BalanceInquiryWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(BalanceInquiryWorkflow::class))->getName())->not->toBeEmpty();
 });

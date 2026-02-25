@@ -43,13 +43,13 @@ return new class () extends Migration {
 
             // Status and validity
             $table->boolean('is_active')->default(true);
-            $table->timestamp('effective_from');
-            $table->timestamp('effective_to')->nullable();
+            $table->dateTime('effective_from');
+            $table->dateTime('effective_to')->nullable();
             $table->string('status')->default('active'); // active, suspended, expired
 
             // Performance tracking
             $table->integer('trigger_count')->default(0);
-            $table->timestamp('last_triggered_at')->nullable();
+            $table->dateTime('last_triggered_at')->nullable();
             $table->decimal('false_positive_rate', 5, 2)->nullable();
 
             $table->timestamps();

@@ -16,27 +16,31 @@
                         </p>
                     </div>
 
+                    <x-demo-banner>
+                        <p>You're in demo mode. The bank details below are simulated. Do not send real funds.</p>
+                    </x-demo-banner>
+
                     <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 mb-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Bank Name</p>
-                                <p class="text-lg font-semibold">FinAegis Banking Ltd.</p>
+                                <p class="text-lg font-semibold">{{ $bankDetails['bank_name'] ?? 'Not configured' }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Account Name</p>
-                                <p class="text-lg font-semibold">FinAegis Core Banking</p>
+                                <p class="text-lg font-semibold">{{ $bankDetails['account_name'] ?? 'Not configured' }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Account Number</p>
-                                <p class="text-lg font-semibold">1234567890</p>
+                                <p class="text-lg font-semibold">{{ $bankDetails['account_number'] ?: 'Not configured' }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Routing Number</p>
-                                <p class="text-lg font-semibold">021000021</p>
+                                <p class="text-lg font-semibold">{{ $bankDetails['routing_number'] ?: 'Not configured' }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">SWIFT/BIC</p>
-                                <p class="text-lg font-semibold">FINAEGISXXX</p>
+                                <p class="text-lg font-semibold">{{ $bankDetails['swift_code'] ?: 'Not configured' }}</p>
                             </div>
                             <div>
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Reference Code</p>
@@ -48,7 +52,7 @@
                     <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <svg class="h-5 w-5 text-yellow-400" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
                                 </svg>
                             </div>

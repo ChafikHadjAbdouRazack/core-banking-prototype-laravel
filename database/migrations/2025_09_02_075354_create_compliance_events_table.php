@@ -20,7 +20,7 @@ return new class () extends Migration {
             $table->uuid('correlation_id')->nullable()->index();
             $table->uuid('causation_id')->nullable()->index();
             $table->string('user_id', 50)->nullable()->index();
-            $table->timestamp('occurred_at')->index();
+            $table->dateTime('occurred_at')->index();
             $table->timestamps();
 
             // Composite index for aggregate queries (with custom shorter names)

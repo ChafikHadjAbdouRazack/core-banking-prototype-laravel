@@ -35,6 +35,17 @@ return [
         'api_key' => env('BITCOIN_API_KEY'),
     ],
 
+    'solana' => [
+        'rpc_url' => env('SOLANA_RPC_URL', 'https://api.mainnet-beta.solana.com'),
+        'network' => env('SOLANA_NETWORK', 'mainnet-beta'),
+    ],
+
+    'tron' => [
+        'rpc_url' => env('TRON_RPC_URL', 'https://api.trongrid.io'),
+        'network' => env('TRON_NETWORK', 'mainnet'),
+        'api_key' => env('TRON_API_KEY'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Hot Wallet Configuration
@@ -79,6 +90,8 @@ return [
             'polygon'  => 128,
             'bsc'      => 15,
             'bitcoin'  => 6,
+            'solana'   => 32,
+            'tron'     => 19,
         ],
         'daily_withdrawal_limit' => env('BLOCKCHAIN_DAILY_WITHDRAWAL_LIMIT', '10000'),
         'require_2fa_amount'     => env('BLOCKCHAIN_REQUIRE_2FA_AMOUNT', '1000'),

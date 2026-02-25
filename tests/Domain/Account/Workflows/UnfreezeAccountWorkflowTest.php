@@ -6,7 +6,7 @@ use App\Domain\Account\Workflows\UnfreezeAccountWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for unfreeze', function () {
-    expect(class_exists(UnfreezeAccountWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(UnfreezeAccountWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(UnfreezeAccountWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

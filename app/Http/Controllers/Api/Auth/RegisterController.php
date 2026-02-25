@@ -50,17 +50,24 @@ class RegisterController extends Controller
      *
      * @OA\JsonContent(
      *
-     * @OA\Property(property="message",               type="string", example="User registered successfully"),
+     * @OA\Property(property="success",               type="boolean", example=true),
      * @OA\Property(
-     *                 property="user",
+     *                 property="data",
      *                 type="object",
+     * @OA\Property(
+     *                     property="user",
+     *                     type="object",
      * @OA\Property(property="id",                    type="integer", example=1),
      * @OA\Property(property="name",                  type="string", example="John Doe"),
      * @OA\Property(property="email",                 type="string", example="john@example.com"),
      * @OA\Property(property="email_verified_at",     type="string", nullable=true, example=null)
-     *             ),
+     *                 ),
      * @OA\Property(property="access_token",          type="string", example="1|aBcDeFgHiJkLmNoPqRsTuVwXyZ..."),
-     * @OA\Property(property="token_type",            type="string", example="Bearer")
+     * @OA\Property(property="refresh_token",         type="string", example="2|rEfReShToKeNhErE..."),
+     * @OA\Property(property="token_type",            type="string", example="Bearer"),
+     * @OA\Property(property="expires_in",            type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
+     * @OA\Property(property="refresh_expires_in",    type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
+     *             )
      *         )
      *     ),
      *
@@ -111,20 +118,20 @@ class RegisterController extends Controller
             ]
         );
 
-        // Create a personal access token for the user with appropriate scopes
-        $token = $this->createTokenWithScopes($user, 'api-token');
+        // Create access/refresh token pair
+        $tokenPair = $this->createTokenPair($user, 'api-token');
 
         return response()->json(
             [
-                'message' => 'User registered successfully',
-                'user'    => [
-                    'id'                => $user->id,
-                    'name'              => $user->name,
-                    'email'             => $user->email,
-                    'email_verified_at' => $user->email_verified_at,
+                'success' => true,
+                'data'    => [
+                    'user'               => $user,
+                    'access_token'       => $tokenPair['access_token'],
+                    'refresh_token'      => $tokenPair['refresh_token'],
+                    'token_type'         => 'Bearer',
+                    'expires_in'         => $tokenPair['expires_in'],
+                    'refresh_expires_in' => $tokenPair['refresh_expires_in'],
                 ],
-                'access_token' => $token,
-                'token_type'   => 'Bearer',
             ],
             201
         );

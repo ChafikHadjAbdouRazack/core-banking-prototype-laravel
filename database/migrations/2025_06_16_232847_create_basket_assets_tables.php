@@ -18,7 +18,7 @@ return new class () extends Migration {
             $table->text('description')->nullable();
             $table->enum('type', ['fixed', 'dynamic'])->default('fixed');
             $table->enum('rebalance_frequency', ['daily', 'weekly', 'monthly', 'quarterly', 'never'])->default('never');
-            $table->timestamp('last_rebalanced_at')->nullable();
+            $table->dateTime('last_rebalanced_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->char('created_by', 36)->nullable();
             $table->json('metadata')->nullable();
@@ -50,7 +50,7 @@ return new class () extends Migration {
             $table->id();
             $table->string('basket_asset_code', 20);
             $table->decimal('value', 20, 8);
-            $table->timestamp('calculated_at');
+            $table->dateTime('calculated_at');
             $table->json('component_values')->nullable();
             $table->timestamps();
 

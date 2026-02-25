@@ -31,9 +31,9 @@ return new class () extends Migration {
             $table->uuid('related_account_uuid')->nullable();
             $table->string('transaction_group_uuid')->nullable();
             $table->uuid('parent_transaction_id')->nullable();
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->uuid('cancelled_by')->nullable();
-            $table->timestamp('retried_at')->nullable();
+            $table->dateTime('retried_at')->nullable();
             $table->uuid('retry_transaction_id')->nullable();
             $table->timestamps();
 

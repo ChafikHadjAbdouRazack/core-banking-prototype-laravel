@@ -89,3 +89,18 @@ Broadcast::channel('privacy.merkle.{network}', function ($user, string $network)
 
     return in_array($network, $supportedNetworks, true);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Mobile Payment Channels (v2.7.0)
+|--------------------------------------------------------------------------
+|
+| Real-time payment status updates for the mobile wallet app.
+| Users can only subscribe to their own payment channel.
+|
+*/
+
+// Payment status updates - user-specific
+Broadcast::channel('payments.{userId}', function ($user, int $userId) {
+    return $user->id === $userId;
+});

@@ -22,8 +22,8 @@ return new class () extends Migration {
             $table->integer('failed_transactions')->default(0);
             $table->integer('disputed_transactions')->default(0);
             $table->decimal('success_rate', 5, 2)->default(0.00);
-            $table->timestamp('last_activity_at')->nullable();
-            $table->timestamp('last_decay_at')->nullable();
+            $table->dateTime('last_activity_at')->nullable();
+            $table->dateTime('last_decay_at')->nullable();
             $table->json('metadata')->nullable();
             $table->enum('status', ['active', 'suspended', 'frozen'])->default('active');
             $table->timestamps();
@@ -54,7 +54,7 @@ return new class () extends Migration {
             $table->string('new_trust_level', 20);
             $table->string('reason')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('occurred_at');
+            $table->dateTime('occurred_at');
             $table->timestamps();
 
             $table->index(['reputation_id', 'occurred_at']);
@@ -83,7 +83,7 @@ return new class () extends Migration {
             $table->string('reference_id')->nullable(); // Transaction ID, Dispute ID, etc.
             $table->string('reference_type')->nullable(); // Type of reference
             $table->json('details')->nullable();
-            $table->timestamp('applied_at');
+            $table->dateTime('applied_at');
             $table->timestamps();
 
             $table->index(['reputation_id', 'factor_type']);
@@ -101,7 +101,7 @@ return new class () extends Migration {
             $table->integer('successful_interactions')->default(0);
             $table->integer('disputed_interactions')->default(0);
             $table->decimal('interaction_success_rate', 5, 2)->default(0.00);
-            $table->timestamp('last_interaction_at')->nullable();
+            $table->dateTime('last_interaction_at')->nullable();
             $table->json('trust_factors')->nullable();
             $table->enum('status', ['active', 'blocked', 'restricted'])->default('active');
             $table->timestamps();

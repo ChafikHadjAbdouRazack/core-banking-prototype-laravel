@@ -38,23 +38,23 @@ return new class () extends Migration {
             $table->json('tags')->nullable();
 
             // Timestamps
-            $table->timestamp('detected_at')->index();
-            $table->timestamp('expires_at')->nullable()->index();
+            $table->dateTime('detected_at')->index();
+            $table->dateTime('expires_at')->nullable()->index();
 
             // Assignment
             $table->foreignId('assigned_to')->nullable()->index();
-            $table->timestamp('assigned_at')->nullable();
+            $table->dateTime('assigned_at')->nullable();
             $table->foreignId('assigned_by')->nullable();
 
             // Resolution
-            $table->timestamp('resolved_at')->nullable();
+            $table->dateTime('resolved_at')->nullable();
             $table->foreignId('resolved_by')->nullable();
             $table->text('resolution_notes')->nullable();
             $table->decimal('resolution_time_hours', 8, 2)->nullable();
             $table->text('false_positive_notes')->nullable();
 
             // Escalation
-            $table->timestamp('escalated_at')->nullable();
+            $table->dateTime('escalated_at')->nullable();
             $table->text('escalation_reason')->nullable();
 
             // Investigation
@@ -63,7 +63,7 @@ return new class () extends Migration {
             $table->json('history')->nullable();
 
             // Status tracking
-            $table->timestamp('status_changed_at')->nullable();
+            $table->dateTime('status_changed_at')->nullable();
             $table->foreignId('status_changed_by')->nullable();
 
             $table->timestamps();

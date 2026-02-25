@@ -26,7 +26,7 @@ All API requests require authentication using Laravel Sanctum tokens:
 
 ```bash
 # Get auth token
-curl -X POST https://api.finaegis.com/api/login \
+curl -X POST https://api.finaegis.org/api/login \
   -H "Content-Type: application/json" \
   -d '{"email": "user@example.com", "password": "password"}'
 ```
@@ -34,7 +34,7 @@ curl -X POST https://api.finaegis.com/api/login \
 ### 2. Making API Calls
 ```bash
 # Get account balance
-curl -X GET https://api.finaegis.com/api/accounts/{uuid}/balance \
+curl -X GET https://api.finaegis.org/api/accounts/{uuid}/balance \
   -H "Authorization: Bearer {token}"
 ```
 
@@ -104,17 +104,17 @@ Import the included Postman collection for quick API testing:
 4. Start testing!
 
 ### Test Environment
-- Base URL: `https://test-api.finaegis.com`
+- Base URL: `https://test-api.finaegis.org`
 - Test credentials available upon request
 - Rate limits: 100 requests per minute
 
 ## Support
 
 ### Developer Resources
-- API Documentation: https://api.finaegis.com/documentation
-- Status Page: https://status.finaegis.com
-- Developer Forum: https://developers.finaegis.com
+- API Documentation: https://api.finaegis.org/documentation
+- Status Page: https://status.finaegis.org
+- Developer Forum: https://developers.finaegis.org
 
 ### Contact
-- Technical Support: developers@finaegis.com
-- Security Issues: security@finaegis.com
+- Technical Support: developers@finaegis.org
+- Security Issues: security@finaegis.org

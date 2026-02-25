@@ -28,13 +28,17 @@
                             <div class="font-medium">Transfer Money</div>
                             <div class="text-sm text-gray-600">Initiate a transfer</div>
                         </button>
-                        <button onclick="sendPredefinedMessage('Analyze my spending patterns')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
-                            <div class="font-medium">Spending Analysis</div>
-                            <div class="text-sm text-gray-600">Get insights</div>
+                        <button onclick="sendPredefinedMessage('Get me a quote for BTC to USD')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                            <div class="font-medium">Trading Quote</div>
+                            <div class="text-sm text-gray-600">Get exchange rates</div>
                         </button>
-                        <button onclick="sendPredefinedMessage('What is the GCU exchange rate?')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
-                            <div class="font-medium">Exchange Rates</div>
-                            <div class="text-sm text-gray-600">Check GCU rates</div>
+                        <button onclick="sendPredefinedMessage('Check my KYC compliance status')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                            <div class="font-medium">Compliance Status</div>
+                            <div class="text-sm text-gray-600">KYC/AML status</div>
+                        </button>
+                        <button onclick="sendPredefinedMessage('What can you do?')" class="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition">
+                            <div class="font-medium">Capabilities</div>
+                            <div class="text-sm text-gray-600">See what I can do</div>
                         </button>
                     </div>
                 </div>
@@ -49,7 +53,7 @@
                             <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            <span>Simulated responses</span>
+                            <span>Real agent routing &amp; tool execution</span>
                         </div>
                         <div class="flex items-center">
                             <svg class="w-4 h-4 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +77,7 @@
                     <!-- Chat Header -->
                     <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-4 rounded-t-lg">
                         <h2 class="text-xl font-semibold">AI Financial Assistant</h2>
-                        <p class="text-sm opacity-90">Powered by FinAegis AI Framework</p>
+                        <p class="text-sm opacity-90">Multi-agent orchestration powered by FinAegis AI Framework</p>
                     </div>
 
                     <!-- Chat Messages -->
@@ -81,9 +85,9 @@
                         <div class="flex justify-start">
                             <div class="max-w-xs lg:max-w-md">
                                 <div class="bg-gray-100 rounded-lg px-4 py-2">
-                                    <p class="text-sm">Hello! I'm your AI financial assistant. How can I help you today?</p>
+                                    <p class="text-sm">Hello! I'm your AI financial assistant. I route your queries to specialized agents — Financial, Trading, Compliance, and Transfer. How can I help you today?</p>
                                 </div>
-                                <p class="text-xs text-gray-500 mt-1">AI Assistant</p>
+                                <p class="text-xs text-gray-500 mt-1">General Assistant</p>
                             </div>
                         </div>
                     </div>
@@ -91,16 +95,17 @@
                     <!-- Chat Input -->
                     <div class="border-t px-6 py-4">
                         <div class="flex space-x-2">
-                            <input 
-                                type="text" 
-                                id="chat-input" 
+                            <input
+                                type="text"
+                                id="chat-input"
                                 class="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 placeholder="Type your message..."
                                 onkeypress="if(event.key === 'Enter') sendMessage()"
                             >
-                            <button 
+                            <button
+                                id="send-btn"
                                 onclick="sendMessage()"
-                                class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition"
+                                class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Send
                             </button>
@@ -113,57 +118,50 @@
 </div>
 
 <script>
-// Demo responses for different queries
-const demoResponses = {
-    'balance': {
-        text: 'Your current account balance is:\n\n• Main Account: $12,456.78\n• Savings Account: $45,231.50\n• GCU Wallet: 1,250 GCU\n\nTotal value: $58,938.28',
-        confidence: 0.95,
-        tools: ['AccountBalanceTool', 'ExchangeRateTool']
-    },
-    'transactions': {
-        text: 'Here are your recent transactions:\n\n1. Amazon Purchase - $156.32 (Today)\n2. Transfer to John - $500.00 (Yesterday)\n3. Salary Credit - $5,000.00 (3 days ago)\n4. Utility Bill - $234.56 (5 days ago)\n\nWould you like to see more details?',
-        confidence: 0.92,
-        tools: ['TransactionHistoryTool']
-    },
-    'transfer': {
-        text: 'I can help you transfer money. Please provide:\n\n• Recipient name or account\n• Amount to transfer\n• Currency (USD, EUR, GCU)\n\nFor example: "Transfer $100 to John Smith"',
-        confidence: 0.88,
-        tools: ['TransferTool', 'KycTool']
-    },
-    'spending': {
-        text: 'Based on your transaction history:\n\n📊 Monthly Spending Analysis:\n• Shopping: $2,345 (35%)\n• Food & Dining: $1,234 (18%)\n• Transportation: $890 (13%)\n• Utilities: $567 (8%)\n• Entertainment: $456 (7%)\n• Other: $1,258 (19%)\n\n💡 Insight: Your shopping expenses increased 15% this month.',
-        confidence: 0.87,
-        tools: ['AnalyticsTool', 'TransactionHistoryTool']
-    },
-    'exchange': {
-        text: 'Current GCU Exchange Rates:\n\n• 1 GCU = 1.00 USD\n• 1 GCU = 0.92 EUR\n• 1 GCU = 0.79 GBP\n• 1 GCU = 150.23 JPY\n\nThe GCU is stable with 0.1% daily volatility.',
-        confidence: 0.94,
-        tools: ['ExchangeRateTool', 'MarketDataTool']
-    },
-    'default': {
-        text: 'I understand you\'re asking about "{query}". In a production environment, I would process this request using our AI models and banking tools. For this demo, try one of the predefined scenarios on the left.',
-        confidence: 0.65,
-        tools: []
-    }
-};
+let isSending = false;
 
 function sendMessage() {
     const input = document.getElementById('chat-input');
     const message = input.value.trim();
-    
-    if (!message) return;
-    
-    // Add user message
+
+    if (!message || isSending) return;
+
     addMessage(message, 'user');
-    
-    // Clear input
     input.value = '';
-    
-    // Simulate AI response
-    setTimeout(() => {
-        const response = getAIResponse(message);
-        addMessage(response.text, 'assistant', response);
-    }, 1000);
+    setLoading(true);
+
+    fetch('/api/demo/ai-chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+        },
+        body: JSON.stringify({ message: message }),
+    })
+    .then(response => {
+        if (response.status === 429) {
+            throw new Error('Rate limit exceeded. Please wait a moment before trying again.');
+        }
+        if (!response.ok) {
+            throw new Error('Server error. Please try again.');
+        }
+        return response.json();
+    })
+    .then(data => {
+        addMessage(data.content, 'assistant', {
+            confidence: data.confidence,
+            tools: data.tools_used || [],
+            agents: data.agents_used || [],
+            responseTime: data.response_time_ms,
+        });
+    })
+    .catch(error => {
+        addMessage(error.message || 'Something went wrong. Please try again.', 'assistant', { error: true });
+    })
+    .finally(() => {
+        setLoading(false);
+    });
 }
 
 function sendPredefinedMessage(message) {
@@ -171,71 +169,113 @@ function sendPredefinedMessage(message) {
     sendMessage();
 }
 
+function setLoading(loading) {
+    isSending = loading;
+    const btn = document.getElementById('send-btn');
+    const input = document.getElementById('chat-input');
+    btn.disabled = loading;
+    input.disabled = loading;
+
+    if (loading) {
+        addTypingIndicator();
+    } else {
+        removeTypingIndicator();
+    }
+}
+
+function addTypingIndicator() {
+    const messagesDiv = document.getElementById('chat-messages');
+    const indicator = document.createElement('div');
+    indicator.id = 'typing-indicator';
+    indicator.className = 'flex justify-start';
+    indicator.innerHTML = `
+        <div class="max-w-xs lg:max-w-md">
+            <div class="bg-gray-100 rounded-lg px-4 py-3">
+                <div class="flex space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">AI is thinking...</p>
+        </div>
+    `;
+    messagesDiv.appendChild(indicator);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+function removeTypingIndicator() {
+    const indicator = document.getElementById('typing-indicator');
+    if (indicator) indicator.remove();
+}
+
 function addMessage(text, sender, metadata = {}) {
     const messagesDiv = document.getElementById('chat-messages');
     const messageDiv = document.createElement('div');
     messageDiv.className = sender === 'user' ? 'flex justify-end' : 'flex justify-start';
-    
+
     const contentDiv = document.createElement('div');
     contentDiv.className = 'max-w-xs lg:max-w-md';
-    
+
     const bubbleDiv = document.createElement('div');
-    bubbleDiv.className = sender === 'user' 
-        ? 'bg-indigo-600 text-white rounded-lg px-4 py-2'
-        : 'bg-gray-100 rounded-lg px-4 py-2';
-    
-    const textP = document.createElement('p');
-    textP.className = 'text-sm whitespace-pre-wrap';
-    textP.textContent = text;
-    
+    if (sender === 'user') {
+        bubbleDiv.className = 'bg-indigo-600 text-white rounded-lg px-4 py-2';
+    } else if (metadata.error) {
+        bubbleDiv.className = 'bg-red-50 border border-red-200 rounded-lg px-4 py-2';
+    } else {
+        bubbleDiv.className = 'bg-gray-100 rounded-lg px-4 py-2';
+    }
+
+    // Render markdown-style bold and line breaks
+    const formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+
+    const textP = document.createElement('div');
+    textP.className = 'text-sm';
+    textP.innerHTML = formattedText;
+
     bubbleDiv.appendChild(textP);
     contentDiv.appendChild(bubbleDiv);
-    
-    // Add metadata
+
+    // Metadata line
     const metaP = document.createElement('p');
     metaP.className = 'text-xs text-gray-500 mt-1';
-    
+
     if (sender === 'user') {
         metaP.textContent = 'You';
     } else {
-        let metaText = 'AI Assistant';
+        let metaText = (metadata.agents && metadata.agents.length > 0)
+            ? metadata.agents.join(', ')
+            : 'AI Assistant';
+
         if (metadata.confidence) {
-            metaText += ` • Confidence: ${(metadata.confidence * 100).toFixed(0)}%`;
+            metaText += ` · ${(metadata.confidence * 100).toFixed(0)}% confidence`;
         }
-        if (metadata.tools && metadata.tools.length > 0) {
-            metaText += ` • Tools: ${metadata.tools.join(', ')}`;
+        if (metadata.responseTime) {
+            metaText += ` · ${metadata.responseTime}ms`;
         }
         metaP.textContent = metaText;
     }
-    
+
     contentDiv.appendChild(metaP);
+
+    // Tool chips
+    if (metadata.tools && metadata.tools.length > 0) {
+        const chipDiv = document.createElement('div');
+        chipDiv.className = 'flex flex-wrap gap-1 mt-1';
+        metadata.tools.forEach(tool => {
+            const chip = document.createElement('span');
+            chip.className = 'inline-block text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full';
+            chip.textContent = tool;
+            chipDiv.appendChild(chip);
+        });
+        contentDiv.appendChild(chipDiv);
+    }
+
     messageDiv.appendChild(contentDiv);
     messagesDiv.appendChild(messageDiv);
-    
-    // Scroll to bottom
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
-
-function getAIResponse(query) {
-    const lowerQuery = query.toLowerCase();
-    
-    if (lowerQuery.includes('balance')) {
-        return demoResponses.balance;
-    } else if (lowerQuery.includes('transaction') || lowerQuery.includes('recent')) {
-        return demoResponses.transactions;
-    } else if (lowerQuery.includes('transfer') || lowerQuery.includes('send')) {
-        return demoResponses.transfer;
-    } else if (lowerQuery.includes('spending') || lowerQuery.includes('analyze')) {
-        return demoResponses.spending;
-    } else if (lowerQuery.includes('exchange') || lowerQuery.includes('gcu') || lowerQuery.includes('rate')) {
-        return demoResponses.exchange;
-    } else {
-        return {
-            text: demoResponses.default.text.replace('{query}', query),
-            confidence: demoResponses.default.confidence,
-            tools: demoResponses.default.tools
-        };
-    }
 }
 </script>
 @endsection

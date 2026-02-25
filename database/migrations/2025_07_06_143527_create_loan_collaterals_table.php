@@ -19,12 +19,12 @@ return new class () extends Migration {
             $table->string('currency', 3)->default('USD');
             $table->string('status', 50)->default('pending_verification');
             $table->uuid('verification_document_id')->nullable();
-            $table->timestamp('verified_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
             $table->string('verified_by')->nullable();
-            $table->timestamp('released_at')->nullable();
-            $table->timestamp('liquidated_at')->nullable();
+            $table->dateTime('released_at')->nullable();
+            $table->dateTime('liquidated_at')->nullable();
             $table->decimal('liquidation_value', 20, 2)->nullable();
-            $table->timestamp('last_valuation_date')->nullable();
+            $table->dateTime('last_valuation_date')->nullable();
             $table->json('valuation_history')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();

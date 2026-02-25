@@ -13,7 +13,7 @@ return new class () extends Migration {
         Schema::table('cgo_investments', function (Blueprint $table) {
             // KYC verification fields
             if (! Schema::hasColumn('cgo_investments', 'kyc_verified_at')) {
-                $table->timestamp('kyc_verified_at')->nullable()->after('payment_completed_at');
+                $table->dateTime('kyc_verified_at')->nullable()->after('payment_completed_at');
             }
             if (! Schema::hasColumn('cgo_investments', 'kyc_level')) {
                 $table->string('kyc_level')->nullable()->after('kyc_verified_at');
@@ -22,7 +22,7 @@ return new class () extends Migration {
                 $table->decimal('risk_assessment', 5, 2)->nullable()->after('kyc_level');
             }
             if (! Schema::hasColumn('cgo_investments', 'aml_checked_at')) {
-                $table->timestamp('aml_checked_at')->nullable()->after('risk_assessment');
+                $table->dateTime('aml_checked_at')->nullable()->after('risk_assessment');
             }
             if (! Schema::hasColumn('cgo_investments', 'aml_flags')) {
                 $table->json('aml_flags')->nullable()->after('aml_checked_at');

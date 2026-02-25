@@ -16,7 +16,7 @@ return new class () extends Migration {
                 $table->string('kyc_verification_level')->nullable()->after('kyc_status');
             }
             if (! Schema::hasColumn('agents', 'kyc_expires_at')) {
-                $table->timestamp('kyc_expires_at')->nullable()->after('kyc_verified_at');
+                $table->dateTime('kyc_expires_at')->nullable()->after('kyc_verified_at');
             }
 
             // Risk and compliance
@@ -44,7 +44,7 @@ return new class () extends Migration {
                 $table->string('limit_currency', 3)->default('USD')->after('monthly_transaction_limit');
             }
             if (! Schema::hasColumn('agents', 'limits_updated_at')) {
-                $table->timestamp('limits_updated_at')->nullable()->after('limit_currency');
+                $table->dateTime('limits_updated_at')->nullable()->after('limit_currency');
             }
 
             // Geographic information

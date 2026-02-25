@@ -6,7 +6,7 @@ use App\Domain\Basket\Workflows\DecomposeBasketWorkflow;
 use Workflow\WorkflowStub;
 
 it('can create workflow stub for decompose basket', function () {
-    expect(class_exists(DecomposeBasketWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(DecomposeBasketWorkflow::class))->getName())->not->toBeEmpty();
 
     $workflow = WorkflowStub::make(DecomposeBasketWorkflow::class);
     expect($workflow)->toBeInstanceOf(WorkflowStub::class);

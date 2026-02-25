@@ -18,5 +18,5 @@ it('can freeze account with reason', function () {
 });
 
 it('can create workflow stub for freeze account', function () {
-    expect(class_exists(FreezeAccountWorkflow::class))->toBeTrue();
+    expect((new ReflectionClass(FreezeAccountWorkflow::class))->getName())->not->toBeEmpty();
 });

@@ -66,7 +66,7 @@ return new class () extends Migration {
             // Rebalancing
             $table->boolean('auto_rebalance')->default(false);
             $table->decimal('rebalance_threshold', 8, 4)->nullable(); // Trigger threshold %
-            $table->timestamp('last_rebalanced_at')->nullable();
+            $table->dateTime('last_rebalanced_at')->nullable();
 
             $table->json('metadata')->nullable();
 
@@ -100,7 +100,7 @@ return new class () extends Migration {
 
             // Audit fields
             $table->string('allocated_by')->nullable()->index();
-            $table->timestamp('allocated_at')->nullable();
+            $table->dateTime('allocated_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -123,8 +123,8 @@ return new class () extends Migration {
 
             // Performance tracking
             $table->decimal('total_earned', 20, 2)->default(0);
-            $table->timestamp('started_at');
-            $table->timestamp('ended_at')->nullable();
+            $table->dateTime('started_at');
+            $table->dateTime('ended_at')->nullable();
 
             $table->json('metadata')->nullable();
 

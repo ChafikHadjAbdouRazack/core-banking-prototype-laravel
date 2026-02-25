@@ -21,9 +21,9 @@ return new class () extends Migration {
             $table->string('key_prefix', 8);
             $table->json('scopes')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->timestamp('expires_at')->nullable();
-            $table->timestamp('last_used_at')->nullable();
-            $table->timestamp('revoked_at')->nullable();
+            $table->dateTime('expires_at')->nullable();
+            $table->dateTime('last_used_at')->nullable();
+            $table->dateTime('revoked_at')->nullable();
             $table->timestamps();
 
             $table->index(['agent_id', 'is_active']);

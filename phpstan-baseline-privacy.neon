@@ -53,3 +53,21 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/Domain/Privacy/ValueObjects/ZkProofTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$prover\.$#'
+			identifier: property.notFound
+			count: 14
+			path: tests/Unit/Domain/Privacy/Services/ProofOfInnocenceServiceTest.php
+
+		-
+			message: '#^Access to an undefined property PHPUnit\\Framework\\TestCase\:\:\$service\.$#'
+			identifier: property.notFound
+			count: 22
+			path: tests/Unit/Domain/Privacy/Services/ProofOfInnocenceServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$prover of class App\\Domain\\Privacy\\Services\\ProofOfInnocenceService constructor expects App\\Domain\\Privacy\\Contracts\\ZkProverInterface, Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domain/Privacy/Services/ProofOfInnocenceServiceTest.php

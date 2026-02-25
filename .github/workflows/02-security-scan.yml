@@ -6,7 +6,7 @@ on:
       php-version:
         description: 'PHP version to use'
         required: false
-        default: '8.3'
+        default: '8.4'
         type: string
     secrets:
       GITLEAKS_LICENSE:
@@ -23,7 +23,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           
@@ -40,7 +40,7 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -54,7 +54,10 @@ jobs:
           cp .env.testing .env
           
       - name: Install Dependencies
-        run: composer install --prefer-dist --no-progress --no-dev
+        run: |
+          # No database service in this job — skip all scripts (package:discover boots Laravel).
+          # Security audit only needs composer metadata, not a running app.
+          composer install --prefer-dist --no-progress --no-dev --no-scripts
         
       - name: Run Security Audit (Production Dependencies)
         id: audit-prod

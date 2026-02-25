@@ -34,8 +34,8 @@ return new class () extends Migration {
 
             // Position status
             $table->enum('status', ['active', 'liquidated', 'closed'])->default('active');
-            $table->timestamp('last_interaction_at')->nullable(); // Last mint/burn/collateral action
-            $table->timestamp('liquidated_at')->nullable();
+            $table->dateTime('last_interaction_at')->nullable(); // Last mint/burn/collateral action
+            $table->dateTime('liquidated_at')->nullable();
 
             // Risk management
             $table->boolean('auto_liquidation_enabled')->default(true);

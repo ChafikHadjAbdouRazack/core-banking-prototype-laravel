@@ -93,7 +93,7 @@ class CrossTenantAccessPreventionTest extends TestCase
     #[Test]
     public function tenant_channel_authorizer_exists(): void
     {
-        $this->assertTrue(class_exists(TenantChannelAuthorizer::class));
+        $this->assertNotEmpty((new ReflectionClass(TenantChannelAuthorizer::class))->getName());
     }
 
     #[Test]
@@ -110,7 +110,7 @@ class CrossTenantAccessPreventionTest extends TestCase
     #[Test]
     public function tenant_data_migration_service_exists(): void
     {
-        $this->assertTrue(class_exists(TenantDataMigrationService::class));
+        $this->assertNotEmpty((new ReflectionClass(TenantDataMigrationService::class))->getName());
     }
 
     #[Test]
@@ -159,9 +159,9 @@ class CrossTenantAccessPreventionTest extends TestCase
     public function stancl_tenancy_bootstrappers_exist(): void
     {
         // Verify that required bootstrapper classes exist
-        $this->assertTrue(class_exists(\Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class));
-        $this->assertTrue(class_exists(\Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class));
-        $this->assertTrue(class_exists(\Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class));
+        $this->assertNotEmpty((new ReflectionClass(\Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class))->getName());
+        $this->assertNotEmpty((new ReflectionClass(\Stancl\Tenancy\Bootstrappers\CacheTenancyBootstrapper::class))->getName());
+        $this->assertNotEmpty((new ReflectionClass(\Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class))->getName());
     }
 
     #[Test]

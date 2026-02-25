@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\IpBlockingService;
 use App\Traits\HasApiScopes;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\PersonalAccessToken;
 
 class LoginController extends Controller
 {
@@ -26,7 +28,7 @@ class LoginController extends Controller
      * @OA\Post(
      *     path="/api/auth/login",
      *     summary="Login user",
-     *     description="Authenticate user with email and password to receive an access token",
+     *     description="Authenticate user with email and password to receive an access/refresh token pair",
      *     operationId="login",
      *     tags={"Authentication"},
      *
@@ -48,17 +50,24 @@ class LoginController extends Controller
      *
      * @OA\JsonContent(
      *
+     * @OA\Property(property="success",           type="boolean", example=true),
      * @OA\Property(
-     *                 property="user",
+     *                 property="data",
      *                 type="object",
+     * @OA\Property(
+     *                     property="user",
+     *                     type="object",
      * @OA\Property(property="id",                type="integer", example=1),
      * @OA\Property(property="name",              type="string", example="John Doe"),
      * @OA\Property(property="email",             type="string", example="john@example.com"),
      * @OA\Property(property="email_verified_at", type="string", nullable=true)
-     *             ),
+     *                 ),
      * @OA\Property(property="access_token",      type="string", example="2|VVGVrIVokPBXkWLOi2yK13eHlQwQtQQONX5GCngZ..."),
+     * @OA\Property(property="refresh_token",     type="string", example="3|rEfReShToKeNhErE..."),
      * @OA\Property(property="token_type",        type="string", example="Bearer"),
-     * @OA\Property(property="expires_in",        type="integer", nullable=true, example=null, description="Token expiration time in seconds")
+     * @OA\Property(property="expires_in",        type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
+     * @OA\Property(property="refresh_expires_in", type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
+     *             )
      *         )
      *     ),
      *
@@ -116,18 +125,23 @@ class LoginController extends Controller
             $request->session()->regenerate();
         }
 
-        // Create token with abilities and proper expiration
-        $plainToken = $this->createTokenWithScopes($user, $request->device_name ?? 'web');
+        // Create access/refresh token pair
+        $tokenPair = $this->createTokenPair($user, $request->device_name ?? 'web');
 
         // Check and enforce concurrent session limits
         $this->enforceSessionLimits($user);
 
         return response()->json(
             [
-                'user'         => $user,
-                'access_token' => $plainToken,
-                'token_type'   => 'Bearer',
-                'expires_in'   => config('sanctum.expiration') ? config('sanctum.expiration') * 60 : null,
+                'success' => true,
+                'data'    => [
+                    'user'               => $user,
+                    'access_token'       => $tokenPair['access_token'],
+                    'refresh_token'      => $tokenPair['refresh_token'],
+                    'token_type'         => 'Bearer',
+                    'expires_in'         => $tokenPair['expires_in'],
+                    'refresh_expires_in' => $tokenPair['refresh_expires_in'],
+                ],
             ]
         );
     }
@@ -177,6 +191,187 @@ class LoginController extends Controller
     }
 
     /**
+     * Refresh the access token using a refresh token.
+     *
+     * Accepts a refresh token (via body or Authorization header), validates it,
+     * revokes the old token pair, and issues a new access/refresh pair.
+     *
+     * @OA\Post(
+     *     path="/api/auth/refresh",
+     *     summary="Refresh access token",
+     *     description="Uses a refresh token to obtain a new access/refresh token pair. Does not require auth:sanctum middleware.",
+     *     operationId="refreshToken",
+     *     tags={"Authentication"},
+     *
+     * @OA\RequestBody(
+     *         required=false,
+     *
+     * @OA\JsonContent(
+     * @OA\Property(property="refresh_token", type="string", example="2|xyz...", description="Refresh token (alternatively send via Authorization: Bearer header)")
+     *         )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=200,
+     *         description="Token refreshed successfully",
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="success",              type="boolean", example=true),
+     * @OA\Property(
+     *                 property="data",
+     *                 type="object",
+     * @OA\Property(property="access_token",         type="string", example="3|newTokenHere..."),
+     * @OA\Property(property="refresh_token",        type="string", example="4|newRefreshHere..."),
+     * @OA\Property(property="token_type",           type="string", example="Bearer"),
+     * @OA\Property(property="expires_in",           type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
+     * @OA\Property(property="refresh_expires_in",   type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
+     *             )
+     *         )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=401,
+     *         description="Invalid or expired refresh token",
+     *
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=false),
+     * @OA\Property(property="message", type="string", example="Invalid or expired refresh token.")
+     *         )
+     *     )
+     * )
+     */
+    public function refresh(Request $request): JsonResponse
+    {
+        // Extract refresh token from body or Authorization header
+        $rawToken = $request->input('refresh_token');
+        if (! $rawToken) {
+            $rawToken = $request->bearerToken();
+        }
+
+        if (! $rawToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh token is required.',
+            ], 401);
+        }
+
+        // Look up the token in the database
+        $accessToken = PersonalAccessToken::findToken($rawToken);
+
+        if (! $accessToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired refresh token.',
+            ], 401);
+        }
+
+        // Verify it has the 'refresh' ability
+        if (! $accessToken->can('refresh')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired refresh token.',
+            ], 401);
+        }
+
+        // Check expiration
+        if ($accessToken->expires_at && Carbon::now()->greaterThan($accessToken->expires_at)) {
+            $accessToken->delete();
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Refresh token has expired.',
+            ], 401);
+        }
+
+        /** @var User $user */
+        $user = $accessToken->tokenable;
+
+        // Derive the base token name (strip '-refresh' suffix)
+        $refreshTokenName = $accessToken->name;
+        $baseName = str_ends_with($refreshTokenName, '-refresh')
+            ? substr($refreshTokenName, 0, -8)
+            : $refreshTokenName;
+
+        // Revoke the old token pair
+        $this->revokeTokenPairByName($user, $baseName);
+
+        // Issue a new token pair
+        $tokenPair = $this->createTokenPair($user, $baseName);
+
+        return response()->json(
+            [
+                'success' => true,
+                'data'    => [
+                    'access_token'       => $tokenPair['access_token'],
+                    'refresh_token'      => $tokenPair['refresh_token'],
+                    'token_type'         => 'Bearer',
+                    'expires_in'         => $tokenPair['expires_in'],
+                    'refresh_expires_in' => $tokenPair['refresh_expires_in'],
+                ],
+            ]
+        );
+    }
+
+    /**
+     * Logout from all devices by revoking all tokens.
+     *
+     * @OA\Post(
+     *     path="/api/auth/logout-all",
+     *     summary="Logout from all devices",
+     *     description="Revokes all tokens for the authenticated user across all devices",
+     *     operationId="logoutAll",
+     *     tags={"Authentication"},
+     *     security={{"bearerAuth":{}}},
+     *
+     * @OA\Response(
+     *         response=200,
+     *         description="All sessions terminated",
+     *
+     * @OA\JsonContent(
+     * @OA\Property(property="success", type="boolean", example=true),
+     * @OA\Property(property="data",    type="object",
+     * @OA\Property(property="message", type="string", example="All sessions terminated successfully"),
+     * @OA\Property(property="revoked_count", type="integer", example=3)
+     *             )
+     *         )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=401,
+     *         description="Unauthenticated",
+     *
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="Unauthenticated")
+     *         )
+     *     )
+     * )
+     */
+    public function logoutAll(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $revokedCount = $user->tokens()->count();
+
+        // Revoke all tokens for the user
+        $user->tokens()->delete();
+
+        // Invalidate session (only for web)
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'message'       => 'All sessions terminated successfully',
+                'revoked_count' => $revokedCount,
+            ],
+        ]);
+    }
+
+    /**
      * Get current user.
      *
      * @OA\Get(
@@ -193,8 +388,9 @@ class LoginController extends Controller
      *
      * @OA\JsonContent(
      *
+     * @OA\Property(property="success",           type="boolean", example=true),
      * @OA\Property(
-     *                 property="user",
+     *                 property="data",
      *                 type="object",
      * @OA\Property(property="id",                type="integer", example=1),
      * @OA\Property(property="name",              type="string", example="John Doe"),
@@ -220,26 +416,44 @@ class LoginController extends Controller
     {
         return response()->json(
             [
-                'user' => $request->user(),
+                'success' => true,
+                'data'    => $request->user(),
             ]
         );
     }
 
     /**
-     * Enforce concurrent session limits by removing oldest tokens.
+     * Enforce concurrent session limits by removing oldest access tokens.
+     *
+     * Refresh tokens (abilities = ['refresh']) are excluded from the count
+     * since they are not active sessions.
      */
     private function enforceSessionLimits(User $user): void
     {
         $maxSessions = config('auth.max_concurrent_sessions', 5);
-        $tokenCount = $user->tokens()->count();
 
-        if ($tokenCount > $maxSessions) {
-            // Delete oldest tokens
-            $tokensToDelete = $tokenCount - $maxSessions;
+        // Count only access tokens (exclude refresh tokens)
+        $accessTokenCount = $user->tokens()
+            ->where('abilities', '!=', '["refresh"]')
+            ->count();
+
+        if ($accessTokenCount > $maxSessions) {
+            $tokensToDelete = $accessTokenCount - $maxSessions;
             $user->tokens()
+                ->where('abilities', '!=', '["refresh"]')
                 ->orderBy('created_at', 'asc')
                 ->limit($tokensToDelete)
                 ->delete();
         }
+    }
+
+    /**
+     * Revoke both access and refresh tokens for a given base name.
+     */
+    private function revokeTokenPairByName(User $user, string $baseName): void
+    {
+        $user->tokens()
+            ->whereIn('name', [$baseName, $baseName . '-refresh'])
+            ->delete();
     }
 }

@@ -17,8 +17,8 @@ return new class () extends Migration {
             $table->string('key_version', 50);
             $table->string('backup_hash', 64);
             $table->boolean('is_verified')->default(false);
-            $table->timestamp('verified_at')->nullable();
-            $table->timestamp('last_used_at')->nullable();
+            $table->dateTime('verified_at')->nullable();
+            $table->dateTime('last_used_at')->nullable();
             $table->unsignedInteger('usage_count')->default(0);
             $table->timestamps();
             $table->softDeletes();

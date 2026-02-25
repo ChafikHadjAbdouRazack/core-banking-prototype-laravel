@@ -321,7 +321,7 @@ class RebalancingService
         }
 
         $netBenefit = $this->calculateNetBenefit($actions, $transactionCost);
-        $highPriorityActions = array_filter($actions, fn ($action) => $action['priority'] > 2.0);
+        $highPriorityActions = array_filter($actions, fn ($action) => $action['priority'] >= 2.0);
 
         return $netBenefit > 0 && count($highPriorityActions) > 0;
     }

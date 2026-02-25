@@ -1,239 +1,177 @@
 <?php
 
-namespace Tests\Unit\Domain\Stablecoin\Services;
+declare(strict_types=1);
 
 use App\Domain\Asset\Services\ExchangeRateService;
 use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;
+use App\Domain\Stablecoin\Models\Stablecoin;
 use App\Domain\Stablecoin\Services\CollateralService;
 use App\Domain\Stablecoin\Services\LiquidationService;
 use App\Domain\Stablecoin\Services\StabilityMechanismService;
-use PHPUnit\Framework\Attributes\Test;
-use ReflectionClass;
-use ReflectionMethod;
-use Tests\ServiceTestCase;
 
-class StabilityMechanismServiceTest extends ServiceTestCase
-{
-    private StabilityMechanismService $service;
+uses(Tests\TestCase::class);
 
-    private ExchangeRateService $exchangeRateService;
-
-    private CollateralService $collateralService;
-
-    private LiquidationService $liquidationService;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->exchangeRateService = $this->createMock(ExchangeRateService::class);
-        $this->collateralService = $this->createMock(CollateralService::class);
-        $this->liquidationService = $this->createMock(LiquidationService::class);
+describe('StabilityMechanismService', function () {
+    beforeEach(function () {
+        $this->exchangeRateService = Mockery::mock(ExchangeRateService::class);
+        $this->collateralService = Mockery::mock(CollateralService::class);
+        $this->liquidationService = Mockery::mock(LiquidationService::class);
 
         $this->service = new StabilityMechanismService(
             $this->exchangeRateService,
             $this->collateralService,
             $this->liquidationService
         );
-    }
+    });
 
-    #[Test]
-    public function test_class_exists(): void
-    {
-        $this->assertTrue(class_exists(StabilityMechanismService::class));
-    }
+    it('implements StabilityMechanismServiceInterface', function () {
+        expect($this->service)->toBeInstanceOf(StabilityMechanismServiceInterface::class);
+    });
 
-    #[Test]
-    public function test_implements_interface(): void
-    {
-        $this->assertInstanceOf(StabilityMechanismServiceInterface::class, $this->service);
-    }
+    it('can be constructed without liquidation service', function () {
+        $service = new StabilityMechanismService(
+            $this->exchangeRateService,
+            $this->collateralService,
+        );
 
-    #[Test]
-    public function test_constructor_injects_dependencies(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $constructor = $reflection->getConstructor();
+        expect($service)->toBeInstanceOf(StabilityMechanismServiceInterface::class);
+    });
 
-        $this->assertNotNull($constructor);
-        $this->assertEquals(3, $constructor->getNumberOfParameters());
+    describe('calculateFeeAdjustment', function () {
+        it('increases mint fee and decreases burn fee when price is above peg', function () {
+            $currentFees = ['mint_fee' => 0.01, 'burn_fee' => 0.01];
+            $deviation = 5.0; // Price above peg
 
-        $parameters = $constructor->getParameters();
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-        $this->assertEquals('exchangeRateService', $parameters[0]->getName());
-        $this->assertEquals(ExchangeRateService::class, $parameters[0]->getType()?->getName());
-        $this->assertFalse($parameters[0]->allowsNull());
+            expect($result['new_mint_fee'])->toBeGreaterThan(0.01);
+            expect($result['new_burn_fee'])->toBeLessThan(0.01);
+            expect($result)->toHaveKey('adjustment_reason');
+            expect($result['adjustment_reason'])->toContain('above');
+        });
 
-        $this->assertEquals('collateralService', $parameters[1]->getName());
-        $this->assertEquals(CollateralService::class, $parameters[1]->getType()?->getName());
-        $this->assertFalse($parameters[1]->allowsNull());
+        it('decreases mint fee and increases burn fee when price is below peg', function () {
+            $currentFees = ['mint_fee' => 0.01, 'burn_fee' => 0.01];
+            $deviation = -5.0; // Price below peg
 
-        $this->assertEquals('liquidationService', $parameters[2]->getName());
-        $this->assertEquals(LiquidationService::class, $parameters[2]->getType()?->getName());
-        $this->assertTrue($parameters[2]->allowsNull());
-        $this->assertTrue($parameters[2]->isDefaultValueAvailable());
-        $this->assertNull($parameters[2]->getDefaultValue());
-    }
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-    #[Test]
-    public function test_has_execute_stability_mechanisms_method(): void
-    {
-        $this->assertTrue(method_exists($this->service, 'executeStabilityMechanisms'));
-    }
+            expect($result['new_mint_fee'])->toBeLessThan(0.01);
+            expect($result['new_burn_fee'])->toBeGreaterThan(0.01);
+            expect($result['adjustment_reason'])->toContain('below');
+        });
 
-    #[Test]
-    public function test_execute_stability_mechanisms_method_signature(): void
-    {
-        $reflection = new ReflectionMethod(StabilityMechanismService::class, 'executeStabilityMechanisms');
+        it('does not change fees when deviation is zero', function () {
+            $currentFees = ['mint_fee' => 0.01, 'burn_fee' => 0.01];
+            $deviation = 0.0;
 
-        $this->assertEquals(0, $reflection->getNumberOfParameters());
-        $this->assertTrue($reflection->isPublic());
-        $this->assertEquals('array', $reflection->getReturnType()?->getName());
-    }
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-    #[Test]
-    public function test_service_properties_are_private_readonly(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
+            expect($result['new_mint_fee'])->toBe(0.01);
+            expect($result['new_burn_fee'])->toBe(0.01);
+        });
 
-        $exchangeRateProperty = $reflection->getProperty('exchangeRateService');
-        $this->assertTrue($exchangeRateProperty->isPrivate());
-        $this->assertTrue($exchangeRateProperty->isReadOnly());
+        it('caps mint fee at maximum of 0.1', function () {
+            $currentFees = ['mint_fee' => 0.09, 'burn_fee' => 0.01];
+            $deviation = 10.0; // Large positive deviation
 
-        $collateralProperty = $reflection->getProperty('collateralService');
-        $this->assertTrue($collateralProperty->isPrivate());
-        $this->assertTrue($collateralProperty->isReadOnly());
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-        $liquidationProperty = $reflection->getProperty('liquidationService');
-        $this->assertTrue($liquidationProperty->isPrivate());
-        $this->assertTrue($liquidationProperty->isReadOnly());
-    }
+            expect($result['new_mint_fee'])->toBeLessThanOrEqual(0.1);
+        });
 
-    #[Test]
-    public function test_service_imports(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
+        it('does not allow burn fee below zero', function () {
+            $currentFees = ['mint_fee' => 0.01, 'burn_fee' => 0.001];
+            $deviation = 10.0; // Large positive deviation
 
-        $fileName = $reflection->getFileName();
-        $fileContent = file_get_contents($fileName);
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-        $this->assertStringContainsString('use App\Domain\Asset\Services\ExchangeRateService;', $fileContent);
-        $this->assertStringContainsString('use App\Domain\Stablecoin\Contracts\StabilityMechanismServiceInterface;', $fileContent);
-        $this->assertStringContainsString('use App\Domain\Stablecoin\Models\Stablecoin;', $fileContent);
-        $this->assertStringContainsString('use Illuminate\Support\Facades\Cache;', $fileContent);
-        $this->assertStringContainsString('use Illuminate\Support\Facades\Log;', $fileContent);
-    }
+            expect($result['new_burn_fee'])->toBeGreaterThanOrEqual(0.0);
+        });
 
-    #[Test]
-    public function test_execute_stability_mechanisms_handles_errors(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $method = $reflection->getMethod('executeStabilityMechanisms');
+        it('uses default fees when current fees are missing', function () {
+            $currentFees = [];
+            $deviation = 5.0;
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-        // Should handle errors with try-catch
-        $this->assertStringContainsString('try {', $source);
-        $this->assertStringContainsString('} catch (Exception $e)', $source);
+            expect($result)->toHaveKey('new_mint_fee');
+            expect($result)->toHaveKey('new_burn_fee');
+            expect($result['new_mint_fee'])->toBeFloat();
+            expect($result['new_burn_fee'])->toBeFloat();
+        });
 
-        // Error logging is handled internally
+        it('rounds fee values to 6 decimal places', function () {
+            $currentFees = ['mint_fee' => 0.01, 'burn_fee' => 0.01];
+            $deviation = 3.0;
 
-        // Should include error in results
-        $this->assertStringContainsString('\'success\' => false', $source);
-        $this->assertStringContainsString('\'error\'   => $e->getMessage()', $source);
-    }
+            $result = $this->service->calculateFeeAdjustment($deviation, $currentFees);
 
-    #[Test]
-    public function test_execute_stability_mechanisms_processes_active_stablecoins(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $method = $reflection->getMethod('executeStabilityMechanisms');
+            // Check fees are properly rounded (no more than 6 decimals)
+            $mintFeeStr = (string) $result['new_mint_fee'];
+            $burnFeeStr = (string) $result['new_burn_fee'];
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            if (str_contains($mintFeeStr, '.')) {
+                expect(strlen(explode('.', $mintFeeStr)[1]))->toBeLessThanOrEqual(6);
+            }
+            if (str_contains($burnFeeStr, '.')) {
+                expect(strlen(explode('.', $burnFeeStr)[1]))->toBeLessThanOrEqual(6);
+            }
+        });
+    });
 
-        // Should get active stablecoins
-        $this->assertStringContainsString('Stablecoin::active()->get()', $source);
+    describe('calculateSupplyIncentives', function () {
+        it('recommends burning when deviation is negative', function () {
+            $result = $this->service->calculateSupplyIncentives(-5.0, 1000000, 1000000);
 
-        // Should iterate through stablecoins
-        $this->assertStringContainsString('foreach ($stablecoins as $stablecoin)', $source);
+            expect($result['recommended_action'])->toBe('burn');
+            expect($result['burn_reward'])->toBeGreaterThan(0.0);
+            expect($result['mint_reward'])->toBe(0);
+        });
 
-        // Should call executeStabilityMechanismForStablecoin
-        $this->assertStringContainsString('executeStabilityMechanismForStablecoin($stablecoin)', $source);
-    }
+        it('recommends minting when deviation is positive', function () {
+            $result = $this->service->calculateSupplyIncentives(5.0, 1000000, 1000000);
 
-    #[Test]
-    public function test_has_execute_stability_mechanism_for_stablecoin_method(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
+            expect($result['recommended_action'])->toBe('mint');
+            expect($result['mint_reward'])->toBeGreaterThan(0.0);
+            expect($result['burn_reward'])->toBe(0);
+        });
 
-        // Check if method is referenced in executeStabilityMechanisms
-        $method = $reflection->getMethod('executeStabilityMechanisms');
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+        it('recommends no action when deviation is zero', function () {
+            $result = $this->service->calculateSupplyIncentives(0.0, 1000000, 1000000);
 
-        $this->assertStringContainsString('$this->executeStabilityMechanismForStablecoin', $source);
-    }
+            expect($result['recommended_action'])->toBe('none');
+            expect($result['mint_reward'])->toBe(0);
+            expect($result['burn_reward'])->toBe(0);
+        });
 
-    #[Test]
-    public function test_execute_stability_mechanisms_returns_results_array(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $method = $reflection->getMethod('executeStabilityMechanisms');
+        it('caps burn reward at 0.1', function () {
+            $result = $this->service->calculateSupplyIncentives(-100.0, 1000000, 1000000);
 
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
+            expect($result['burn_reward'])->toBeLessThanOrEqual(0.1);
+        });
 
-        // Should initialize results array
-        $this->assertStringContainsString('$results = [];', $source);
+        it('caps mint reward at 0.1', function () {
+            $result = $this->service->calculateSupplyIncentives(100.0, 1000000, 1000000);
 
-        // Should store results by stablecoin code
-        $this->assertStringContainsString('$results[$stablecoin->code] = $result;', $source);
+            expect($result['mint_reward'])->toBeLessThanOrEqual(0.1);
+        });
 
-        // Should return results
-        $this->assertStringContainsString('return $results;', $source);
-    }
+        it('scales incentives proportionally to deviation', function () {
+            $smallDeviation = $this->service->calculateSupplyIncentives(-2.0, 1000000, 1000000);
+            $largeDeviation = $this->service->calculateSupplyIncentives(-8.0, 1000000, 1000000);
 
-    #[Test]
-    public function test_uses_strict_types(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
+            expect($largeDeviation['burn_reward'])->toBeGreaterThan($smallDeviation['burn_reward']);
+        });
+    });
 
-        $fileName = $reflection->getFileName();
-        $fileContent = file_get_contents($fileName);
+    describe('executeStabilityMechanismForStablecoin', function () {
+        it('throws for unknown stability mechanism', function () {
+            $stablecoin = Mockery::mock(Stablecoin::class)->shouldIgnoreMissing();
+            $stablecoin->shouldReceive('__get')->with('stability_mechanism')->andReturn('unknown_mechanism');
 
-        // Check for strict types declaration
-        $this->assertStringContainsString('declare(strict_types=1);', $fileContent);
-    }
-
-    #[Test]
-    public function test_namespace_is_correct(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $this->assertEquals('App\Domain\Stablecoin\Services', $reflection->getNamespaceName());
-    }
-
-    #[Test]
-    public function test_log_error_includes_context(): void
-    {
-        $reflection = new ReflectionClass(StabilityMechanismService::class);
-        $method = $reflection->getMethod('executeStabilityMechanisms');
-
-        $fileName = $reflection->getFileName();
-        $startLine = $method->getStartLine();
-        $endLine = $method->getEndLine();
-        $source = implode('', array_slice(file($fileName), $startLine - 1, $endLine - $startLine + 1));
-
-        // Should include stablecoin_code in log context
-        $this->assertStringContainsString("'stablecoin_code' => \$stablecoin->code", $source);
-        $this->assertStringContainsString("'error'           => \$e->getMessage()", $source);
-    }
-}
+            expect(fn () => $this->service->executeStabilityMechanismForStablecoin($stablecoin))
+                ->toThrow(InvalidArgumentException::class, 'Unknown stability mechanism');
+        });
+    });
+});

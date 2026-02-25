@@ -15,8 +15,8 @@ return new class () extends Migration {
             $table->string('ip_address')->unique();
             $table->string('reason');
             $table->integer('failed_attempts')->default(0);
-            $table->timestamp('blocked_at');
-            $table->timestamp('expires_at')->index();
+            $table->dateTime('blocked_at');
+            $table->dateTime('expires_at')->index();
             $table->timestamps();
 
             $table->index(['ip_address', 'expires_at']);

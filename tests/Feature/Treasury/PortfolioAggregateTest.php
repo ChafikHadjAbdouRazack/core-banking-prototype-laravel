@@ -91,9 +91,10 @@ it('allocates assets with proper validation', function () {
                 $portfolioId,
                 $allocationId,
                 [
-                    new AssetAllocation('equities', 60.0, 0.0, 0.0),
-                    new AssetAllocation('bonds', 30.0, 0.0, 0.0),
-                    new AssetAllocation('cash', 10.0, 0.0, 0.0),
+                    // drift auto-calculated as abs(currentWeight - targetWeight) when drift=0.0
+                    ['assetClass' => 'equities', 'targetWeight' => 60.0, 'currentWeight' => 0.0, 'drift' => 60.0],
+                    ['assetClass' => 'bonds', 'targetWeight' => 30.0, 'currentWeight' => 0.0, 'drift' => 30.0],
+                    ['assetClass' => 'cash', 'targetWeight' => 10.0, 'currentWeight' => 0.0, 'drift' => 10.0],
                 ],
                 1000000.0,
                 'portfolio_manager'

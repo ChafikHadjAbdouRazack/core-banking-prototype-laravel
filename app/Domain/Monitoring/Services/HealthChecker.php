@@ -14,9 +14,14 @@ class HealthChecker
 {
     private ?MetricsCollector $metricsCollector;
 
-    public function __construct(?MetricsCollector $metricsCollector = null)
-    {
+    private ?EventStoreHealthCheck $eventStoreHealthCheck;
+
+    public function __construct(
+        ?MetricsCollector $metricsCollector = null,
+        ?EventStoreHealthCheck $eventStoreHealthCheck = null,
+    ) {
         $this->metricsCollector = $metricsCollector;
+        $this->eventStoreHealthCheck = $eventStoreHealthCheck;
     }
 
     /**
@@ -46,6 +51,89 @@ class HealthChecker
             'timestamp' => now()->toIso8601String(),
             'checks'    => $checks,
         ];
+    }
+
+    /**
+     * Perform deep health check including event store checks.
+     *
+     * @return array<string, mixed>
+     */
+    public function checkDeep(): array
+    {
+        $basicResult = $this->check();
+
+        if ($this->eventStoreHealthCheck) {
+            $basicResult['checks']['event_store'] = $this->eventStoreHealthCheck->checkAll();
+
+            // Re-evaluate overall health including event store
+            $healthy = collect($basicResult['checks'])->every(fn ($check) => $check['healthy']);
+            $basicResult['healthy'] = $healthy;
+            $basicResult['status'] = $healthy ? 'healthy' : 'unhealthy';
+        }
+
+        return $basicResult;
+    }
+
+    /**
+     * Check health for a specific domain.
+     *
+     * @return array<string, mixed>
+     */
+    public function checkDomain(string $domain): array
+    {
+        $result = [
+            'domain'    => $domain,
+            'timestamp' => now()->toIso8601String(),
+            'checks'    => [],
+        ];
+
+        if ($this->eventStoreHealthCheck) {
+            $eventStoreService = $this->eventStoreHealthCheck->getEventStoreService();
+            $domainMap = $eventStoreService->getDomainTableMap();
+
+            if (isset($domainMap[$domain])) {
+                $tables = $domainMap[$domain];
+
+                // Check event table connectivity
+                if ($tables['event_table']) {
+                    try {
+                        DB::table($tables['event_table'])->limit(1)->get();
+                        $result['checks']['event_table'] = [
+                            'healthy' => true,
+                            'table'   => $tables['event_table'],
+                            'message' => 'Accessible',
+                        ];
+                    } catch (Exception $e) {
+                        $result['checks']['event_table'] = [
+                            'healthy' => false,
+                            'table'   => $tables['event_table'],
+                            'message' => $e->getMessage(),
+                        ];
+                    }
+                }
+
+                // Check snapshot freshness
+                if ($tables['snapshot_table']) {
+                    $snapshotCheck = $this->eventStoreHealthCheck->checkSnapshotFreshness();
+                    $domainSnapshot = $snapshotCheck['domains'][$domain] ?? null;
+                    $result['checks']['snapshot'] = $domainSnapshot ?? [
+                        'fresh'   => true,
+                        'message' => 'No snapshot table',
+                    ];
+                }
+            } else {
+                $result['checks']['domain'] = [
+                    'healthy' => false,
+                    'message' => "Domain '{$domain}' not found in event store mapping",
+                ];
+            }
+        }
+
+        $healthy = collect($result['checks'])->every(fn ($check) => ($check['healthy'] ?? $check['fresh'] ?? true));
+        $result['healthy'] = $healthy;
+        $result['status'] = $healthy ? 'healthy' : 'unhealthy';
+
+        return $result;
     }
 
     /**

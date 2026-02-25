@@ -3,17 +3,13 @@
 use App\Domain\Payment\Activities\ValidateWithdrawalActivity;
 use App\Domain\Payment\DataObjects\BankWithdrawal;
 
-it('class exists', function () {
-    expect(class_exists(ValidateWithdrawalActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(ValidateWithdrawalActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(ValidateWithdrawalActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(ValidateWithdrawalActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {

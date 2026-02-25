@@ -6,6 +6,8 @@ namespace Tests\Feature\HardwareWallet;
 
 use App\Domain\Wallet\Models\HardwareWalletAssociation;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
+use Laravel\Pennant\Feature;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
@@ -22,6 +24,8 @@ class HardwareWalletRegistrationTest extends TestCase
     {
         parent::setUp();
 
+        Cache::flush();
+        Feature::define('sub_product.blockchain', true);
         Sanctum::actingAs($this->user);
     }
 
@@ -35,13 +39,13 @@ class HardwareWalletRegistrationTest extends TestCase
             'public_key'       => '04' . str_repeat('ab', 64),
             'address'          => '0x1234567890123456789012345678901234567890',
             'chain'            => 'ethereum',
-            'derivation_path'  => "44'/60'/0'/0/0",
+            'derivation_path'  => "m/44'/60'/0'/0/0",
             'supported_chains' => ['ethereum', 'polygon', 'bsc'],
         ]);
 
         $response->assertStatus(201);
         $response->assertJsonStructure([
-            'success',
+            'message',
             'data' => [
                 'association_id',
                 'device_type',
@@ -86,7 +90,7 @@ class HardwareWalletRegistrationTest extends TestCase
             'public_key'       => '04' . str_repeat('ab', 64),
             'address'          => '0x1234567890123456789012345678901234567890',
             'chain'            => 'ethereum',
-            'derivation_path'  => "44'/60'/0'/0/0",
+            'derivation_path'  => "m/44'/60'/0'/0/0",
             'supported_chains' => ['ethereum'],
         ]);
 
@@ -103,7 +107,7 @@ class HardwareWalletRegistrationTest extends TestCase
             'public_key'       => '04' . str_repeat('ab', 64),
             'address'          => 'invalid-address',
             'chain'            => 'ethereum',
-            'derivation_path'  => "44'/60'/0'/0/0",
+            'derivation_path'  => "m/44'/60'/0'/0/0",
             'supported_chains' => ['ethereum'],
         ]);
 
@@ -131,27 +135,29 @@ class HardwareWalletRegistrationTest extends TestCase
     public function it_lists_user_associations(): void
     {
         HardwareWalletAssociation::create([
-            'user_id'         => $this->user->id,
-            'device_type'     => 'ledger_nano_x',
-            'device_id'       => 'ledger_123',
-            'device_label'    => 'Ledger 1',
-            'public_key'      => '04' . str_repeat('ab', 64),
-            'address'         => '0x1111111111111111111111111111111111111111',
-            'chain'           => 'ethereum',
-            'derivation_path' => "44'/60'/0'/0/0",
-            'is_active'       => true,
+            'user_id'          => $this->user->id,
+            'device_type'      => 'ledger_nano_x',
+            'device_id'        => 'ledger_123',
+            'device_label'     => 'Ledger 1',
+            'public_key'       => '04' . str_repeat('ab', 64),
+            'address'          => '0x1111111111111111111111111111111111111111',
+            'chain'            => 'ethereum',
+            'derivation_path'  => "m/44'/60'/0'/0/0",
+            'supported_chains' => ['ethereum', 'polygon'],
+            'is_active'        => true,
         ]);
 
         HardwareWalletAssociation::create([
-            'user_id'         => $this->user->id,
-            'device_type'     => 'trezor_model_t',
-            'device_id'       => 'trezor_456',
-            'device_label'    => 'Trezor 1',
-            'public_key'      => '04' . str_repeat('cd', 64),
-            'address'         => '0x2222222222222222222222222222222222222222',
-            'chain'           => 'polygon',
-            'derivation_path' => "m/44'/60'/0'/0/0",
-            'is_active'       => true,
+            'user_id'          => $this->user->id,
+            'device_type'      => 'trezor_model_t',
+            'device_id'        => 'trezor_456',
+            'device_label'     => 'Trezor 1',
+            'public_key'       => '04' . str_repeat('cd', 64),
+            'address'          => '0x2222222222222222222222222222222222222222',
+            'chain'            => 'polygon',
+            'derivation_path'  => "m/44'/60'/0'/0/0",
+            'supported_chains' => ['ethereum', 'polygon'],
+            'is_active'        => true,
         ]);
 
         $response = $this->getJson('/api/hardware-wallet/associations');
@@ -164,15 +170,16 @@ class HardwareWalletRegistrationTest extends TestCase
     public function it_removes_association(): void
     {
         $association = HardwareWalletAssociation::create([
-            'user_id'         => $this->user->id,
-            'device_type'     => 'ledger_nano_x',
-            'device_id'       => 'ledger_123',
-            'device_label'    => 'Ledger 1',
-            'public_key'      => '04' . str_repeat('ab', 64),
-            'address'         => '0x1111111111111111111111111111111111111111',
-            'chain'           => 'ethereum',
-            'derivation_path' => "44'/60'/0'/0/0",
-            'is_active'       => true,
+            'user_id'          => $this->user->id,
+            'device_type'      => 'ledger_nano_x',
+            'device_id'        => 'ledger_123',
+            'device_label'     => 'Ledger 1',
+            'public_key'       => '04' . str_repeat('ab', 64),
+            'address'          => '0x1111111111111111111111111111111111111111',
+            'chain'            => 'ethereum',
+            'derivation_path'  => "m/44'/60'/0'/0/0",
+            'supported_chains' => ['ethereum'],
+            'is_active'        => true,
         ]);
 
         $response = $this->deleteJson('/api/hardware-wallet/associations/' . $association->id);
@@ -189,20 +196,22 @@ class HardwareWalletRegistrationTest extends TestCase
         $otherUser = User::factory()->create();
 
         $association = HardwareWalletAssociation::create([
-            'user_id'         => $otherUser->id,
-            'device_type'     => 'ledger_nano_x',
-            'device_id'       => 'ledger_123',
-            'device_label'    => 'Ledger 1',
-            'public_key'      => '04' . str_repeat('ab', 64),
-            'address'         => '0x1111111111111111111111111111111111111111',
-            'chain'           => 'ethereum',
-            'derivation_path' => "44'/60'/0'/0/0",
-            'is_active'       => true,
+            'user_id'          => $otherUser->id,
+            'device_type'      => 'ledger_nano_x',
+            'device_id'        => 'ledger_123',
+            'device_label'     => 'Ledger 1',
+            'public_key'       => '04' . str_repeat('ab', 64),
+            'address'          => '0x1111111111111111111111111111111111111111',
+            'chain'            => 'ethereum',
+            'derivation_path'  => "m/44'/60'/0'/0/0",
+            'supported_chains' => ['ethereum'],
+            'is_active'        => true,
         ]);
 
         $response = $this->deleteJson('/api/hardware-wallet/associations/' . $association->id);
 
-        $response->assertStatus(403);
+        // Controller scopes query to authenticated user, so other user's association returns 404
+        $response->assertStatus(404);
 
         $association->refresh();
         $this->assertTrue($association->is_active);
@@ -216,7 +225,7 @@ class HardwareWalletRegistrationTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonStructure([
             'data' => [
-                'devices',
+                'device_types',
                 'chains',
             ],
         ]);
@@ -236,7 +245,7 @@ class HardwareWalletRegistrationTest extends TestCase
             'public_key'       => '04' . str_repeat('ab', 64),
             'address'          => $address,
             'chain'            => 'ethereum',
-            'derivation_path'  => "44'/60'/0'/0/0",
+            'derivation_path'  => "m/44'/60'/0'/0/0",
             'supported_chains' => ['ethereum'],
         ])->assertStatus(201);
 
@@ -248,7 +257,7 @@ class HardwareWalletRegistrationTest extends TestCase
             'public_key'       => '04' . str_repeat('ab', 64),
             'address'          => $address,
             'chain'            => 'ethereum',
-            'derivation_path'  => "44'/60'/0'/0/0",
+            'derivation_path'  => "m/44'/60'/0'/0/0",
             'supported_chains' => ['ethereum'],
         ]);
 

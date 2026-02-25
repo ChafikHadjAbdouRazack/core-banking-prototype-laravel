@@ -28,7 +28,7 @@ return new class () extends Migration {
         Schema::create('edd_periodic_reviews', function (Blueprint $table) {
             $table->id();
             $table->string('customer_id', 36)->unique();
-            $table->timestamp('next_review_at')->index();
+            $table->dateTime('next_review_at')->index();
             $table->integer('interval_months')->default(6);
             $table->timestamps();
         });

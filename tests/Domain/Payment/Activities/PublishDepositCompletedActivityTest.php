@@ -3,17 +3,13 @@
 use App\Domain\Payment\Activities\PublishDepositCompletedActivity;
 use App\Domain\Payment\DataObjects\StripeDeposit;
 
-it('class exists', function () {
-    expect(class_exists(PublishDepositCompletedActivity::class))->toBeTrue();
-});
-
 it('extends Activity base class', function () {
     $reflection = new ReflectionClass(PublishDepositCompletedActivity::class);
     expect($reflection->getParentClass()->getName())->toBe('Workflow\Activity');
 });
 
 it('has execute method', function () {
-    expect(method_exists(PublishDepositCompletedActivity::class, 'execute'))->toBeTrue();
+    expect((new ReflectionClass(PublishDepositCompletedActivity::class))->hasMethod('execute'))->toBeTrue();
 });
 
 it('execute method has correct signature', function () {

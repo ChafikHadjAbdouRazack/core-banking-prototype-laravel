@@ -146,6 +146,26 @@
             </div>
         </section>
 
+        <!-- DeFi Lending Callout -->
+        <section class="py-12 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-gradient-to-r from-cyan-50 to-purple-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">DeFi Lending & Flash Loans</h3>
+                        <p class="text-gray-600 max-w-xl">
+                            Connect to DeFi lending markets through Aave and Compound. Access flash loans for arbitrage and refinancing, with real-time market rate comparison across protocols.
+                        </p>
+                    </div>
+                    <a href="{{ route('features.show', 'crosschain-defi') }}" class="mt-4 md:mt-0 inline-flex items-center px-6 py-3 bg-cyan-600 text-white rounded-lg font-semibold hover:bg-cyan-700 transition-colors flex-shrink-0">
+                        Explore Cross-Chain & DeFi
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- CTA Section -->
         <section class="py-20 bg-gray-50">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">

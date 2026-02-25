@@ -16,7 +16,7 @@ return new class () extends Migration {
             $table->json('health_status')->nullable();
             $table->integer('metrics_count')->default(0);
             $table->enum('overall_health', ['healthy', 'degraded', 'unhealthy', 'unknown'])->default('unknown');
-            $table->timestamp('created_at')->useCurrent();
+            $table->dateTime('created_at')->useCurrent();
 
             $table->index('overall_health');
             $table->index('created_at');

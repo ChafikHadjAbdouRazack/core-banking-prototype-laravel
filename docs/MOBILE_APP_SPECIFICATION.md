@@ -1,5 +1,13 @@
 # FinAegis Mobile Wallet - Technical Specification
 
+> **Version Context:** This specification was written for the v2.5.0 mobile app launch.
+> The FinAegis backend has since evolved to v5.0.0 with 41 domains, including significant
+> additions such as CrossChain, DeFi, RegTech, Event Streaming, GraphQL API, Plugin
+> Marketplace, and more. Mobile-relevant backend domains (Mobile, MobilePayment, Relayer,
+> Commerce, TrustCert, Privacy, KeyManagement) have all received further enhancements in
+> subsequent releases. See [CLAUDE.md](../CLAUDE.md) for the current version status and
+> full domain listing.
+
 **Version**: 1.4
 **Date**: February 2, 2026
 **Status**: Backend Complete - Ready for Mobile Development

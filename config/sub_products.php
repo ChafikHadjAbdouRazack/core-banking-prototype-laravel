@@ -65,6 +65,21 @@ return [
         'color'            => 'warning',
     ],
 
+    'blockchain' => [
+        'enabled'     => env('SUB_PRODUCT_BLOCKCHAIN_ENABLED', true),
+        'name'        => 'FinAegis Blockchain',
+        'description' => 'Hardware wallet integration and blockchain signing',
+        'features'    => [
+            'hardware_wallets' => env('BLOCKCHAIN_HARDWARE_WALLETS_ENABLED', true),
+            'signing'          => env('BLOCKCHAIN_SIGNING_ENABLED', true),
+        ],
+        'licenses'         => [],
+        'routes_prefix'    => 'blockchain',
+        'navigation_order' => 50,
+        'icon'             => 'heroicon-o-cube-transparent',
+        'color'            => 'secondary',
+    ],
+
     'treasury' => [
         'enabled'     => env('SUB_PRODUCT_TREASURY_ENABLED', true),
         'name'        => 'FinAegis Treasury',

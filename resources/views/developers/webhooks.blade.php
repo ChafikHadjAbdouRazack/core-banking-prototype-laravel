@@ -192,6 +192,58 @@ curl -X POST https://api.finaegis.org/v2/webhooks \
                                     ['name' => 'system.security_alert', 'desc' => 'Security event detected'],
                                     ['name' => 'system.status_change', 'desc' => 'System status changed']
                                 ]
+                            ],
+                            [
+                                'title' => 'CrossChain Events',
+                                'icon' => 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+                                'color' => 'cyan',
+                                'events' => [
+                                    ['name' => 'bridge.initiated', 'desc' => 'Cross-chain bridge transfer started'],
+                                    ['name' => 'bridge.completed', 'desc' => 'Bridge transfer confirmed on destination chain'],
+                                    ['name' => 'bridge.failed', 'desc' => 'Bridge transfer failed or timed out'],
+                                    ['name' => 'swap.completed', 'desc' => 'Cross-chain token swap completed']
+                                ]
+                            ],
+                            [
+                                'title' => 'DeFi Events',
+                                'icon' => 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6',
+                                'color' => 'emerald',
+                                'events' => [
+                                    ['name' => 'position.opened', 'desc' => 'DeFi position opened (lending, staking, LP)'],
+                                    ['name' => 'position.closed', 'desc' => 'DeFi position closed and funds returned'],
+                                    ['name' => 'position.liquidation_warning', 'desc' => 'Position approaching liquidation threshold'],
+                                    ['name' => 'yield.harvested', 'desc' => 'Yield rewards harvested from protocol']
+                                ]
+                            ],
+                            [
+                                'title' => 'RegTech Events',
+                                'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                                'color' => 'rose',
+                                'events' => [
+                                    ['name' => 'compliance.report.generated', 'desc' => 'MiFID II or MiCA compliance report ready'],
+                                    ['name' => 'compliance.violation.detected', 'desc' => 'Regulatory compliance violation detected'],
+                                    ['name' => 'travel_rule.check.completed', 'desc' => 'Travel Rule verification completed']
+                                ]
+                            ],
+                            [
+                                'title' => 'Mobile Payment Events',
+                                'icon' => 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
+                                'color' => 'violet',
+                                'events' => [
+                                    ['name' => 'payment_intent.created', 'desc' => 'New payment intent initialized'],
+                                    ['name' => 'payment_intent.completed', 'desc' => 'Payment intent successfully fulfilled'],
+                                    ['name' => 'payment_intent.expired', 'desc' => 'Payment intent expired without completion']
+                                ]
+                            ],
+                            [
+                                'title' => 'Partner BaaS Events',
+                                'icon' => 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+                                'color' => 'amber',
+                                'events' => [
+                                    ['name' => 'partner.onboarded', 'desc' => 'New BaaS partner onboarding completed'],
+                                    ['name' => 'sdk.generated', 'desc' => 'Partner SDK build generated and ready'],
+                                    ['name' => 'widget.deployed', 'desc' => 'Embedded widget deployed to production']
+                                ]
                             ]
                         ];
                     @endphp

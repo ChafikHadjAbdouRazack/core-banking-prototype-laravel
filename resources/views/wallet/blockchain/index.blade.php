@@ -29,9 +29,10 @@
                             if (!isset($balance['error'])) {
                                 $address = $addresses->firstWhere('uuid', $addressId);
                                 $chain = $supportedChains[$address->chain];
-                                // Mock USD conversion - in production, use real exchange rates
-                                $usdValue = $balance['balance'] * ($chain['symbol'] === 'BTC' ? 30000 : ($chain['symbol'] === 'ETH' ? 2000 : 1));
-                                $totalUSD += $usdValue;
+                                $rate = $usdRates[$chain['symbol']] ?? null;
+                                if ($rate !== null) {
+                                    $totalUSD += $balance['balance'] * $rate;
+                                }
                             }
                         }
                     @endphp

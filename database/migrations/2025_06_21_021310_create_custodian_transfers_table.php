@@ -23,7 +23,7 @@ return new class () extends Migration {
             $table->string('reference')->nullable();
             $table->text('failure_reason')->nullable();
             $table->json('metadata')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             // Indexes

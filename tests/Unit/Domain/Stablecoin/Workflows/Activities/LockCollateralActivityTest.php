@@ -13,7 +13,7 @@ class LockCollateralActivityTest extends DomainTestCase
     #[Test]
     public function test_class_exists(): void
     {
-        $this->assertTrue(class_exists(LockCollateralActivity::class));
+        $this->assertNotEmpty((new ReflectionClass(LockCollateralActivity::class))->getName());
     }
 
     #[Test]
@@ -26,7 +26,7 @@ class LockCollateralActivityTest extends DomainTestCase
     #[Test]
     public function test_has_execute_method(): void
     {
-        $this->assertTrue(method_exists(LockCollateralActivity::class, 'execute'));
+        $this->assertTrue((new ReflectionClass(LockCollateralActivity::class))->hasMethod('execute'));
     }
 
     #[Test]

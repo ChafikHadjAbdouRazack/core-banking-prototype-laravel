@@ -34,26 +34,26 @@ return new class () extends Migration {
 
             // Assignment
             $table->foreignId('assigned_to')->nullable()->index();
-            $table->timestamp('assigned_at')->nullable();
+            $table->dateTime('assigned_at')->nullable();
             $table->foreignId('assigned_by')->nullable();
             $table->foreignId('created_by')->nullable();
 
             // Review
             $table->foreignId('reviewed_by')->nullable();
-            $table->timestamp('reviewed_at')->nullable();
+            $table->dateTime('reviewed_at')->nullable();
 
             // Closure
             $table->foreignId('closed_by')->nullable();
-            $table->timestamp('closed_at')->nullable();
+            $table->dateTime('closed_at')->nullable();
             $table->string('closure_reason')->nullable();
             $table->text('closure_notes')->nullable();
 
             // Activity tracking
             $table->integer('reopened_count')->default(0);
-            $table->timestamp('last_activity_at')->nullable()->index();
+            $table->dateTime('last_activity_at')->nullable()->index();
 
             // SLA management
-            $table->timestamp('due_date')->nullable()->index();
+            $table->dateTime('due_date')->nullable()->index();
             $table->string('sla_status')->nullable()->index();
             $table->integer('escalation_level')->default(0);
 

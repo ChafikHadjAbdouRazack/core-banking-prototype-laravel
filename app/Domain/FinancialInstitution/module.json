@@ -1,8 +1,8 @@
 {
     "$schema": "https://finaegis.io/schemas/module.json",
     "name": "finaegis/financial-institution",
-    "version": "1.3.0",
-    "description": "Financial institution management and regulatory entity tracking",
+    "version": "2.0.0",
+    "description": "Financial institution management, partner BaaS platform, and regulatory entity tracking",
     "type": "optional",
     "dependencies": {
         "required": {
@@ -18,7 +18,10 @@
         "events": [
             "InstitutionRegistered",
             "InstitutionVerified",
-            "InstitutionSuspended"
+            "InstitutionSuspended",
+            "PartnerOnboarded",
+            "PartnerBillingGenerated",
+            "IntegrationEnabled"
         ],
         "commands": [
             "RegisterInstitutionCommand",
