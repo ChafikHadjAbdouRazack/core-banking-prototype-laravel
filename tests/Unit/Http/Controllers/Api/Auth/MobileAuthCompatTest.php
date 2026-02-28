@@ -182,7 +182,14 @@ describe('CORS configuration', function (): void {
         $corsConfig = config('cors.allowed_headers');
 
         expect($corsConfig)->toContain('X-Client-Platform')
-            ->and($corsConfig)->toContain('X-Client-Version');
+            ->and($corsConfig)->toContain('X-Client-Version')
+            ->and($corsConfig)->toContain('X-Payment-Version');
+    });
+
+    it('includes PATCH in allowed methods', function (): void {
+        $corsMethods = config('cors.allowed_methods');
+
+        expect($corsMethods)->toContain('PATCH');
     });
 });
 

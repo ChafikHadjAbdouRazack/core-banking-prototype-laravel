@@ -138,4 +138,14 @@ class CardProvisioningService
     {
         return $this->cardIssuer->cancelCard($cardToken, $reason);
     }
+
+    /**
+     * List all non-cancelled cards for a user.
+     *
+     * @return array<VirtualCard>
+     */
+    public function listUserCards(string $userId): array
+    {
+        return $this->cardIssuer->listUserCards($userId);
+    }
 }

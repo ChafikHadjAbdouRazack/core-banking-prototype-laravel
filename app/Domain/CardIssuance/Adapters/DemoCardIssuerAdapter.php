@@ -155,4 +155,23 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
     {
         return Cache::get("card:{$cardToken}");
     }
+
+    /**
+     * @return array<VirtualCard>
+     */
+    public function listUserCards(string $userId): array
+    {
+        /** @var array<string> $tokens */
+        $tokens = Cache::get("user_cards:{$userId}", []);
+
+        $cards = [];
+        foreach ($tokens as $token) {
+            $card = $this->getCard($token);
+            if ($card !== null && $card->status !== CardStatus::CANCELLED) {
+                $cards[] = $card;
+            }
+        }
+
+        return $cards;
+    }
 }

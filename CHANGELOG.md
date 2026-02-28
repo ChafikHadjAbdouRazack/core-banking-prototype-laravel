@@ -5,6 +5,138 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.7.0] - 2026-02-28
+
+### Added
+- **Rewards/Gamification Domain** — Complete rewards system with XP, levels, quests, points shop, and daily streaks
+  - `RewardsService` with race-safe quest completion and item redemption using `DB::transaction()` + `lockForUpdate()`
+  - `RewardProfile`, `RewardQuest`, `RewardShopItem`, `RewardQuestCompletion`, `RewardRedemption` models with UUID primary keys
+  - `RewardsController` with 5 REST endpoints: profile, quests, quest completion, shop, item redemption
+  - Level progression system (XP thresholds: level×100, MAX_LEVEL=999)
+  - Streak tracking with separate read-only computation and write-side persistence
+  - Specific error codes: `QUEST_NOT_FOUND`, `QUEST_ALREADY_COMPLETED`, `ITEM_NOT_FOUND`, `ITEM_OUT_OF_STOCK`, `INSUFFICIENT_POINTS`
+  - 16 feature tests covering all reward flows, edge cases, and race conditions
+- **Recent Recipients** — `GET /api/v1/wallet/recent-recipients` endpoint returning deduplicated send history
+- **Notification Unread Count** — `GET /api/v1/notifications/unread-count` endpoint for badge display
+- **Route Aliases** — Mobile-friendly v1 paths for `create-account`, `estimate-fee`, `data-export`
+- 3 new edge case tests (inactive quest, inactive item, nonexistent UUID item)
+
+### Changed
+- **WebAuthn/FIDO2 Security Hardening** (PasskeyAuthenticationService):
+  - Added rpIdHash validation (SHA-256 of rpId compared with authData per WebAuthn §7.1)
+  - Added User Presence (UP) and User Verification (UV) flag checks
+  - Added COSE algorithm validation (only ES256/alg=-7 accepted)
+  - Added COSE curve validation (only P-256/crv=1 with 32-byte coordinate check)
+  - Added origin validation in assertion flow
+  - Fixed rpId consistency — uses `config('mobile.webauthn.rp_id')` everywhere
+  - Fixed exception message leak — generic error to client, details logged server-side
+  - Registration challenge moved to `/register-challenge` to resolve route conflict
+  - Removed insecure GET challenge route
+- **Rewards Race Condition Fixes**:
+  - Duplicate-completion check moved inside `DB::transaction()` with `lockForUpdate()` on profile row
+  - Balance and stock checks moved inside `DB::transaction()` with pessimistic locking
+  - Streak initialization fixed for null `last_activity_date` (starts at 1)
+  - Level-up loop capped at MAX_LEVEL=999
+- POST mutation routes now use `api.rate_limit:mutation` tier (not query)
+- Rate limiting added to `unread-count` and `data-export` endpoints
+- `idempotency` middleware added to `create-account` alias
+- `estimate-fee` alias changed from GET to POST
+- `whereUuid('id')` constraints added to rewards routes
+- `PaymentIntentStatus` enum used in `recentRecipients` query (replaces raw strings)
+- Added `shop_item_id` index to `reward_redemptions` migration
+
+### Fixed
+- Passkey registration route conflict — two `POST /challenge` routes shadowed each other
+- Streak mutation on read — profile view no longer modifies streak without persisting
+
+---
+
+## [5.6.0] - 2026-02-28
+
+### Added
+- **RAILGUN Privacy Protocol Integration** — Production-ready privacy layer replacing demo implementations
+  - `RailgunBridgeClient` — HTTP client for Node.js RAILGUN bridge service
+  - `RailgunMerkleTreeService` — Implements `MerkleTreeServiceInterface` via bridge
+  - `RailgunZkProverService` — Implements `ZkProverInterface` via bridge
+  - `RailgunPrivacyService` — Orchestrator for shield/unshield/transfer flows
+  - `RailgunWallet` model — Stores encrypted RAILGUN wallet data per user
+  - `ShieldedBalance` model — Cached shielded token balances
+  - Chain support: Ethereum (1), Polygon (137), Arbitrum (42161), BSC (56) — Base NOT supported
+  - 57 unit and feature tests with `Http::fake()` bridge mocking
+- Node.js RAILGUN Bridge service specification (`infrastructure/railgun-bridge/`)
+- `RAILGUN_BRIDGE_URL`, `RAILGUN_BRIDGE_SECRET`, `RAILGUN_BRIDGE_TIMEOUT` env vars
+- `ZK_PROVIDER=railgun` and `MERKLE_PROVIDER=railgun` config options
+
+### Changed
+- `config/privacy.php` — Added `railgun` section with bridge configuration
+- `PrivacyServiceProvider` — Added `'railgun'` case for ZK prover and Merkle tree bindings
+- `PrivacyController` — Delegates to `RailgunPrivacyService` when RAILGUN mode is active
+- `.env.production.example` and `.env.zelta.example` — Added RAILGUN environment variables
+- Privacy network list updated — removed `base` (not supported by RAILGUN)
+
+---
+
+## [5.5.0] - 2026-02-21
+
+### Added
+- **ERC-4337 Pimlico v2 Production Integration** — bundler, paymaster, smart account factory
+- Marqeta webhook Basic Auth + HMAC signature verification
+- `.env.zelta.example` synced with all production environment variables
+
+### Changed
+- Platform hardening: IdempotencyMiddleware wiring, E2E banking tests, multi-tenancy isolation tests
+- Dependabot triage: 4 safe upgrades merged, 5 breaking PRs closed with ignore rules
+- CI reliability improvements
+
+---
+
+## [5.4.1] - 2026-02-21
+
+### Changed
+- Dependabot triage (PRs #642-#659)
+- IdempotencyMiddleware applied to ~24 financial mutation routes
+- E2E banking flow tests (6 scenarios)
+- Multi-tenancy isolation tests (5 scenarios)
+- Documentation "prototype" → "platform" refresh
+
+---
+
+## [5.4.0] - 2026-02-21
+
+### Added
+- **Ondato KYC** — Identity verification with TrustCert linkage
+- **Chainalysis Sanctions Adapter** — Real-time screening integration
+- **Marqeta Card Issuing Adapter** — Virtual/physical card management
+- Firebase FCM v1 migration (from legacy API)
+
+### Fixed
+- X402 and mobile test hardening
+- CVE patches for dependencies
+
+---
+
+## [5.2.0] - 2026-02-19
+
+### Added
+- **X402 Protocol** — HTTP 402 native micropayments with USDC on Base L2
+- Payment gate middleware for per-endpoint API monetization
+- Facilitator integration with EIP-3009/Permit2 payment schemes
+- AI agent autonomous payments with spending limits
+- GraphQL X402 domain schema
+- MCP payment tool for AI workflows
+
+---
+
+## [5.1.6] - 2026-02-21
+
+### Changed
+- Copyright year update
+- Accessibility improvements
+- CSP headers hardening
+- Email configuration defaults
+
+---
+
 ## [5.1.5] - 2026-02-21
 
 ### Changed

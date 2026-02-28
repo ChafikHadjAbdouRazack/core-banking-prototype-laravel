@@ -8,7 +8,6 @@ use App\Domain\Relayer\Contracts\BundlerInterface;
 use App\Domain\Relayer\Contracts\PaymasterInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
 use App\Domain\Relayer\Services\GasStationService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
@@ -17,8 +16,6 @@ use Tests\TestCase;
 
 class GasStationServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private GasStationService $service;
 
     private PaymasterInterface&MockInterface $paymaster;

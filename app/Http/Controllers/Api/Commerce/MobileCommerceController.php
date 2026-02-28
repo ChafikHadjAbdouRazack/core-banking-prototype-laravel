@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Commerce;
 
+use App\Domain\Commerce\Enums\MerchantStatus;
+use App\Domain\Commerce\Models\Merchant;
 use App\Domain\Commerce\Services\MerchantOnboardingService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
@@ -50,9 +52,32 @@ class MobileCommerceController extends Controller
      */
     public function merchants(Request $request): JsonResponse
     {
+        $query = Merchant::where('status', MerchantStatus::ACTIVE);
+
+        if ($search = $request->query('search')) {
+            $query->where('display_name', 'like', '%' . $search . '%');
+        }
+
+        $merchants = $query->orderBy('display_name')
+            ->paginate(min((int) $request->query('per_page', '20'), 100));
+
         return response()->json([
             'success' => true,
-            'data'    => $this->getDemoMerchants(),
+            'data'    => $merchants->map(fn (Merchant $m) => [
+                'id'                => $m->public_id,
+                'display_name'      => $m->display_name,
+                'category'          => $m->terminal_id ?? 'general',
+                'accepted_tokens'   => $m->accepted_assets ?? [],
+                'accepted_networks' => $m->accepted_networks ?? [],
+                'icon_url'          => $m->icon_url,
+                'active'            => true,
+            ])->values(),
+            'pagination' => [
+                'current_page' => $merchants->currentPage(),
+                'last_page'    => $merchants->lastPage(),
+                'per_page'     => $merchants->perPage(),
+                'total'        => $merchants->total(),
+            ],
         ]);
     }
 
@@ -341,8 +366,7 @@ class MobileCommerceController extends Controller
      */
     public function merchantDetail(Request $request, string $merchantId): JsonResponse
     {
-        $merchants = $this->getDemoMerchants();
-        $merchant = collect($merchants)->firstWhere('id', $merchantId);
+        $merchant = Merchant::where('public_id', $merchantId)->first();
 
         if (! $merchant) {
             return response()->json([
@@ -356,7 +380,16 @@ class MobileCommerceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $merchant,
+            'data'    => [
+                'id'                => $merchant->public_id,
+                'display_name'      => $merchant->display_name,
+                'category'          => $merchant->terminal_id ?? 'general',
+                'accepted_tokens'   => $merchant->accepted_assets ?? [],
+                'accepted_networks' => $merchant->accepted_networks ?? [],
+                'icon_url'          => $merchant->icon_url,
+                'status'            => $merchant->status->value,
+                'active'            => $merchant->canAcceptPayments(),
+            ],
         ]);
     }
 
@@ -460,34 +493,5 @@ class MobileCommerceController extends Controller
             'success' => true,
             'data'    => [],
         ]);
-    }
-
-    /**
-     * Get demo merchant list (shared between merchants list and detail).
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private function getDemoMerchants(): array
-    {
-        return [
-            [
-                'id'                => 'merchant_demo_001',
-                'display_name'      => 'Demo Coffee Shop',
-                'category'          => 'food_beverage',
-                'accepted_tokens'   => ['USDC', 'USDT'],
-                'accepted_networks' => ['polygon', 'base'],
-                'icon_url'          => null,
-                'active'            => true,
-            ],
-            [
-                'id'                => 'merchant_demo_002',
-                'display_name'      => 'Digital Store',
-                'category'          => 'retail',
-                'accepted_tokens'   => ['USDC', 'USDT', 'WETH'],
-                'accepted_networks' => ['polygon', 'arbitrum', 'base'],
-                'icon_url'          => null,
-                'active'            => true,
-            ],
-        ];
     }
 }

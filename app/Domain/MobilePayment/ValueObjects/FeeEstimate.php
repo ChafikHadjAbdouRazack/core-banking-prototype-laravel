@@ -32,6 +32,21 @@ final readonly class FeeEstimate
                 amount: '5.0',
                 usdApprox: '0.50',
             ),
+            PaymentNetwork::POLYGON => new self(
+                nativeAsset: 'MATIC',
+                amount: '0.005',
+                usdApprox: '0.01',
+            ),
+            PaymentNetwork::BASE, PaymentNetwork::ARBITRUM => new self(
+                nativeAsset: 'ETH',
+                amount: '0.000005',
+                usdApprox: '0.01',
+            ),
+            PaymentNetwork::ETHEREUM => new self(
+                nativeAsset: 'ETH',
+                amount: '0.001',
+                usdApprox: '2.00',
+            ),
         };
     }
 

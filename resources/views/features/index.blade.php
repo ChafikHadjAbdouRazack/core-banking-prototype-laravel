@@ -38,9 +38,9 @@
     <section class="pt-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
-                <h1 class="text-5xl font-bold text-gray-900 mb-6">Powerful Features for Modern Banking</h1>
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">42 Domain Modules. One Platform.</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    Experience next-generation financial services with our comprehensive platform designed for the global economy.
+                    Every building block a modern fintech needs—from democratic currency governance to AI agent commerce, cross-chain DeFi, and privacy-preserving identity.
                 </p>
             </div>
         </div>
@@ -58,12 +58,11 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-lg font-semibold text-gray-900">Platform Under Active Development</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">Feature Status Guide</h3>
                         <p class="mt-2 text-gray-600">
-                            FinAegis is currently in active development. While core features are functional, 
-                            some advanced features are still being implemented. Features marked with badges 
-                            indicate their current status. The platform includes a comprehensive demo mode 
-                            for testing without external dependencies.
+                            FinAegis is under active development with new modules shipping regularly.
+                            Features are marked with status badges below. The demo environment lets you
+                            explore every feature without external dependencies.
                         </p>
                         <div class="mt-3 flex gap-4">
                             <span class="inline-flex items-center px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
@@ -89,11 +88,11 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div>
                         <div class="inline-flex items-center px-4 py-2 bg-indigo-100 rounded-full mb-6">
-                            <span class="text-indigo-600 font-semibold">Revolutionary Currency</span>
+                            <span class="text-indigo-600 font-semibold">Flagship Product</span>
                         </div>
                         <h2 class="text-4xl font-bold text-gray-900 mb-6">Global Currency Unit (GCU)</h2>
                         <p class="text-lg text-gray-600 mb-6">
-                            The world's first democratically governed basket currency. GCU combines the stability of multiple major currencies with the transparency of community governance.
+                            A democratically governed basket currency backed by six reserve assets. Users vote on composition through stake-weighted governance with full event-sourced audit trails.
                         </p>
                         <ul class="space-y-3 mb-8">
                             <li class="flex items-start">
@@ -214,7 +213,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Instant Settlements</h3>
                     <p class="text-gray-600 mb-4">
-                        Experience instant transaction processing in demo mode, with production speeds dependent on bank integration.
+                        Real-time transaction processing with event-sourced settlement. Configurable for instant or T+1 settlement based on your compliance requirements.
                     </p>
                     <a href="{{ route('features.show', 'settlements') }}" class="text-green-600 font-medium hover:text-green-700">
                         Learn more →
@@ -230,7 +229,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Democratic Governance</h3>
                     <p class="text-gray-600 mb-4">
-                        Participate in platform decisions through weighted voting. Your voice matters in shaping the future of finance.
+                        Stake-weighted voting on monetary policy and platform decisions. Monthly governance cycles with transparent tallying and event-sourced audit trails.
                     </p>
                     <a href="{{ route('features.show', 'governance') }}" class="text-yellow-600 font-medium hover:text-yellow-700">
                         Join governance →
@@ -246,7 +245,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Bank Integration Patterns</h3>
                     <p class="text-gray-600 mb-4">
-                        Mock connectors demonstrating Open Banking integration patterns. Explore how banking APIs could connect.
+                        Open Banking-compliant API adapters including Ondato KYC, Chainalysis sanctions screening, and Marqeta card issuing.
                     </p>
                     <a href="{{ route('features.show', 'bank-integration') }}" class="text-red-600 font-medium hover:text-red-700">
                         Explore patterns →
@@ -262,7 +261,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Developer APIs</h3>
                     <p class="text-gray-600 mb-4">
-                        Comprehensive REST APIs and webhooks for seamless integration. Build powerful applications on our platform.
+                        Full REST coverage with OpenAPI specs, GraphQL across 34 domains with real-time subscriptions, and configurable webhooks.
                     </p>
                     <a href="{{ route('features.show', 'api') }}" class="text-blue-600 font-medium hover:text-blue-700">
                         View docs →
@@ -310,7 +309,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Privacy & Identity</h3>
                     <p class="text-gray-600 mb-4">
-                        ZK-KYC proofs, Merkle trees, soulbound tokens, W3C verifiable credentials, and Shamir secret sharing for key management.
+                        Prove compliance without exposing data. ZK-KYC proofs, W3C verifiable credentials, soulbound tokens, and Shamir key management.
                     </p>
                     <a href="{{ route('features.show', 'privacy-identity') }}" class="text-teal-600 font-medium hover:text-teal-700">
                         Learn more →
@@ -406,7 +405,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">GraphQL API</h3>
                     <p class="text-gray-600 mb-4">
-                        Lighthouse-powered GraphQL covering 33 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination.
+                        Lighthouse-powered GraphQL covering 34 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination.
                     </p>
                     <a href="{{ route('features.show', 'api') }}" class="text-pink-600 font-medium hover:text-pink-700">
                         View API &rarr;
@@ -558,7 +557,7 @@
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition">
-                    Try the Demo
+                    Explore the Platform
                 </a>
                 <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition">
                     View Source

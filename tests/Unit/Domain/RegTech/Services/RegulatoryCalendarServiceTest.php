@@ -9,13 +9,10 @@ use App\Domain\RegTech\Models\FilingSchedule;
 use App\Domain\RegTech\Services\JurisdictionConfigurationService;
 use App\Domain\RegTech\Services\RegulatoryCalendarService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class RegulatoryCalendarServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private RegulatoryCalendarService $service;
 
     protected function setUp(): void

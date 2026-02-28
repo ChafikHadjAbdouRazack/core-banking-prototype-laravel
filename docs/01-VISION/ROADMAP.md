@@ -1,14 +1,14 @@
-# FinAegis Prototype Roadmap
+# FinAegis Platform Roadmap
 
-**Last Updated:** 2026-02-21
-**Current Version:** v5.1.5
-**Domains:** 41 bounded contexts
+**Last Updated:** 2026-02-27
+**Current Version:** v5.4.1
+**Domains:** 42 bounded contexts
 
 ---
 
 ## Vision
 
-**FinAegis** is a comprehensive banking prototype demonstrating advanced financial architecture patterns. Built with Domain-Driven Design, Event Sourcing, and CQRS, it serves as an educational resource and foundation for modern banking system design.
+**FinAegis** is a comprehensive banking platform demonstrating advanced financial architecture patterns. Built with Domain-Driven Design, Event Sourcing, and CQRS, it serves as an educational resource and foundation for modern banking system design.
 
 ---
 
@@ -24,9 +24,9 @@
 | **CQRS** | Command/Query Bus with read/write separation across all domains |
 | **Multi-Tenancy** | Team-based isolation (stancl/tenancy v3.9) |
 | **Event Streaming** | Redis Streams-based real-time event distribution with live dashboard |
-| **41 DDD Domains** | Comprehensive bounded contexts covering banking, trading, compliance, DeFi, and more |
+| **42 DDD Domains** | Comprehensive bounded contexts covering banking, trading, compliance, DeFi, and more |
 
-### Domain Architecture (41 Domains)
+### Domain Architecture (42 Domains)
 
 | Category | Domains |
 |----------|---------|
@@ -37,6 +37,7 @@
 | **AI & Agents** | AI, AgentProtocol |
 | **Compliance & Regulation** | RegTech, Regulatory, Fraud, Security |
 | **Infrastructure** | Monitoring, Batch, Webhook, Performance |
+| **Protocols** | X402 |
 | **Business** | Governance, Cgo, Basket, Asset, Custodian, FinancialInstitution, CardIssuance |
 | **Engagement** | Activity, Contact, Newsletter, Product |
 
@@ -158,17 +159,38 @@
 - Access/refresh token pairs with rotation via Sanctum abilities
 - `POST /api/auth/refresh` on public route, PHPStan fix, OpenAPI update
 
-### v5.1.5 -- Dependency Cleanup & Production Readiness (Current)
+### v5.1.5 -- Dependency Cleanup & Production Readiness
 - Upgrade l5-swagger 9 to 10 (swagger-php 5 to 6, modern architecture)
 - Fix PSR-4 autoloading for plugin directories
 - Production environment template (`.env.production.example`)
 - Card API enhancements: network selection, labels, transactions, biometric cancel
 
+### v5.1.6 -- Security Hardening
+- Copyright year updates, accessibility improvements
+- CSP headers, email config defaults
+
+### v5.2.0 -- X402 Protocol
+- HTTP-native micropayments (USDC on Base)
+- Payment gate middleware, facilitator integration
+- AI agent payments, spending limits
+- GraphQL/REST APIs, MCP tool
+
+### v5.4.0 -- Ondato KYC, Sanctions Screening & Card Issuing
+- Ondato identity verification with TrustCert linkage
+- Chainalysis sanctions adapter, Marqeta card issuing adapter
+- Firebase FCM v1 migration, X402/mobile test hardening, CVE patches
+
+### v5.4.1 -- Platform Hardening (Current)
+- Dependabot triage (PRs #642-#659)
+- IdempotencyMiddleware, E2E tests
+- Multi-tenancy isolation tests, docs refresh
+- CI reliability improvements
+
 ---
 
 ## Future Roadmap
 
-### v5.2.0 -- OpenAPI Attribute Migration (Planned)
+### v5.5.0 -- OpenAPI Attribute Migration (Planned)
 - Migrate 10,000+ `@OA\` docblock annotations to PHP 8 `#[OA\]` attributes
 - Drop `doctrine/annotations` dependency entirely
 - Laravel 13 upgrade when available, PHP 8.5 features
@@ -190,7 +212,7 @@
 ### Architecture Patterns Demonstrated
 - **Event Sourcing**: Complete audit trail architecture with domain-specific stores
 - **CQRS**: Full command/query separation with read models
-- **DDD**: 41 bounded contexts with proper domain isolation
+- **DDD**: 42 bounded contexts with proper domain isolation
 - **Saga Pattern**: Compensatable workflows for distributed transactions
 - **Plugin Architecture**: Sandboxed plugin execution with security scanning
 - **GraphQL**: Type-safe API with subscriptions and DataLoaders
@@ -198,4 +220,4 @@
 
 ---
 
-**This roadmap reflects the technical patterns and architecture implemented in the FinAegis prototype, serving as an educational resource and foundation for understanding modern banking system design.**
+**This roadmap reflects the technical patterns and architecture implemented in the FinAegis platform, serving as an educational resource and foundation for understanding modern banking system design.**

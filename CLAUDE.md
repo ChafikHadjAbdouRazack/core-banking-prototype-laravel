@@ -20,7 +20,11 @@ git status && git branch --show-current
 ### Version Status
 | Version | Status | Key Changes |
 |---------|--------|-------------|
-| v5.3.1 | ✅ Released | Firebase FCM v1 Migration: kreait/laravel-firebase SDK, legacy HTTP API removal, service account auth, graceful null-messaging fallback |
+| v5.7.0 | ✅ Released | Mobile Rewards & Security Hardening: Rewards/gamification domain (quests, XP/levels, points shop, streaks with race-safe locking), WebAuthn FIDO2 hardening (rpIdHash, UV/UP flags, COSE validation, origin check), recent recipients, notification unread count, route aliases, 44 feature tests |
+| v5.6.0 | ✅ Released | RAILGUN Privacy Protocol: Node.js bridge service (@railgun-community/wallet SDK), RailgunBridgeClient HTTP client, RailgunMerkleTreeService/ZkProverService, RailgunPrivacyService orchestrator (shield/unshield/transfer), RailgunWallet/ShieldedBalance models, PrivacyController integration, 57 tests, chains: Ethereum/Polygon/Arbitrum/BSC |
+| v5.5.0 | ✅ Released | Production Relayer & Card Webhooks: ERC-4337 Pimlico v2 integration (bundler, paymaster, smart account factory), Marqeta webhook Basic Auth + HMAC verification, .env.zelta.example sync, platform hardening (IdempotencyMiddleware, E2E tests, Dependabot triage) |
+| v5.4.1 | ✅ Released | Platform Hardening: Dependabot triage (PRs #642-#659), IdempotencyMiddleware, E2E tests, multi-tenancy isolation tests, CI reliability, docs refresh |
+| v5.4.0 | ✅ Released | Ondato KYC, Sanctions Screening & Card Issuing: Ondato identity verification with TrustCert linkage, Chainalysis sanctions adapter, Marqeta card issuing adapter, Firebase FCM v1 migration, X402/mobile test hardening, CVE patches |
 | v5.2.0 | ✅ Released | X402 Protocol: HTTP-native micropayments (USDC on Base), payment gate middleware, facilitator integration, AI agent payments, spending limits, GraphQL/REST APIs, MCP tool |
 | v5.1.6 | ✅ Released | Security Hardening: copyright year, accessibility improvements, CSP headers, email config defaults |
 | v5.1.5 | ✅ Released | Dependency Cleanup: l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example`, passkey test fix |
@@ -125,6 +129,7 @@ app/
 │   ├── X402/         # HTTP 402 Protocol, Payment Gate, AI Agent Payments (v5.2.0)
 │   ├── CrossChain/   # Bridge protocols, cross-chain swaps, multi-chain portfolio (v3.0.0)
 │   ├── DeFi/         # DEX aggregation, lending, staking, yield optimization (v3.0.0)
+│   ├── Rewards/      # Gamification: quests, XP/levels, points shop, streaks (v5.7.0)
 │   └── Shared/       # CQRS interfaces, events
 ├── Infrastructure/   # CQRS bus implementations
 ├── Http/Controllers/ # REST API
@@ -207,6 +212,9 @@ app/
 | Plugin Sandbox | `PluginSandbox` (Infrastructure/Plugins) |
 | Plugin Security | `PluginSecurityScanner` (Infrastructure/Plugins) |
 | Projector Health | `ProjectorHealthService` (Monitoring) |
+| Rewards | `RewardsService` (Rewards) |
+| RAILGUN Bridge | `RailgunBridgeClient` (Privacy) |
+| RAILGUN Privacy | `RailgunPrivacyService` (Privacy) |
 
 ---
 

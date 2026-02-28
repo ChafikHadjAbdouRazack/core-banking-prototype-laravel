@@ -96,44 +96,25 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ## Platform Status
 
-- **Version**: 5.1.5 (Dependency Cleanup & Production Readiness)
-- **Status**: Demonstration Prototype / Production Mobile Backend
-- **Last Updated**: February 21, 2026
+- **Version**: 5.7.0 (Mobile Rewards & Security Hardening)
+- **Status**: Production-Grade Platform
+- **Last Updated**: February 28, 2026
 
-### Current Release Features (v5.1.5)
-- **v5.1.5**: Dependency cleanup — l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example` for mobile backend deployment, passkey test fix
-- **v5.1.4**: Refresh token mechanism — proper access/refresh token pairs with rotation, PHPStan fix, OpenAPI docs update
-- **v5.1.3**: Mobile API compat — optional `owner_address` for smart account onboarding, auth response standardization, token refresh & logout-all endpoints, rate limiter fix
-- **v5.1.2**: Production CSS fix for `/app` landing page — standalone pre-compiled Tailwind CSS (CSP-compliant, Vite-independent)
-- **v5.1.1**: Mobile app landing page (`/app`) with email signup, flaky Azure HSM test fix
-- **v5.1.0**: 21 mobile API endpoints, GraphQL 33-domain full coverage, blockchain address models, CI hardening
-- **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution
-- **Live Dashboard**: 5 metrics endpoints for real-time platform monitoring
-- **Multi-Channel Notification System**: Email, push, in-app, webhook, SMS notification channels
-- **API Gateway Middleware**: Request ID tracing, timing headers for observability
-- **GraphQL Schema Expansion**: 33 domain schemas (up from 14 in v4.3.0)
+### Current Release Features (v5.7.0)
+- **v5.7.0**: Mobile Rewards & Security Hardening — Rewards/gamification domain (quests, XP/levels, points shop, streaks), WebAuthn FIDO2 hardening (rpIdHash, UV/UP, COSE validation), race-safe redemption with pessimistic locking, recent recipients, notification unread count, route aliases
+- **v5.6.0**: RAILGUN Privacy Protocol — Node.js bridge to `@railgun-community/wallet` SDK, shield/unshield/transfer, Merkle tree integration, 4-chain support (Ethereum/Polygon/Arbitrum/BSC)
+- **v5.5.0**: Production Relayer & Card Webhooks — ERC-4337 Pimlico v2, Marqeta webhook auth, platform hardening
+- **v5.4.0**: Ondato KYC, Chainalysis sanctions adapter, Marqeta card issuing adapter, Firebase FCM v1
+- **v5.2.0**: X402 Protocol — HTTP 402 micropayments with USDC on Base, AI agent payments
+- **v5.0.0**: Event Streaming — Redis Streams publisher/consumer, live dashboard, notification system
 
 ### Previous Releases
-- v4.3.0: Developer Experience (GraphQL Fraud/Banking/Mobile/TrustCert, CLI commands, security hardening)
-- v4.2.0: Real-time Platform (GraphQL subscriptions, plugin hook system, webhook/audit plugins)
-- v4.1.0: GraphQL Expansion (6 new domains, event replay filtering, projector health monitoring)
-- v4.0.0: Architecture Evolution (Event Store v2, GraphQL API foundation, Plugin Marketplace)
-- v3.5.0: Compliance Certification (SOC 2, PCI DSS, multi-region, GDPR enhanced)
-- v3.4.0: API Maturity & DX (API versioning, rate limiting, SDK generation, OpenAPI)
-- v3.3.0: Event Store Optimization & Observability
-- v3.2.0: Production Readiness & Plugin Architecture
-- v3.1.0: Consolidation & Documentation
-- v3.0.0: Cross-Chain & DeFi
-- v2.8.0-v2.9.0: AI, RegTech, BaaS, ML Fraud Detection
-- v2.6.0: Privacy Layer & ERC-4337 (Merkle Trees, Smart Accounts, Gas Station, UserOp Signing)
-- v2.5.0: Mobile App Launch (Expo/React Native, separate repository)
-- v2.4.0: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)
-- v2.3.0: AI-Powered Banking, RegTech Automation, Embedded Finance (BaaS)
-- v2.2.0: Mobile Backend (Device Management, Biometrics, Push Notifications)
-- v2.1.0: Hardware Wallets, Multi-Sig, WebSocket Streaming, Kubernetes
-- v2.0.0: Multi-Tenancy with Team-Based Isolation
+- v4.x: GraphQL API (34 domains), Event Store v2, Plugin Marketplace, real-time subscriptions
+- v3.x: Cross-Chain & DeFi, compliance certification (SOC 2, PCI DSS, GDPR), production readiness
+- v2.x: Multi-tenancy, hardware wallets, mobile backend, privacy layer, ERC-4337, RegTech
+- v1.x: Foundation — event sourcing, DDD, core banking domains
 
-This is an educational prototype demonstrating modern banking architecture patterns. It's not production-ready.
+This platform demonstrates modern banking architecture patterns including event sourcing, DDD, and workflow orchestration.
 
 ## Contributing to Docs
 

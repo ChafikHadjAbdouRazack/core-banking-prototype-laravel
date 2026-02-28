@@ -42,6 +42,8 @@ class KycVerification extends Model
         'status',
         'provider',
         'provider_reference',
+        'application_id',
+        'target_level',
         'verification_data',
         'extracted_data',
         'checks_performed',

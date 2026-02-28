@@ -70,7 +70,7 @@ class UserPreferencesController extends Controller
      *     operationId="mobileUserPreferencesUpdate",
      *     tags={"Mobile User Preferences"},
      *     summary="Update user mobile preferences",
-     *     description="Updates the authenticated user mobile preferences",
+     *     description="Updates the authenticated user mobile preferences. Accepts fields at the top level or nested under a 'preferences' key.",
      *     security={{"sanctum":{}}},
      *
      *     @OA\Response(response=200, description="Successful operation"),
@@ -79,7 +79,14 @@ class UserPreferencesController extends Controller
      */
     public function update(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), self::VALIDATION_RULES);
+        // Support both flat payloads and payloads nested under 'preferences' key
+        $input = $request->all();
+        if (isset($input['preferences']) && is_array($input['preferences'])) {
+            $input = array_merge($input, $input['preferences']);
+            unset($input['preferences']);
+        }
+
+        $validator = Validator::make($input, self::VALIDATION_RULES);
 
         if ($validator->fails()) {
             return response()->json([
@@ -93,14 +100,14 @@ class UserPreferencesController extends Controller
         }
 
         $allowedKeys = array_keys(self::DEFAULTS);
-        $incoming = $request->only($allowedKeys);
+        $incoming = array_intersect_key($input, array_flip($allowedKeys));
 
         if (empty($incoming)) {
             return response()->json([
                 'success' => false,
                 'error'   => [
                     'code'    => 'NO_VALID_FIELDS',
-                    'message' => 'No valid preference fields provided',
+                    'message' => 'No valid preference fields provided. Accepted fields: ' . implode(', ', $allowedKeys),
                 ],
             ], 400);
         }

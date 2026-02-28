@@ -9,14 +9,11 @@ use App\Domain\Mobile\Models\MobileDevice;
 use App\Domain\Mobile\Models\MobileDeviceSession;
 use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class BiometricJWTServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private BiometricJWTService $service;
 
     protected User $user;

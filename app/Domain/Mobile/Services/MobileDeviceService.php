@@ -204,6 +204,25 @@ class MobileDeviceService
     }
 
     /**
+     * Find all passkey-enabled devices for a user identified by email.
+     *
+     * @return \Illuminate\Support\Collection<int, MobileDevice>
+     */
+    public function findPasskeyDevicesByEmail(string $email): \Illuminate\Support\Collection
+    {
+        $user = User::where('email', $email)->first();
+
+        if (! $user) {
+            return collect();
+        }
+
+        return MobileDevice::where('user_id', $user->id)
+            ->where('passkey_enabled', true)
+            ->whereNotNull('passkey_credential_id')
+            ->get();
+    }
+
+    /**
      * Block a device.
      */
     public function blockDevice(MobileDevice $device, string $reason): void

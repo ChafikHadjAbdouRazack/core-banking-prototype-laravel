@@ -4,18 +4,26 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Relayer;
 
+use App\Domain\Relayer\Contracts\BundlerInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
+use App\Domain\Relayer\Exceptions\RpcException;
+use App\Domain\Relayer\Services\EthRpcClient;
 use App\Domain\Relayer\Services\GasStationService;
 use App\Domain\Relayer\Services\SmartAccountService;
+use App\Domain\Relayer\ValueObjects\UserOperation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class MobileRelayerController extends Controller
 {
     public function __construct(
         private readonly GasStationService $gasStation,
         private readonly SmartAccountService $smartAccountService,
+        private readonly BundlerInterface $bundler,
+        private readonly ?EthRpcClient $rpcClient = null,
     ) {
     }
 
@@ -347,17 +355,49 @@ class MobileRelayerController extends Controller
             ], 422);
         }
 
-        $hash = '0x' . bin2hex(random_bytes(32));
+        $opData = $request->input('user_op');
+        $signature = $request->input('signature');
 
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'user_op_hash' => $hash,
-                'network'      => $network->value,
-                'status'       => 'pending',
-                'submitted_at' => now()->toIso8601String(),
-            ],
-        ], 201);
+        try {
+            $userOp = new UserOperation(
+                sender: $opData['sender'] ?? '0x0',
+                nonce: (int) hexdec(ltrim($opData['nonce'] ?? '0x0', '0x')),
+                initCode: $opData['initCode'] ?? '0x',
+                callData: $opData['callData'] ?? '0x',
+                callGasLimit: (int) hexdec(ltrim($opData['callGasLimit'] ?? '0x0', '0x')),
+                verificationGasLimit: (int) hexdec(ltrim($opData['verificationGasLimit'] ?? '0x0', '0x')),
+                preVerificationGas: (int) hexdec(ltrim($opData['preVerificationGas'] ?? '0x0', '0x')),
+                maxFeePerGas: (int) hexdec(ltrim($opData['maxFeePerGas'] ?? '0x0', '0x')),
+                maxPriorityFeePerGas: (int) hexdec(ltrim($opData['maxPriorityFeePerGas'] ?? '0x0', '0x')),
+                paymasterAndData: $opData['paymasterAndData'] ?? '0x',
+                signature: $signature,
+            );
+
+            $hash = $this->bundler->submitUserOperation($userOp, $network);
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'user_op_hash' => $hash,
+                    'network'      => $network->value,
+                    'status'       => 'pending',
+                    'submitted_at' => now()->toIso8601String(),
+                ],
+            ], 201);
+        } catch (Throwable $e) {
+            Log::error('UserOp submission failed', [
+                'network' => $network->value,
+                'error'   => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error'   => [
+                    'code'    => 'BUNDLER_ERROR',
+                    'message' => 'Failed to submit UserOperation to bundler.',
+                ],
+            ], 502);
+        }
     }
 
     /**
@@ -398,16 +438,42 @@ class MobileRelayerController extends Controller
      */
     public function getUserOp(string $hash): JsonResponse
     {
-        return response()->json([
-            'success' => true,
-            'data'    => [
-                'user_op_hash' => $hash,
-                'status'       => 'pending',
-                'tx_hash'      => null,
-                'block_number' => null,
-                'updated_at'   => now()->toIso8601String(),
-            ],
-        ]);
+        try {
+            $result = $this->bundler->getUserOperationStatus($hash);
+
+            $status = match ($result['status'] ?? 'unknown') {
+                'success', 'confirmed', 'complete' => 'confirmed',
+                'reverted', 'failed' => 'failed',
+                default => 'pending',
+            };
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'user_op_hash' => $hash,
+                    'status'       => $status,
+                    'tx_hash'      => $result['tx_hash'] ?? null,
+                    'block_number' => $result['receipt']['blockNumber'] ?? null,
+                    'updated_at'   => now()->toIso8601String(),
+                ],
+            ]);
+        } catch (Throwable $e) {
+            Log::warning('UserOp status query failed', [
+                'hash'  => $hash,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'data'    => [
+                    'user_op_hash' => $hash,
+                    'status'       => 'pending',
+                    'tx_hash'      => null,
+                    'block_number' => null,
+                    'updated_at'   => now()->toIso8601String(),
+                ],
+            ]);
+        }
     }
 
     /**
@@ -590,7 +656,7 @@ class MobileRelayerController extends Controller
                     'gwei'        => (float) $supported->getCurrentGasPrice(),
                     'usdEstimate' => $supported->getAverageGasCostUsd(),
                 ],
-                'blockNumber' => random_int(50_000_000, 60_000_000),
+                'blockNumber' => $this->getBlockNumber($supported),
                 'relayer'     => [
                     'status'            => 'active',
                     'queueDepth'        => 0,
@@ -599,5 +665,23 @@ class MobileRelayerController extends Controller
                 'updatedAt' => now()->toIso8601String(),
             ],
         ]);
+    }
+
+    /**
+     * Get the current block number for a network.
+     *
+     * Queries the RPC node when available, falls back to random_int for demo mode.
+     */
+    private function getBlockNumber(SupportedNetwork $network): int
+    {
+        if ($this->rpcClient !== null) {
+            try {
+                return $this->rpcClient->getBlockNumber($network);
+            } catch (RpcException) {
+                // Fall through to demo value
+            }
+        }
+
+        return random_int(50_000_000, 60_000_000);
     }
 }

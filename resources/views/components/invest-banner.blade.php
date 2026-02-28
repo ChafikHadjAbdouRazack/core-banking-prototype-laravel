@@ -11,7 +11,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between">
             <div class="mb-4 sm:mb-0 pr-8">
                 <h3 class="text-lg sm:text-xl font-bold text-white mb-1">
-                    Open Source Core Banking Prototype
+                    Open Source Core Banking Infrastructure
                 </h3>
                 <p class="text-sm sm:text-base text-gray-300">
                     Explore the code, contribute on GitHub, or star the repo!

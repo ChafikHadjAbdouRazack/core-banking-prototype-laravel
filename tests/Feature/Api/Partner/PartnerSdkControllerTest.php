@@ -6,14 +6,11 @@ namespace Tests\Feature\Api\Partner;
 
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class PartnerSdkControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     private FinancialInstitutionPartner $partner;
 
     private string $clientSecret = 'test_secret_123';

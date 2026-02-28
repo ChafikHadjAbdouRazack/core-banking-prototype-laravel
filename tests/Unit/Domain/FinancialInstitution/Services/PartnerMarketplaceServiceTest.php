@@ -7,13 +7,10 @@ namespace Tests\Unit\Domain\FinancialInstitution\Services;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use App\Domain\FinancialInstitution\Services\PartnerMarketplaceService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PartnerMarketplaceServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private PartnerMarketplaceService $service;
 
     protected function setUp(): void

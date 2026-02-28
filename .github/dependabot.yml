@@ -11,6 +11,17 @@ updates:
       - "composer"
     reviewers:
       - "FinAegis/maintainers"
+    ignore:
+      - dependency-name: "resend/resend-php"
+        versions: [">=1.0.0"]
+      - dependency-name: "symfony/http-client"
+        versions: [">=8.0.0"]
+      - dependency-name: "squizlabs/php_codesniffer"
+        versions: [">=4.0.0"]
+      - dependency-name: "predis/predis"
+        versions: [">=3.0.0"]
+      - dependency-name: "laravel/cashier"
+        versions: [">=16.0.0"]
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -21,6 +32,11 @@ updates:
     labels:
       - "dependencies"
       - "npm"
+    ignore:
+      - dependency-name: "tailwindcss"
+        versions: [">=4.0.0"]
+      - dependency-name: "@ledgerhq/hw-app-eth"
+        versions: [">=7.0.0"]
 
   - package-ecosystem: "github-actions"
     directory: "/"

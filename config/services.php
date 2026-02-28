@@ -215,4 +215,25 @@ return [
         'retry_attempts' => env('CHAINALYSIS_RETRY_ATTEMPTS', 3),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Ondato KYC/Identity Verification Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Ondato provides identity verification via mobile SDK flow.
+    | Backend creates sessions, mobile SDK captures documents/selfie,
+    | Ondato processes and notifies via webhooks.
+    |
+    */
+
+    'ondato' => [
+        'application_id'  => env('ONDATO_APPLICATION_ID'),
+        'secret'          => env('ONDATO_SECRET'),
+        'setup_id'        => env('ONDATO_SETUP_ID'),
+        'sandbox'         => env('ONDATO_SANDBOX', true),
+        'webhook_secret'  => env('ONDATO_WEBHOOK_SECRET'),
+        'kyc_api_url'     => env('ONDATO_KYC_API_URL', 'https://sandbox-kycapi.ondato.com'),
+        'verifid_api_url' => env('ONDATO_VERIFID_API_URL', 'https://verifid.ondato.com'),
+    ],
+
 ];

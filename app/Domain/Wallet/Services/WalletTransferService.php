@@ -123,9 +123,14 @@ class WalletTransferService
      */
     private function detectAddressType(string $address, PaymentNetwork $network): string
     {
+        if ($network->isEvm()) {
+            return 'eoa';
+        }
+
         return match ($network) {
             PaymentNetwork::SOLANA => strlen($address) >= 40 ? 'program' : 'wallet',
             PaymentNetwork::TRON   => str_starts_with($address, 'T') ? 'base58' : 'hex',
+            default                => 'unknown',
         };
     }
 
@@ -150,8 +155,18 @@ class WalletTransferService
             ];
         }
 
-        // ENS (.eth) - not natively supported on Solana/Tron
+        // ENS (.eth) - supported on EVM chains but requires external resolver
         if (str_ends_with($name, '.eth')) {
+            if ($network->isEvm()) {
+                return [
+                    'resolved' => false,
+                    'name'     => $name,
+                    'address'  => null,
+                    'network'  => $network->value,
+                    'error'    => 'ENS resolution requires external resolver integration. Please use a wallet address directly.',
+                ];
+            }
+
             return [
                 'resolved' => false,
                 'name'     => $name,
@@ -175,9 +190,6 @@ class WalletTransferService
      */
     private function estimateTransferTime(PaymentNetwork $network): int
     {
-        return match ($network) {
-            PaymentNetwork::SOLANA => 5,
-            PaymentNetwork::TRON   => 30,
-        };
+        return $network->avgConfirmationSeconds();
     }
 }

@@ -50,10 +50,10 @@ function walletUserRequest(string $uri = '/api/v1/wallet/tokens', string $method
 }
 
 describe('MobileWalletController tokens', function (): void {
-    it('returns supported token list', function (): void {
+    it('returns config-driven token list', function (): void {
         $controller = makeWalletController($this);
 
-        $response = $controller->tokens();
+        $response = $controller->tokens(walletUserRequest('/api/v1/wallet/tokens'));
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
@@ -67,16 +67,38 @@ describe('MobileWalletController tokens', function (): void {
             ->and($symbols)->toContain('WBTC');
     });
 
-    it('includes network and decimals info per token', function (): void {
+    it('includes network, decimals, and contract addresses per token', function (): void {
         $controller = makeWalletController($this);
 
-        $response = $controller->tokens();
+        $response = $controller->tokens(walletUserRequest('/api/v1/wallet/tokens'));
         $data = $response->getData(true);
 
         $usdc = collect($data['data'])->firstWhere('symbol', 'USDC');
-        expect($usdc)->toHaveKeys(['symbol', 'name', 'decimals', 'networks', 'icon'])
+        expect($usdc)->toHaveKeys(['symbol', 'name', 'decimals', 'networks', 'icon', 'addresses'])
             ->and($usdc['decimals'])->toBe(6)
-            ->and($usdc['networks'])->toContain('polygon');
+            ->and($usdc['networks'])->toContain('polygon')
+            ->and($usdc['addresses'])->toHaveKey('polygon');
+    });
+
+    it('filters tokens by chain_id query parameter', function (): void {
+        $controller = makeWalletController($this);
+
+        $response = $controller->tokens(walletUserRequest('/api/v1/wallet/tokens?chain_id=base'));
+        $data = $response->getData(true);
+
+        expect($data['success'])->toBeTrue();
+
+        // USDC has base, USDT does not, WETH has base, WBTC does not
+        $symbols = array_column($data['data'], 'symbol');
+        expect($symbols)->toContain('USDC')
+            ->and($symbols)->toContain('WETH')
+            ->and($symbols)->not->toContain('USDT')
+            ->and($symbols)->not->toContain('WBTC');
+
+        // Each returned token should only have the 'base' network
+        foreach ($data['data'] as $token) {
+            expect($token['networks'])->toBe(['base']);
+        }
     });
 });
 

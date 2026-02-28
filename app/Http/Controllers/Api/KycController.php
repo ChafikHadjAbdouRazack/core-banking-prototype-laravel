@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Compliance\Models\AuditLog;
+use App\Domain\Compliance\Models\KycVerification;
 use App\Domain\Compliance\Services\KycService;
+use App\Domain\Compliance\Services\OndatoService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -406,5 +409,178 @@ class KycController extends Controller
                 500
             );
         }
+    }
+
+    /**
+     * Start Ondato KYC verification for the authenticated user.
+     *
+     * @OA\Post(
+     *     path="/api/compliance/kyc/ondato/start",
+     *     operationId="startOndatoVerification",
+     *     tags={"KYC"},
+     *     summary="Start Ondato identity verification",
+     *     description="Creates an Ondato identity verification session linked to a TrustCert application",
+     *     security={{"sanctum": {}}},
+     *
+     * @OA\RequestBody(
+     *         required=true,
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="application_id", type="string", example="app_abc123", description="TrustCertApplication ID"),
+     * @OA\Property(property="target_level",   type="integer", example=2, description="Trust level (0-3)"),
+     * @OA\Property(property="first_name",     type="string", example="John"),
+     * @OA\Property(property="last_name",      type="string", example="Doe")
+     *         )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=200,
+     *         description="Verification session created",
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="data", type="object",
+     * @OA\Property(property="identity_verification_id", type="string", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+     * @OA\Property(property="verification_id",          type="string", example="9c1a2b3d-4e5f-6789-abcd-ef0123456789"),
+     * @OA\Property(property="status",                   type="string", example="pending")
+     *         )
+     *     )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=400,
+     *         description="KYC already approved or invalid application",
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="error", type="string", example="KYC already approved")
+     *         )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=500,
+     *         description="Failed to start verification"
+     *     )
+     * )
+     */
+    public function startOndatoVerification(Request $request, OndatoService $ondatoService): JsonResponse
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        if ($user->kyc_status === 'approved') {
+            return response()->json(['error' => 'KYC already approved'], 400);
+        }
+
+        $request->validate([
+            'application_id' => 'required|string',
+            'target_level'   => 'required|integer|between:0,3',
+            'first_name'     => 'sometimes|string|max:255',
+            'last_name'      => 'sometimes|string|max:255',
+        ]);
+
+        // Verify the TrustCert application exists and is valid
+        $application = Cache::get("trustcert_application:{$user->id}");
+        if (! $application || ($application['id'] ?? null) !== $request->input('application_id')) {
+            return response()->json(['error' => 'TrustCert application not found'], 400);
+        }
+
+        if (in_array($application['status'] ?? '', ['approved', 'cancelled'], true)) {
+            return response()->json(['error' => 'TrustCert application is already ' . $application['status']], 400);
+        }
+
+        // Map integer target_level to string enum
+        $targetLevelMap = [0 => 'unknown', 1 => 'basic', 2 => 'verified', 3 => 'high'];
+        $targetLevelString = $targetLevelMap[(int) $request->input('target_level')] ?? 'unknown';
+
+        try {
+            $data = $request->only(['first_name', 'last_name']);
+            $data['application_id'] = $request->input('application_id');
+            $data['target_level'] = $targetLevelString;
+
+            $result = $ondatoService->createIdentityVerification($user, $data);
+
+            return response()->json(['data' => $result]);
+        } catch (Exception $e) {
+            AuditLog::log(
+                'kyc.ondato_start_failed',
+                null,
+                null,
+                null,
+                ['error' => $e->getMessage(), 'user_uuid' => $user->uuid],
+                'kyc,ondato,error'
+            );
+
+            return response()->json(['error' => 'Failed to start Ondato verification'], 500);
+        }
+    }
+
+    /**
+     * Get Ondato verification status for the authenticated user.
+     *
+     * @OA\Get(
+     *     path="/api/compliance/kyc/ondato/status/{verificationId}",
+     *     operationId="getOndatoVerificationStatus",
+     *     tags={"KYC"},
+     *     summary="Get Ondato verification status",
+     *     description="Retrieve the status of a specific Ondato KYC verification",
+     *     security={{"sanctum": {}}},
+     *
+     * @OA\Parameter(
+     *         name="verificationId",
+     *         in="path",
+     *         required=true,
+     *         description="The KycVerification ID",
+     *
+     * @OA\Schema(type="string")
+     *     ),
+     *
+     * @OA\Response(
+     *         response=200,
+     *         description="Verification status",
+     *
+     * @OA\JsonContent(
+     *
+     * @OA\Property(property="data", type="object",
+     * @OA\Property(property="verification_id",   type="string"),
+     * @OA\Property(property="status",            type="string", enum={"pending", "in_progress", "completed", "failed", "expired"}),
+     * @OA\Property(property="completed_at",      type="string", format="date-time", nullable=true),
+     * @OA\Property(property="failure_reason",    type="string", nullable=true),
+     * @OA\Property(property="trust_cert_level",  type="integer", nullable=true, description="Trust level (1-3) when completed")
+     *         )
+     *     )
+     *     ),
+     *
+     * @OA\Response(
+     *         response=404,
+     *         description="Verification not found"
+     *     )
+     * )
+     */
+    public function getOndatoVerificationStatus(string $verificationId): JsonResponse
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $verification = KycVerification::where('id', $verificationId)
+            ->where('user_id', $user->id)
+            ->where('provider', 'ondato')
+            ->firstOrFail();
+
+        // Map target_level string to integer for the response
+        $trustCertLevel = null;
+        if ($verification->status === KycVerification::STATUS_COMPLETED && $verification->target_level) {
+            $levelMap = ['basic' => 1, 'verified' => 2, 'high' => 3];
+            $trustCertLevel = $levelMap[$verification->target_level] ?? null;
+        }
+
+        return response()->json(['data' => [
+            'verification_id'  => $verification->id,
+            'status'           => $verification->status,
+            'completed_at'     => $verification->completed_at?->toIso8601String(),
+            'failure_reason'   => $verification->failure_reason,
+            'trust_cert_level' => $trustCertLevel,
+        ]]);
     }
 }

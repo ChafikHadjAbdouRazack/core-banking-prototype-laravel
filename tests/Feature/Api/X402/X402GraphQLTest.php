@@ -8,14 +8,11 @@ use App\Domain\X402\Models\X402MonetizedEndpoint;
 use App\Domain\X402\Models\X402Payment;
 use App\Domain\X402\Models\X402SpendingLimit;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class X402GraphQLTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected User $user;
 
     protected int $teamId;

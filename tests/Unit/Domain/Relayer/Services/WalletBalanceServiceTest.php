@@ -6,14 +6,11 @@ namespace Tests\Unit\Domain\Relayer\Services;
 
 use App\Domain\Relayer\Enums\SupportedNetwork;
 use App\Domain\Relayer\Services\DemoWalletBalanceService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class WalletBalanceServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private DemoWalletBalanceService $service;
 
     protected function setUp(): void

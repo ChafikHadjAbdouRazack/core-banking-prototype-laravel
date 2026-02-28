@@ -5,8 +5,8 @@
 @section('seo')
     @include('partials.seo', [
         'title' => 'FinAegis Platform - Open Banking for Developers',
-        'description' => 'FinAegis Platform - Open-source banking infrastructure for developers. Build, deploy, and scale financial services with our MIT-licensed platform.',
-        'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development',
+        'description' => 'FinAegis Platform - Open-source core banking infrastructure with 42 DDD domains, event sourcing, REST + GraphQL APIs, and cross-chain DeFi. MIT licensed.',
+        'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development, DDD, event sourcing',
     ])
 
     {{-- Schema.org Markup --}}
@@ -180,8 +180,8 @@
                                 <div class="text-sm text-gray-500">License</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-blue-400 code-font">1,189+</div>
-                                <div class="text-sm text-gray-500">Routes</div>
+                                <div class="text-2xl font-bold text-blue-400 code-font">42</div>
+                                <div class="text-sm text-gray-500">Domains</div>
                             </div>
                             <div>
                                 <div class="text-2xl font-bold text-purple-400 code-font">∞</div>
@@ -335,7 +335,7 @@
                         <p class="text-gray-600 mb-4">Comprehensive test suite included</p>
                         <div class="code-font text-sm bg-gray-100 rounded p-3">
                             <span class="text-gray-500">$</span> <span class="text-green-400">./vendor/bin/pest</span><br>
-                            <span class="text-green-500">✓</span> 142 tests passed
+                            <span class="text-green-500">✓</span> All tests passed
                         </div>
                     </div>
                     
@@ -346,8 +346,8 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold mb-2">Docs That Don't Suck</h3>
-                        <p class="text-gray-600 mb-4">Clear, example-driven documentation</p>
+                        <h3 class="text-xl font-semibold mb-2">Developer-First Docs</h3>
+                        <p class="text-gray-600 mb-4">OpenAPI specs, GraphQL playground, and example-driven guides</p>
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500">API Reference</span>
                             <span class="text-indigo-600 font-semibold">View →</span>
@@ -478,7 +478,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">GraphQL API</h3>
-                        <p class="text-pink-100 text-sm mb-4">33 domains, subscriptions, DataLoaders, and real-time queries</p>
+                        <p class="text-pink-100 text-sm mb-4">34 domains, subscriptions, DataLoaders, and real-time queries</p>
                         <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
                     </div>
 
@@ -524,9 +524,9 @@
                     </svg>
                 </div>
                 
-                <h2 class="text-4xl font-bold mb-6">Join the Open Banking Revolution</h2>
+                <h2 class="text-4xl font-bold mb-6">Start Building Today</h2>
                 <p class="text-xl text-gray-300 mb-8">
-                    Star us on GitHub and be part of the community building the future of finance
+                    Fork the repo, explore the architecture, and ship your fintech product on production-grade infrastructure
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">

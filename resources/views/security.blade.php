@@ -45,9 +45,9 @@
                         <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
                     </svg>
                 </div>
-                <h1 class="text-5xl font-bold mb-6">Security Overview</h1>
+                <h1 class="text-5xl font-bold mb-6">Security Architecture</h1>
                 <p class="text-xl text-purple-100 max-w-3xl mx-auto">
-                    Bank-grade security meets blockchain immutability. Your assets are protected by the most advanced security measures in the industry.
+                    Multi-layered security with HMAC integrity verification, HSM key management, Shamir secret sharing, and comprehensive audit trails.
                 </p>
             </div>
         </div>
@@ -64,12 +64,11 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-lg font-semibold text-gray-900">Project Under Active Development</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">Security Implementation Status</h3>
                         <p class="mt-2 text-gray-600">
-                            This project is currently under active development. The security criteria listed below are 
-                            <strong>guidelines and goals</strong> that we are working towards. Many of these features 
-                            may not be implemented in the current framework yet. This page represents our security roadmap 
-                            and the standards we aim to achieve as the platform matures.
+                            FinAegis implements production-grade security patterns throughout the codebase.
+                            Features below are marked as <strong>implemented</strong> or <strong>planned</strong>.
+                            The platform is under active development with new security hardening in every release.
                         </p>
                     </div>
                 </div>

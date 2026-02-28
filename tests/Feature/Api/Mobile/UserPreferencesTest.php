@@ -128,4 +128,37 @@ class UserPreferencesTest extends TestCase
         $response->assertStatus(400)
             ->assertJsonPath('error.code', 'NO_VALID_FIELDS');
     }
+
+    public function test_patch_preferences_accepts_nested_preferences_key(): void
+    {
+        $response = $this->withToken($this->token)
+            ->patchJson('/api/v1/user/preferences', [
+                'preferences' => [
+                    'isPrivacyModeEnabled' => false,
+                    'hideBalances'         => true,
+                    'activeNetwork'        => 'ethereum',
+                ],
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('data.isPrivacyModeEnabled', false)
+            ->assertJsonPath('data.hideBalances', true)
+            ->assertJsonPath('data.activeNetwork', 'ethereum');
+    }
+
+    public function test_patch_preferences_accepts_mixed_flat_and_nested(): void
+    {
+        $response = $this->withToken($this->token)
+            ->patchJson('/api/v1/user/preferences', [
+                'hideBalances' => true,
+                'preferences'  => [
+                    'activeNetwork' => 'polygon',
+                ],
+            ]);
+
+        $response->assertOk()
+            ->assertJsonPath('data.hideBalances', true)
+            ->assertJsonPath('data.activeNetwork', 'polygon');
+    }
 }

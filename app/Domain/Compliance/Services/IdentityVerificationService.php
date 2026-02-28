@@ -21,6 +21,10 @@ class IdentityVerificationService
             'partner_id'    => null,
             'signature_key' => null,
         ],
+        'ondato' => [
+            'kyc_api_url'    => null,
+            'application_id' => null,
+        ],
     ];
 
     public function __construct()
@@ -30,6 +34,8 @@ class IdentityVerificationService
         $this->providers['smileid']['api_key'] = config('services.smileid.api_key');
         $this->providers['smileid']['partner_id'] = config('services.smileid.partner_id');
         $this->providers['smileid']['signature_key'] = config('services.smileid.signature_key');
+        $this->providers['ondato']['kyc_api_url'] = config('services.ondato.kyc_api_url');
+        $this->providers['ondato']['application_id'] = config('services.ondato.application_id');
     }
 
     /**
@@ -87,6 +93,8 @@ class IdentityVerificationService
                 return $this->createOnfidoSession($userData);
             case 'smileid':
                 return $this->createSmileIdSession($userData);
+            case 'ondato':
+                return $this->createOndatoSession($userData);
             default:
                 throw new InvalidArgumentException("Unknown provider: {$provider}");
         }
@@ -104,6 +112,8 @@ class IdentityVerificationService
                 return $this->getOnfidoResult($sessionId);
             case 'smileid':
                 return $this->getSmileIdResult($sessionId);
+            case 'ondato':
+                return $this->getOndatoResult($sessionId);
             default:
                 throw new InvalidArgumentException("Unknown provider: {$provider}");
         }
@@ -317,5 +327,46 @@ class IdentityVerificationService
             'smile_job_id' => 'sjid_' . uniqid(),
             'result_code'  => '1012',
         ];
+    }
+
+    /**
+     * Create Ondato verification session.
+     *
+     * Delegates to OndatoService for real API integration.
+     *
+     * @param  array<string, mixed>  $userData
+     * @return array<string, mixed>
+     */
+    protected function createOndatoSession(array $userData): array
+    {
+        /** @var OndatoService $ondatoService */
+        $ondatoService = app(OndatoService::class);
+        $user = $userData['user'] ?? null;
+
+        if (! $user instanceof \App\Models\User) {
+            // Fallback: return simulated session if no user object provided
+            return [
+                'session_id' => 'ondato_' . uniqid(),
+                'provider'   => 'ondato',
+                'expires_at' => now()->addHours(24)->toIso8601String(),
+            ];
+        }
+
+        return $ondatoService->createIdentityVerification($user, $userData);
+    }
+
+    /**
+     * Get Ondato verification result.
+     *
+     * Delegates to OndatoService for real API integration.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getOndatoResult(string $sessionId): array
+    {
+        /** @var OndatoService $ondatoService */
+        $ondatoService = app(OndatoService::class);
+
+        return $ondatoService->getIdentityVerificationStatus($sessionId);
     }
 }

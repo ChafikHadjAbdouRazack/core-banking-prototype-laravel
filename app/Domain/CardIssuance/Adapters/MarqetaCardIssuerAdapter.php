@@ -196,6 +196,36 @@ class MarqetaCardIssuerAdapter implements CardIssuerInterface
     }
 
     /**
+     * @return array<VirtualCard>
+     */
+    public function listUserCards(string $userId): array
+    {
+        Log::info('Marqeta: Listing user cards', ['user_id' => $userId]);
+
+        $response = $this->request()->get('/cards/user/' . $userId);
+
+        if (! $response->successful()) {
+            Log::warning('Marqeta: Failed to list user cards', [
+                'user_id' => $userId,
+                'status'  => $response->status(),
+            ]);
+
+            return [];
+        }
+
+        $items = $response->json('data') ?? [];
+        $cards = [];
+        foreach ($items as $item) {
+            $card = $this->mapResponseToVirtualCard($item);
+            if ($card->status !== CardStatus::CANCELLED) {
+                $cards[] = $card;
+            }
+        }
+
+        return $cards;
+    }
+
+    /**
      * Transition a card to a new state via the Marqeta transitions API.
      */
     private function transitionCardState(

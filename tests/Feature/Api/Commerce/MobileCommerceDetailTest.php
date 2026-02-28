@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\Commerce;
 
+use App\Domain\Commerce\Enums\MerchantStatus;
+use App\Domain\Commerce\Models\Merchant;
 use App\Models\User;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -32,6 +34,14 @@ class MobileCommerceDetailTest extends TestCase
 
     public function test_merchant_detail_returns_existing_merchant(): void
     {
+        Merchant::create([
+            'public_id'         => 'merchant_demo_001',
+            'display_name'      => 'Demo Coffee Shop',
+            'accepted_assets'   => ['USDC', 'USDT'],
+            'accepted_networks' => ['polygon', 'base'],
+            'status'            => MerchantStatus::ACTIVE,
+        ]);
+
         $response = $this->withToken($this->token)
             ->getJson('/api/v1/commerce/merchants/merchant_demo_001');
 
@@ -48,6 +58,74 @@ class MobileCommerceDetailTest extends TestCase
 
         $response->assertNotFound()
             ->assertJsonPath('success', false);
+    }
+
+    public function test_merchants_list_returns_active_merchants(): void
+    {
+        Merchant::create([
+            'public_id'         => 'merchant_active_1',
+            'display_name'      => 'Active Shop',
+            'accepted_assets'   => ['USDC'],
+            'accepted_networks' => ['polygon'],
+            'status'            => MerchantStatus::ACTIVE,
+        ]);
+        Merchant::create([
+            'public_id'         => 'merchant_suspended_1',
+            'display_name'      => 'Suspended Shop',
+            'accepted_assets'   => ['USDC'],
+            'accepted_networks' => ['polygon'],
+            'status'            => MerchantStatus::SUSPENDED,
+        ]);
+
+        $response = $this->withToken($this->token)
+            ->getJson('/api/v1/commerce/merchants');
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $ids = collect($response->json('data'))->pluck('id')->all();
+        $this->assertContains('merchant_active_1', $ids);
+        $this->assertNotContains('merchant_suspended_1', $ids);
+    }
+
+    public function test_merchants_list_supports_search(): void
+    {
+        Merchant::create([
+            'public_id'         => 'merchant_coffee',
+            'display_name'      => 'Best Coffee Shop',
+            'accepted_assets'   => ['USDC'],
+            'accepted_networks' => ['polygon'],
+            'status'            => MerchantStatus::ACTIVE,
+        ]);
+        Merchant::create([
+            'public_id'         => 'merchant_tech',
+            'display_name'      => 'Tech Store',
+            'accepted_assets'   => ['USDC'],
+            'accepted_networks' => ['polygon'],
+            'status'            => MerchantStatus::ACTIVE,
+        ]);
+
+        $response = $this->withToken($this->token)
+            ->getJson('/api/v1/commerce/merchants?search=Coffee');
+
+        $response->assertOk();
+
+        $ids = collect($response->json('data'))->pluck('id')->all();
+        $this->assertContains('merchant_coffee', $ids);
+        $this->assertNotContains('merchant_tech', $ids);
+    }
+
+    public function test_merchants_list_includes_pagination(): void
+    {
+        $response = $this->withToken($this->token)
+            ->getJson('/api/v1/commerce/merchants');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'data',
+                'pagination' => ['current_page', 'last_page', 'per_page', 'total'],
+            ]);
     }
 
     public function test_payment_request_detail_requires_auth(): void

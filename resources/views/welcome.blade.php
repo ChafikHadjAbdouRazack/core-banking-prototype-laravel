@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'FinAegis - Open Source Core Banking Platform')
+@section('title', 'FinAegis - Open Source Core Banking Infrastructure')
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'FinAegis - Open Source Core Banking Platform',
-        'description' => 'An open-source demonstration of modern banking architecture featuring the Global Currency Unit (GCU), event sourcing, and AI agent integration. Built with Laravel for developers and researchers.',
-        'keywords' => 'FinAegis, open source banking, GCU, core banking prototype, Laravel banking, event sourcing, fintech demo, banking API',
+        'title' => 'FinAegis - Open Source Core Banking Infrastructure',
+        'description' => 'Open-source core banking infrastructure with 42 DDD domains, event sourcing, cross-chain DeFi, privacy-preserving identity, RegTech compliance, AI analytics, and HTTP-native micropayments. Built with Laravel.',
+        'keywords' => 'FinAegis, open source banking, core banking infrastructure, GCU, event sourcing, DeFi, cross-chain, RegTech, banking API, Laravel fintech',
     ])
 
     {{-- Schema.org Markup --}}
@@ -51,21 +51,21 @@
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
-                        Open Source Core Banking Prototype
+                        Open Source Core Banking Infrastructure
                     </div>
                     <h1 class="text-5xl md:text-6xl font-bold mb-6">
-                        Modern Banking Architecture<br/>
-                        Built in the Open
+                        The Banking Infrastructure<br/>
+                        Developers Deserve
                     </h1>
                     <p class="text-xl md:text-2xl mb-8 text-purple-100 max-w-4xl mx-auto">
-                        A modern core banking platform with 42 DDD domains—featuring the <a href="{{ route('features.show', 'gcu') }}" class="text-white underline hover:text-purple-100">Global Currency Unit</a>, cross-chain bridges, DeFi protocols, privacy-preserving identity, mobile payments, RegTech compliance, AI-powered analytics, and HTTP-native micropayments via the x402 protocol.
+                        42 domain modules covering everything from <a href="{{ route('features.show', 'gcu') }}" class="text-white underline hover:text-purple-100">democratic currency governance</a> to cross-chain DeFi, privacy-preserving identity, AI-driven analytics, and HTTP-native micropayments. Open source. MIT licensed.
                     </p>
                     <p class="mb-8">
-                        <a href="{{ route('about') }}" class="text-purple-200 hover:text-white underline">Learn about the project →</a>
+                        <a href="{{ route('about') }}" class="text-purple-200 hover:text-white underline">Why we built this →</a>
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
-                            Try the Demo
+                            Explore the Platform
                         </a>
                         <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition inline-flex items-center justify-center">
                             <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -94,14 +94,14 @@
                         <div class="p-12 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
                             <div class="mb-4">
                                 <span class="inline-block px-4 py-2 bg-white/20 backdrop-blur rounded-full text-sm font-semibold">
-                                    🔬 Research & Learning Project
+                                    MIT Licensed &middot; Open Source
                                 </span>
                             </div>
                             <h2 class="text-3xl md:text-4xl font-bold mb-6">
                                 What Is FinAegis?
                             </h2>
                             <p class="text-lg mb-6 text-indigo-100">
-                                FinAegis is an open-source demonstration of how a modern core banking platform could work. It showcases 42 DDD domains with event sourcing, CQRS, cross-chain bridges, DeFi protocols, AI integration, and HTTP-native micropayments.
+                                A production-grade core banking platform built with Laravel and domain-driven design. 42 bounded contexts, event sourcing, CQRS, and every integration pattern a modern fintech needs—from cross-chain bridges to AI agent commerce.
                             </p>
                             <div class="space-y-4 mb-8">
                                 <div class="flex items-start">
@@ -125,7 +125,7 @@
                             </div>
                             <div class="bg-white/10 backdrop-blur rounded-lg p-4">
                                 <p class="text-sm">
-                                    <strong>Note:</strong> This is a prototype. All transactions are simulated. No real money is involved.
+                                    <strong>Sandbox environment:</strong> All transactions use test data. Explore every feature freely.
                                 </p>
                             </div>
                         </div>
@@ -137,17 +137,17 @@
                             <div class="space-y-6 mb-8">
                                 <div>
                                     <h4 class="font-semibold text-gray-900 mb-2">Developers & Architects</h4>
-                                    <p class="text-gray-600">Learn how to build financial systems with event sourcing, CQRS, and domain-driven design patterns in Laravel.</p>
+                                    <p class="text-gray-600">See how event sourcing, CQRS, and DDD work in a real financial system—not just theory, but running code.</p>
                                 </div>
 
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 mb-2">Fintech Researchers</h4>
-                                    <p class="text-gray-600">Study the Global Currency Unit concept—a basket currency with democratic composition voting.</p>
+                                    <h4 class="font-semibold text-gray-900 mb-2">Fintech Founders</h4>
+                                    <p class="text-gray-600">Fork the codebase and build your product on top of battle-tested banking infrastructure. MIT licensed.</p>
                                 </div>
 
                                 <div>
                                     <h4 class="font-semibold text-gray-900 mb-2">AI/ML Engineers</h4>
-                                    <p class="text-gray-600">Explore our Agent Protocol implementation for AI-to-AI financial transactions and MCP tool integration.</p>
+                                    <p class="text-gray-600">Integrate AI agents into financial workflows with our MCP tools, A2A protocol, and natural language transaction queries.</p>
                                 </div>
                             </div>
 
@@ -174,9 +174,9 @@
         <section id="features" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">What's Implemented</h2>
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Built-In Capabilities</h2>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        42 DDD domains covering core banking, cross-chain DeFi, privacy, mobile payments, compliance, AI, and API monetization
+                        42 domain modules spanning payments, lending, compliance, DeFi, privacy, mobile wallets, AI analytics, and more
                     </p>
                 </div>
 
@@ -188,7 +188,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Global Currency Unit</h3>
                         <p class="text-gray-600 mb-4">
-                            A basket currency concept with democratic composition voting. Explore how multi-asset backing could work.
+                            A multi-currency basket with democratic governance. Users vote on composition across USD, EUR, GBP, CHF, JPY, and gold.
                         </p>
                         <span class="text-indigo-600 font-medium hover:text-indigo-700">
                             Learn more →
@@ -202,9 +202,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-xl font-semibold mb-3">Multi-Asset Support</h3>
+                        <h3 class="text-xl font-semibold mb-3">Multi-Asset Accounts</h3>
                         <p class="text-gray-600 mb-4">
-                            Account structures supporting multiple currencies and asset types with automatic conversions.
+                            Hold fiat, crypto, and commodities in a single account with real-time conversion and portfolio tracking.
                         </p>
                         <span class="text-purple-600 font-medium hover:text-purple-700">
                             Explore assets →
@@ -220,7 +220,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Event-Sourced Ledger</h3>
                         <p class="text-gray-600 mb-4">
-                            Complete transaction history with audit trails using Spatie Event Sourcing patterns.
+                            Every transaction is an immutable event. Full audit trails, point-in-time reconstruction, and replay capability built in.
                         </p>
                         <span class="text-green-600 font-medium hover:text-green-700">
                             See architecture →
@@ -236,7 +236,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Democratic Governance</h3>
                         <p class="text-gray-600 mb-4">
-                            Weighted voting system for currency composition decisions. A working governance prototype.
+                            Stake-weighted voting on monetary policy. Users shape their currency through on-chain governance proposals.
                         </p>
                         <span class="text-yellow-600 font-medium hover:text-yellow-700">
                             Try voting →
@@ -252,7 +252,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Banking API Patterns</h3>
                         <p class="text-gray-600 mb-4">
-                            Open Banking-style API structures with mock connectors showing integration patterns.
+                            Open Banking-compliant API patterns with Ondato KYC, Chainalysis sanctions screening, and Marqeta card issuing adapters.
                         </p>
                         <span class="text-red-600 font-medium hover:text-red-700">
                             View APIs →
@@ -268,7 +268,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">REST, GraphQL & OpenAPI</h3>
                         <p class="text-gray-600 mb-4">
-                            Comprehensive REST APIs with Swagger documentation, GraphQL across 33 domains with subscriptions, and webhook examples.
+                            Full REST coverage with OpenAPI specs, GraphQL across 34 domains with real-time subscriptions, and configurable webhooks.
                         </p>
                         <span class="text-blue-600 font-medium hover:text-blue-700">
                             View docs →
@@ -284,7 +284,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">AI Agent Protocol</h3>
                         <p class="text-gray-600 mb-4">
-                            Google's A2A protocol implementation for AI agent commerce with MCP tools.
+                            Google A2A protocol for autonomous agent-to-agent commerce. MCP tools, spending limits, and transaction analytics built in.
                         </p>
                         <span class="text-cyan-600 font-medium hover:text-cyan-700">
                             Explore AI →
@@ -300,7 +300,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Cross-Chain & DeFi</h3>
                         <p class="text-gray-600 mb-4">
-                            Bridge protocols (Wormhole, LayerZero, Axelar), DEX aggregation, lending, staking, and yield optimization.
+                            Bridge across Wormhole, LayerZero, and Axelar. Aggregate DEX liquidity, optimize yield, and manage multi-chain portfolios.
                         </p>
                         <span class="text-orange-600 font-medium hover:text-orange-700">
                             Explore bridges →
@@ -316,7 +316,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Privacy & Identity</h3>
                         <p class="text-gray-600 mb-4">
-                            ZK-KYC proofs, Merkle trees, soulbound tokens, verifiable credentials, and Shamir key sharding.
+                            Prove compliance without exposing data. ZK-KYC proofs, W3C verifiable credentials, soulbound tokens, and Shamir key management.
                         </p>
                         <span class="text-teal-600 font-medium hover:text-teal-700">
                             Learn more →
@@ -332,7 +332,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Mobile Payments</h3>
                         <p class="text-gray-600 mb-4">
-                            Payment intents, passkey authentication, P2P transfers, activity feed, and ERC-4337 account abstraction.
+                            Full mobile backend: passkey authentication, payment intents, P2P transfers, push notifications, and ERC-4337 account abstraction.
                         </p>
                         <span class="text-pink-600 font-medium hover:text-pink-700">
                             View mobile →
@@ -348,7 +348,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">RegTech Compliance</h3>
                         <p class="text-gray-600 mb-4">
-                            MiFID II, MiCA, and Travel Rule compliance with jurisdiction-specific adapters and automated reporting.
+                            MiFID II, MiCA, and Travel Rule adapters with jurisdiction-aware routing. Automated reporting and Ondato KYC integration.
                         </p>
                         <span class="text-amber-600 font-medium hover:text-amber-700">
                             View compliance →
@@ -364,7 +364,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Banking-as-a-Service</h3>
                         <p class="text-gray-600 mb-4">
-                            Partner APIs, auto-generated SDKs, embeddable widgets, usage-based billing, and marketplace.
+                            White-label your banking stack. Partner APIs, auto-generated SDKs, embeddable widgets, and usage-based billing.
                         </p>
                         <span class="text-violet-600 font-medium hover:text-violet-700">
                             Explore BaaS →
@@ -380,7 +380,7 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-3">Multi-Tenancy</h3>
                         <p class="text-gray-600 mb-4">
-                            Team-based isolation with tenant data migration, enterprise features, and per-tenant configuration.
+                            Full data isolation per tenant with automated migration, per-tenant configuration, and enterprise-grade access controls.
                         </p>
                         <span class="text-emerald-600 font-medium hover:text-emerald-700">
                             Learn more →
@@ -420,7 +420,7 @@
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">Platform Architecture</h2>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        41 bounded contexts built with domain-driven design, event sourcing, and CQRS. Each module demonstrates specific financial system patterns.
+                        42 bounded contexts built with domain-driven design, event sourcing, and CQRS. Each module implements specific financial system patterns you can use independently.
                     </p>
                 </div>
 
@@ -430,17 +430,17 @@
                     <div class="gcu-highlight rounded-2xl p-8 mb-8">
                         <div class="text-center mb-8">
                             <h3 class="text-2xl font-bold text-gray-900 mb-2">FinAegis Core Platform</h3>
-                            <p class="text-gray-600">Domain-driven design with event sourcing</p>
+                            <p class="text-gray-600">Domain-driven design · Event sourcing · CQRS</p>
                         </div>
 
                         <!-- GCU as Primary Product -->
                         <div class="bg-white rounded-xl p-8 shadow-lg mb-8">
                             <div class="flex items-center justify-between mb-4">
                                 <h4 class="text-3xl font-bold text-indigo-600">Global Currency Unit (GCU)</h4>
-                                <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-semibold">Demo</span>
+                                <span class="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-semibold">Flagship</span>
                             </div>
                             <p class="text-lg text-gray-700 mb-6">
-                                A concept for a democratically governed basket currency. Users vote on currency composition, and the system automatically rebalances holdings. Fully simulated in this prototype.
+                                A democratically governed basket currency where users vote on composition. The system automatically rebalances across six reserve assets based on community governance.
                             </p>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div class="text-center">
@@ -468,8 +468,8 @@
                                     </svg>
                                 </div>
                                 <h5 class="font-semibold text-gray-900 mb-2">Exchange Module</h5>
-                                <p class="text-sm text-gray-600 mb-3">Order matching engine demo</p>
-                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Demo</span>
+                                <p class="text-sm text-gray-600 mb-3">Order matching engine with limit & market orders</p>
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Core</span>
                             </div>
 
                             <!-- Lending -->
@@ -480,8 +480,8 @@
                                     </svg>
                                 </div>
                                 <h5 class="font-semibold text-gray-900 mb-2">Lending Module</h5>
-                                <p class="text-sm text-gray-600 mb-3">P2P lending workflow</p>
-                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Demo</span>
+                                <p class="text-sm text-gray-600 mb-3">P2P lending with risk assessment</p>
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Core</span>
                             </div>
 
                             <!-- Stablecoins -->
@@ -492,8 +492,8 @@
                                     </svg>
                                 </div>
                                 <h5 class="font-semibold text-gray-900 mb-2">Stablecoin Module</h5>
-                                <p class="text-sm text-gray-600 mb-3">Token minting patterns</p>
-                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Demo</span>
+                                <p class="text-sm text-gray-600 mb-3">Minting, burning, and peg management</p>
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Core</span>
                             </div>
 
                             <!-- Treasury -->
@@ -504,14 +504,14 @@
                                     </svg>
                                 </div>
                                 <h5 class="font-semibold text-gray-900 mb-2">Treasury Module</h5>
-                                <p class="text-sm text-gray-600 mb-3">Cash management demo</p>
-                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Demo</span>
+                                <p class="text-sm text-gray-600 mb-3">Portfolio management and yield optimization</p>
+                                <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-semibold">Core</span>
                             </div>
                         </div>
                     </div>
 
-                    <p class="text-center text-gray-600 italic">
-                        All modules are demonstrations. Explore the code to see how each pattern works.
+                    <p class="text-center text-gray-600 mt-6">
+                        Each module is independently usable. Explore the code to understand the patterns, or fork and build on them.
                     </p>
                 </div>
             </div>
@@ -523,7 +523,7 @@
                 <div class="text-center mb-16">
                     <h2 class="text-4xl font-bold text-gray-900 mb-4">The GCU Concept</h2>
                     <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                        A thought experiment in democratic monetary policy—what if users could vote on their currency's composition?
+                        What if users could vote on their currency's composition? The GCU is a working implementation of democratic monetary policy.
                     </p>
                 </div>
 
@@ -570,7 +570,7 @@
                         </div>
                         <h3 class="text-2xl font-semibold mb-4">Multi-Asset Backed</h3>
                         <p class="text-gray-600 mb-4">
-                            Basket currency concept backed by multiple fiat currencies and gold for theoretical stability.
+                            Basket currency backed by six reserve assets—USD, EUR, GBP, CHF, JPY, and gold—with automatic rebalancing.
                         </p>
                         <ul class="text-left text-gray-700 space-y-2">
                             <li class="flex items-start">
@@ -589,7 +589,7 @@
                                 <svg class="w-5 h-5 text-green-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
-                                Simulated diversification
+                                Real-time diversification
                             </li>
                         </ul>
                     </div>
@@ -601,9 +601,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-semibold mb-4">Technically Sound</h3>
+                        <h3 class="text-2xl font-semibold mb-4">Production Architecture</h3>
                         <p class="text-gray-600 mb-4">
-                            Built with production-grade patterns even though it's a prototype. Learn from real architecture.
+                            Built with the same patterns used in production banking systems. Event sourcing, CQRS, and DDD throughout.
                         </p>
                         <ul class="text-left text-gray-700 space-y-2">
                             <li class="flex items-start">
@@ -723,7 +723,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-3">REST & GraphQL APIs</h3>
-                        <p class="text-gray-600">OpenAPI/Swagger docs, GraphQL (33 domains), webhooks, and comprehensive test coverage</p>
+                        <p class="text-gray-600">OpenAPI/Swagger docs, GraphQL (34 domains), webhooks, and comprehensive test coverage</p>
                     </div>
                 </div>
 
@@ -740,7 +740,7 @@
                     <div>
                         <h3 class="text-3xl font-bold text-gray-900 mb-4">Built for Developers</h3>
                         <p class="text-lg text-gray-600 mb-6">
-                            Learn banking architecture by exploring working code. Fork the repo, run it locally, and experiment with the APIs. Great for fintech research, education, or prototyping your own ideas.
+                            Clone, run, and ship. Every endpoint is documented, every pattern is tested, and the full codebase is yours to fork and build on.
                         </p>
                         <div class="space-y-4">
                             <div class="flex items-start">
@@ -758,7 +758,7 @@
                                 </svg>
                                 <div>
                                     <h4 class="font-semibold text-gray-900">Comprehensive Tests</h4>
-                                    <p class="text-gray-600">Pest PHP tests demonstrating usage patterns</p>
+                                    <p class="text-gray-600">Pest PHP test suite with parallel execution and coverage</p>
                                 </div>
                             </div>
                             <div class="flex items-start">
@@ -816,7 +816,7 @@
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
                     <a href="{{ route('register') }}" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
-                        Try the Demo
+                        Explore the Platform
                     </a>
                     <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-indigo-600 transition inline-flex items-center justify-center">
                         <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">

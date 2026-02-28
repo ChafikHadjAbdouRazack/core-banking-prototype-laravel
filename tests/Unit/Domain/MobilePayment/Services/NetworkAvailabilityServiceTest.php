@@ -16,67 +16,82 @@ describe('NetworkAvailabilityService', function (): void {
         expect($service)->toBeInstanceOf(NetworkAvailabilityService::class);
     });
 
-    it('has getNetworkStatuses method', function (): void {
+    it('returns statuses for all supported networks', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
+        $statuses = $service->getNetworkStatuses();
 
-        expect($reflection->hasMethod('getNetworkStatuses'))->toBeTrue();
-        expect($reflection->getMethod('getNetworkStatuses')->isPublic())->toBeTrue();
+        expect($statuses)->toHaveCount(count(PaymentNetwork::cases()));
+
+        $networkIds = array_column($statuses, 'id');
+        foreach (PaymentNetwork::cases() as $network) {
+            expect($networkIds)->toContain($network->value);
+        }
     });
 
-    it('has getNetworkStatus method accepting PaymentNetwork', function (): void {
+    it('returns correct structure for each network status', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getNetworkStatus');
+        $statuses = $service->getNetworkStatuses();
 
-        expect($method->isPublic())->toBeTrue();
-        $params = $method->getParameters();
-        expect($params[0]->getType()->getName())->toBe(PaymentNetwork::class);
+        foreach ($statuses as $status) {
+            expect($status)->toHaveKeys([
+                'id', 'name', 'native_asset', 'status',
+                'avg_fee_usd', 'avg_confirmation_seconds',
+                'congestion', 'supported_assets',
+            ]);
+            expect($status['avg_fee_usd'])->toBeString();
+            expect($status['avg_confirmation_seconds'])->toBeInt()->toBeGreaterThan(0);
+            expect($status['congestion'])->toBeString();
+            expect($status['supported_assets'])->toBeArray()->toContain('USDC');
+        }
     });
 
-    it('returns correct average fee for Solana via reflection', function (): void {
+    it('returns correct status for a single network', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getAverageFeeUsd');
-        $method->setAccessible(true);
+        $status = $service->getNetworkStatus(PaymentNetwork::SOLANA);
+        assert($status !== null);
 
-        expect($method->invoke($service, PaymentNetwork::SOLANA))->toBe('0.001');
+        expect($status['id'])->toBe('SOLANA');
+        expect($status['name'])->toBe('Solana');
+        expect($status['native_asset'])->toBe('SOL');
+        expect($status['avg_fee_usd'])->toBe('0.001');
+        expect($status['avg_confirmation_seconds'])->toBe(5);
     });
 
-    it('returns correct average fee for Tron via reflection', function (): void {
+    it('returns correct fee and confirmation time for Tron', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getAverageFeeUsd');
-        $method->setAccessible(true);
+        $status = $service->getNetworkStatus(PaymentNetwork::TRON);
+        assert($status !== null);
 
-        expect($method->invoke($service, PaymentNetwork::TRON))->toBe('0.50');
+        expect($status['avg_fee_usd'])->toBe('0.500');
+        expect($status['avg_confirmation_seconds'])->toBe(30);
     });
 
-    it('returns correct average confirmation time for Solana', function (): void {
+    it('returns correct data for EVM chains', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getAvgConfirmationSeconds');
-        $method->setAccessible(true);
 
-        expect($method->invoke($service, PaymentNetwork::SOLANA))->toBe(5);
-    });
+        $polygon = $service->getNetworkStatus(PaymentNetwork::POLYGON);
+        assert($polygon !== null);
+        expect($polygon['native_asset'])->toBe('MATIC');
+        expect($polygon['avg_fee_usd'])->toBe('0.010');
 
-    it('returns correct average confirmation time for Tron', function (): void {
-        $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getAvgConfirmationSeconds');
-        $method->setAccessible(true);
+        $base = $service->getNetworkStatus(PaymentNetwork::BASE);
+        assert($base !== null);
+        expect($base['native_asset'])->toBe('ETH');
+        expect($base['avg_fee_usd'])->toBe('0.005');
 
-        expect($method->invoke($service, PaymentNetwork::TRON))->toBe(3);
+        $ethereum = $service->getNetworkStatus(PaymentNetwork::ETHEREUM);
+        assert($ethereum !== null);
+        expect($ethereum['native_asset'])->toBe('ETH');
+        expect($ethereum['avg_fee_usd'])->toBe('2.000');
     });
 
     it('returns low congestion level by default', function (): void {
         $service = new NetworkAvailabilityService();
-        $reflection = new ReflectionClass($service);
-        $method = $reflection->getMethod('getCongestionLevel');
-        $method->setAccessible(true);
 
-        expect($method->invoke($service, PaymentNetwork::SOLANA))->toBe('low');
-        expect($method->invoke($service, PaymentNetwork::TRON))->toBe('low');
+        foreach (PaymentNetwork::cases() as $network) {
+            $status = $service->getNetworkStatus($network);
+            assert($status !== null);
+            expect($status['congestion'])->toBe('low');
+        }
     });
 });

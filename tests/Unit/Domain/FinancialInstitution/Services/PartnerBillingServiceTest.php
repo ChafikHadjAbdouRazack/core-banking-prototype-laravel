@@ -10,14 +10,11 @@ use App\Domain\FinancialInstitution\Models\PartnerInvoice;
 use App\Domain\FinancialInstitution\Models\PartnerUsageRecord;
 use App\Domain\FinancialInstitution\Services\PartnerBillingService;
 use App\Domain\FinancialInstitution\Services\PartnerTierService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
 
 class PartnerBillingServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private PartnerBillingService $service;
 
     protected function setUp(): void

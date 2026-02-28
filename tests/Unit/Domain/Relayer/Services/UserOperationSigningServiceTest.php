@@ -9,15 +9,12 @@ use App\Domain\Relayer\Exceptions\UserOpSigningException;
 use App\Domain\Relayer\Services\UserOperationSigningService;
 use App\Models\User;
 use DateTimeInterface;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Tests\TestCase;
 
 class UserOperationSigningServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private UserOperationSigningService $service;
 
     protected function setUp(): void

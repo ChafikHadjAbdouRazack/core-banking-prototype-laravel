@@ -17,7 +17,7 @@ return [
 
     'paths' => ['api/*', 'v1/*', 'v2/*', 'auth/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    'allowed_methods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 
     'allowed_origins' => array_filter(array_merge(
         // Production origins (env-driven for multi-domain deployment)
@@ -30,7 +30,7 @@ return [
 
     'allowed_origins_patterns' => [],
 
-    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-TOKEN', 'Accept', 'Origin', 'X-Client-Platform', 'X-Client-Version'],
+    'allowed_headers' => ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-TOKEN', 'Accept', 'Origin', 'X-Client-Platform', 'X-Client-Version', 'X-Payment-Version'],
 
     'exposed_headers' => [],
 

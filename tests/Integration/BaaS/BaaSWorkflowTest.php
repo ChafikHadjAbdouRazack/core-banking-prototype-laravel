@@ -13,7 +13,6 @@ use App\Domain\FinancialInstitution\Services\PartnerMarketplaceService;
 use App\Domain\FinancialInstitution\Services\PartnerTierService;
 use App\Domain\FinancialInstitution\Services\PartnerUsageMeteringService;
 use App\Domain\FinancialInstitution\Services\SdkGeneratorService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
@@ -22,8 +21,6 @@ use Tests\TestCase;
  */
 class BaaSWorkflowTest extends TestCase
 {
-    use RefreshDatabase;
-
     private string $clientSecret = 'test_secret_123';
 
     private function createPartnerApplication(): FinancialInstitutionApplication

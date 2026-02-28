@@ -9,6 +9,7 @@ use App\Domain\Privacy\Exceptions\CommitmentNotFoundException;
 use App\Domain\Privacy\Models\DelegatedProofJob;
 use App\Domain\Privacy\Services\DelegatedProofService;
 use App\Domain\Privacy\Services\ProofOfInnocenceService;
+use App\Domain\Privacy\Services\RailgunPrivacyService;
 use App\Domain\Privacy\Services\SrsManifestService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -33,7 +34,21 @@ class PrivacyController extends Controller
         private readonly SrsManifestService $srsManifestService,
         private readonly DelegatedProofService $delegatedProofService,
         private readonly ProofOfInnocenceService $proofOfInnocenceService,
+        private readonly ?RailgunPrivacyService $railgunService = null,
     ) {
+    }
+
+    private function isRailgunMode(): bool
+    {
+        return $this->railgunService !== null
+            && config('privacy.zk.provider') === 'railgun';
+    }
+
+    private function railgun(): RailgunPrivacyService
+    {
+        assert($this->railgunService !== null);
+
+        return $this->railgunService;
     }
 
     /**
@@ -553,7 +568,23 @@ class PrivacyController extends Controller
      */
     public function getShieldedBalances(Request $request): JsonResponse
     {
-        // Demo implementation — in production, query shielded notes by user commitment
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($this->isRailgunMode()) {
+            $network = $request->query('network');
+            $balances = $this->railgun()->getShieldedBalances(
+                $user,
+                is_string($network) ? $network : null,
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => $balances,
+            ]);
+        }
+
+        // Demo fallback
         $networks = $this->merkleService->getSupportedNetworks();
         $balances = [];
 
@@ -598,7 +629,18 @@ class PrivacyController extends Controller
      */
     public function getTotalShieldedBalance(Request $request): JsonResponse
     {
-        // Demo implementation — aggregate would sum shielded note values
+        if ($this->isRailgunMode()) {
+            /** @var User $user */
+            $user = $request->user();
+            $data = $this->railgun()->getTotalShieldedBalance($user);
+
+            return response()->json([
+                'success' => true,
+                'data'    => $data,
+            ]);
+        }
+
+        // Demo fallback
         return response()->json([
             'success' => true,
             'data'    => [
@@ -682,6 +724,21 @@ class PrivacyController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        if ($this->isRailgunMode()) {
+            $result = $this->railgun()->shield(
+                $user,
+                $validated['token'],
+                $validated['amount'],
+                $validated['network'],
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => $result,
+            ], 201);
+        }
+
+        // Demo fallback: delegated proof
         $job = $this->delegatedProofService->requestProof(
             $user,
             'shield_1_1',
@@ -734,6 +791,22 @@ class PrivacyController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        if ($this->isRailgunMode()) {
+            $result = $this->railgun()->unshield(
+                $user,
+                $validated['recipient'],
+                $validated['token'],
+                $validated['amount'],
+                $validated['network'],
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => $result,
+            ], 201);
+        }
+
+        // Demo fallback: delegated proof
         $job = $this->delegatedProofService->requestProof(
             $user,
             'unshield_2_1',
@@ -790,6 +863,22 @@ class PrivacyController extends Controller
         /** @var User $user */
         $user = $request->user();
 
+        if ($this->isRailgunMode()) {
+            $result = $this->railgun()->privateTransfer(
+                $user,
+                $validated['recipient_commitment'] ?? '',
+                $validated['token'],
+                $validated['amount'],
+                $validated['network'],
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => $result,
+            ], 201);
+        }
+
+        // Demo fallback: delegated proof
         $job = $this->delegatedProofService->requestProof(
             $user,
             'transfer_2_2',
@@ -836,8 +925,9 @@ class PrivacyController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        // Demo: deterministic viewing key derived from user UUID
-        $viewingKey = '0x' . hash('sha256', 'viewing_key_' . $user->id);
+        $viewingKey = $this->isRailgunMode()
+            ? $this->railgun()->getViewingKey($user)
+            : '0x' . hash('sha256', 'viewing_key_' . $user->id);
 
         return response()->json([
             'success' => true,

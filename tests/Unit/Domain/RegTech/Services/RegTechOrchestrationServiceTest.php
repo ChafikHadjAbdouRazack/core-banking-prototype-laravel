@@ -12,15 +12,12 @@ use App\Domain\RegTech\Services\JurisdictionConfigurationService;
 use App\Domain\RegTech\Services\RegTechOrchestrationService;
 use App\Domain\RegTech\Services\RegulatoryCalendarService;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use RuntimeException;
 use Tests\TestCase;
 
 class RegTechOrchestrationServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private RegTechOrchestrationService $service;
 
     private JurisdictionConfigurationService $jurisdictionService;

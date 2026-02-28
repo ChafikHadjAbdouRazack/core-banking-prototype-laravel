@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\Compliance\SanctionsCheckController;
 use App\Http\Controllers\Api\ComplianceAlertController;
 use App\Http\Controllers\Api\ComplianceCaseController;
 use App\Http\Controllers\Api\ComplianceCertificationController;
@@ -9,6 +10,15 @@ use App\Http\Controllers\Api\GdprController;
 use App\Http\Controllers\Api\GdprEnhancedController;
 use App\Http\Controllers\Api\KycController;
 use Illuminate\Support\Facades\Route;
+
+// Mobile sanctions check endpoint (v5.8.0)
+Route::prefix('v1/compliance')->name('api.compliance.mobile.')
+    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->group(function () {
+        Route::get('/check-address', SanctionsCheckController::class)
+            ->middleware('throttle:30,1')
+            ->name('check-address');
+    });
 
 // Compliance and KYC endpoints
 Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance')->group(function () {
@@ -47,6 +57,10 @@ Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance'
         Route::post('/submit', [KycController::class, 'submit']);
         Route::post('/documents', [KycController::class, 'upload']);
         Route::get('/documents/{documentId}/download', [KycController::class, 'downloadDocument']);
+
+        // Ondato KYC verification (mobile SDK flow)
+        Route::post('/ondato/start', [KycController::class, 'startOndatoVerification']);
+        Route::get('/ondato/status/{verificationId}', [KycController::class, 'getOndatoVerificationStatus']);
     });
 
     // Compliance Certification (SOC 2, PCI DSS)

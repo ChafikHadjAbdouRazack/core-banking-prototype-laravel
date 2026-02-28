@@ -61,6 +61,13 @@ interface CardIssuerInterface
     public function getCard(string $cardToken): ?VirtualCard;
 
     /**
+     * List all cards for a given user.
+     *
+     * @return array<VirtualCard>
+     */
+    public function listUserCards(string $userId): array;
+
+    /**
      * Get the issuer name for identification.
      */
     public function getName(): string;

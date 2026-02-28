@@ -6,7 +6,6 @@ namespace Tests\Unit\Domain\AI\Services;
 
 use App\Domain\AI\Models\AiPromptTemplate;
 use App\Domain\AI\Services\PromptTemplateService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,8 +13,6 @@ use Tests\TestCase;
 
 class PromptTemplateServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private PromptTemplateService $service;
 
     protected function setUp(): void

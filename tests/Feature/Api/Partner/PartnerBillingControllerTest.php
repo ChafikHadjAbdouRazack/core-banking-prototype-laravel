@@ -7,13 +7,10 @@ namespace Tests\Feature\Api\Partner;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use App\Domain\FinancialInstitution\Models\PartnerInvoice;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class PartnerBillingControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     private FinancialInstitutionPartner $partner;
 
     private string $clientSecret = 'test_secret_123';

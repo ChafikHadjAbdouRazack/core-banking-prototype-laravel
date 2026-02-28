@@ -63,6 +63,7 @@ class ReceiveAddressService
         return match ($network) {
             PaymentNetwork::SOLANA => $this->toBase58Like($hash),
             PaymentNetwork::TRON   => 'T' . substr(strtoupper($hash), 0, 33),
+            PaymentNetwork::POLYGON, PaymentNetwork::BASE, PaymentNetwork::ARBITRUM, PaymentNetwork::ETHEREUM => '0x' . substr($hash, 0, 40),
         };
     }
 
@@ -74,6 +75,7 @@ class ReceiveAddressService
         return match ($network) {
             PaymentNetwork::SOLANA => "solana:{$address}?spl-token=USDC",
             PaymentNetwork::TRON   => $address,
+            PaymentNetwork::POLYGON, PaymentNetwork::BASE, PaymentNetwork::ARBITRUM, PaymentNetwork::ETHEREUM => "ethereum:{$address}",
         };
     }
 

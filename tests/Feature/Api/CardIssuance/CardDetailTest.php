@@ -107,7 +107,7 @@ class CardDetailTest extends TestCase
         $response->assertUnauthorized();
     }
 
-    public function test_card_transactions_returns_sorted_data(): void
+    public function test_card_transactions_returns_empty_until_real_integration(): void
     {
         // Create a card first so we have a valid card ID
         $createResponse = $this->withToken($this->token)
@@ -124,58 +124,15 @@ class CardDetailTest extends TestCase
             ->assertJsonPath('success', true)
             ->assertJsonStructure([
                 'success',
-                'data' => [
-                    '*' => ['id', 'amount', 'currency', 'merchant', 'category', 'status', 'timestamp'],
-                ],
+                'data',
                 'pagination' => ['next_cursor', 'has_more', 'total'],
             ]);
 
+        // Returns empty array until real Marqeta integration is ready
         $data = $response->json('data');
-        $this->assertNotEmpty($data);
-
-        // Verify sorted by timestamp DESC
-        for ($i = 1; $i < count($data); $i++) {
-            $this->assertGreaterThanOrEqual(
-                $data[$i]['timestamp'],
-                $data[$i - 1]['timestamp'],
-                'Transactions should be sorted by timestamp DESC'
-            );
-        }
-    }
-
-    public function test_card_transactions_supports_pagination(): void
-    {
-        $createResponse = $this->withToken($this->token)
-            ->postJson('/api/v1/cards', [
-                'cardholder_name' => 'Test User',
-            ]);
-
-        $cardToken = $createResponse->json('data.card_token');
-
-        // Fetch first page with limit=3
-        $response = $this->withToken($this->token)
-            ->getJson("/api/v1/cards/{$cardToken}/transactions?limit=3");
-
-        $response->assertOk();
-        $firstPage = $response->json('data');
-        $this->assertCount(3, $firstPage);
-        $this->assertTrue($response->json('pagination.has_more'));
-
-        $nextCursor = $response->json('pagination.next_cursor');
-        $this->assertNotNull($nextCursor);
-
-        // Fetch second page
-        $response2 = $this->withToken($this->token)
-            ->getJson("/api/v1/cards/{$cardToken}/transactions?limit=3&cursor={$nextCursor}");
-
-        $response2->assertOk();
-        $secondPage = $response2->json('data');
-        $this->assertNotEmpty($secondPage);
-
-        // Verify no overlap between pages
-        $firstIds = array_column($firstPage, 'id');
-        $secondIds = array_column($secondPage, 'id');
-        $this->assertEmpty(array_intersect($firstIds, $secondIds));
+        $this->assertEmpty($data);
+        $this->assertFalse($response->json('pagination.has_more'));
+        $this->assertEquals(0, $response->json('pagination.total'));
     }
 
     public function test_cancel_card_requires_biometric_token(): void

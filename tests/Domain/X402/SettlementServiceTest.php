@@ -18,7 +18,6 @@ use App\Domain\X402\Models\X402Payment;
 use App\Domain\X402\Services\X402PaymentVerificationService;
 use App\Domain\X402\Services\X402PricingService;
 use App\Domain\X402\Services\X402SettlementService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
@@ -26,8 +25,6 @@ use Tests\TestCase;
 
 class SettlementServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     /** @var FacilitatorClientInterface&MockInterface */
     private FacilitatorClientInterface $facilitator;
 

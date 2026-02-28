@@ -6,13 +6,10 @@ namespace Tests\Unit\Domain\RegTech\Models;
 
 use App\Domain\RegTech\Models\FilingSchedule;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class FilingScheduleTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

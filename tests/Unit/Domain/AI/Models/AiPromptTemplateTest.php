@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\AI\Models;
 
 use App\Domain\AI\Models\AiPromptTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AiPromptTemplateTest extends TestCase
 {
-    use RefreshDatabase;
-
     #[Test]
     public function it_creates_a_prompt_template(): void
     {

@@ -17,7 +17,7 @@ Transform FinAegis into the **premier open source core banking platform** that:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                     FINAEGIS CORE BANKING PLATFORM (v5.1.5)              │
+│                     FINAEGIS CORE BANKING PLATFORM (v5.7.0)              │
 ├─────────────────────────────────────────────────────────────────────────┤
 │  CORE BANKING                                                            │
 │  ┌────────────┐  ┌────────────┐  ┌────────────┐  ┌────────────┐        │
@@ -58,7 +58,7 @@ Transform FinAegis into the **premier open source core banking platform** that:
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Domain Inventory (41 Bounded Contexts)
+### Domain Inventory (42 Bounded Contexts)
 
 | Category | Domains | Status |
 |----------|---------|--------|
@@ -68,23 +68,23 @@ Transform FinAegis into the **premier open source core banking platform** that:
 | **Digital Assets** | Stablecoin, Wallet (HW+Multi-Sig), Governance | Production Ready |
 | **Cross-Chain & DeFi** | CrossChain (Wormhole/LayerZero/Axelar), DeFi (Uniswap/Aave/Curve/Lido) | Production Ready |
 | **Privacy & Identity** | Privacy (ZK-KYC/Merkle), KeyManagement (Shamir/HSM), Commerce (SBT), TrustCert (W3C VC) | Production Ready |
-| **Mobile & Payments** | Mobile, MobilePayment, Relayer (ERC-4337), Payment | Production Ready |
+| **Mobile & Payments** | Mobile, MobilePayment, Relayer (ERC-4337), Payment, X402 (HTTP 402), Rewards | Production Ready |
 | **Financial Services** | Treasury, Lending, Custodian, CardIssuance | Mature |
 | **Platform & AI** | AI (MCP/NLP/ML), AgentProtocol, Monitoring, Performance, Security | Mature |
 | **BaaS** | FinancialInstitution (Partner APIs, SDKs, Widgets, Billing, Marketplace) | Mature |
 | **Supporting** | User, Contact, Newsletter, Webhook, Activity, Batch, Cgo, Shared | Complete |
 
-### Key Metrics (as of v5.1.5)
+### Key Metrics (as of v5.7.0)
 
 | Metric | Value |
 |--------|-------|
-| Bounded Contexts | 41 |
-| Services | 330+ |
-| Controllers | 174 |
-| API Routes | 1,150+ |
+| Bounded Contexts | 43 |
+| Services | 340+ |
+| Controllers | 176 |
+| API Routes | 1,200+ |
 | PHPStan Level | **8** |
-| Test Files | 775+ |
-| GraphQL Domains | 33 |
+| Test Files | 850+ |
+| GraphQL Domains | 34 |
 | GraphQL Schema Files | 36 |
 
 ---
@@ -224,7 +224,7 @@ interface CachingQueryBus extends QueryBus
 |--------|---------|--------|
 | Test Coverage | 50%+ | 80% |
 | PHPStan Level | **8** | 8 ✅ |
-| Bounded Contexts | 41 | — |
+| Bounded Contexts | 42 | — |
 | CI Pipeline Pass Rate | 99% | 99% ✅ |
 
 ### Community Engagement
@@ -247,7 +247,7 @@ interface CachingQueryBus extends QueryBus
    - Mitigation: Automated security audit, HSM integration, ZK-KYC, OWASP checks
 
 ### Medium Risk
-3. **Complexity Barrier** - DDD + Event Sourcing + 41 domains is sophisticated
+3. **Complexity Barrier** - DDD + Event Sourcing + 42 domains is sophisticated
    - Mitigation: Excellent documentation, tutorials, developer portal
 
 4. **Maintenance Burden** - Open source requires ongoing support
@@ -261,7 +261,7 @@ interface CachingQueryBus extends QueryBus
 
 ## Conclusion
 
-The FinAegis platform has evolved from a core banking prototype to a comprehensive financial infrastructure platform spanning 41 domains. Key capabilities now include:
+The FinAegis platform has evolved from a core banking prototype to a comprehensive financial infrastructure platform spanning 42 domains. Key capabilities now include:
 
 1. **GraphQL API** - Schema-first Lighthouse PHP across 33 domains with subscriptions and DataLoaders
 2. **Event Streaming** - Redis Streams publisher/consumer, live dashboard, multi-channel notifications
@@ -273,10 +273,10 @@ The FinAegis platform has evolved from a core banking prototype to a comprehensi
 8. **Banking-as-a-Service** - Partner APIs, SDK generation, embeddable widgets
 9. **AI Framework** - MCP tools, NLP queries, ML anomaly detection
 
-**v5.1.5 Focus**: Dependency cleanup — l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example` for mobile backend deployment, passkey test fix.
+**v5.4.1 Focus**: Platform hardening — Dependabot triage, CI reliability, IdempotencyMiddleware, E2E tests, multi-tenancy isolation tests.
 
 ---
 
-*Document Version: 5.1.5*
-*Last Updated: February 21, 2026*
+*Document Version: 5.4.1*
+*Last Updated: February 27, 2026*
 *Author: Architecture Review*

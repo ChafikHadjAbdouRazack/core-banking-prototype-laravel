@@ -35,19 +35,8 @@ function commerceUserRequest(string $uri, string $method = 'GET', array $data = 
     return $request;
 }
 
-describe('MobileCommerceController merchants', function (): void {
-    it('returns list of demo merchants', function (): void {
-        $controller = makeCommerceController($this);
-
-        $response = $controller->merchants(commerceUserRequest('/api/v1/commerce/merchants'));
-        $data = $response->getData(true);
-
-        expect($data['success'])->toBeTrue()
-            ->and($data['data'])->toBeArray()
-            ->and(count($data['data']))->toBeGreaterThan(0)
-            ->and($data['data'][0])->toHaveKeys(['id', 'display_name', 'category', 'accepted_tokens']);
-    });
-});
+// MobileCommerceController merchants() and merchantDetail() now query the database;
+// see Feature/Api/Commerce/MobileCommerceDetailTest for DB-backed merchant tests.
 
 describe('MobileCommerceController parseQr', function (): void {
     it('parses valid QR code data', function (): void {

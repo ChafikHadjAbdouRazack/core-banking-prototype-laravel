@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Feature\Api\Privacy;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -14,8 +13,6 @@ use Tests\TestCase;
  */
 class SrsManifestControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

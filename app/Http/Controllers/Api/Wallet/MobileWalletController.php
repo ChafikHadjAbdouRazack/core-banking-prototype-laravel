@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Wallet;
 
+use App\Domain\Account\Models\BlockchainAddress;
+use App\Domain\MobilePayment\Enums\PaymentIntentStatus;
+use App\Domain\MobilePayment\Models\PaymentIntent;
 use App\Domain\MobilePayment\Services\ActivityFeedService;
 use App\Domain\MobilePayment\Services\PaymentIntentService;
 use App\Domain\MobilePayment\Services\TransactionDetailService;
@@ -58,38 +61,36 @@ class MobileWalletController extends Controller
      *     @OA\Response(response=401, description="Unauthorized")
      * )
      */
-    public function tokens(): JsonResponse
+    public function tokens(Request $request): JsonResponse
     {
-        $tokens = [
-            [
-                'symbol'   => 'USDC',
-                'name'     => 'USD Coin',
-                'decimals' => 6,
-                'networks' => ['polygon', 'base', 'arbitrum', 'optimism', 'ethereum'],
-                'icon'     => 'usdc',
-            ],
-            [
-                'symbol'   => 'USDT',
-                'name'     => 'Tether USD',
-                'decimals' => 6,
-                'networks' => ['polygon', 'arbitrum', 'optimism', 'ethereum'],
-                'icon'     => 'usdt',
-            ],
-            [
-                'symbol'   => 'WETH',
-                'name'     => 'Wrapped Ether',
-                'decimals' => 18,
-                'networks' => ['polygon', 'base', 'arbitrum', 'optimism'],
-                'icon'     => 'weth',
-            ],
-            [
-                'symbol'   => 'WBTC',
-                'name'     => 'Wrapped Bitcoin',
-                'decimals' => 8,
-                'networks' => ['polygon', 'arbitrum', 'ethereum'],
-                'icon'     => 'wbtc',
-            ],
-        ];
+        /** @var array<string, array{name: string, decimals: int, icon: string, networks: array<string, string>}> $registry */
+        $registry = config('supported_tokens', []);
+        $chainFilter = $request->query('chain_id');
+
+        $tokens = [];
+        foreach ($registry as $symbol => $meta) {
+            $networks = $meta['networks'] ?? [];
+
+            if ($chainFilter !== null) {
+                $networks = array_filter(
+                    $networks,
+                    fn (string $network) => $network === $chainFilter,
+                    ARRAY_FILTER_USE_KEY,
+                );
+                if (empty($networks)) {
+                    continue;
+                }
+            }
+
+            $tokens[] = [
+                'symbol'    => $symbol,
+                'name'      => $meta['name'],
+                'decimals'  => $meta['decimals'],
+                'networks'  => array_keys($networks),
+                'icon'      => $meta['icon'],
+                'addresses' => $networks,
+            ];
+        }
 
         return response()->json([
             'success' => true,
@@ -280,9 +281,27 @@ class MobileWalletController extends Controller
             $addresses[] = [
                 'address'    => $account->account_address,
                 'network'    => $account->network ?? 'polygon',
+                'type'       => 'smart_account',
                 'deployed'   => $account->is_deployed ?? false,
                 'created_at' => $account->created_at?->toIso8601String(),
             ];
+        }
+
+        // If no smart accounts exist yet, return deterministic placeholder addresses
+        // so the mobile Receive screen can display a QR code before onboarding completes.
+        if (empty($addresses)) {
+            $supportedNetworks = $this->smartAccountService->getSupportedNetworks();
+            $seed = hash('sha256', "wallet:{$user->id}:" . config('app.key'));
+
+            foreach ($supportedNetworks as $network) {
+                $addresses[] = [
+                    'address'    => '0x' . substr(hash('sha256', "{$seed}:{$network}"), 0, 40),
+                    'network'    => $network,
+                    'type'       => 'pending',
+                    'deployed'   => false,
+                    'created_at' => null,
+                ];
+            }
         }
 
         return response()->json([
@@ -489,5 +508,81 @@ class MobileWalletController extends Controller
                 ],
             ], 422);
         }
+    }
+
+    /**
+     * Get recent recipient addresses from send history.
+     *
+     * @OA\Get(
+     *     path="/api/v1/wallet/recent-recipients",
+     *     operationId="walletRecentRecipients",
+     *     summary="Get recent send recipients",
+     *     description="Returns unique recipient addresses from recent send transactions, ordered by most recent.",
+     *     tags={"Mobile Wallet"},
+     *     security={{"sanctum": {}}},
+     *     @OA\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         required=false,
+     *         description="Number of recipients to return (max 50, default 10)",
+     *         @OA\Schema(type="integer", default=10, maximum=50)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Recent recipients list",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(type="object",
+     *                 @OA\Property(property="address", type="string", example="0x1234...abcd"),
+     *                 @OA\Property(property="name", type="string", nullable=true, example="Alice Johnson"),
+     *                 @OA\Property(property="network", type="string", example="polygon"),
+     *                 @OA\Property(property="token", type="string", example="USDC"),
+     *                 @OA\Property(property="last_sent_at", type="string", format="date-time")
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
+    public function recentRecipients(Request $request): JsonResponse
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $limit = min((int) $request->query('limit', '10'), 50);
+
+        $recipients = PaymentIntent::where('user_id', $user->id)
+            ->whereIn('status', [PaymentIntentStatus::CONFIRMED, PaymentIntentStatus::PENDING])
+            ->whereNotNull('metadata->recipient_address')
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get()
+            ->map(fn (PaymentIntent $intent) => [
+                'address'      => $intent->metadata['recipient_address'] ?? '',
+                'network'      => $intent->network,
+                'token'        => $intent->asset,
+                'last_sent_at' => $intent->created_at->toIso8601String(),
+            ])
+            ->filter(fn (array $r) => $r['address'] !== '')
+            ->unique('address')
+            ->take($limit)
+            ->values();
+
+        // Resolve recipient names from blockchain_addresses → users
+        $addresses = $recipients->pluck('address')->all();
+        $nameMap = BlockchainAddress::whereIn('address', $addresses)
+            ->with('user:uuid,name')
+            ->get()
+            ->keyBy('address')
+            ->map(fn (BlockchainAddress $ba) => $ba->user?->name);
+
+        $recipients = $recipients->map(fn (array $r) => array_merge(
+            ['address' => $r['address'], 'name' => $nameMap[$r['address']] ?? null],
+            ['network' => $r['network'], 'token' => $r['token'], 'last_sent_at' => $r['last_sent_at']],
+        ));
+
+        return response()->json([
+            'success' => true,
+            'data'    => $recipients,
+        ]);
     }
 }

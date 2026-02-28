@@ -47,7 +47,7 @@
         </div>
     </section>
 
-    <!-- Prototype Disclaimer -->
+    <!-- Integration Notice -->
     <section class="py-8 bg-amber-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-white rounded-lg shadow p-6 border-l-4 border-amber-400">
@@ -58,11 +58,10 @@
                         </svg>
                     </div>
                     <div class="ml-3">
-                        <h3 class="text-lg font-semibold text-gray-900">Prototype Implementation Notice</h3>
+                        <h3 class="text-lg font-semibold text-gray-900">Integration Architecture</h3>
                         <p class="mt-2 text-gray-600">
-                            The bank integrations on this page are <strong>reference implementations</strong> demonstrating how production
-                            banking connectors would function. These are not live bank connections. Actual integrations with financial
-                            institutions require separate commercial agreements and regulatory approvals.
+                            Bank integrations include <strong>production-ready adapters</strong> for Ondato KYC, Chainalysis sanctions screening, and Marqeta card issuing.
+                            Additional connectors use reference implementations that demonstrate integration patterns. Live bank connections require commercial agreements and regulatory approvals.
                         </p>
                     </div>
                 </div>

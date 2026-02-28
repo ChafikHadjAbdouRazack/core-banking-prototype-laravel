@@ -4,9 +4,9 @@
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'About FinAegis - Open Source Core Banking',
-        'description' => 'FinAegis is an open-source core banking prototype demonstrating event sourcing, CQRS, and the Global Currency Unit concept. Built for learning and exploration.',
-        'keywords' => 'FinAegis about, open source banking, core banking prototype, GCU, event sourcing, CQRS, Laravel banking',
+        'title' => 'About FinAegis - Open Source Core Banking Infrastructure',
+        'description' => 'FinAegis is an open-source core banking platform with 42 DDD domains, event sourcing, CQRS, and the Global Currency Unit. Built with Laravel for fintech developers.',
+        'keywords' => 'FinAegis about, open source banking, core banking platform, GCU, event sourcing, CQRS, Laravel banking, DDD, fintech infrastructure',
     ])
 
     {{-- Schema.org Markup --}}
@@ -61,7 +61,7 @@
                 </div>
                 <h1 class="text-5xl font-bold text-gray-900 mb-6">About FinAegis</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    An open-source demonstration of modern core banking architecture—built to teach, explore, and inspire new thinking about financial systems.
+                    Open-source core banking infrastructure built with Laravel—42 domain modules covering everything from democratic currency governance to AI agent commerce.
                 </p>
             </div>
         </div>
@@ -74,14 +74,14 @@
                 <div>
                     <h2 class="text-4xl font-bold text-gray-900 mb-6">What Is FinAegis?</h2>
                     <p class="text-lg text-gray-600 mb-4">
-                        FinAegis is a prototype core banking platform built with Laravel, designed to demonstrate how modern financial systems could work using event sourcing, CQRS, domain-driven design, and AI agent integration.
+                        FinAegis is a core banking platform built with Laravel, implementing event sourcing, CQRS, domain-driven design, and AI agent integration across 42 bounded contexts.
                     </p>
                     <p class="text-lg text-gray-600 mb-4">
-                        At its heart is the <strong>Global Currency Unit (GCU)</strong> concept—a thought experiment in democratic monetary policy where users vote on their currency's composition from a basket of global currencies.
+                        At its heart is the <strong>Global Currency Unit (GCU)</strong>—a democratically governed basket currency where users vote on composition from six global reserve assets.
                     </p>
-                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 mt-6">
-                        <p class="text-amber-800">
-                            <strong>Important:</strong> This is a prototype for learning and demonstration purposes. All transactions are simulated. No real money is involved.
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mt-6">
+                        <p class="text-blue-800">
+                            <strong>Sandbox environment:</strong> All transactions use test data. Explore every feature freely.
                         </p>
                     </div>
                     <div class="mt-8">
@@ -149,7 +149,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-bold text-gray-900">Why Build This?</h2>
-                <p class="mt-4 text-xl text-gray-600">The ideas and questions driving this project</p>
+                <p class="mt-4 text-xl text-gray-600">The problems and questions that drive this project</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white p-8 rounded-xl shadow-lg">
@@ -158,9 +158,9 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Education</h3>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Transparency</h3>
                     <p class="text-gray-600">
-                        Core banking systems are rarely open. This project lets developers see how ledgers, transactions, and financial workflows actually work—without the black-box mystery.
+                        Core banking systems are rarely open. FinAegis lets developers see how ledgers, transactions, and financial workflows actually work—no black boxes.
                     </p>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-lg">
@@ -171,7 +171,7 @@
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-4">Experimentation</h3>
                     <p class="text-gray-600">
-                        What if users could vote on their currency's composition? What if AI agents could autonomously transact? These questions need a playground to explore.
+                        What if users could vote on their currency's composition? What if AI agents could autonomously transact? FinAegis is where these ideas become working code.
                     </p>
                 </div>
                 <div class="bg-white p-8 rounded-xl shadow-lg">
@@ -194,13 +194,13 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-4xl font-bold text-gray-900">What's Inside</h2>
-                <p class="mt-4 text-xl text-gray-600">Key concepts demonstrated in this prototype</p>
+                <p class="mt-4 text-xl text-gray-600">Key capabilities built into the platform</p>
             </div>
             <div class="max-w-3xl mx-auto">
                 <div class="timeline-item mb-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Global Currency Unit (GCU)</h3>
                     <p class="text-gray-600">
-                        A conceptual basket currency backed by USD, EUR, GBP, CHF, JPY, and gold. Users vote monthly on the composition. A thought experiment in democratic monetary governance.
+                        A basket currency backed by USD, EUR, GBP, CHF, JPY, and gold. Users vote monthly on composition through stake-weighted governance with full event-sourced audit trails.
                     </p>
                 </div>
                 <div class="timeline-item mb-12">
@@ -218,7 +218,7 @@
                 <div class="timeline-item mb-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">Banking API Patterns</h3>
                     <p class="text-gray-600">
-                        Mock connectors demonstrating Open Banking integration patterns. See how real banking APIs could connect to a core banking system.
+                        Open Banking-compliant API adapters including Ondato KYC, Chainalysis sanctions screening, and Marqeta card issuing for real-world integration patterns.
                     </p>
                 </div>
                 <div class="timeline-item mb-12">
@@ -236,7 +236,7 @@
                 <div class="timeline-item mb-12">
                     <h3 class="text-xl font-bold text-gray-900 mb-2">GraphQL API</h3>
                     <p class="text-gray-600">
-                        Lighthouse-powered GraphQL covering 33 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination alongside REST/OpenAPI.
+                        Lighthouse-powered GraphQL covering 34 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination alongside REST/OpenAPI.
                     </p>
                 </div>
                 <div class="timeline-item mb-12">
@@ -296,16 +296,16 @@
                     <div class="bg-white rounded-xl shadow-lg p-6">
                         <h4 class="text-xl font-bold text-gray-900 mb-3">For Developers</h4>
                         <p class="text-gray-600 mb-4">
-                            Learn banking architecture, contribute code, report issues, or just explore how financial systems work under the hood.
+                            Fork the codebase, contribute features, or explore how production banking systems are built under the hood.
                         </p>
                         <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="text-indigo-600 font-semibold hover:text-indigo-700">
                             Contribute on GitHub →
                         </a>
                     </div>
                     <div class="bg-white rounded-xl shadow-lg p-6">
-                        <h4 class="text-xl font-bold text-gray-900 mb-3">For Researchers</h4>
+                        <h4 class="text-xl font-bold text-gray-900 mb-3">For Founders</h4>
                         <p class="text-gray-600 mb-4">
-                            Study the GCU concept, governance mechanisms, or use the codebase as a foundation for fintech research projects.
+                            Build your fintech product on battle-tested infrastructure. 42 domain modules, MIT licensed, ready to customize.
                         </p>
                         <a href="{{ route('developers') }}" class="text-indigo-600 font-semibold hover:text-indigo-700">
                             View Documentation →
@@ -319,13 +319,13 @@
     <!-- Try It Section -->
     <section class="py-20 bg-indigo-600">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="text-4xl font-bold text-white mb-6">Explore the Demo</h2>
+            <h2 class="text-4xl font-bold text-white mb-6">See It in Action</h2>
             <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
-                See the concepts in action. Create a demo account to explore the GCU, governance voting, and the full banking interface—all simulated, all safe.
+                Create a free account to explore the GCU, governance voting, cross-chain operations, and the full banking interface.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50">
-                    Try the Demo
+                    See It in Action
                 </a>
                 <a href="{{ route('features') }}" class="inline-flex items-center justify-center px-8 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-indigo-700">
                     See Features

@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Domain\AI\Models;
 
 use App\Domain\AI\Models\AiLlmUsage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class AiLlmUsageTest extends TestCase
 {
-    use RefreshDatabase;
-
     #[Test]
     public function it_creates_an_llm_usage_record(): void
     {

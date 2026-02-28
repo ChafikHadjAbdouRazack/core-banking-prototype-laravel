@@ -9,15 +9,12 @@ use App\Domain\AI\Models\AiLlmUsage;
 use App\Domain\AI\Services\LLMOrchestrationService;
 use App\Domain\AI\ValueObjects\LLMResponse;
 use Exception;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class LLMOrchestrationServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private LLMOrchestrationService $service;
 
     protected function setUp(): void

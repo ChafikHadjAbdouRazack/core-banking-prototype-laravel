@@ -70,10 +70,6 @@ Route::prefix('websocket')->name('api.websocket.')
         Route::get('/channels', [App\Http\Controllers\Api\WebSocketController::class, 'channels'])->name('channels');
     });
 
-// Legacy authentication routes for backward compatibility
-Route::post('/login', [LoginController::class, 'login'])->middleware('api.rate_limit:auth');
-Route::post('/register', [RegisterController::class, 'register'])->middleware('api.rate_limit:auth');
-
 // Authentication endpoints (public)
 Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
@@ -129,16 +125,11 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
 
     // Passkey aliases (public — authentication endpoints)
     Route::prefix('passkey')->middleware('throttle:5,1')->group(function () {
-        Route::get('/challenge', [PasskeyController::class, 'challenge'])->name('api.auth.passkey.challenge.get');
-        Route::post('/challenge', [PasskeyController::class, 'challenge']);
+        Route::post('/challenge', [PasskeyController::class, 'challenge'])->name('api.auth.passkey.challenge');
         Route::post('/verify', [PasskeyController::class, 'authenticate'])->name('api.auth.passkey.verify');
         Route::post('/authenticate', [PasskeyController::class, 'authenticate']);
     });
 });
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum', 'check.token.expiration');
 
 // Legacy profile route for backward compatibility
 Route::get('/profile', function (Request $request) {
@@ -177,6 +168,12 @@ Route::prefix('webhooks')->middleware(['api.rate_limit:webhook'])->group(functio
         ->middleware('webhook.signature:coinbase');
 });
 
+// Ondato KYC webhook endpoints
+Route::prefix('webhooks/ondato')->middleware(['api.rate_limit:webhook'])->group(function () {
+    Route::post('/identity-verification', [App\Http\Controllers\Api\OndatoWebhookController::class, 'identityVerification']);
+    Route::post('/identification', [App\Http\Controllers\Api\OndatoWebhookController::class, 'identification']);
+});
+
 // Extended monitoring endpoints with authentication
 Route::prefix('monitoring')->middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
     Route::get('/metrics-json', [App\Http\Controllers\Api\MonitoringController::class, 'metrics']);
@@ -213,13 +210,22 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'check.token.expiration', 'r
     });
 });
 
-// Passkey/WebAuthn Authentication (v2.7.0) - public
+// Passkey/WebAuthn Authentication (v2.7.0) - public assertion flow
 Route::prefix('v1/auth/passkey')
     ->middleware('throttle:5,1')
     ->name('mobile.auth.passkey.')
     ->group(function () {
         Route::post('/challenge', [PasskeyController::class, 'challenge'])->name('challenge');
         Route::post('/authenticate', [PasskeyController::class, 'authenticate'])->name('authenticate');
+    });
+
+// Passkey registration (requires auth) - v1 path
+Route::prefix('v1/auth/passkey')
+    ->middleware(['auth:sanctum', 'check.token.expiration', 'throttle:5,1'])
+    ->name('mobile.auth.passkey.authed.')
+    ->group(function () {
+        Route::post('/register-challenge', [PasskeyController::class, 'challenge'])->name('register-challenge');
+        Route::post('/register', [PasskeyController::class, 'register'])->name('register');
     });
 
 /*

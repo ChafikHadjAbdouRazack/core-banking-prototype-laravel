@@ -1,7 +1,7 @@
 # FinAegis Core Banking Platform
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-5.2.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-5.7.0-blue.svg)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
@@ -37,6 +37,8 @@ FinAegis provides the foundation for building digital banking applications. The 
 | Plugin Marketplace | Manager, loader, sandbox, security scanner (v4.0.0) |
 | Event streaming | Redis Streams publisher/consumer, live dashboard (v5.0.0) |
 | API monetization | x402 protocol: HTTP-native micropayments with USDC on Base (v5.2.0) |
+| Privacy protocol | RAILGUN SDK integration: shield/unshield/transfer with Merkle proofs (v5.6.0) |
+| Mobile gamification | Rewards system: quests, XP/levels, points shop, streaks (v5.7.0) |
 | Learning modern architecture | Complete DDD + CQRS + Event Sourcing example |
 
 ---
@@ -249,8 +251,9 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 | **TrustCert** | W3C Verifiable Credentials, QR/deep link verification |
 | **Mobile** | Biometric auth, push notifications, device management |
 | **Mobile Payments** | Payment intents, activity feed, receipts, USDC on Solana/Tron (v2.7.0) |
-| **Passkey Auth** | WebAuthn/FIDO2 challenge-response authentication (v2.7.0) |
+| **Passkey Auth** | WebAuthn/FIDO2 with rpIdHash, UV/UP flags, COSE validation (v2.7.0+v5.7.0) |
 | **P2P Transfers** | Address validation, name resolution, fee quotes (v2.7.0) |
+| **Rewards** | Gamification: XP/levels, quests, points shop, streaks, race-safe redemption (v5.7.0) |
 
 ### API Monetization (v5.2.0)
 
@@ -289,7 +292,7 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 - **Event Sourcing** - Domain-specific event tables with Event Store v2, replay, and upcasting (v4.0.0)
 - **CQRS** - Separated read/write models for optimal performance
 - **Saga Pattern** - Distributed transactions with automatic rollback
-- **DDD** - 41 bounded contexts with clear boundaries
+- **DDD** - 42+ bounded contexts with clear boundaries
 - **Multi-Tenancy** - Team-based data isolation with stancl/tenancy v3.9
 - **GraphQL** - Schema-first Lighthouse PHP across 34 domains with subscriptions (v4.0.0+)
 - **Event Streaming** - Redis Streams publisher/consumer with live dashboard (v5.0.0)
@@ -375,7 +378,7 @@ See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details
 | **Database** | MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+ |
 | **Cache/Queue/Streaming** | Redis (cache, queues, Streams), Laravel Horizon |
 | **Real-time** | Soketi (Pusher-compatible), Laravel Echo, Redis Streams |
-| **Testing** | Pest PHP (parallel, 790+ test files, 6,300+ tests), PHPStan Level 8 |
+| **Testing** | Pest PHP (parallel, 850+ test files, 6,500+ tests), PHPStan Level 8 |
 | **Admin** | Filament v3 |
 | **Frontend** | Livewire, Tailwind CSS |
 | **Deployment** | Docker, Kubernetes (Helm), Istio |

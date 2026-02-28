@@ -44,11 +44,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
                 <div class="inline-flex items-center px-4 py-2 bg-indigo-100 rounded-full mb-6">
-                    <span class="text-indigo-600 font-semibold">Revolutionary Currency</span>
+                    <span class="text-indigo-600 font-semibold">Flagship Product</span>
                 </div>
                 <h1 class="text-5xl font-bold text-gray-900 mb-6">Global Currency Unit (GCU)</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                    A revolutionary basket currency designed for stability, transparency, and democratic governance in the global economy.
+                    A democratically governed basket currency backed by six reserve assets—USD, EUR, GBP, CHF, JPY, and gold—with stake-weighted governance and event-sourced audit trails.
                 </p>
             </div>
         </div>

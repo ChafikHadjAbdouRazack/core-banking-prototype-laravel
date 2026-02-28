@@ -2,7 +2,7 @@
 
 ## Strategic Vision
 
-Transform FinAegis from a **technically excellent prototype** into the **premier open-source core banking platform** with world-class developer experience and production-ready deployment capabilities.
+FinAegis is a **production-grade open-source core banking platform** with world-class developer experience, comprehensive test coverage, and production-ready deployment capabilities.
 
 ---
 
@@ -1124,6 +1124,11 @@ main ─────────●─────────●─────
 | **v5.1.3** | Mobile API Compatibility | Auth response standardization, token refresh/logout-all endpoints, rate limiter fix | ✅ Released 2026-02-17 |
 | **v5.1.4** | Refresh Token Mechanism | Proper access/refresh token pairs, token rotation, PHPStan fix, OpenAPI docs update | ✅ Released 2026-02-18 |
 | **v5.1.5** | Dependency Cleanup & Production Readiness | l5-swagger 9→10 (swagger-php 6), PSR-4 plugin fix, `.env.production.example` for mobile backend, passkey test fix | ✅ Released 2026-02-21 |
+| **v5.2.0** | X402 Protocol | HTTP 402 native micropayments (USDC on Base), payment gate middleware, AI agent payments, spending limits | ✅ Released 2026-02-19 |
+| **v5.4.0** | Ondato KYC & Card Issuing | Ondato identity verification, Chainalysis sanctions adapter, Marqeta card issuing, Firebase FCM v1 | ✅ Released 2026-02-21 |
+| **v5.5.0** | Production Relayer & Card Webhooks | ERC-4337 Pimlico v2 integration, Marqeta webhook auth, platform hardening | ✅ Released 2026-02-21 |
+| **v5.6.0** | RAILGUN Privacy Protocol | Node.js bridge to @railgun-community/wallet SDK, shield/unshield/transfer, 4-chain support (ETH/Polygon/Arbitrum/BSC) | ✅ Released 2026-02-28 |
+| **v5.7.0** | Mobile Rewards & Security Hardening | Rewards domain (quests, XP/levels, shop, streaks), WebAuthn FIDO2 hardening, recent recipients, route aliases, 44 tests | ✅ Released 2026-02-28 |
 
 ---
 
@@ -1888,8 +1893,64 @@ After 18 releases (v1.1.0 → v3.0.0), the platform has grown to 41 domains, 266
 ### Root Cause
 The `/app` landing page rendered correctly locally but broke in production because `public/build/` is gitignored. The Vite-compiled CSS on production was built before `app.blade.php` existed, so Tailwind purged all its utility classes. Initial CDN fix was blocked by Content Security Policy. Final solution: pre-compiled standalone CSS committed to git.
 
+## v5.5.0 — Production Relayer & Card Webhooks ✅ COMPLETED
+
+**Released**: February 21, 2026
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| ERC-4337 Pimlico v2 | ✅ | Production bundler, paymaster, smart account factory integration |
+| Marqeta Webhook Auth | ✅ | Basic Auth + HMAC signature verification for card webhooks |
+| .env.zelta.example | ✅ | Full production environment template synced |
+| Platform Hardening | ✅ | IdempotencyMiddleware, E2E banking tests, multi-tenancy isolation |
+
 ---
 
-*Document Version: 5.1.5*
+## v5.6.0 — RAILGUN Privacy Protocol ✅ COMPLETED
+
+**Released**: February 28, 2026
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| RailgunBridgeClient | ✅ | HTTP client for Node.js RAILGUN bridge service |
+| RailgunMerkleTreeService | ✅ | Implements MerkleTreeServiceInterface via bridge |
+| RailgunZkProverService | ✅ | Implements ZkProverInterface via bridge |
+| RailgunPrivacyService | ✅ | Orchestrator for shield/unshield/transfer flows |
+| RailgunWallet Model | ✅ | Encrypted wallet data per user with UUID keys |
+| ShieldedBalance Model | ✅ | Cached shielded token balances per network |
+| 4-Chain Support | ✅ | Ethereum, Polygon, Arbitrum, BSC (Base not supported by RAILGUN) |
+| 57 Tests | ✅ | Unit and feature tests with Http::fake() bridge mocking |
+
+---
+
+## v5.7.0 — Mobile Rewards & Security Hardening ✅ COMPLETED
+
+**Released**: February 28, 2026
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Rewards Domain | ✅ | Complete gamification: quests, XP/levels, points shop, daily streaks |
+| Race-Safe Operations | ✅ | DB::transaction() + lockForUpdate() for quest completion and redemption |
+| WebAuthn Hardening | ✅ | rpIdHash, UP/UV flags, COSE alg/curve validation, origin check |
+| Recent Recipients | ✅ | Deduplicated send history endpoint with limit parameter |
+| Notification Unread Count | ✅ | Badge count endpoint for mobile home screen |
+| Route Aliases | ✅ | Mobile-friendly v1 paths for create-account, estimate-fee, data-export |
+| Error Code Specificity | ✅ | QUEST_NOT_FOUND, QUEST_ALREADY_COMPLETED, ITEM_OUT_OF_STOCK, etc. |
+| 44 Feature Tests | ✅ | Full coverage including edge cases and race conditions |
+
+### Breaking Changes (Mobile)
+- Registration challenge: `POST /api/auth/passkey/challenge` with `{type: 'registration'}` → `POST /api/v1/auth/passkey/register-challenge`
+- GET challenge route removed (security — challenges are POST-only)
+- Estimate fee alias changed from GET to POST
+
+---
+
+*Document Version: 5.7.0*
 *Created: January 11, 2026*
-*Updated: February 21, 2026 (v5.1.5 Dependency Cleanup & Production Readiness released)*
+*Updated: February 28, 2026 (v5.7.0 Mobile Rewards & Security Hardening released)*

@@ -8,15 +8,12 @@ use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use App\Http\Middleware\PartnerAuthMiddleware;
 use Closure;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class PartnerAuthMiddlewareTest extends TestCase
 {
-    use RefreshDatabase;
-
     private PartnerAuthMiddleware $middleware;
 
     private string $clientSecret = 'test_secret_abc123';

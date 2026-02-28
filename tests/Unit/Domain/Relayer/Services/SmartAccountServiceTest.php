@@ -9,15 +9,12 @@ use App\Domain\Relayer\Exceptions\SmartAccountException;
 use App\Domain\Relayer\Models\SmartAccount;
 use App\Domain\Relayer\Services\SmartAccountService;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
 class SmartAccountServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private SmartAccountService $service;
 
     private SmartAccountFactoryInterface&MockInterface $factory;

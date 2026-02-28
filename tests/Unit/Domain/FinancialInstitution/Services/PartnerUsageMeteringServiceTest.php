@@ -9,14 +9,11 @@ use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use App\Domain\FinancialInstitution\Models\PartnerUsageRecord;
 use App\Domain\FinancialInstitution\Services\PartnerTierService;
 use App\Domain\FinancialInstitution\Services\PartnerUsageMeteringService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
 
 class PartnerUsageMeteringServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private PartnerUsageMeteringService $service;
 
     private PartnerTierService $tierService;

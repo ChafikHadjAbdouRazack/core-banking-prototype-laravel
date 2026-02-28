@@ -7,14 +7,11 @@ namespace Tests\Feature\Api\Partner;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionApplication;
 use App\Domain\FinancialInstitution\Models\FinancialInstitutionPartner;
 use App\Domain\FinancialInstitution\Models\PartnerIntegration;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class PartnerMarketplaceControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     private FinancialInstitutionPartner $partner;
 
     private string $clientSecret = 'test_secret_123';

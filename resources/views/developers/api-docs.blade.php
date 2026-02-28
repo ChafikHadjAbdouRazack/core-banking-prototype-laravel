@@ -1572,7 +1572,7 @@ if (response.status === 402) {
                                 <li><a href="#mobile-payment" class="text-violet-600 hover:text-violet-800 flex justify-between"><span>Mobile Payment</span><span class="text-gray-400">25+ routes</span></a></li>
                                 <li><a href="#partner-baas" class="text-rose-600 hover:text-rose-800 flex justify-between"><span>Partner BaaS</span><span class="text-gray-400">24 routes</span></a></li>
                                 <li><a href="#ai" class="text-gray-600 hover:text-gray-800 flex justify-between"><span>AI Query</span><span class="text-gray-400">2 routes</span></a></li>
-                                <li><a href="#graphql" class="text-sky-600 hover:text-sky-800 flex justify-between"><span>GraphQL</span><span class="text-gray-400">33 domains</span></a></li>
+                                <li><a href="#graphql" class="text-sky-600 hover:text-sky-800 flex justify-between"><span>GraphQL</span><span class="text-gray-400">34 domains</span></a></li>
                                 <li><a href="#event-streaming" class="text-lime-600 hover:text-lime-800 flex justify-between"><span>Event Streaming</span><span class="text-gray-400">5 endpoints</span></a></li>
                                 <li><a href="#x402" class="text-emerald-600 hover:text-emerald-800 flex justify-between"><span>x402 Protocol</span><span class="text-gray-400">15+ endpoints</span></a></li>
                             </ul>

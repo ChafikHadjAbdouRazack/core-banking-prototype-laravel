@@ -7,15 +7,12 @@ namespace Tests\Integration\GraphQL;
 use App\Domain\Shared\Models\Plugin;
 use App\Infrastructure\Plugins\PluginHookManager;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PluginGraphQLTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected User $user;
 
     protected function setUp(): void

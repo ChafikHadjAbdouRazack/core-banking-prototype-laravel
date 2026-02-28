@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <!-- Prototype Disclaimer -->
+        <!-- Architecture Notice -->
         <div class="py-8 bg-amber-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white rounded-lg shadow p-6 border-l-4 border-amber-400">
@@ -25,12 +25,12 @@
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <h3 class="text-lg font-semibold text-gray-900">Prototype Implementation Notice</h3>
+                            <h3 class="text-lg font-semibold text-gray-900">Multi-Bank Architecture</h3>
                             <p class="mt-2 text-gray-600">
-                                The banking integrations shown on this page demonstrate the platform's <strong>multi-bank architecture capabilities</strong>.
-                                The bank connectors (Paysera, Deutsche Bank, Santander, Revolut, N26) are reference implementations showing how
-                                production banking integrations would work. Actual bank partnerships require separate commercial agreements.
-                                Deposit protection figures illustrate the theoretical benefit of multi-bank distribution.
+                                FinAegis supports <strong>multi-bank architecture</strong> with pluggable connectors for institutional partners.
+                                The bank integrations shown here are reference implementations demonstrating production integration patterns.
+                                Live bank partnerships require separate commercial agreements. Deposit protection figures illustrate
+                                the benefit of multi-bank fund distribution.
                             </p>
                         </div>
                     </div>

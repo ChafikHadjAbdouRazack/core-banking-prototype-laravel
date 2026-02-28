@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BlockchainWalletController;
 use App\Http\Controllers\Api\HardwareWalletController;
 use App\Http\Controllers\Api\MultiSigWalletController;
 use App\Http\Controllers\Api\Wallet\MobileWalletController;
+use App\Http\Controllers\Api\Wallet\RecoveryShardController;
 use Illuminate\Support\Facades\Route;
 
 // Blockchain wallet endpoints
@@ -17,7 +18,7 @@ Route::prefix('blockchain-wallets')->middleware(['auth:sanctum', 'check.token.ex
         Route::get('/{walletId}/transactions', [BlockchainWalletController::class, 'transactions']);
     });
 
-    Route::middleware('transaction.rate_limit:blockchain')->group(function () {
+    Route::middleware(['transaction.rate_limit:blockchain', 'idempotency'])->group(function () {
         Route::post('/', [BlockchainWalletController::class, 'store']);
         Route::put('/{walletId}', [BlockchainWalletController::class, 'update']);
         Route::post('/{walletId}/addresses', [BlockchainWalletController::class, 'generateAddress']);
@@ -132,6 +133,24 @@ Route::prefix('v1/wallet')->name('mobile.wallet.')
             ->middleware('api.rate_limit:query')
             ->name('transactions.detail');
         Route::post('/transactions/send', [MobileWalletController::class, 'send'])
-            ->middleware('transaction.rate_limit:payment_intent')
+            ->middleware(['transaction.rate_limit:payment_intent', 'idempotency'])
             ->name('transactions.send');
+
+        // Recent recipients (v5.6.0)
+        Route::get('/recent-recipients', [MobileWalletController::class, 'recentRecipients'])
+            ->middleware('api.rate_limit:query')
+            ->name('recent-recipients');
+
+        // Alias: mobile expects POST /api/v1/wallet/create-account
+        Route::post('/create-account', [App\Http\Controllers\Api\Relayer\SmartAccountController::class, 'createAccount'])
+            ->middleware(['transaction.rate_limit:relayer', 'idempotency'])
+            ->name('create-account');
+
+        // Recovery shard cloud backup (v5.8.0)
+        Route::post('/recovery-shard-backup', [RecoveryShardController::class, 'store'])
+            ->name('recovery-shard-backup.store');
+        Route::get('/recovery-shard-backup', [RecoveryShardController::class, 'show'])
+            ->name('recovery-shard-backup.show');
+        Route::delete('/recovery-shard-backup', [RecoveryShardController::class, 'destroy'])
+            ->name('recovery-shard-backup.destroy');
     });
