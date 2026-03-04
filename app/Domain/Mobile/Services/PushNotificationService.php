@@ -68,6 +68,9 @@ class PushNotificationService
             }
         }
 
+        // Broadcast updated unread count for real-time UI updates
+        $this->broadcastUnreadCount($user);
+
         return $results;
     }
 
@@ -335,6 +338,12 @@ class PushNotificationService
     public function markAsRead(MobilePushNotification $notification): void
     {
         $notification->markAsRead();
+
+        // Broadcast updated unread count
+        $user = User::find($notification->user_id);
+        if ($user) {
+            $this->broadcastUnreadCount($user);
+        }
     }
 
     /**
@@ -342,12 +351,17 @@ class PushNotificationService
      */
     public function markAllAsRead(User $user): int
     {
-        return MobilePushNotification::where('user_id', $user->id)
+        $count = MobilePushNotification::where('user_id', $user->id)
             ->unread()
             ->update([
                 'status'  => MobilePushNotification::STATUS_READ,
                 'read_at' => now(),
             ]);
+
+        // Broadcast updated unread count (now 0)
+        $this->broadcastUnreadCount($user);
+
+        return $count;
     }
 
     /**
@@ -458,6 +472,19 @@ class PushNotificationService
                 'balance'   => $balance,
                 'threshold' => $threshold,
             ]
+        );
+    }
+
+    /**
+     * Broadcast the current unread notification count for real-time updates.
+     */
+    private function broadcastUnreadCount(User $user): void
+    {
+        $unreadCount = $this->getUnreadCount($user);
+
+        \App\Domain\Mobile\Events\Broadcast\NotificationCountUpdated::dispatch(
+            $user->id,
+            $unreadCount
         );
     }
 }

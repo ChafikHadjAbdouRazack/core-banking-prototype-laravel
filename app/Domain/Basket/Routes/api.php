@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 // Basket endpoints
 Route::prefix('v2')->group(function () {
     // V2 accounts endpoint (requires authentication)
-    Route::middleware('auth:sanctum', 'check.token.expiration')->get('/accounts', [App\Http\Controllers\Api\AccountController::class, 'index']);
+    Route::middleware('auth:sanctum')->get('/accounts', [App\Http\Controllers\Api\AccountController::class, 'index']);
 
     // Public basket endpoints
     Route::prefix('baskets')->group(function () {
@@ -30,7 +30,7 @@ Route::prefix('v2')->group(function () {
     });
 
     // Protected basket endpoints
-    Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::post('/baskets', [BasketController::class, 'store']);
         Route::post('/baskets/{code}/rebalance', [BasketController::class, 'rebalance']);
         Route::post('/baskets/{code}/performance/calculate', [BasketPerformanceController::class, 'calculate']);

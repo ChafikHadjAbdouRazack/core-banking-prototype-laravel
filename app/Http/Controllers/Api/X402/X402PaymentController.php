@@ -10,38 +10,42 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 /**
  * X402 Payment History Controller.
  *
  * Provides read access to x402 payment records and statistics.
- *
- * @OA\Tag(
- *     name="X402 Payments",
- *     description="X402 payment history and analytics"
- * )
  */
+#[OA\Tag(
+    name: 'X402 Payments',
+    description: 'X402 payment history and analytics'
+)]
 class X402PaymentController extends Controller
 {
     /**
      * List x402 payments.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/payments",
-     *     summary="List x402 payment records",
-     *     tags={"X402 Payments"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="status", in="query", required=false, @OA\Schema(type="string", enum={"pending", "verified", "settled", "failed", "expired"})),
-     *     @OA\Parameter(name="network", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="payer_address", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="per_page", in="query", required=false, description="Items per page (alias: limit)", @OA\Schema(type="integer", default=20, maximum=100)),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Paginated payment records"
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/payments',
+        summary: 'List x402 payment records',
+        tags: ['X402 Payments'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'status', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['pending', 'verified', 'settled', 'failed', 'expired'])),
+        new OA\Parameter(name: 'network', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'payer_address', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'per_page', in: 'query', required: false, description: 'Items per page (alias: limit)', schema: new OA\Schema(type: 'integer', default: 20, maximum: 100)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Paginated payment records'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = X402Payment::query()
@@ -83,18 +87,28 @@ class X402PaymentController extends Controller
 
     /**
      * Get a specific payment.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/payments/{id}",
-     *     summary="Get x402 payment details",
-     *     tags={"X402 Payments"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Payment details"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/payments/{id}',
+        summary: 'Get x402 payment details',
+        tags: ['X402 Payments'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Payment details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function show(Request $request, string $id): JsonResponse
     {
         $payment = X402Payment::where('team_id', $request->user()?->currentTeam?->id)
@@ -107,28 +121,32 @@ class X402PaymentController extends Controller
 
     /**
      * Get payment statistics.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/payments/stats",
-     *     summary="Get x402 payment statistics",
-     *     tags={"X402 Payments"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="period", in="query", required=false, description="Time period (aliases: 24h=day, 7d=week, 30d=month)", @OA\Schema(type="string", enum={"day", "week", "month", "24h", "7d", "30d"}, default="day")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Payment statistics",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="total_payments", type="integer"),
-     *             @OA\Property(property="total_settled", type="integer"),
-     *             @OA\Property(property="total_failed", type="integer"),
-     *             @OA\Property(property="total_volume_atomic", type="string"),
-     *             @OA\Property(property="total_volume_usd", type="string"),
-     *             @OA\Property(property="unique_payers", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/payments/stats',
+        summary: 'Get x402 payment statistics',
+        tags: ['X402 Payments'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Time period (aliases: 24h=day, 7d=week, 30d=month)', schema: new OA\Schema(type: 'string', enum: ['day', 'week', 'month', '24h', '7d', '30d'], default: 'day')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Payment statistics',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'total_payments', type: 'integer'),
+        new OA\Property(property: 'total_settled', type: 'integer'),
+        new OA\Property(property: 'total_failed', type: 'integer'),
+        new OA\Property(property: 'total_volume_atomic', type: 'string'),
+        new OA\Property(property: 'total_volume_usd', type: 'string'),
+        new OA\Property(property: 'unique_payers', type: 'integer'),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function stats(Request $request): JsonResponse
     {
         $period = $request->input('period', 'day');

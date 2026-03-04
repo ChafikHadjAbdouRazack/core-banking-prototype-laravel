@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Account\DataObjects\AccountUuid;
-use App\Domain\Account\DataObjects\Money;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\Transfer;
 use App\Domain\Asset\Models\Asset;
@@ -16,57 +15,44 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Workflow\WorkflowStub;
 
 class TransferController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/api/transfers",
-     *     operationId="createTransfer",
-     *     tags={"Transfers"},
-     *     summary="Create a money transfer",
-     *     description="Transfers money from one account to another",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"from_account_uuid", "to_account_uuid", "amount"},
-     *
-     * @OA\Property(property="from_account_uuid",        type="string", format="uuid", example="550e8400-e29b-41d4-a716-446655440000"),
-     * @OA\Property(property="to_account_uuid",          type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
-     * @OA\Property(property="amount",                   type="integer", example=5000, minimum=1, description="Amount in cents"),
-     * @OA\Property(property="description",              type="string", example="Payment for services", maxLength=255)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Transfer initiated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                     type="object",
-     * @OA\Property(property="transfer_uuid",            type="string", format="uuid"),
-     * @OA\Property(property="from_account_uuid",        type="string", format="uuid"),
-     * @OA\Property(property="to_account_uuid",          type="string", format="uuid"),
-     * @OA\Property(property="amount",                   type="integer", example=5000),
-     * @OA\Property(property="status",                   type="string", example="pending")
-     *             ),
-     * @OA\Property(property="message",                  type="string", example="Transfer initiated successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error or business rule violation",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transfers',
+            operationId: 'createTransfer',
+            tags: ['Transfers'],
+            summary: 'Create a money transfer',
+            description: 'Transfers money from one account to another',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['from_account_uuid', 'to_account_uuid', 'amount'], properties: [
+        new OA\Property(property: 'from_account_uuid', type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440000'),
+        new OA\Property(property: 'to_account_uuid', type: 'string', format: 'uuid', example: '660e8400-e29b-41d4-a716-446655440000'),
+        new OA\Property(property: 'amount', type: 'integer', example: 5000, minimum: 1, description: 'Amount in cents'),
+        new OA\Property(property: 'description', type: 'string', example: 'Payment for services', maxLength: 255),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Transfer initiated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'transfer_uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'from_account_uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'to_account_uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'amount', type: 'integer', example: 5000),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        ]),
+        new OA\Property(property: 'message', type: 'string', example: 'Transfer initiated successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error or business rule violation',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate(

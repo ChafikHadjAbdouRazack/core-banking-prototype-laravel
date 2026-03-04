@@ -5,108 +5,51 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 use Workflow\Models\StoredWorkflow;
 use Workflow\Models\StoredWorkflowException;
 use Workflow\Models\StoredWorkflowLog;
 
-/**
- * @OA\Tag(
- *     name="Workflow Monitoring",
- *     description="Monitor and manage workflow executions, compensations, and saga patterns"
- * )
- */
+#[OA\Tag(
+    name: 'Workflow Monitoring',
+    description: 'Monitor and manage workflow executions, compensations, and saga patterns'
+)]
 class WorkflowMonitoringController extends Controller
 {
     /**
      * Get all workflows with filtering and pagination.
-     *
-     * @OA\Get(
-     *     path="/api/workflows",
-     *     operationId="listWorkflows",
-     *     tags={"Workflow Monitoring"},
-     *     summary="List all workflows with filtering",
-     *     description="Retrieves a paginated list of workflows with optional filtering by status, class, and date range",
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by workflow status",
-     *
-     * @OA\Schema(type="string",             enum={"created", "pending", "running", "completed", "failed", "waiting"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="class",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by workflow class name (partial match)",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="per_page",
-     *         in="query",
-     *         required=false,
-     *         description="Number of items per page",
-     *
-     * @OA\Schema(type="integer",            minimum=1, maximum=100, default=15)
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="search",
-     *         in="query",
-     *         required=false,
-     *         description="Search in workflow class and arguments",
-     *
-     * @OA\Schema(type="string",             maxLength=255)
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="created_from",
-     *         in="query",
-     *         required=false,
-     *         description="Filter workflows created after this date",
-     *
-     * @OA\Schema(type="string",             format="date")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="created_to",
-     *         in="query",
-     *         required=false,
-     *         description="Filter workflows created before this date",
-     *
-     * @OA\Schema(type="string",             format="date")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Workflows retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",         type="array", @OA\Items(type="object")),
-     * @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     * @OA\Property(property="current_page", type="integer"),
-     * @OA\Property(property="last_page",    type="integer"),
-     * @OA\Property(property="per_page",     type="integer"),
-     * @OA\Property(property="total",        type="integer"),
-     * @OA\Property(property="from",         type="integer"),
-     * @OA\Property(property="to",           type="integer")
-     *             ),
-     * @OA\Property(
-     *                 property="stats",
-     *                 type="object",
-     *                 description="Workflow statistics"
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows',
+        operationId: 'listWorkflows',
+        tags: ['Workflow Monitoring'],
+        summary: 'List all workflows with filtering',
+        description: 'Retrieves a paginated list of workflows with optional filtering by status, class, and date range',
+        parameters: [
+        new OA\Parameter(name: 'status', in: 'query', required: false, description: 'Filter by workflow status', schema: new OA\Schema(type: 'string', enum: ['created', 'pending', 'running', 'completed', 'failed', 'waiting'])),
+        new OA\Parameter(name: 'class', in: 'query', required: false, description: 'Filter by workflow class name (partial match)', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'per_page', in: 'query', required: false, description: 'Number of items per page', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 15)),
+        new OA\Parameter(name: 'search', in: 'query', required: false, description: 'Search in workflow class and arguments', schema: new OA\Schema(type: 'string', maxLength: 255)),
+        new OA\Parameter(name: 'created_from', in: 'query', required: false, description: 'Filter workflows created after this date', schema: new OA\Schema(type: 'string', format: 'date')),
+        new OA\Parameter(name: 'created_to', in: 'query', required: false, description: 'Filter workflows created before this date', schema: new OA\Schema(type: 'string', format: 'date')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Workflows retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'current_page', type: 'integer'),
+        new OA\Property(property: 'last_page', type: 'integer'),
+        new OA\Property(property: 'per_page', type: 'integer'),
+        new OA\Property(property: 'total', type: 'integer'),
+        new OA\Property(property: 'from', type: 'integer'),
+        new OA\Property(property: 'to', type: 'integer'),
+        ]),
+        new OA\Property(property: 'stats', type: 'object', description: 'Workflow statistics'),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         $request->validate(
@@ -179,42 +122,31 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get specific workflow details with full logs.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/{id}",
-     *     operationId="getWorkflow",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get workflow details",
-     *     description="Retrieves detailed information about a specific workflow including logs, exceptions, and compensation info",
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Workflow ID",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Workflow details retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="workflow",           type="object", description="Workflow details with logs"),
-     * @OA\Property(property="exceptions",         type="array", @OA\Items(type="object")),
-     * @OA\Property(property="compensation_info",  type="object", description="Compensation tracking information"),
-     * @OA\Property(property="execution_timeline", type="array", @OA\Items(type="object"))
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Workflow not found"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/{id}',
+        operationId: 'getWorkflow',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get workflow details',
+        description: 'Retrieves detailed information about a specific workflow including logs, exceptions, and compensation info',
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Workflow ID', schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Workflow details retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'workflow', type: 'object', description: 'Workflow details with logs'),
+        new OA\Property(property: 'exceptions', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'compensation_info', type: 'object', description: 'Compensation tracking information'),
+        new OA\Property(property: 'execution_timeline', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Workflow not found'
+    )]
     public function show(string $id): JsonResponse
     {
         $workflow = StoredWorkflow::with(
@@ -242,32 +174,24 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflow statistics dashboard data.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/stats",
-     *     operationId="getWorkflowStats",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get workflow statistics",
-     *     description="Retrieves overall workflow execution statistics and counts by status",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Statistics retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="total_workflows",    type="integer"),
-     * @OA\Property(
-     *                 property="by_status",
-     *                 type="object",
-     *                 additionalProperties={"type": "integer"}
-     *             ),
-     * @OA\Property(property="recent_executions",  type="integer"),
-     * @OA\Property(property="avg_execution_time", type="number")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/stats',
+        operationId: 'getWorkflowStats',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get workflow statistics',
+        description: 'Retrieves overall workflow execution statistics and counts by status'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Statistics retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'total_workflows', type: 'integer'),
+        new OA\Property(property: 'by_status', type: 'object', additionalProperties: new OA\AdditionalProperties(type: 'integer')),
+        new OA\Property(property: 'recent_executions', type: 'integer'),
+        new OA\Property(property: 'avg_execution_time', type: 'number'),
+        ])
+    )]
     public function stats(): JsonResponse
     {
         return response()->json($this->getWorkflowStats());
@@ -275,49 +199,36 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflows by status.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/status/{status}",
-     *     operationId="getWorkflowsByStatus",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get workflows by status",
-     *     description="Retrieves all workflows with a specific status",
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="path",
-     *         required=true,
-     *         description="Workflow status to filter by",
-     *
-     * @OA\Schema(type="string",             enum={"created", "pending", "running", "completed", "failed", "waiting"})
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Workflows retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",       type="string"),
-     * @OA\Property(property="count",        type="integer"),
-     * @OA\Property(property="data",         type="array", @OA\Items(type="object")),
-     * @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     * @OA\Property(property="current_page", type="integer"),
-     * @OA\Property(property="last_page",    type="integer"),
-     * @OA\Property(property="per_page",     type="integer"),
-     * @OA\Property(property="total",        type="integer")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid status"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/status/{status}',
+        operationId: 'getWorkflowsByStatus',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get workflows by status',
+        description: 'Retrieves all workflows with a specific status',
+        parameters: [
+        new OA\Parameter(name: 'status', in: 'path', required: true, description: 'Workflow status to filter by', schema: new OA\Schema(type: 'string', enum: ['created', 'pending', 'running', 'completed', 'failed', 'waiting'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Workflows retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'count', type: 'integer'),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'current_page', type: 'integer'),
+        new OA\Property(property: 'last_page', type: 'integer'),
+        new OA\Property(property: 'per_page', type: 'integer'),
+        new OA\Property(property: 'total', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid status'
+    )]
     public function byStatus(string $status): JsonResponse
     {
         $validStatuses = ['created', 'pending', 'running', 'completed', 'failed', 'waiting'];
@@ -348,40 +259,32 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get failed workflows with detailed error information.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/failed",
-     *     operationId="getFailedWorkflows",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get failed workflows",
-     *     description="Retrieves all failed workflows with detailed exception information",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Failed workflows retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",               type="array", @OA\Items(type="object")),
-     * @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     * @OA\Property(property="current_page",       type="integer"),
-     * @OA\Property(property="last_page",          type="integer"),
-     * @OA\Property(property="per_page",           type="integer"),
-     * @OA\Property(property="total",              type="integer")
-     *             ),
-     * @OA\Property(
-     *                 property="error_summary",
-     *                 type="object",
-     * @OA\Property(property="most_common_errors", type="array", @OA\Items(type="object")),
-     * @OA\Property(property="total_exceptions",   type="integer"),
-     * @OA\Property(property="recent_exceptions",  type="integer")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/failed',
+        operationId: 'getFailedWorkflows',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get failed workflows',
+        description: 'Retrieves all failed workflows with detailed exception information'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Failed workflows retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'current_page', type: 'integer'),
+        new OA\Property(property: 'last_page', type: 'integer'),
+        new OA\Property(property: 'per_page', type: 'integer'),
+        new OA\Property(property: 'total', type: 'integer'),
+        ]),
+        new OA\Property(property: 'error_summary', type: 'object', properties: [
+        new OA\Property(property: 'most_common_errors', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'total_exceptions', type: 'integer'),
+        new OA\Property(property: 'recent_exceptions', type: 'integer'),
+        ]),
+        ])
+    )]
     public function failed(): JsonResponse
     {
         $failedWorkflows = StoredWorkflow::where('status', 'failed')
@@ -418,46 +321,36 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get workflow execution metrics.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/metrics",
-     *     operationId="getWorkflowMetrics",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get workflow execution metrics",
-     *     description="Retrieves detailed workflow execution metrics and performance data",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Metrics retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="execution_metrics",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="last_24_hours",
-     *                     type="object",
-     * @OA\Property(property="total_executions",    type="integer"),
-     * @OA\Property(property="successful",          type="integer"),
-     * @OA\Property(property="failed",              type="integer"),
-     * @OA\Property(property="average_duration",    type="number")
-     *                 ),
-     * @OA\Property(
-     *                     property="last_7_days",
-     *                     type="object",
-     * @OA\Property(property="total_executions",    type="integer"),
-     * @OA\Property(property="successful",          type="integer"),
-     * @OA\Property(property="failed",              type="integer"),
-     * @OA\Property(property="average_duration",    type="number")
-     *                 )
-     *             ),
-     * @OA\Property(property="workflow_types",      type="array", @OA\Items(type="object")),
-     * @OA\Property(property="performance_metrics", type="object")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/metrics',
+        operationId: 'getWorkflowMetrics',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get workflow execution metrics',
+        description: 'Retrieves detailed workflow execution metrics and performance data'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Metrics retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'execution_metrics', type: 'object', properties: [
+        new OA\Property(property: 'last_24_hours', type: 'object', properties: [
+        new OA\Property(property: 'total_executions', type: 'integer'),
+        new OA\Property(property: 'successful', type: 'integer'),
+        new OA\Property(property: 'failed', type: 'integer'),
+        new OA\Property(property: 'average_duration', type: 'number'),
+        ]),
+        new OA\Property(property: 'last_7_days', type: 'object', properties: [
+        new OA\Property(property: 'total_executions', type: 'integer'),
+        new OA\Property(property: 'successful', type: 'integer'),
+        new OA\Property(property: 'failed', type: 'integer'),
+        new OA\Property(property: 'average_duration', type: 'number'),
+        ]),
+        ]),
+        new OA\Property(property: 'workflow_types', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'performance_metrics', type: 'object'),
+        ])
+    )]
     public function metrics(): JsonResponse
     {
         $now = now();
@@ -488,57 +381,37 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Search workflows by various criteria.
-     *
-     * @OA\Post(
-     *     path="/api/workflows/search",
-     *     operationId="searchWorkflows",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Search workflows",
-     *     description="Search workflows by class, arguments, output, or exception content",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"query"},
-     *
-     * @OA\Property(property="query",        type="string", minLength=2, maxLength=255, description="Search query"),
-     * @OA\Property(
-     *                 property="type",
-     *                 type="string",
-     *                 enum={"class", "arguments", "output", "exception", "all"},
-     *                 default="all",
-     *                 description="Type of search"
-     *             ),
-     * @OA\Property(property="per_page",     type="integer", minimum=1, maximum=50, default=20)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Search results",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="search_query", type="string"),
-     * @OA\Property(property="search_type",  type="string"),
-     * @OA\Property(property="results",      type="array", @OA\Items(type="object")),
-     * @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     * @OA\Property(property="total_found",  type="integer"),
-     * @OA\Property(property="current_page", type="integer"),
-     * @OA\Property(property="last_page",    type="integer")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/workflows/search',
+        operationId: 'searchWorkflows',
+        tags: ['Workflow Monitoring'],
+        summary: 'Search workflows',
+        description: 'Search workflows by class, arguments, output, or exception content',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['query'], properties: [
+        new OA\Property(property: 'query', type: 'string', minLength: 2, maxLength: 255, description: 'Search query'),
+        new OA\Property(property: 'type', type: 'string', enum: ['class', 'arguments', 'output', 'exception', 'all'], default: 'all', description: 'Type of search'),
+        new OA\Property(property: 'per_page', type: 'integer', minimum: 1, maximum: 50, default: 20),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Search results',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'search_query', type: 'string'),
+        new OA\Property(property: 'search_type', type: 'string'),
+        new OA\Property(property: 'results', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'total_found', type: 'integer'),
+        new OA\Property(property: 'current_page', type: 'integer'),
+        new OA\Property(property: 'last_page', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function search(Request $request): JsonResponse
     {
         $request->validate(
@@ -589,50 +462,36 @@ class WorkflowMonitoringController extends Controller
 
     /**
      * Get compensation tracking information.
-     *
-     * @OA\Get(
-     *     path="/api/workflows/compensations",
-     *     operationId="getWorkflowCompensations",
-     *     tags={"Workflow Monitoring"},
-     *     summary="Get compensation tracking",
-     *     description="Retrieves workflows that have triggered compensations or rollback activities",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Compensation data retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="workflow",                type="object"),
-     * @OA\Property(property="compensation_info",       type="object"),
-     * @OA\Property(property="rollback_activities",     type="array", @OA\Items(type="object"))
-     *                 )
-     *             ),
-     * @OA\Property(
-     *                 property="meta",
-     *                 type="object",
-     * @OA\Property(property="current_page",            type="integer"),
-     * @OA\Property(property="last_page",               type="integer"),
-     * @OA\Property(property="total",                   type="integer")
-     *             ),
-     * @OA\Property(
-     *                 property="compensation_summary",
-     *                 type="object",
-     * @OA\Property(property="total_workflows",         type="integer"),
-     * @OA\Property(property="failed_workflows",        type="integer"),
-     * @OA\Property(property="failure_rate",            type="number"),
-     * @OA\Property(property="compensations_triggered", type="integer")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/workflows/compensations',
+        operationId: 'getWorkflowCompensations',
+        tags: ['Workflow Monitoring'],
+        summary: 'Get compensation tracking',
+        description: 'Retrieves workflows that have triggered compensations or rollback activities'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Compensation data retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'workflow', type: 'object'),
+        new OA\Property(property: 'compensation_info', type: 'object'),
+        new OA\Property(property: 'rollback_activities', type: 'array', items: new OA\Items(type: 'object')),
+        ])),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'current_page', type: 'integer'),
+        new OA\Property(property: 'last_page', type: 'integer'),
+        new OA\Property(property: 'total', type: 'integer'),
+        ]),
+        new OA\Property(property: 'compensation_summary', type: 'object', properties: [
+        new OA\Property(property: 'total_workflows', type: 'integer'),
+        new OA\Property(property: 'failed_workflows', type: 'integer'),
+        new OA\Property(property: 'failure_rate', type: 'number'),
+        new OA\Property(property: 'compensations_triggered', type: 'integer'),
+        ]),
+        ])
+    )]
     public function compensations(): JsonResponse
     {
         // Find workflows that have compensation patterns

@@ -8,27 +8,29 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Blog",
- *     description="Public blog and newsletter"
- * )
- */
+#[OA\Tag(
+    name: 'Blog',
+    description: 'Public blog and newsletter'
+)]
 class BlogController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/blog",
-     *     operationId="blogIndex",
-     *     tags={"Blog"},
-     *     summary="List blog posts",
-     *     description="Returns the blog listing page",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blog',
+            operationId: 'blogIndex',
+            tags: ['Blog'],
+            summary: 'List blog posts',
+            description: 'Returns the blog listing page'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $featuredPost = \App\Models\BlogPost::published()
@@ -53,20 +55,24 @@ class BlogController extends Controller
         return view('blog.index', compact('featuredPost', 'recentPosts', 'categories'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blog/{slug}",
-     *     operationId="blogShow",
-     *     tags={"Blog"},
-     *     summary="Show blog post",
-     *     description="Returns a specific blog post by slug",
-     *
-     *     @OA\Parameter(name="slug", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blog/{slug}',
+            operationId: 'blogShow',
+            tags: ['Blog'],
+            summary: 'Show blog post',
+            description: 'Returns a specific blog post by slug',
+            parameters: [
+        new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show($slug)
     {
         $post = \App\Models\BlogPost::published()
@@ -83,18 +89,21 @@ class BlogController extends Controller
         return view('blog.show', compact('post', 'relatedPosts'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/blog/subscribe",
-     *     operationId="blogSubscribe",
-     *     tags={"Blog"},
-     *     summary="Subscribe to newsletter",
-     *     description="Subscribes an email to the blog newsletter",
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/blog/subscribe',
+            operationId: 'blogSubscribe',
+            tags: ['Blog'],
+            summary: 'Subscribe to newsletter',
+            description: 'Subscribes an email to the blog newsletter'
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function subscribe(Request $request, SubscriberEmailService $emailService)
     {
         $validated = $request->validate(

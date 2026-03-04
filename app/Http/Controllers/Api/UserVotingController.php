@@ -13,34 +13,28 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="User Voting",
- *     description="User-friendly voting interface for GCU governance"
- * )
- */
+#[OA\Tag(
+    name: 'User Voting',
+    description: 'User-friendly voting interface for GCU governance'
+)]
 class UserVotingController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/voting/polls",
-     *     summary="Get polls available for voting",
-     *     description="Get all active polls with user's voting context",
-     *     tags={"User Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of voting polls",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/UserVotingPoll"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/voting/polls',
+            summary: 'Get polls available for voting',
+            description: 'Get all active polls with user\'s voting context',
+            tags: ['User Voting'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of voting polls',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/UserVotingPoll')),
+        ])
+    )]
     public function getActivePolls(): JsonResponse
     {
         $user = Auth::user();
@@ -69,20 +63,17 @@ class UserVotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/voting/polls/upcoming",
-     *     summary="Get upcoming polls",
-     *     description="Get polls that will become active soon",
-     *     tags={"User Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of upcoming polls"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/voting/polls/upcoming',
+            summary: 'Get upcoming polls',
+            description: 'Get polls that will become active soon',
+            tags: ['User Voting'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of upcoming polls'
+    )]
     public function getUpcomingPolls(): JsonResponse
     {
         $polls = Poll::where('status', PollStatus::DRAFT)
@@ -98,20 +89,17 @@ class UserVotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/voting/polls/history",
-     *     summary="Get user's voting history",
-     *     description="Get all polls the user has participated in",
-     *     tags={"User Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User's voting history"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/voting/polls/history',
+            summary: 'Get user\'s voting history',
+            description: 'Get all polls the user has participated in',
+            tags: ['User Voting'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'User\'s voting history'
+    )]
     public function getVotingHistory(): JsonResponse
     {
         $user = Auth::user();
@@ -135,54 +123,40 @@ class UserVotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/voting/polls/{uuid}/vote",
-     *     summary="Submit vote for GCU basket composition",
-     *     description="Submit weighted allocation vote for basket composition",
-     *     tags={"User Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"allocations"},
-     *
-     * @OA\Property(
-     *                 property="allocations",
-     *                 type="object",
-     *                 description="Currency allocations (must sum to 100)",
-     *                 example={"USD": 40, "EUR": 30, "GBP": 15, "CHF": 10, "JPY": 3, "XAU": 2}
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Vote submitted successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",           type="string"),
-     * @OA\Property(property="vote_id",           type="string"),
-     * @OA\Property(property="voting_power_used", type="integer")
-     *         )
-     *     ),
-     *
-     * @OA\Response(response=400,                 description="Invalid vote data"),
-     * @OA\Response(response=403,                 description="Cannot vote on this poll"),
-     * @OA\Response(response=404,                 description="Poll not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/voting/polls/{uuid}/vote',
+            summary: 'Submit vote for GCU basket composition',
+            description: 'Submit weighted allocation vote for basket composition',
+            tags: ['User Voting'],
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['allocations'], properties: [
+        new OA\Property(property: 'allocations', type: 'object', description: 'Currency allocations (must sum to 100)', example: ['USD' => 40, 'EUR' => 30, 'GBP' => 15, 'CHF' => 10, 'JPY' => 3, 'XAU' => 2]),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Vote submitted successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'vote_id', type: 'string'),
+        new OA\Property(property: 'voting_power_used', type: 'integer'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid vote data'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Cannot vote on this poll'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Poll not found'
+    )]
     public function submitBasketVote(Request $request, string $uuid): JsonResponse
     {
         $poll = Poll::where('uuid', $uuid)->firstOrFail();
@@ -252,20 +226,17 @@ class UserVotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/voting/dashboard",
-     *     summary="Get voting dashboard data",
-     *     description="Get comprehensive voting dashboard information",
-     *     tags={"User Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Dashboard data"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/voting/dashboard',
+            summary: 'Get voting dashboard data',
+            description: 'Get comprehensive voting dashboard information',
+            tags: ['User Voting'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Dashboard data'
+    )]
     public function getDashboard(): JsonResponse
     {
         $user = Auth::user();

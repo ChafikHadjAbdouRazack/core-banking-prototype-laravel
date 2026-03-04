@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\MCPToolsController;
 use Illuminate\Support\Facades\Route;
 
 // AI Agent endpoints (protected)
-Route::prefix('ai')->middleware(['auth:sanctum', 'check.token.expiration', 'api.rate_limit:private'])->group(function () {
+Route::prefix('ai')->middleware(['auth:sanctum', 'api.rate_limit:private'])->group(function () {
     Route::post('/chat', [AIAgentController::class, 'chat'])->name('api.ai.chat');
     Route::get('/conversations', [AIAgentController::class, 'conversations'])->name('api.ai.conversations');
     Route::get('/conversations/{conversationId}', [AIAgentController::class, 'getConversation'])->name('api.ai.conversation');

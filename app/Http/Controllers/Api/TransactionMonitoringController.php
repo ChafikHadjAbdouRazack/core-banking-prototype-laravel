@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
 class TransactionMonitoringController extends Controller
 {
@@ -27,42 +28,24 @@ class TransactionMonitoringController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring",
-     *     operationId="getMonitoredTransactions",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get monitored transactions",
-     *     description="Retrieve transactions that are being monitored for compliance",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"pending", "reviewing", "cleared", "flagged"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="risk_level",
-     *         in="query",
-     *         description="Filter by risk level",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"low", "medium", "high", "critical"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="page",
-     *         in="query",
-     *         description="Page number",
-     *         required=false,
-     *         @OA\Schema(type="integer", default=1)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of monitored transactions",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring',
+            operationId: 'getMonitoredTransactions',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get monitored transactions',
+            description: 'Retrieve transactions that are being monitored for compliance',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', required: false, schema: new OA\Schema(type: 'string', enum: ['pending', 'reviewing', 'cleared', 'flagged'])),
+        new OA\Parameter(name: 'risk_level', in: 'query', description: 'Filter by risk level', required: false, schema: new OA\Schema(type: 'string', enum: ['low', 'medium', 'high', 'critical'])),
+        new OA\Parameter(name: 'page', in: 'query', description: 'Page number', required: false, schema: new OA\Schema(type: 'integer', default: 1)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of monitored transactions',
+        content: new OA\JsonContent()
+    )]
     public function getMonitoredTransactions(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -98,32 +81,26 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring/{id}",
-     *     operationId="getTransactionDetails",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get transaction monitoring details",
-     *     description="Retrieve detailed monitoring information for a specific transaction",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Transaction ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Transaction monitoring details",
-     *         @OA\JsonContent()
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Transaction not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring/{id}',
+            operationId: 'getTransactionDetails',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get transaction monitoring details',
+            description: 'Retrieve detailed monitoring information for a specific transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Transaction ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction monitoring details',
+        content: new OA\JsonContent()
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Transaction not found'
+    )]
     public function getTransactionDetails(string $id): JsonResponse
     {
         $transaction = Transaction::findOrFail($id);
@@ -149,36 +126,27 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/transaction-monitoring/{id}/flag",
-     *     operationId="flagTransaction",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Flag a transaction",
-     *     description="Flag a transaction for compliance review",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Transaction ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="reason", type="string", description="Reason for flagging"),
-     *             @OA\Property(property="severity", type="string", enum={"low", "medium", "high", "critical"}),
-     *             @OA\Property(property="notes", type="string", description="Additional notes")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Transaction flagged successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transaction-monitoring/{id}/flag',
+            operationId: 'flagTransaction',
+            tags: ['Transaction Monitoring'],
+            summary: 'Flag a transaction',
+            description: 'Flag a transaction for compliance review',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Transaction ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'reason', type: 'string', description: 'Reason for flagging'),
+        new OA\Property(property: 'severity', type: 'string', enum: ['low', 'medium', 'high', 'critical']),
+        new OA\Property(property: 'notes', type: 'string', description: 'Additional notes'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction flagged successfully',
+        content: new OA\JsonContent()
+    )]
     public function flagTransaction(string $id, Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -232,36 +200,27 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/transaction-monitoring/{id}/clear",
-     *     operationId="clearTransaction",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Clear a transaction",
-     *     description="Clear a transaction from compliance monitoring",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Transaction ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="reason", type="string", description="Reason for clearing"),
-     *             @OA\Property(property="reviewer", type="string", description="Reviewer ID"),
-     *             @OA\Property(property="notes", type="string", description="Additional notes")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Transaction cleared successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transaction-monitoring/{id}/clear',
+            operationId: 'clearTransaction',
+            tags: ['Transaction Monitoring'],
+            summary: 'Clear a transaction',
+            description: 'Clear a transaction from compliance monitoring',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Transaction ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'reason', type: 'string', description: 'Reason for clearing'),
+        new OA\Property(property: 'reviewer', type: 'string', description: 'Reviewer ID'),
+        new OA\Property(property: 'notes', type: 'string', description: 'Additional notes'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction cleared successfully',
+        content: new OA\JsonContent()
+    )]
     public function clearTransaction(string $id, Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -284,21 +243,19 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring/rules",
-     *     operationId="getMonitoringRules",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get monitoring rules",
-     *     description="Retrieve all transaction monitoring rules",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of monitoring rules",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring/rules',
+            operationId: 'getMonitoringRules',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get monitoring rules',
+            description: 'Retrieve all transaction monitoring rules',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of monitoring rules',
+        content: new OA\JsonContent()
+    )]
     public function getRules(): JsonResponse
     {
         $rules = MonitoringRule::where('is_active', true)
@@ -323,32 +280,26 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/transaction-monitoring/rules",
-     *     operationId="createMonitoringRule",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Create monitoring rule",
-     *     description="Create a new transaction monitoring rule",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "type", "conditions", "severity"},
-     *             @OA\Property(property="name", type="string"),
-     *             @OA\Property(property="type", type="string"),
-     *             @OA\Property(property="conditions", type="object"),
-     *             @OA\Property(property="threshold", type="number"),
-     *             @OA\Property(property="severity", type="string", enum={"low", "medium", "high", "critical"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Rule created successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transaction-monitoring/rules',
+            operationId: 'createMonitoringRule',
+            tags: ['Transaction Monitoring'],
+            summary: 'Create monitoring rule',
+            description: 'Create a new transaction monitoring rule',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'type', 'conditions', 'severity'], properties: [
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'type', type: 'string'),
+        new OA\Property(property: 'conditions', type: 'object'),
+        new OA\Property(property: 'threshold', type: 'number'),
+        new OA\Property(property: 'severity', type: 'string', enum: ['low', 'medium', 'high', 'critical']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Rule created successfully',
+        content: new OA\JsonContent()
+    )]
     public function createRule(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -381,32 +332,23 @@ class TransactionMonitoringController extends Controller
         ], 201);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/transaction-monitoring/rules/{id}",
-     *     operationId="updateMonitoringRule",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Update monitoring rule",
-     *     description="Update an existing transaction monitoring rule",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Rule ID",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent()
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rule updated successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/transaction-monitoring/rules/{id}',
+            operationId: 'updateMonitoringRule',
+            tags: ['Transaction Monitoring'],
+            summary: 'Update monitoring rule',
+            description: 'Update an existing transaction monitoring rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Rule ID', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent())
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rule updated successfully',
+        content: new OA\JsonContent()
+    )]
     public function updateRule(string $id, Request $request): JsonResponse
     {
         $rule = MonitoringRule::findOrFail($id);
@@ -433,28 +375,22 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/transaction-monitoring/rules/{id}",
-     *     operationId="deleteMonitoringRule",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Delete monitoring rule",
-     *     description="Delete a transaction monitoring rule",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Rule ID",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rule deleted successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/transaction-monitoring/rules/{id}',
+            operationId: 'deleteMonitoringRule',
+            tags: ['Transaction Monitoring'],
+            summary: 'Delete monitoring rule',
+            description: 'Delete a transaction monitoring rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Rule ID', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rule deleted successfully',
+        content: new OA\JsonContent()
+    )]
     public function deleteRule(string $id): JsonResponse
     {
         $rule = MonitoringRule::findOrFail($id);
@@ -468,28 +404,22 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring/patterns",
-     *     operationId="getDetectedPatterns",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get detected patterns",
-     *     description="Retrieve patterns detected in transaction monitoring",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Pattern type filter",
-     *         required=false,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of detected patterns",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring/patterns',
+            operationId: 'getDetectedPatterns',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get detected patterns',
+            description: 'Retrieve patterns detected in transaction monitoring',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'type', in: 'query', description: 'Pattern type filter', required: false, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of detected patterns',
+        content: new OA\JsonContent()
+    )]
     public function getPatterns(Request $request): JsonResponse
     {
         $type = $request->query('type');
@@ -527,21 +457,19 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring/thresholds",
-     *     operationId="getMonitoringThresholds",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get monitoring thresholds",
-     *     description="Retrieve current transaction monitoring thresholds",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Current monitoring thresholds",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring/thresholds',
+            operationId: 'getMonitoringThresholds',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get monitoring thresholds',
+            description: 'Retrieve current transaction monitoring thresholds',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Current monitoring thresholds',
+        content: new OA\JsonContent()
+    )]
     public function getThresholds(): JsonResponse
     {
         // Get current thresholds from configuration or database
@@ -574,25 +502,20 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/transaction-monitoring/thresholds",
-     *     operationId="updateMonitoringThresholds",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Update monitoring thresholds",
-     *     description="Update transaction monitoring thresholds",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent()
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Thresholds updated successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/transaction-monitoring/thresholds',
+            operationId: 'updateMonitoringThresholds',
+            tags: ['Transaction Monitoring'],
+            summary: 'Update monitoring thresholds',
+            description: 'Update transaction monitoring thresholds',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent())
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Thresholds updated successfully',
+        content: new OA\JsonContent()
+    )]
     public function updateThresholds(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -625,28 +548,22 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/transaction-monitoring/analyze/realtime",
-     *     operationId="analyzeTransactionRealtime",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Analyze transaction in real-time",
-     *     description="Perform real-time analysis of a transaction",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"transaction_id"},
-     *             @OA\Property(property="transaction_id", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Analysis completed",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transaction-monitoring/analyze/realtime',
+            operationId: 'analyzeTransactionRealtime',
+            tags: ['Transaction Monitoring'],
+            summary: 'Analyze transaction in real-time',
+            description: 'Perform real-time analysis of a transaction',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['transaction_id'], properties: [
+        new OA\Property(property: 'transaction_id', type: 'string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Analysis completed',
+        content: new OA\JsonContent()
+    )]
     public function analyzeRealtime(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -677,32 +594,22 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/transaction-monitoring/analyze/batch",
-     *     operationId="analyzeTransactionBatch",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Analyze transactions in batch",
-     *     description="Perform batch analysis of multiple transactions",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"transaction_ids"},
-     *             @OA\Property(
-     *                 property="transaction_ids",
-     *                 type="array",
-     *                 @OA\Items(type="string")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Batch analysis started",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/transaction-monitoring/analyze/batch',
+            operationId: 'analyzeTransactionBatch',
+            tags: ['Transaction Monitoring'],
+            summary: 'Analyze transactions in batch',
+            description: 'Perform batch analysis of multiple transactions',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['transaction_ids'], properties: [
+        new OA\Property(property: 'transaction_ids', type: 'array', items: new OA\Items(type: 'string')),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Batch analysis started',
+        content: new OA\JsonContent()
+    )]
     public function analyzeBatch(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -745,32 +652,26 @@ class TransactionMonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/transaction-monitoring/analysis/{analysisId}",
-     *     operationId="getAnalysisStatus",
-     *     tags={"Transaction Monitoring"},
-     *     summary="Get analysis status",
-     *     description="Get the status of a batch analysis",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="analysisId",
-     *         in="path",
-     *         description="Analysis ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Analysis status",
-     *         @OA\JsonContent()
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Analysis not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/transaction-monitoring/analysis/{analysisId}',
+            operationId: 'getAnalysisStatus',
+            tags: ['Transaction Monitoring'],
+            summary: 'Get analysis status',
+            description: 'Get the status of a batch analysis',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'analysisId', in: 'path', description: 'Analysis ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Analysis status',
+        content: new OA\JsonContent()
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Analysis not found'
+    )]
     public function getAnalysisStatus(string $analysisId): JsonResponse
     {
         $status = Cache::get("batch_analysis:{$analysisId}");

@@ -8,49 +8,35 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 class VotingController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/v2/gcu/voting/proposals",
-     *     summary="Get voting proposals",
-     *     tags={"GCU Voting"},
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status (active, upcoming, past)",
-     *         required=false,
-     *
-     * @OA\Schema(type="string",                   enum={"active", "upcoming", "past"})
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of voting proposals",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",             type="string", example="success"),
-     * @OA\Property(property="data",               type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="id",                 type="integer"),
-     * @OA\Property(property="title",              type="string"),
-     * @OA\Property(property="description",        type="string"),
-     * @OA\Property(property="status",             type="string"),
-     * @OA\Property(property="voting_starts_at",   type="string", format="date-time"),
-     * @OA\Property(property="voting_ends_at",     type="string", format="date-time"),
-     * @OA\Property(property="participation_rate", type="number"),
-     * @OA\Property(property="approval_rate",      type="number")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/gcu/voting/proposals',
+            summary: 'Get voting proposals',
+            tags: ['GCU Voting'],
+            parameters: [
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status (active, upcoming, past)', required: false, schema: new OA\Schema(type: 'string', enum: ['active', 'upcoming', 'past'])),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of voting proposals',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'success'),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'integer'),
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'voting_starts_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'voting_ends_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'participation_rate', type: 'number'),
+        new OA\Property(property: 'approval_rate', type: 'number'),
+        ])),
+        ])
+    )]
     public function proposals(Request $request): JsonResponse
     {
         $query = GcuVotingProposal::query();
@@ -99,33 +85,22 @@ class VotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/gcu/voting/proposals/{id}",
-     *     summary="Get proposal details",
-     *     tags={"GCU Voting"},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Proposal ID",
-     *         required=true,
-     *
-     * @OA\Schema(type="integer")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Proposal details",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status", type="string", example="success"),
-     * @OA\Property(property="data",   type="object")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/gcu/voting/proposals/{id}',
+            summary: 'Get proposal details',
+            tags: ['GCU Voting'],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Proposal ID', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Proposal details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'success'),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function proposalDetails($id): JsonResponse
     {
         $proposal = GcuVotingProposal::findOrFail($id);
@@ -158,47 +133,30 @@ class VotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/gcu/voting/proposals/{id}/vote",
-     *     summary="Cast a vote",
-     *     tags={"GCU Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Proposal ID",
-     *         required=true,
-     *
-     * @OA\Schema(type="integer")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="vote",         type="string", enum={"for", "against", "abstain"})
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Vote cast successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",       type="string", example="success"),
-     * @OA\Property(property="message",      type="string"),
-     * @OA\Property(property="data",         type="object",
-     * @OA\Property(property="vote",         type="string"),
-     * @OA\Property(property="voting_power", type="number")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/gcu/voting/proposals/{id}/vote',
+            summary: 'Cast a vote',
+            tags: ['GCU Voting'],
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Proposal ID', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'vote', type: 'string', enum: ['for', 'against', 'abstain']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Vote cast successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'success'),
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'vote', type: 'string'),
+        new OA\Property(property: 'voting_power', type: 'number'),
+        ]),
+        ])
+    )]
     public function vote(Request $request, $id): JsonResponse
     {
         $proposal = GcuVotingProposal::findOrFail($id);
@@ -272,35 +230,26 @@ class VotingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/gcu/voting/my-votes",
-     *     summary="Get user's voting history",
-     *     tags={"GCU Voting"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User's voting history",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",         type="string", example="success"),
-     * @OA\Property(property="data",           type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="proposal_id",    type="integer"),
-     * @OA\Property(property="proposal_title", type="string"),
-     * @OA\Property(property="vote",           type="string"),
-     * @OA\Property(property="voting_power",   type="number"),
-     * @OA\Property(property="voted_at",       type="string", format="date-time")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/gcu/voting/my-votes',
+            summary: 'Get user\'s voting history',
+            tags: ['GCU Voting'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'User\'s voting history',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'success'),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'proposal_id', type: 'integer'),
+        new OA\Property(property: 'proposal_title', type: 'string'),
+        new OA\Property(property: 'vote', type: 'string'),
+        new OA\Property(property: 'voting_power', type: 'number'),
+        new OA\Property(property: 'voted_at', type: 'string', format: 'date-time'),
+        ])),
+        ])
+    )]
     public function myVotes(Request $request): JsonResponse
     {
         $votes = GcuVote::where('user_uuid', $request->user()->uuid)

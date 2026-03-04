@@ -13,7 +13,7 @@ use App\Http\Controllers\Api\TransferController;
 use Illuminate\Support\Facades\Route;
 
 // Core account, transaction, and transfer endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // Sub-product status for authenticated users
     Route::get('/sub-products/enabled', [SubProductController::class, 'enabled']);
 

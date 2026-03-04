@@ -10,13 +10,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Bank Allocation",
- *     description="User bank allocation preferences and fund distribution management"
- * )
- */
+#[OA\Tag(
+    name: 'Bank Allocation',
+    description: 'User bank allocation preferences and fund distribution management'
+)]
 class BankAllocationController extends Controller
 {
     public function __construct(
@@ -24,49 +23,40 @@ class BankAllocationController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/bank-allocations",
-     *     tags={"Bank Allocation"},
-     *     summary="Get user bank allocations",
-     *     description="Get current user's bank allocation preferences and distribution",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Bank allocations retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                     type="object",
-     * @OA\Property(property="allocations",              type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="bank_code",                type="string", example="PAYSERA"),
-     * @OA\Property(property="bank_name",                type="string", example="Paysera Bank"),
-     * @OA\Property(property="allocation_percentage",    type="number", example=40.0),
-     * @OA\Property(property="is_primary",               type="boolean", example=true),
-     * @OA\Property(property="status",                   type="string", example="active"),
-     * @OA\Property(property="metadata",                 type="object",
-     * @OA\Property(property="country",                  type="string", example="Lithuania"),
-     * @OA\Property(property="currency",                 type="string", example="EUR"),
-     * @OA\Property(property="insurance_limit",          type="integer", example=100000)
-     *                         )
-     *                     )
-     *                 ),
-     * @OA\Property(property="summary",                  type="object",
-     * @OA\Property(property="total_percentage",         type="number", example=100.0),
-     * @OA\Property(property="bank_count",               type="integer", example=3),
-     * @OA\Property(property="primary_bank",             type="string", example="PAYSERA"),
-     * @OA\Property(property="is_diversified",           type="boolean", example=true),
-     * @OA\Property(property="total_insurance_coverage", type="integer", example=300000)
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/bank-allocations',
+            tags: ['Bank Allocation'],
+            summary: 'Get user bank allocations',
+            description: 'Get current user\'s bank allocation preferences and distribution',
+            security: [['bearerAuth' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bank allocations retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'allocations', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'bank_name', type: 'string', example: 'Paysera Bank'),
+        new OA\Property(property: 'allocation_percentage', type: 'number', example: 40.0),
+        new OA\Property(property: 'is_primary', type: 'boolean', example: true),
+        new OA\Property(property: 'status', type: 'string', example: 'active'),
+        new OA\Property(property: 'metadata', type: 'object', properties: [
+        new OA\Property(property: 'country', type: 'string', example: 'Lithuania'),
+        new OA\Property(property: 'currency', type: 'string', example: 'EUR'),
+        new OA\Property(property: 'insurance_limit', type: 'integer', example: 100000),
+        ]),
+        ])),
+        new OA\Property(property: 'summary', type: 'object', properties: [
+        new OA\Property(property: 'total_percentage', type: 'number', example: 100.0),
+        new OA\Property(property: 'bank_count', type: 'integer', example: 3),
+        new OA\Property(property: 'primary_bank', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'is_diversified', type: 'boolean', example: true),
+        new OA\Property(property: 'total_insurance_coverage', type: 'integer', example: 300000),
+        ]),
+        ]),
+        ])
+    )]
     public function index(): JsonResponse
     {
         $user = Auth::user();
@@ -115,52 +105,35 @@ class BankAllocationController extends Controller
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/bank-allocations",
-     *     tags={"Bank Allocation"},
-     *     summary="Update bank allocations",
-     *     description="Update user's bank allocation preferences",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"allocations"},
-     *
-     * @OA\Property(property="allocations",           type="object", example={"PAYSERA": 40, "DEUTSCHE_BANK": 30, "SANTANDER": 30}),
-     * @OA\Property(property="primary_bank",          type="string", example="PAYSERA")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Bank allocations updated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",               type="string", example="Bank allocations updated successfully"),
-     * @OA\Property(property="data",                  type="object",
-     * @OA\Property(property="allocations",           type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="bank_code",             type="string", example="PAYSERA"),
-     * @OA\Property(property="allocation_percentage", type="number", example=40.0),
-     * @OA\Property(property="is_primary",            type="boolean", example=true)
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error - allocations must sum to 100%"
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/bank-allocations',
+            tags: ['Bank Allocation'],
+            summary: 'Update bank allocations',
+            description: 'Update user\'s bank allocation preferences',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['allocations'], properties: [
+        new OA\Property(property: 'allocations', type: 'object', example: ['PAYSERA' => 40, 'DEUTSCHE_BANK' => 30, 'SANTANDER' => 30]),
+        new OA\Property(property: 'primary_bank', type: 'string', example: 'PAYSERA'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bank allocations updated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Bank allocations updated successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'allocations', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'allocation_percentage', type: 'number', example: 40.0),
+        new OA\Property(property: 'is_primary', type: 'boolean', example: true),
+        ])),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error - allocations must sum to 100%'
+    )]
     public function update(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -214,48 +187,35 @@ class BankAllocationController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/bank-allocations/banks",
-     *     tags={"Bank Allocation"},
-     *     summary="Add bank to allocation",
-     *     description="Add a new bank to user's allocation preferences",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"bank_code", "percentage"},
-     *
-     * @OA\Property(property="bank_code",             type="string", example="REVOLUT"),
-     * @OA\Property(property="percentage",            type="number", minimum=0.01, maximum=100, example=15.0)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Bank added successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",               type="string", example="Bank added to allocation successfully"),
-     * @OA\Property(property="data",                  type="object",
-     * @OA\Property(property="bank_code",             type="string", example="REVOLUT"),
-     * @OA\Property(property="bank_name",             type="string", example="Revolut Bank"),
-     * @OA\Property(property="allocation_percentage", type="number", example=15.0),
-     * @OA\Property(property="is_primary",            type="boolean", example=false),
-     * @OA\Property(property="status",                type="string", example="active")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error or bank already exists"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/bank-allocations/banks',
+            tags: ['Bank Allocation'],
+            summary: 'Add bank to allocation',
+            description: 'Add a new bank to user\'s allocation preferences',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['bank_code', 'percentage'], properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'REVOLUT'),
+        new OA\Property(property: 'percentage', type: 'number', minimum: 0.01, maximum: 100, example: 15.0),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Bank added successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Bank added to allocation successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'REVOLUT'),
+        new OA\Property(property: 'bank_name', type: 'string', example: 'Revolut Bank'),
+        new OA\Property(property: 'allocation_percentage', type: 'number', example: 15.0),
+        new OA\Property(property: 'is_primary', type: 'boolean', example: false),
+        new OA\Property(property: 'status', type: 'string', example: 'active'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error or bank already exists'
+    )]
     public function addBank(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -294,43 +254,31 @@ class BankAllocationController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/bank-allocations/banks/{bankCode}",
-     *     tags={"Bank Allocation"},
-     *     summary="Remove bank from allocation",
-     *     description="Remove a bank from user's allocation preferences",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="bankCode",
-     *         in="path",
-     *         required=true,
-     *         description="Bank code to remove",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Bank removed successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",    type="string", example="Bank removed from allocation successfully"),
-     * @OA\Property(property="data",       type="object",
-     * @OA\Property(property="bank_code",  type="string", example="REVOLUT"),
-     * @OA\Property(property="removed_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Cannot remove primary bank or bank not found"
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/bank-allocations/banks/{bankCode}',
+            tags: ['Bank Allocation'],
+            summary: 'Remove bank from allocation',
+            description: 'Remove a bank from user\'s allocation preferences',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'bankCode', in: 'path', required: true, description: 'Bank code to remove', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bank removed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Bank removed from allocation successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'REVOLUT'),
+        new OA\Property(property: 'removed_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Cannot remove primary bank or bank not found'
+    )]
     public function removeBank(string $bankCode): JsonResponse
     {
         try {
@@ -358,45 +306,33 @@ class BankAllocationController extends Controller
         }
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/bank-allocations/primary/{bankCode}",
-     *     tags={"Bank Allocation"},
-     *     summary="Set primary bank",
-     *     description="Set a bank as the primary bank for the user",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="bankCode",
-     *         in="path",
-     *         required=true,
-     *         description="Bank code to set as primary",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Primary bank updated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",    type="string", example="Primary bank updated successfully"),
-     * @OA\Property(property="data",       type="object",
-     * @OA\Property(property="bank_code",  type="string", example="PAYSERA"),
-     * @OA\Property(property="bank_name",  type="string", example="Paysera Bank"),
-     * @OA\Property(property="is_primary", type="boolean", example=true),
-     * @OA\Property(property="updated_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Bank not found in user's allocation"
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/bank-allocations/primary/{bankCode}',
+            tags: ['Bank Allocation'],
+            summary: 'Set primary bank',
+            description: 'Set a bank as the primary bank for the user',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'bankCode', in: 'path', required: true, description: 'Bank code to set as primary', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Primary bank updated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Primary bank updated successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'bank_name', type: 'string', example: 'Paysera Bank'),
+        new OA\Property(property: 'is_primary', type: 'boolean', example: true),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Bank not found in user\'s allocation'
+    )]
     public function setPrimaryBank(string $bankCode): JsonResponse
     {
         try {
@@ -426,36 +362,27 @@ class BankAllocationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/bank-allocations/available-banks",
-     *     tags={"Bank Allocation"},
-     *     summary="Get available banks",
-     *     description="Get list of all available banks for allocation",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Available banks retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",               type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="bank_code",          type="string", example="PAYSERA"),
-     * @OA\Property(property="bank_name",          type="string", example="Paysera Bank"),
-     * @OA\Property(property="country",            type="string", example="Lithuania"),
-     * @OA\Property(property="currency",           type="string", example="EUR"),
-     * @OA\Property(property="insurance_limit",    type="integer", example=100000),
-     * @OA\Property(property="supported_features", type="array", @OA\Items(type="string"))
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/bank-allocations/available-banks',
+            tags: ['Bank Allocation'],
+            summary: 'Get available banks',
+            description: 'Get list of all available banks for allocation',
+            security: [['bearerAuth' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Available banks retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'bank_name', type: 'string', example: 'Paysera Bank'),
+        new OA\Property(property: 'country', type: 'string', example: 'Lithuania'),
+        new OA\Property(property: 'currency', type: 'string', example: 'EUR'),
+        new OA\Property(property: 'insurance_limit', type: 'integer', example: 100000),
+        new OA\Property(property: 'supported_features', type: 'array', items: new OA\Items(type: 'string')),
+        ])),
+        ])
+    )]
     public function getAvailableBanks(): JsonResponse
     {
         $banks = collect(UserBankPreference::AVAILABLE_BANKS)->map(
@@ -478,55 +405,39 @@ class BankAllocationController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/bank-allocations/distribution-preview",
-     *     tags={"Bank Allocation"},
-     *     summary="Preview fund distribution",
-     *     description="Preview how funds would be distributed across banks for a given amount",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"amount", "asset_code"},
-     *
-     * @OA\Property(property="amount",                   type="number", minimum=0.01, example=1000.00),
-     * @OA\Property(property="asset_code",               type="string", example="USD")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Distribution preview generated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                     type="object",
-     * @OA\Property(property="total_amount",             type="number", example=1000.00),
-     * @OA\Property(property="asset_code",               type="string", example="USD"),
-     * @OA\Property(property="distribution",             type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="bank_code",                type="string", example="PAYSERA"),
-     * @OA\Property(property="bank_name",                type="string", example="Paysera Bank"),
-     * @OA\Property(property="allocation_percentage",    type="number", example=40.0),
-     * @OA\Property(property="amount",                   type="number", example=400.00),
-     * @OA\Property(property="is_primary",               type="boolean", example=true)
-     *                     )
-     *                 ),
-     * @OA\Property(property="summary",                  type="object",
-     * @OA\Property(property="bank_count",               type="integer", example=3),
-     * @OA\Property(property="is_diversified",           type="boolean", example=true),
-     * @OA\Property(property="total_insurance_coverage", type="integer", example=300000)
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/bank-allocations/distribution-preview',
+            tags: ['Bank Allocation'],
+            summary: 'Preview fund distribution',
+            description: 'Preview how funds would be distributed across banks for a given amount',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['amount', 'asset_code'], properties: [
+        new OA\Property(property: 'amount', type: 'number', minimum: 0.01, example: 1000.00),
+        new OA\Property(property: 'asset_code', type: 'string', example: 'USD'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Distribution preview generated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'total_amount', type: 'number', example: 1000.00),
+        new OA\Property(property: 'asset_code', type: 'string', example: 'USD'),
+        new OA\Property(property: 'distribution', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'bank_code', type: 'string', example: 'PAYSERA'),
+        new OA\Property(property: 'bank_name', type: 'string', example: 'Paysera Bank'),
+        new OA\Property(property: 'allocation_percentage', type: 'number', example: 40.0),
+        new OA\Property(property: 'amount', type: 'number', example: 400.00),
+        new OA\Property(property: 'is_primary', type: 'boolean', example: true),
+        ])),
+        new OA\Property(property: 'summary', type: 'object', properties: [
+        new OA\Property(property: 'bank_count', type: 'integer', example: 3),
+        new OA\Property(property: 'is_diversified', type: 'boolean', example: true),
+        new OA\Property(property: 'total_insurance_coverage', type: 'integer', example: 300000),
+        ]),
+        ]),
+        ])
+    )]
     public function previewDistribution(Request $request): JsonResponse
     {
         $validated = $request->validate(

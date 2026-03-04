@@ -14,14 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Identity",
- *     description="Agent registration, discovery, and identity management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Identity',
+    description: 'Agent registration, discovery, and identity management endpoints'
+)]
 class AgentIdentityController extends Controller
 {
     public function __construct(
@@ -30,42 +28,42 @@ class AgentIdentityController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/register",
-     *     operationId="registerAgent",
-     *     tags={"Agent Protocol - Identity"},
-     *     summary="Register a new agent in the system",
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "type"},
-     *             @OA\Property(property="name", type="string", example="Trading Agent Alpha"),
-     *             @OA\Property(property="type", type="string", enum={"service", "user", "system"}, example="service"),
-     *             @OA\Property(property="description", type="string", example="Automated trading agent"),
-     *             @OA\Property(property="capabilities", type="array", @OA\Items(type="string"), example={"payment", "trading"}),
-     *             @OA\Property(property="metadata", type="object", example={"version": "1.0", "provider": "FinAegis"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Agent registered successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="agent_id", type="string"),
-     *                 @OA\Property(property="did", type="string"),
-     *                 @OA\Property(property="name", type="string"),
-     *                 @OA\Property(property="type", type="string"),
-     *                 @OA\Property(property="registered_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/register',
+            operationId: 'registerAgent',
+            tags: ['Agent Protocol - Identity'],
+            summary: 'Register a new agent in the system',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'type'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Trading Agent Alpha'),
+        new OA\Property(property: 'type', type: 'string', enum: ['service', 'user', 'system'], example: 'service'),
+        new OA\Property(property: 'description', type: 'string', example: 'Automated trading agent'),
+        new OA\Property(property: 'capabilities', type: 'array', example: ['payment', 'trading'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'metadata', type: 'object', example: ['version' => '1.0', 'provider' => 'FinAegis']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Agent registered successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'agent_id', type: 'string'),
+        new OA\Property(property: 'did', type: 'string'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'type', type: 'string'),
+        new OA\Property(property: 'registered_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -157,46 +155,26 @@ class AgentIdentityController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/discover",
-     *     operationId="discoverAgents",
-     *     tags={"Agent Protocol - Identity"},
-     *     summary="Discover agents by capabilities or type",
-     *     @OA\Parameter(
-     *         name="capability",
-     *         in="query",
-     *         description="Filter by capability",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Filter by agent type",
-     *         @OA\Schema(type="string", enum={"service", "user", "system"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         @OA\Schema(type="string", enum={"active", "inactive", "suspended"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of results",
-     *         @OA\Schema(type="integer", default=20)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of discovered agents",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/discover',
+            operationId: 'discoverAgents',
+            tags: ['Agent Protocol - Identity'],
+            summary: 'Discover agents by capabilities or type',
+            parameters: [
+        new OA\Parameter(name: 'capability', in: 'query', description: 'Filter by capability', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'type', in: 'query', description: 'Filter by agent type', schema: new OA\Schema(type: 'string', enum: ['service', 'user', 'system'])),
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', schema: new OA\Schema(type: 'string', enum: ['active', 'inactive', 'suspended'])),
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of results', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of discovered agents',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function discover(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -232,30 +210,27 @@ class AgentIdentityController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}",
-     *     operationId="getAgentByDID",
-     *     tags={"Agent Protocol - Identity"},
-     *     summary="Get agent details by DID",
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Agent details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}',
+            operationId: 'getAgentByDID',
+            tags: ['Agent Protocol - Identity'],
+            summary: 'Get agent details by DID',
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Agent details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function show(string $did): JsonResponse
     {
         try {
@@ -299,38 +274,35 @@ class AgentIdentityController extends Controller
         }
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/agent-protocol/agents/{did}/capabilities",
-     *     operationId="updateAgentCapabilities",
-     *     tags={"Agent Protocol - Identity"},
-     *     summary="Update agent capabilities",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"capabilities"},
-     *             @OA\Property(property="capabilities", type="array",
-     *                 @OA\Items(type="object",
-     *                     @OA\Property(property="name", type="string"),
-     *                     @OA\Property(property="version", type="string"),
-     *                     @OA\Property(property="metadata", type="object")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Capabilities updated"),
-     *     @OA\Response(response=404, description="Agent not found"),
-     *     @OA\Response(response=403, description="Not authorized")
-     * )
-     */
+        #[OA\Put(
+            path: '/api/agent-protocol/agents/{did}/capabilities',
+            operationId: 'updateAgentCapabilities',
+            tags: ['Agent Protocol - Identity'],
+            summary: 'Update agent capabilities',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['capabilities'], properties: [
+        new OA\Property(property: 'capabilities', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'version', type: 'string'),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ])),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Capabilities updated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Not authorized'
+    )]
     public function updateCapabilities(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -404,26 +376,24 @@ class AgentIdentityController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/.well-known/ap2-configuration",
-     *     operationId="ap2Configuration",
-     *     tags={"Agent Protocol - Identity"},
-     *     summary="AP2 well-known configuration endpoint",
-     *     @OA\Response(
-     *         response=200,
-     *         description="AP2 configuration",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="issuer", type="string"),
-     *             @OA\Property(property="agent_registration_endpoint", type="string"),
-     *             @OA\Property(property="agent_discovery_endpoint", type="string"),
-     *             @OA\Property(property="payment_endpoint", type="string"),
-     *             @OA\Property(property="escrow_endpoint", type="string"),
-     *             @OA\Property(property="supported_capabilities", type="array", @OA\Items(type="string"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/.well-known/ap2-configuration',
+            operationId: 'ap2Configuration',
+            tags: ['Agent Protocol - Identity'],
+            summary: 'AP2 well-known configuration endpoint'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'AP2 configuration',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'issuer', type: 'string'),
+        new OA\Property(property: 'agent_registration_endpoint', type: 'string'),
+        new OA\Property(property: 'agent_discovery_endpoint', type: 'string'),
+        new OA\Property(property: 'payment_endpoint', type: 'string'),
+        new OA\Property(property: 'escrow_endpoint', type: 'string'),
+        new OA\Property(property: 'supported_capabilities', type: 'array', items: new OA\Items(type: 'string')),
+        ])
+    )]
     public function wellKnownConfiguration(): JsonResponse
     {
         return response()->json([

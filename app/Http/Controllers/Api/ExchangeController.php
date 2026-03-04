@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
 class ExchangeController extends Controller
 {
@@ -23,42 +24,30 @@ class ExchangeController extends Controller
         $this->exchangeService = $exchangeService;
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/exchange/orders",
-     *     tags={"Exchange"},
-     *     summary="Place a new order",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"type", "order_type", "base_currency", "quote_currency", "amount"},
-     *
-     * @OA\Property(property="type",           type="string", enum={"buy", "sell"}),
-     * @OA\Property(property="order_type",     type="string", enum={"market", "limit"}),
-     * @OA\Property(property="base_currency",  type="string", example="BTC"),
-     * @OA\Property(property="quote_currency", type="string", example="EUR"),
-     * @OA\Property(property="amount",         type="string", example="0.01"),
-     * @OA\Property(property="price",          type="string", example="50000", description="Required for limit orders"),
-     * @OA\Property(property="stop_price",     type="string", example="49000", description="For stop orders")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Order placed successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="success",        type="boolean", example=true),
-     * @OA\Property(property="order_id",       type="string"),
-     * @OA\Property(property="message",        type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/exchange/orders',
+            tags: ['Exchange'],
+            summary: 'Place a new order',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['type', 'order_type', 'base_currency', 'quote_currency', 'amount'], properties: [
+        new OA\Property(property: 'type', type: 'string', enum: ['buy', 'sell']),
+        new OA\Property(property: 'order_type', type: 'string', enum: ['market', 'limit']),
+        new OA\Property(property: 'base_currency', type: 'string', example: 'BTC'),
+        new OA\Property(property: 'quote_currency', type: 'string', example: 'EUR'),
+        new OA\Property(property: 'amount', type: 'string', example: '0.01'),
+        new OA\Property(property: 'price', type: 'string', example: '50000', description: 'Required for limit orders'),
+        new OA\Property(property: 'stop_price', type: 'string', example: '49000', description: 'For stop orders'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Order placed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'order_id', type: 'string'),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
     public function placeOrder(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -118,27 +107,19 @@ class ExchangeController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/exchange/orders/{orderId}",
-     *     tags={"Exchange"},
-     *     summary="Cancel an order",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="orderId",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Order cancelled successfully"
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/exchange/orders/{orderId}',
+            tags: ['Exchange'],
+            summary: 'Cancel an order',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'orderId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Order cancelled successfully'
+    )]
     public function cancelOrder(string $orderId): JsonResponse
     {
         $account = Auth::user()->account;
@@ -188,40 +169,21 @@ class ExchangeController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange/orders",
-     *     tags={"Exchange"},
-     *     summary="Get user's orders",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *
-     * @OA\Schema(type="string", enum={"open", "filled", "cancelled", "all"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="base_currency",
-     *         in="query",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quote_currency",
-     *         in="query",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of orders"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange/orders',
+            tags: ['Exchange'],
+            summary: 'Get user\'s orders',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'status', in: 'query', schema: new OA\Schema(type: 'string', enum: ['open', 'filled', 'cancelled', 'all'])),
+        new OA\Parameter(name: 'base_currency', in: 'query', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quote_currency', in: 'query', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of orders'
+    )]
     public function getOrders(Request $request): JsonResponse
     {
         $account = Auth::user()->account;
@@ -256,33 +218,20 @@ class ExchangeController extends Controller
         return response()->json($orders);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange/trades",
-     *     tags={"Exchange"},
-     *     summary="Get user's trade history",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="base_currency",
-     *         in="query",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quote_currency",
-     *         in="query",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of trades"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange/trades',
+            tags: ['Exchange'],
+            summary: 'Get user\'s trade history',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'base_currency', in: 'query', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quote_currency', in: 'query', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of trades'
+    )]
     public function getTrades(Request $request): JsonResponse
     {
         $account = Auth::user()->account;
@@ -309,41 +258,20 @@ class ExchangeController extends Controller
         return response()->json($trades);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange/orderbook/{baseCurrency}/{quoteCurrency}",
-     *     tags={"Exchange"},
-     *     summary="Get order book for a trading pair",
-     *
-     * @OA\Parameter(
-     *         name="baseCurrency",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quoteCurrency",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="depth",
-     *         in="query",
-     *
-     * @OA\Schema(type="integer", default=20)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Order book data"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange/orderbook/{baseCurrency}/{quoteCurrency}',
+            tags: ['Exchange'],
+            summary: 'Get order book for a trading pair',
+            parameters: [
+        new OA\Parameter(name: 'baseCurrency', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quoteCurrency', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'depth', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Order book data'
+    )]
     public function getOrderBook(string $baseCurrency, string $quoteCurrency, Request $request): JsonResponse
     {
         $depth = min($request->input('depth', 20), 100); // Max depth of 100
@@ -353,18 +281,15 @@ class ExchangeController extends Controller
         return response()->json($orderBook);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange/markets",
-     *     tags={"Exchange"},
-     *     summary="Get market data for all trading pairs",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Market data for all pairs"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange/markets',
+            tags: ['Exchange'],
+            summary: 'Get market data for all trading pairs'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Market data for all pairs'
+    )]
     public function getMarkets(): JsonResponse
     {
         // Load active trading pairs from liquidity pools

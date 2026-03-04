@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Throwable;
 
 class MobileRelayerController extends Controller
@@ -29,42 +30,37 @@ class MobileRelayerController extends Controller
 
     /**
      * Get relayer status and gas prices.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/status",
-     *     operationId="relayerStatus",
-     *     summary="Get relayer status and gas prices",
-     *     description="Returns current relayer system health, supported networks with gas prices and congestion levels.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="healthy", type="boolean", example=true),
-     *                 @OA\Property(
-     *                     property="networks",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="object",
-     *                         @OA\Property(property="network", type="string", example="polygon"),
-     *                         @OA\Property(property="chain_id", type="integer", example=137),
-     *                         @OA\Property(property="gas_price_gwei", type="string", example="30"),
-     *                         @OA\Property(property="congestion", type="string", example="low"),
-     *                         @OA\Property(property="native_currency", type="string", example="MATIC")
-     *                     )
-     *                 ),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/status',
+        operationId: 'relayerStatus',
+        summary: 'Get relayer status and gas prices',
+        description: 'Returns current relayer system health, supported networks with gas prices and congestion levels.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'healthy', type: 'boolean', example: true),
+        new OA\Property(property: 'networks', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'chain_id', type: 'integer', example: 137),
+        new OA\Property(property: 'gas_price_gwei', type: 'string', example: '30'),
+        new OA\Property(property: 'congestion', type: 'string', example: 'low'),
+        new OA\Property(property: 'native_currency', type: 'string', example: 'MATIC'),
+        ])),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function status(): JsonResponse
     {
         $networks = [];
@@ -90,57 +86,59 @@ class MobileRelayerController extends Controller
 
     /**
      * Estimate gas for a transaction.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/estimate-gas",
-     *     operationId="relayerEstimateGas",
-     *     summary="Estimate gas for a transaction",
-     *     description="Estimates gas cost for a transaction on the specified network.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"network", "to"},
-     *             @OA\Property(property="network", type="string", example="polygon", description="Target network"),
-     *             @OA\Property(property="to", type="string", example="0x1234...abcd", description="Destination address"),
-     *             @OA\Property(property="value", type="string", example="1000000", description="Transfer value"),
-     *             @OA\Property(property="data", type="string", example="0x", description="Call data")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Gas estimate returned",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="network", type="string", example="polygon"),
-     *                 @OA\Property(property="gas_price", type="string", example="30"),
-     *                 @OA\Property(property="gas_limit", type="string", example="200000"),
-     *                 @OA\Property(property="total_cost", type="string", example="0.05"),
-     *                 @OA\Property(property="currency", type="string", example="MATIC"),
-     *                 @OA\Property(property="sponsored", type="boolean", example=true)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Unsupported network",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(property="code", type="string", example="UNSUPPORTED_NETWORK"),
-     *                 @OA\Property(property="message", type="string", example="Network not supported.")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/estimate-gas',
+        operationId: 'relayerEstimateGas',
+        summary: 'Estimate gas for a transaction',
+        description: 'Estimates gas cost for a transaction on the specified network. Returns ERC-4337 compatible gas fields.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['network', 'to'], properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon', description: 'Target network'),
+        new OA\Property(property: 'to', type: 'string', example: '0x1234...abcd', description: 'Destination address'),
+        new OA\Property(property: 'value', type: 'string', example: '1000000', description: 'Transfer value'),
+        new OA\Property(property: 'data', type: 'string', example: '0x', description: 'Call data'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Gas estimate returned',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'gas_price', type: 'string', example: '30'),
+        new OA\Property(property: 'gas_limit', type: 'string', example: '200000'),
+        new OA\Property(property: 'total_cost', type: 'string', example: '0.05'),
+        new OA\Property(property: 'total_fee_usd', type: 'number', format: 'float', example: 0.05),
+        new OA\Property(property: 'currency', type: 'string', example: 'MATIC'),
+        new OA\Property(property: 'sponsored', type: 'boolean', example: true),
+        new OA\Property(property: 'call_gas_limit', type: 'string', example: '200000'),
+        new OA\Property(property: 'verification_gas_limit', type: 'string', example: '100000'),
+        new OA\Property(property: 'pre_verification_gas', type: 'string', example: '21000'),
+        new OA\Property(property: 'max_fee_per_gas', type: 'string', example: '30'),
+        new OA\Property(property: 'max_priority_fee_per_gas', type: 'string', example: '2'),
+        new OA\Property(property: 'paymaster_fee', type: 'string', example: '0'),
+        new OA\Property(property: 'paymaster_fee_usd', type: 'number', format: 'float', example: 0.0),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Unsupported network',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'UNSUPPORTED_NETWORK'),
+        new OA\Property(property: 'message', type: 'string', example: 'Network not supported.'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function estimateGas(Request $request): JsonResponse
     {
         $request->validate([
@@ -164,84 +162,88 @@ class MobileRelayerController extends Controller
         $callData = $request->input('data', '0x');
         $estimate = $this->gasStation->estimateFee($callData, $network);
 
+        $gasPrice = $network->getCurrentGasPrice();
+        $gasLimit = (string) ($estimate['estimated_gas'] ?? 200000);
+        $totalCost = $estimate['fee_usdc'] ?? '0';
+
         return response()->json([
             'success' => true,
             'data'    => [
-                'network'    => $network->value,
-                'gas_price'  => $network->getCurrentGasPrice(),
-                'gas_limit'  => (string) ($estimate['estimated_gas'] ?? 200000),
-                'total_cost' => $estimate['fee_usdc'] ?? '0',
-                'currency'   => $network->getNativeCurrency(),
-                'sponsored'  => true,
+                'network'                  => $network->value,
+                'gas_price'                => $gasPrice,
+                'gas_limit'                => $gasLimit,
+                'total_cost'               => $totalCost,
+                'total_fee_usd'            => (float) $totalCost,
+                'currency'                 => $network->getNativeCurrency(),
+                'sponsored'                => true,
+                'call_gas_limit'           => $gasLimit,
+                'verification_gas_limit'   => '100000',
+                'pre_verification_gas'     => '21000',
+                'max_fee_per_gas'          => $gasPrice,
+                'max_priority_fee_per_gas' => '2',
+                'paymaster_fee'            => '0',
+                'paymaster_fee_usd'        => 0.0,
             ],
         ]);
     }
 
     /**
      * Build a UserOperation from parameters.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/build-userop",
-     *     operationId="relayerBuildUserOp",
-     *     summary="Build a UserOperation from parameters",
-     *     description="Constructs an ERC-4337 UserOperation struct from the provided transaction parameters.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"network", "to"},
-     *             @OA\Property(property="network", type="string", example="polygon", description="Target network"),
-     *             @OA\Property(property="to", type="string", example="0x1234...abcd", description="Destination address"),
-     *             @OA\Property(property="value", type="string", example="1000000", description="Transfer value"),
-     *             @OA\Property(property="data", type="string", example="0x", description="Call data"),
-     *             @OA\Property(property="from", type="string", example="0x0", description="Sender address")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="UserOperation built successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(
-     *                     property="user_op",
-     *                     type="object",
-     *                     @OA\Property(property="sender", type="string", example="0x0"),
-     *                     @OA\Property(property="nonce", type="string", example="0x0"),
-     *                     @OA\Property(property="initCode", type="string", example="0x"),
-     *                     @OA\Property(property="callData", type="string", example="0x"),
-     *                     @OA\Property(property="callGasLimit", type="string", example="0x30D40"),
-     *                     @OA\Property(property="verificationGasLimit", type="string", example="0x186A0"),
-     *                     @OA\Property(property="preVerificationGas", type="string", example="0xC350"),
-     *                     @OA\Property(property="maxFeePerGas", type="string"),
-     *                     @OA\Property(property="maxPriorityFeePerGas", type="string"),
-     *                     @OA\Property(property="paymasterAndData", type="string", example="0x"),
-     *                     @OA\Property(property="signature", type="string", example="0x")
-     *                 ),
-     *                 @OA\Property(property="network", type="string", example="polygon"),
-     *                 @OA\Property(property="entry_point", type="string", example="0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Unsupported network",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(property="code", type="string", example="UNSUPPORTED_NETWORK"),
-     *                 @OA\Property(property="message", type="string", example="Network not supported.")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/build-userop',
+        operationId: 'relayerBuildUserOp',
+        summary: 'Build a UserOperation from parameters',
+        description: 'Constructs an ERC-4337 UserOperation struct from the provided transaction parameters.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['network', 'to'], properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon', description: 'Target network'),
+        new OA\Property(property: 'to', type: 'string', example: '0x1234...abcd', description: 'Destination address'),
+        new OA\Property(property: 'value', type: 'string', example: '1000000', description: 'Transfer value'),
+        new OA\Property(property: 'data', type: 'string', example: '0x', description: 'Call data'),
+        new OA\Property(property: 'from', type: 'string', example: '0x0', description: 'Sender address'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'UserOperation built successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user_op', type: 'object', properties: [
+        new OA\Property(property: 'sender', type: 'string', example: '0x0'),
+        new OA\Property(property: 'nonce', type: 'string', example: '0x0'),
+        new OA\Property(property: 'initCode', type: 'string', example: '0x'),
+        new OA\Property(property: 'callData', type: 'string', example: '0x'),
+        new OA\Property(property: 'callGasLimit', type: 'string', example: '0x30D40'),
+        new OA\Property(property: 'verificationGasLimit', type: 'string', example: '0x186A0'),
+        new OA\Property(property: 'preVerificationGas', type: 'string', example: '0xC350'),
+        new OA\Property(property: 'maxFeePerGas', type: 'string'),
+        new OA\Property(property: 'maxPriorityFeePerGas', type: 'string'),
+        new OA\Property(property: 'paymasterAndData', type: 'string', example: '0x'),
+        new OA\Property(property: 'signature', type: 'string', example: '0x'),
+        ]),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'entry_point', type: 'string', example: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Unsupported network',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'UNSUPPORTED_NETWORK'),
+        new OA\Property(property: 'message', type: 'string', example: 'Network not supported.'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function buildUserOp(Request $request): JsonResponse
     {
         $request->validate([
@@ -288,54 +290,48 @@ class MobileRelayerController extends Controller
 
     /**
      * Submit a signed UserOperation to the bundler.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/submit",
-     *     operationId="relayerSubmitUserOp",
-     *     summary="Submit a signed UserOperation",
-     *     description="Submits a signed ERC-4337 UserOperation to the bundler for on-chain execution.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"network", "user_op", "signature"},
-     *             @OA\Property(property="network", type="string", example="polygon", description="Target network"),
-     *             @OA\Property(property="user_op", type="object", description="The UserOperation struct"),
-     *             @OA\Property(property="signature", type="string", example="0xabcdef...", description="Signed UserOperation signature")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="UserOperation submitted",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="user_op_hash", type="string", example="0xabc123..."),
-     *                 @OA\Property(property="network", type="string", example="polygon"),
-     *                 @OA\Property(property="status", type="string", example="pending"),
-     *                 @OA\Property(property="submitted_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Unsupported network",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(property="code", type="string", example="UNSUPPORTED_NETWORK"),
-     *                 @OA\Property(property="message", type="string", example="Network not supported.")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/submit',
+        operationId: 'relayerSubmitUserOp',
+        summary: 'Submit a signed UserOperation',
+        description: 'Submits a signed ERC-4337 UserOperation to the bundler for on-chain execution.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['network', 'user_op', 'signature'], properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon', description: 'Target network'),
+        new OA\Property(property: 'user_op', type: 'object', description: 'The UserOperation struct'),
+        new OA\Property(property: 'signature', type: 'string', example: '0xabcdef...', description: 'Signed UserOperation signature'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'UserOperation submitted',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user_op_hash', type: 'string', example: '0xabc123...'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        new OA\Property(property: 'submitted_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Unsupported network',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'UNSUPPORTED_NETWORK'),
+        new OA\Property(property: 'message', type: 'string', example: 'Network not supported.'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function submitUserOp(Request $request): JsonResponse
     {
         $request->validate([
@@ -402,40 +398,36 @@ class MobileRelayerController extends Controller
 
     /**
      * Get UserOperation status by hash.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/userop/{hash}",
-     *     operationId="relayerGetUserOp",
-     *     summary="Get UserOperation status by hash",
-     *     description="Returns the current status and details of a previously submitted UserOperation.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="hash",
-     *         in="path",
-     *         required=true,
-     *         description="The UserOperation hash",
-     *         @OA\Schema(type="string", example="0xabc123...")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="UserOperation details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="user_op_hash", type="string", example="0xabc123..."),
-     *                 @OA\Property(property="status", type="string", example="pending"),
-     *                 @OA\Property(property="tx_hash", type="string", nullable=true, example=null),
-     *                 @OA\Property(property="block_number", type="integer", nullable=true, example=null),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/userop/{hash}',
+        operationId: 'relayerGetUserOp',
+        summary: 'Get UserOperation status by hash',
+        description: 'Returns the current status and details of a previously submitted UserOperation.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'hash', in: 'path', required: true, description: 'The UserOperation hash', schema: new OA\Schema(type: 'string', example: '0xabc123...')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'UserOperation details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user_op_hash', type: 'string', example: '0xabc123...'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        new OA\Property(property: 'tx_hash', type: 'string', nullable: true, example: null),
+        new OA\Property(property: 'block_number', type: 'integer', nullable: true, example: null),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function getUserOp(string $hash): JsonResponse
     {
         try {
@@ -478,34 +470,31 @@ class MobileRelayerController extends Controller
 
     /**
      * Get tokens accepted for gas payment (paymaster).
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/supported-tokens",
-     *     operationId="relayerSupportedTokens",
-     *     summary="Get tokens accepted for gas payment",
-     *     description="Returns the list of tokens accepted by the paymaster for sponsored gas payments.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Supported tokens list",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="symbol", type="string", example="USDC"),
-     *                     @OA\Property(property="name", type="string", example="USD Coin"),
-     *                     @OA\Property(property="sponsored", type="boolean", example=true)
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/supported-tokens',
+        operationId: 'relayerSupportedTokens',
+        summary: 'Get tokens accepted for gas payment',
+        description: 'Returns the list of tokens accepted by the paymaster for sponsored gas payments.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Supported tokens list',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'symbol', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'name', type: 'string', example: 'USD Coin'),
+        new OA\Property(property: 'sponsored', type: 'boolean', example: true),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function supportedTokens(): JsonResponse
     {
         $tokens = [
@@ -522,36 +511,33 @@ class MobileRelayerController extends Controller
 
     /**
      * Get paymaster configuration data.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/paymaster-data",
-     *     operationId="relayerPaymasterData",
-     *     summary="Get paymaster configuration data",
-     *     description="Returns paymaster addresses, entry points, sponsored tokens and gas limits per network.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Paymaster configuration per network",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="network", type="string", example="polygon"),
-     *                     @OA\Property(property="paymaster_address", type="string", example="0x1234..."),
-     *                     @OA\Property(property="entry_point", type="string", example="0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"),
-     *                     @OA\Property(property="sponsored_tokens", type="array", @OA\Items(type="string"), example={"USDC", "USDT"}),
-     *                     @OA\Property(property="max_gas_sponsored", type="string", example="500000")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/paymaster-data',
+        operationId: 'relayerPaymasterData',
+        summary: 'Get paymaster configuration data',
+        description: 'Returns paymaster addresses, entry points, sponsored tokens and gas limits per network.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Paymaster configuration per network',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'paymaster_address', type: 'string', example: '0x1234...'),
+        new OA\Property(property: 'entry_point', type: 'string', example: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'),
+        new OA\Property(property: 'sponsored_tokens', type: 'array', example: ['USDC', 'USDT'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'max_gas_sponsored', type: 'string', example: '500000'),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function paymasterData(): JsonResponse
     {
         $data = [];
@@ -573,66 +559,56 @@ class MobileRelayerController extends Controller
 
     /**
      * Get per-network relayer status.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/networks/{network}/status",
-     *     operationId="relayerNetworkStatus",
-     *     summary="Get per-network relayer status",
-     *     description="Returns detailed relayer status for a specific network including gas prices, block number and relayer queue depth.",
-     *     tags={"Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="network",
-     *         in="path",
-     *         required=true,
-     *         description="Network identifier (e.g. polygon, ethereum, arbitrum)",
-     *         @OA\Schema(type="string", example="polygon")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Network relayer status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="chainId", type="integer", example=137),
-     *                 @OA\Property(property="network", type="string", example="polygon"),
-     *                 @OA\Property(property="status", type="string", example="operational"),
-     *                 @OA\Property(
-     *                     property="gasPrice",
-     *                     type="object",
-     *                     @OA\Property(property="gwei", type="number", format="float", example=30.0),
-     *                     @OA\Property(property="usdEstimate", type="number", format="float", example=0.01)
-     *                 ),
-     *                 @OA\Property(property="blockNumber", type="integer", example=55000000),
-     *                 @OA\Property(
-     *                     property="relayer",
-     *                     type="object",
-     *                     @OA\Property(property="status", type="string", example="active"),
-     *                     @OA\Property(property="queueDepth", type="integer", example=0),
-     *                     @OA\Property(property="avgConfirmationMs", type="integer", example=2400)
-     *                 ),
-     *                 @OA\Property(property="updatedAt", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Unsupported network",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(
-     *                 property="error",
-     *                 type="object",
-     *                 @OA\Property(property="code", type="string", example="UNSUPPORTED_NETWORK"),
-     *                 @OA\Property(property="message", type="string", example="Network 'unsupported' is not supported")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/networks/{network}/status',
+        operationId: 'relayerNetworkStatus',
+        summary: 'Get per-network relayer status',
+        description: 'Returns detailed relayer status for a specific network including gas prices, block number and relayer queue depth.',
+        tags: ['Relayer'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'network', in: 'path', required: true, description: 'Network identifier (e.g. polygon, ethereum, arbitrum)', schema: new OA\Schema(type: 'string', example: 'polygon')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Network relayer status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'chainId', type: 'integer', example: 137),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'status', type: 'string', example: 'operational'),
+        new OA\Property(property: 'gasPrice', type: 'object', properties: [
+        new OA\Property(property: 'gwei', type: 'number', format: 'float', example: 30.0),
+        new OA\Property(property: 'usdEstimate', type: 'number', format: 'float', example: 0.01),
+        ]),
+        new OA\Property(property: 'blockNumber', type: 'integer', example: 55000000),
+        new OA\Property(property: 'relayer', type: 'object', properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'active'),
+        new OA\Property(property: 'queueDepth', type: 'integer', example: 0),
+        new OA\Property(property: 'avgConfirmationMs', type: 'integer', example: 2400),
+        ]),
+        new OA\Property(property: 'updatedAt', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Unsupported network',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'UNSUPPORTED_NETWORK'),
+        new OA\Property(property: 'message', type: 'string', example: 'Network \'unsupported\' is not supported'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function networkStatus(string $network): JsonResponse
     {
         $supported = SupportedNetwork::tryFrom($network);

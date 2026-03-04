@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 use Workflow\WorkflowStub;
@@ -36,40 +37,41 @@ class PortfolioController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios",
-     *     operationId="listTreasuryPortfolios",
-     *     tags={"Treasury Portfolio"},
-     *     summary="List portfolios for treasury",
-     *     description="Retrieves a list of portfolios for the authenticated treasury account",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="treasury_id",
-     *         in="query",
-     *         required=false,
-     *         description="Treasury ID to filter portfolios",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of treasury portfolios",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/TreasuryPortfolio")),
-     *             @OA\Property(property="meta", type="object",
-     *                 @OA\Property(property="total", type="integer"),
-     *                 @OA\Property(property="count", type="integer")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden - insufficient treasury permissions"),
-     *     @OA\Response(response=429, description="Too Many Requests")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios',
+            operationId: 'listTreasuryPortfolios',
+            tags: ['Treasury Portfolio'],
+            summary: 'List portfolios for treasury',
+            description: 'Retrieves a list of portfolios for the authenticated treasury account',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'treasury_id', in: 'query', required: false, description: 'Treasury ID to filter portfolios', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of treasury portfolios',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'total', type: 'integer'),
+        new OA\Property(property: 'count', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - insufficient treasury permissions'
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Too Many Requests'
+    )]
     public function index(Request $request): JsonResponse
     {
         try {
@@ -120,36 +122,44 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/treasury/portfolios",
-     *     operationId="createTreasuryPortfolio",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Create a new treasury portfolio",
-     *     description="Creates a new portfolio for treasury management with investment strategy",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CreateTreasuryPortfolioRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=201,
-     *         description="Portfolio created successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/TreasuryPortfolio"),
-     *             @OA\Property(property="message", type="string", example="Portfolio created successfully")
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Bad Request - validation errors"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden - insufficient treasury permissions"),
-     *     @OA\Response(response=422, description="Unprocessable Entity - validation failed"),
-     *     @OA\Response(response=429, description="Too Many Requests")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/treasury/portfolios',
+            operationId: 'createTreasuryPortfolio',
+            tags: ['Treasury Portfolio'],
+            summary: 'Create a new treasury portfolio',
+            description: 'Creates a new portfolio for treasury management with investment strategy',
+            security: [['sanctum' => ['treasury']]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Portfolio created successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        new OA\Property(property: 'message', type: 'string', example: 'Portfolio created successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad Request - validation errors'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - insufficient treasury permissions'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Unprocessable Entity - validation failed'
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Too Many Requests'
+    )]
     public function store(CreatePortfolioRequest $request): JsonResponse
     {
         try {
@@ -193,37 +203,41 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}",
-     *     operationId="getTreasuryPortfolio",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get portfolio details",
-     *     description="Retrieves detailed information about a specific treasury portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/TreasuryPortfolioDetailed")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Portfolio not found"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Forbidden"),
-     *     @OA\Response(response=429, description="Too Many Requests")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}',
+            operationId: 'getTreasuryPortfolio',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get portfolio details',
+            description: 'Retrieves detailed information about a specific treasury portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Portfolio not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden'
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Too Many Requests'
+    )]
     public function show(string $id): JsonResponse
     {
         try {
@@ -262,42 +276,39 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/treasury/portfolios/{id}",
-     *     operationId="updateTreasuryPortfolio",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Update portfolio strategy",
-     *     description="Updates the investment strategy for a treasury portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/UpdateTreasuryPortfolioRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio updated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/TreasuryPortfolio"),
-     *             @OA\Property(property="message", type="string", example="Portfolio strategy updated successfully")
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Bad Request"),
-     *     @OA\Response(response=404, description="Portfolio not found"),
-     *     @OA\Response(response=422, description="Validation failed")
-     * )
-     */
+        #[OA\Put(
+            path: '/api/treasury/portfolios/{id}',
+            operationId: 'updateTreasuryPortfolio',
+            tags: ['Treasury Portfolio'],
+            summary: 'Update portfolio strategy',
+            description: 'Updates the investment strategy for a treasury portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio updated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        new OA\Property(property: 'message', type: 'string', example: 'Portfolio strategy updated successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad Request'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Portfolio not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation failed'
+    )]
     public function update(UpdatePortfolioRequest $request, string $id): JsonResponse
     {
         try {
@@ -343,35 +354,33 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/treasury/portfolios/{id}",
-     *     operationId="deleteTreasuryPortfolio",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Delete portfolio",
-     *     description="Soft deletes a treasury portfolio (sets status to inactive)",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio deleted successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Portfolio deleted successfully")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Portfolio not found"),
-     *     @OA\Response(response=409, description="Conflict - portfolio cannot be deleted")
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/treasury/portfolios/{id}',
+            operationId: 'deleteTreasuryPortfolio',
+            tags: ['Treasury Portfolio'],
+            summary: 'Delete portfolio',
+            description: 'Soft deletes a treasury portfolio (sets status to inactive)',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio deleted successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string', example: 'Portfolio deleted successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Portfolio not found'
+    )]
+    #[OA\Response(
+        response: 409,
+        description: 'Conflict - portfolio cannot be deleted'
+    )]
     public function destroy(string $id): JsonResponse
     {
         try {
@@ -418,39 +427,27 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/treasury/portfolios/{id}/allocate",
-     *     operationId="allocatePortfolioAssets",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Allocate assets to portfolio",
-     *     description="Allocates assets to a treasury portfolio with specified weights",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/AllocateAssetsRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Assets allocated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/TreasuryPortfolio"),
-     *             @OA\Property(property="message", type="string", example="Assets allocated successfully")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/treasury/portfolios/{id}/allocate',
+            operationId: 'allocatePortfolioAssets',
+            tags: ['Treasury Portfolio'],
+            summary: 'Allocate assets to portfolio',
+            description: 'Allocates assets to a treasury portfolio with specified weights',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Assets allocated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        new OA\Property(property: 'message', type: 'string', example: 'Assets allocated successfully'),
+        ])
+    )]
     public function allocate(AllocateAssetsRequest $request, string $id): JsonResponse
     {
         try {
@@ -489,37 +486,29 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/allocations",
-     *     operationId="getPortfolioAllocations",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get current asset allocations",
-     *     description="Retrieves current asset allocation details for a portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Current asset allocations",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="allocations", type="array", @OA\Items(ref="#/components/schemas/AssetAllocation")),
-     *                 @OA\Property(property="total_value", type="number", format="float"),
-     *                 @OA\Property(property="last_updated", type="string", format="date-time")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/allocations',
+            operationId: 'getPortfolioAllocations',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get current asset allocations',
+            description: 'Retrieves current asset allocation details for a portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Current asset allocations',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'allocations', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'total_value', type: 'number', format: 'float'),
+        new OA\Property(property: 'last_updated', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getAllocations(string $id): JsonResponse
     {
         try {
@@ -549,42 +538,30 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/treasury/portfolios/{id}/rebalance",
-     *     operationId="triggerPortfolioRebalancing",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Trigger portfolio rebalancing",
-     *     description="Initiates rebalancing workflow for a treasury portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\RequestBody(
-     *         required=false,
-     *         @OA\JsonContent(ref="#/components/schemas/TriggerRebalancingRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rebalancing workflow started",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="workflow_id", type="string"),
-     *                 @OA\Property(property="status", type="string", example="started")
-     *             ),
-     *             @OA\Property(property="message", type="string", example="Rebalancing workflow started")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/treasury/portfolios/{id}/rebalance',
+            operationId: 'triggerPortfolioRebalancing',
+            tags: ['Treasury Portfolio'],
+            summary: 'Trigger portfolio rebalancing',
+            description: 'Initiates rebalancing workflow for a treasury portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rebalancing workflow started',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'workflow_id', type: 'string'),
+        new OA\Property(property: 'status', type: 'string', example: 'started'),
+        ]),
+        new OA\Property(property: 'message', type: 'string', example: 'Rebalancing workflow started'),
+        ])
+    )]
     public function triggerRebalancing(TriggerRebalancingRequest $request, string $id): JsonResponse
     {
         try {
@@ -628,33 +605,25 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/rebalancing-plan",
-     *     operationId="getRebalancingPlan",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get rebalancing plan",
-     *     description="Calculates and returns the rebalancing plan for a portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rebalancing plan details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/RebalancingPlan")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/rebalancing-plan',
+            operationId: 'getRebalancingPlan',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get rebalancing plan',
+            description: 'Calculates and returns the rebalancing plan for a portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rebalancing plan details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function getRebalancingPlan(string $id): JsonResponse
     {
         try {
@@ -679,38 +648,26 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/treasury/portfolios/{id}/approve-rebalancing",
-     *     operationId="approvePortfolioRebalancing",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Approve rebalancing execution",
-     *     description="Approves and executes a portfolio rebalancing plan",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/ApproveRebalancingRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rebalancing approved and executed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Rebalancing executed successfully")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/treasury/portfolios/{id}/approve-rebalancing',
+            operationId: 'approvePortfolioRebalancing',
+            tags: ['Treasury Portfolio'],
+            summary: 'Approve rebalancing execution',
+            description: 'Approves and executes a portfolio rebalancing plan',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rebalancing approved and executed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string', example: 'Rebalancing executed successfully'),
+        ])
+    )]
     public function approveRebalancing(ApproveRebalancingRequest $request, string $id): JsonResponse
     {
         try {
@@ -748,41 +705,26 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/performance",
-     *     operationId="getPortfolioPerformance",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get performance metrics",
-     *     description="Retrieves performance metrics and analytics for a portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Performance period",
-     *         @OA\Schema(type="string", enum={"1d", "7d", "30d", "90d", "1y", "ytd", "all"}, default="30d")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio performance metrics",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/PortfolioPerformance")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/performance',
+            operationId: 'getPortfolioPerformance',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get performance metrics',
+            description: 'Retrieves performance metrics and analytics for a portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Performance period', schema: new OA\Schema(type: 'string', enum: ['1d', '7d', '30d', '90d', '1y', 'ytd', 'all'], default: '30d')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio performance metrics',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function getPerformance(Request $request, string $id): JsonResponse
     {
         try {
@@ -817,33 +759,25 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/valuation",
-     *     operationId="getPortfolioValuation",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get current portfolio valuation",
-     *     description="Retrieves real-time valuation of portfolio assets",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio valuation details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/PortfolioValuation")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/valuation',
+            operationId: 'getPortfolioValuation',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get current portfolio valuation',
+            description: 'Retrieves real-time valuation of portfolio assets',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio valuation details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function getValuation(string $id): JsonResponse
     {
         try {
@@ -872,41 +806,26 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/history",
-     *     operationId="getPortfolioHistory",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Get portfolio historical data",
-     *     description="Retrieves historical performance and rebalancing data",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         required=false,
-     *         description="Type of historical data",
-     *         @OA\Schema(type="string", enum={"rebalancing", "performance", "all"}, default="all")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio historical data",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", ref="#/components/schemas/PortfolioHistory")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/history',
+            operationId: 'getPortfolioHistory',
+            tags: ['Treasury Portfolio'],
+            summary: 'Get portfolio historical data',
+            description: 'Retrieves historical performance and rebalancing data',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        new OA\Parameter(name: 'type', in: 'query', required: false, description: 'Type of historical data', schema: new OA\Schema(type: 'string', enum: ['rebalancing', 'performance', 'all'], default: 'all')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio historical data',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function getHistory(Request $request, string $id): JsonResponse
     {
         try {
@@ -945,42 +864,30 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/treasury/portfolios/{id}/reports",
-     *     operationId="generatePortfolioReport",
-     *     tags={"Treasury Portfolio"},
-     *     summary="Generate portfolio report",
-     *     description="Generates a comprehensive report for a treasury portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(ref="#/components/schemas/CreateReportRequest")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=202,
-     *         description="Report generation started",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="workflow_id", type="string"),
-     *                 @OA\Property(property="status", type="string", example="started")
-     *             ),
-     *             @OA\Property(property="message", type="string", example="Report generation started")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/treasury/portfolios/{id}/reports',
+            operationId: 'generatePortfolioReport',
+            tags: ['Treasury Portfolio'],
+            summary: 'Generate portfolio report',
+            description: 'Generates a comprehensive report for a treasury portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(type: 'object'))
+        )]
+    #[OA\Response(
+        response: 202,
+        description: 'Report generation started',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'workflow_id', type: 'string'),
+        new OA\Property(property: 'status', type: 'string', example: 'started'),
+        ]),
+        new OA\Property(property: 'message', type: 'string', example: 'Report generation started'),
+        ])
+    )]
     public function generateReport(CreateReportRequest $request, string $id): JsonResponse
     {
         try {
@@ -1026,33 +933,25 @@ class PortfolioController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/treasury/portfolios/{id}/reports",
-     *     operationId="listPortfolioReports",
-     *     tags={"Treasury Portfolio"},
-     *     summary="List portfolio reports",
-     *     description="Retrieves a list of generated reports for a portfolio",
-     *     security={{"sanctum":{"treasury"}}},
-     *
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Portfolio ID",
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of portfolio reports",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/PortfolioReport"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/treasury/portfolios/{id}/reports',
+            operationId: 'listPortfolioReports',
+            tags: ['Treasury Portfolio'],
+            summary: 'List portfolio reports',
+            description: 'Retrieves a list of generated reports for a portfolio',
+            security: [['sanctum' => ['treasury']]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Portfolio ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of portfolio reports',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function listReports(string $id): JsonResponse
     {
         try {

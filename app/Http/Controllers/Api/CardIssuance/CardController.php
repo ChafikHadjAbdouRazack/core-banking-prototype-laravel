@@ -12,15 +12,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use RuntimeException;
 use Throwable;
 
-/**
- * @OA\Tag(
- *     name="Card Issuance",
- *     description="Virtual card provisioning for Apple Pay / Google Pay"
- * )
- */
+#[OA\Tag(
+    name: 'Card Issuance',
+    description: 'Virtual card provisioning for Apple Pay / Google Pay'
+)]
 class CardController extends Controller
 {
     public function __construct(
@@ -31,39 +30,40 @@ class CardController extends Controller
 
     /**
      * Provision a new virtual card for Apple Pay / Google Pay.
-     *
-     * @OA\Post(
-     *     path="/api/v1/cards/provision",
-     *     summary="Provision virtual card for mobile wallet",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id", "wallet_type"},
-     *             @OA\Property(property="device_id", type="string", example="device_abc123"),
-     *             @OA\Property(property="wallet_type", type="string", enum={"apple_pay", "google_pay"}),
-     *             @OA\Property(property="cardholder_name", type="string", example="John Doe")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Provisioning data for mobile wallet",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="card_id", type="string"),
-     *                 @OA\Property(property="encrypted_pass_data", type="string"),
-     *                 @OA\Property(property="activation_data", type="string"),
-     *                 @OA\Property(property="ephemeral_public_key", type="string"),
-     *                 @OA\Property(property="certificate_chain", type="array", @OA\Items(type="string"))
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/cards/provision',
+        summary: 'Provision virtual card for mobile wallet',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'wallet_type'], properties: [
+        new OA\Property(property: 'device_id', type: 'string', example: 'device_abc123'),
+        new OA\Property(property: 'wallet_type', type: 'string', enum: ['apple_pay', 'google_pay']),
+        new OA\Property(property: 'cardholder_name', type: 'string', example: 'John Doe'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Provisioning data for mobile wallet',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'card_id', type: 'string'),
+        new OA\Property(property: 'encrypted_pass_data', type: 'string'),
+        new OA\Property(property: 'activation_data', type: 'string'),
+        new OA\Property(property: 'ephemeral_public_key', type: 'string'),
+        new OA\Property(property: 'certificate_chain', type: 'array', items: new OA\Items(type: 'string')),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function provision(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -123,27 +123,26 @@ class CardController extends Controller
 
     /**
      * Get user's virtual cards.
-     *
-     * @OA\Get(
-     *     path="/api/v1/cards",
-     *     summary="List user's virtual cards",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of cards",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="card_id", type="string"),
-     *                 @OA\Property(property="last4", type="string", example="4242"),
-     *                 @OA\Property(property="network", type="string", example="visa"),
-     *                 @OA\Property(property="status", type="string", example="active")
-     *             ))
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/cards',
+        summary: 'List user\'s virtual cards',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of cards',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'card_id', type: 'string'),
+        new OA\Property(property: 'last4', type: 'string', example: '4242'),
+        new OA\Property(property: 'network', type: 'string', example: 'visa'),
+        new OA\Property(property: 'status', type: 'string', example: 'active'),
+        ])),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -174,39 +173,45 @@ class CardController extends Controller
 
     /**
      * Create a new virtual card.
-     *
-     * @OA\Post(
-     *     path="/api/v1/cards",
-     *     summary="Create a new virtual card",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             @OA\Property(property="cardholder_name", type="string", example="John Doe"),
-     *             @OA\Property(property="currency", type="string", example="USD"),
-     *             @OA\Property(property="network", type="string", enum={"visa", "mastercard"}, example="visa"),
-     *             @OA\Property(property="label", type="string", example="My Travel Card", maxLength=50)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Card created",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="card_token", type="string"),
-     *                 @OA\Property(property="last4", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="status", type="string"),
-     *                 @OA\Property(property="label", type="string", nullable=true)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Card creation failed"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/cards',
+        summary: 'Create a new virtual card',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'cardholder_name', type: 'string', example: 'John Doe'),
+        new OA\Property(property: 'currency', type: 'string', example: 'USD'),
+        new OA\Property(property: 'network', type: 'string', enum: ['visa', 'mastercard'], example: 'visa'),
+        new OA\Property(property: 'label', type: 'string', example: 'My Travel Card', maxLength: 50),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Card created',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'card_token', type: 'string'),
+        new OA\Property(property: 'last4', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'label', type: 'string', nullable: true),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Card creation failed'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -263,24 +268,28 @@ class CardController extends Controller
 
     /**
      * Get a specific card.
-     *
-     * @OA\Get(
-     *     path="/api/v1/cards/{cardId}",
-     *     summary="Get a specific virtual card",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Card details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Card not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/cards/{cardId}',
+        summary: 'Get a specific virtual card',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Card not found'
+    )]
     public function show(Request $request, string $cardId): JsonResponse
     {
         try {
@@ -313,65 +322,86 @@ class CardController extends Controller
 
     /**
      * Get transactions for a card.
-     *
-     * @OA\Get(
-     *     path="/api/v1/cards/{cardId}/transactions",
-     *     summary="Get transactions for a virtual card",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="limit", in="query", required=false, @OA\Schema(type="integer", default=20, maximum=100)),
-     *     @OA\Parameter(name="cursor", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Card transactions",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="id", type="string"),
-     *                 @OA\Property(property="amount", type="number"),
-     *                 @OA\Property(property="currency", type="string"),
-     *                 @OA\Property(property="merchant", type="string"),
-     *                 @OA\Property(property="category", type="string"),
-     *                 @OA\Property(property="status", type="string"),
-     *                 @OA\Property(property="timestamp", type="string", format="date-time")
-     *             )),
-     *             @OA\Property(property="pagination", type="object",
-     *                 @OA\Property(property="next_cursor", type="string", nullable=true),
-     *                 @OA\Property(property="has_more", type="boolean"),
-     *                 @OA\Property(property="total", type="integer")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/cards/{cardId}/transactions',
+        summary: 'Get transactions for a virtual card',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 20, maximum: 100)),
+        new OA\Parameter(name: 'cursor', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card transactions',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'string'),
+        new OA\Property(property: 'amount', type: 'number'),
+        new OA\Property(property: 'currency', type: 'string'),
+        new OA\Property(property: 'merchant', type: 'string'),
+        new OA\Property(property: 'category', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        ])),
+        new OA\Property(property: 'pagination', type: 'object', properties: [
+        new OA\Property(property: 'next_cursor', type: 'string', nullable: true),
+        new OA\Property(property: 'has_more', type: 'boolean'),
+        new OA\Property(property: 'total', type: 'integer'),
+        ]),
+        ])
+    )]
     public function transactions(Request $request, string $cardId): JsonResponse
     {
-        // TODO: Replace with real Marqeta transaction history when integration matures
+        $limit = min((int) $request->query('limit', '20'), 100);
+        $cursor = $request->query('cursor');
+
+        $result = $this->provisioningService->getTransactions(
+            $cardId,
+            $limit,
+            is_string($cursor) ? $cursor : null,
+        );
+
+        $transactions = array_map(
+            fn ($tx) => $tx->toArray(),
+            $result['transactions'],
+        );
+
         return response()->json([
             'success'    => true,
-            'data'       => [],
+            'data'       => $transactions,
             'pagination' => [
-                'next_cursor' => null,
-                'has_more'    => false,
-                'total'       => 0,
+                'next_cursor' => $result['next_cursor'],
+                'has_more'    => $result['next_cursor'] !== null,
+                'total'       => count($transactions),
             ],
         ]);
     }
 
     /**
      * Freeze a virtual card.
-     *
-     * @OA\Post(
-     *     path="/api/v1/cards/{cardId}/freeze",
-     *     summary="Freeze a virtual card",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Card frozen"),
-     *     @OA\Response(response=404, description="Card not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/cards/{cardId}/freeze',
+        summary: 'Freeze a virtual card',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card frozen'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Card not found'
+    )]
     public function freeze(Request $request, string $cardId): JsonResponse
     {
         try {
@@ -394,17 +424,24 @@ class CardController extends Controller
 
     /**
      * Unfreeze a virtual card.
-     *
-     * @OA\Delete(
-     *     path="/api/v1/cards/{cardId}/freeze",
-     *     summary="Unfreeze a virtual card",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Card unfrozen"),
-     *     @OA\Response(response=404, description="Card not found")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/v1/cards/{cardId}/freeze',
+        summary: 'Unfreeze a virtual card',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card unfrozen'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Card not found'
+    )]
     public function unfreeze(Request $request, string $cardId): JsonResponse
     {
         try {
@@ -427,28 +464,40 @@ class CardController extends Controller
 
     /**
      * Cancel a virtual card (requires biometric authentication).
-     *
-     * @OA\Delete(
-     *     path="/api/v1/cards/{cardId}",
-     *     summary="Cancel a virtual card permanently (requires biometric auth)",
-     *     tags={"Card Issuance"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="cardId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"biometric_token"},
-     *             @OA\Property(property="biometric_token", type="string", minLength=32, maxLength=2048, description="Biometric JWT or demo HMAC token"),
-     *             @OA\Property(property="reason", type="string", example="User requested cancellation")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Card cancelled"),
-     *     @OA\Response(response=403, description="Biometric verification failed"),
-     *     @OA\Response(response=404, description="Card not found"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=503, description="Biometric service unavailable")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/v1/cards/{cardId}',
+        summary: 'Cancel a virtual card permanently (requires biometric auth)',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['biometric_token'], properties: [
+        new OA\Property(property: 'biometric_token', type: 'string', minLength: 32, maxLength: 2048, description: 'Biometric JWT or demo HMAC token'),
+        new OA\Property(property: 'reason', type: 'string', example: 'User requested cancellation'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card cancelled'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Biometric verification failed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Card not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 503,
+        description: 'Biometric service unavailable'
+    )]
     public function cancel(Request $request, string $cardId): JsonResponse
     {
         $validated = $request->validate([

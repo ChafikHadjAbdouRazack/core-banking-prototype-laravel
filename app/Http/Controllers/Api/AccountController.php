@@ -20,6 +20,7 @@ use App\Rules\NoSqlInjection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Workflow\WorkflowStub;
 
 class AccountController extends Controller
@@ -30,26 +31,21 @@ class AccountController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/accounts",
-     *     operationId="listAccounts",
-     *     tags={"Accounts"},
-     *     summary="List accounts",
-     *     description="Retrieves a list of accounts for the authenticated user",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of accounts",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Account"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/accounts',
+            operationId: 'listAccounts',
+            tags: ['Accounts'],
+            summary: 'List accounts',
+            description: 'Retrieves a list of accounts for the authenticated user',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of accounts',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Account')),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         // Get the authenticated user
@@ -79,46 +75,32 @@ class AccountController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/accounts",
-     *     operationId="createAccount",
-     *     tags={"Accounts"},
-     *     summary="Create a new account",
-     *     description="Creates a new bank account for a user with an optional initial balance",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"user_uuid", "name"},
-     *
-     * @OA\Property(property="user_uuid",                type="string", format="uuid", example="660e8400-e29b-41d4-a716-446655440000"),
-     * @OA\Property(property="name",                     type="string", example="Savings Account", maxLength=255),
-     * @OA\Property(property="initial_balance",          type="integer", example=10000, minimum=0, description="Initial balance in cents")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Account created successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                     ref="#/components/schemas/Account"),
-     * @OA\Property(property="message",                  type="string", example="Account created successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/accounts',
+            operationId: 'createAccount',
+            tags: ['Accounts'],
+            summary: 'Create a new account',
+            description: 'Creates a new bank account for a user with an optional initial balance',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['user_uuid', 'name'], properties: [
+        new OA\Property(property: 'user_uuid', type: 'string', format: 'uuid', example: '660e8400-e29b-41d4-a716-446655440000'),
+        new OA\Property(property: 'name', type: 'string', example: 'Savings Account', maxLength: 255),
+        new OA\Property(property: 'initial_balance', type: 'integer', example: 10000, minimum: 0, description: 'Initial balance in cents'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Account created successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', ref: '#/components/schemas/Account'),
+        new OA\Property(property: 'message', type: 'string', example: 'Account created successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -191,42 +173,29 @@ class AccountController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/accounts/{uuid}",
-     *     operationId="getAccount",
-     *     tags={"Accounts"},
-     *     summary="Get account details",
-     *     description="Retrieves detailed information about a specific account",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         description="Account UUID",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",                         format="uuid")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Account details",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                     ref="#/components/schemas/Account")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Account not found",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/accounts/{uuid}',
+            operationId: 'getAccount',
+            tags: ['Accounts'],
+            summary: 'Get account details',
+            description: 'Retrieves detailed information about a specific account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', description: 'Account UUID', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Account details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', ref: '#/components/schemas/Account'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Account not found',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function show(Request $request, string $uuid): JsonResponse
     {
         // Try to get from cache first
@@ -256,49 +225,34 @@ class AccountController extends Controller
         );
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/accounts/{uuid}",
-     *     operationId="deleteAccount",
-     *     tags={"Accounts"},
-     *     summary="Delete an account",
-     *     description="Deletes an account. Account must have zero balance and not be frozen.",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         description="Account UUID",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",                         format="uuid")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Account deletion initiated",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                  type="string", example="Account deletion initiated")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Cannot delete account",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Account not found",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/accounts/{uuid}',
+            operationId: 'deleteAccount',
+            tags: ['Accounts'],
+            summary: 'Delete an account',
+            description: 'Deletes an account. Account must have zero balance and not be frozen.',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', description: 'Account UUID', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Account deletion initiated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Account deletion initiated'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Cannot delete account',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Account not found',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function destroy(Request $request, string $uuid): JsonResponse
     {
         $account = Account::where('uuid', $uuid)->firstOrFail();
@@ -345,53 +299,33 @@ class AccountController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/accounts/{uuid}/freeze",
-     *     operationId="freezeAccount",
-     *     tags={"Accounts"},
-     *     summary="Freeze an account",
-     *     description="Freezes an account to prevent any transactions",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         description="Account UUID",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",                         format="uuid")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"reason"},
-     *
-     * @OA\Property(property="reason",                   type="string", example="Suspicious activity detected", maxLength=255),
-     * @OA\Property(property="authorized_by",            type="string", example="admin@example.com", maxLength=255)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Account frozen successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                  type="string", example="Account frozen successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Account already frozen",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/accounts/{uuid}/freeze',
+            operationId: 'freezeAccount',
+            tags: ['Accounts'],
+            summary: 'Freeze an account',
+            description: 'Freezes an account to prevent any transactions',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', description: 'Account UUID', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['reason'], properties: [
+        new OA\Property(property: 'reason', type: 'string', example: 'Suspicious activity detected', maxLength: 255),
+        new OA\Property(property: 'authorized_by', type: 'string', example: 'admin@example.com', maxLength: 255),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Account frozen successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Account frozen successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Account already frozen',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function freeze(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate(
@@ -436,53 +370,33 @@ class AccountController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/accounts/{uuid}/unfreeze",
-     *     operationId="unfreezeAccount",
-     *     tags={"Accounts"},
-     *     summary="Unfreeze an account",
-     *     description="Unfreezes a previously frozen account",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         description="Account UUID",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",                         format="uuid")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"reason"},
-     *
-     * @OA\Property(property="reason",                   type="string", example="Investigation completed", maxLength=255),
-     * @OA\Property(property="authorized_by",            type="string", example="admin@example.com", maxLength=255)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Account unfrozen successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                  type="string", example="Account unfrozen successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Account not frozen",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/Error")
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/accounts/{uuid}/unfreeze',
+            operationId: 'unfreezeAccount',
+            tags: ['Accounts'],
+            summary: 'Unfreeze an account',
+            description: 'Unfreezes a previously frozen account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', description: 'Account UUID', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['reason'], properties: [
+        new OA\Property(property: 'reason', type: 'string', example: 'Investigation completed', maxLength: 255),
+        new OA\Property(property: 'authorized_by', type: 'string', example: 'admin@example.com', maxLength: 255),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Account unfrozen successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Account unfrozen successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Account not frozen',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
     public function unfreeze(Request $request, string $uuid): JsonResponse
     {
         $validated = $request->validate(

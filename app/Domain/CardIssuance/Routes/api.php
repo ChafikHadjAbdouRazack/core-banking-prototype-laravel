@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/cards')->name('api.cards.')->group(function () {
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [CardController::class, 'index'])->name('index');
         Route::post('/', [CardController::class, 'store'])
             ->middleware('transaction.rate_limit:card_provision')

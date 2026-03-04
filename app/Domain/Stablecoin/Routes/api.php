@@ -26,7 +26,7 @@ Route::prefix('v2')->group(function () {
     });
 
     // Stablecoin operations endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:stablecoins'])->prefix('stablecoin-operations')->group(function () {
+    Route::middleware(['auth:sanctum', 'sub_product:stablecoins'])->prefix('stablecoin-operations')->group(function () {
         Route::post('/mint', [StablecoinOperationsController::class, 'mint'])->middleware('idempotency');
         Route::post('/burn', [StablecoinOperationsController::class, 'burn'])->middleware('idempotency');
         Route::post('/add-collateral', [StablecoinOperationsController::class, 'addCollateral'])->middleware('idempotency');

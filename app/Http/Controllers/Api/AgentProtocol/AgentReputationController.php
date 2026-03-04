@@ -13,14 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Reputation",
- *     description="Agent reputation and trust management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Reputation',
+    description: 'Agent reputation and trust management endpoints'
+)]
 class AgentReputationController extends Controller
 {
     public function __construct(
@@ -29,37 +27,34 @@ class AgentReputationController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/reputation",
-     *     operationId="getAgentReputation",
-     *     tags={"Agent Protocol - Reputation"},
-     *     summary="Get agent reputation score and details",
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Reputation details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="agent_did", type="string"),
-     *                 @OA\Property(property="score", type="number", example=85.5),
-     *                 @OA\Property(property="trust_level", type="string", example="trusted"),
-     *                 @OA\Property(property="total_transactions", type="integer", example=150),
-     *                 @OA\Property(property="success_rate", type="number", example=98.5),
-     *                 @OA\Property(property="dispute_count", type="integer", example=2)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/reputation',
+            operationId: 'getAgentReputation',
+            tags: ['Agent Protocol - Reputation'],
+            summary: 'Get agent reputation score and details',
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Reputation details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'agent_did', type: 'string'),
+        new OA\Property(property: 'score', type: 'number', example: 85.5),
+        new OA\Property(property: 'trust_level', type: 'string', example: 'trusted'),
+        new OA\Property(property: 'total_transactions', type: 'integer', example: 150),
+        new OA\Property(property: 'success_rate', type: 'number', example: 98.5),
+        new OA\Property(property: 'dispute_count', type: 'integer', example: 2),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function show(string $did): JsonResponse
     {
         try {
@@ -132,48 +127,44 @@ class AgentReputationController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/reputation/feedback",
-     *     operationId="submitAgentFeedback",
-     *     tags={"Agent Protocol - Reputation"},
-     *     summary="Submit feedback about an agent transaction",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID to review",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"reviewer_did", "transaction_id", "outcome"},
-     *             @OA\Property(property="reviewer_did", type="string", example="did:finaegis:agent:reviewer123"),
-     *             @OA\Property(property="transaction_id", type="string", example="txn-uuid-here"),
-     *             @OA\Property(property="outcome", type="string", enum={"success", "failed", "cancelled", "timeout"}, example="success"),
-     *             @OA\Property(property="rating", type="integer", minimum=1, maximum=5, example=5),
-     *             @OA\Property(property="comment", type="string", example="Fast and reliable service"),
-     *             @OA\Property(property="transaction_value", type="number", example=1000.00)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Feedback submitted",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="new_score", type="number"),
-     *                 @OA\Property(property="score_change", type="number"),
-     *                 @OA\Property(property="new_trust_level", type="string")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/reputation/feedback',
+            operationId: 'submitAgentFeedback',
+            tags: ['Agent Protocol - Reputation'],
+            summary: 'Submit feedback about an agent transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID to review', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['reviewer_did', 'transaction_id', 'outcome'], properties: [
+        new OA\Property(property: 'reviewer_did', type: 'string', example: 'did:finaegis:agent:reviewer123'),
+        new OA\Property(property: 'transaction_id', type: 'string', example: 'txn-uuid-here'),
+        new OA\Property(property: 'outcome', type: 'string', enum: ['success', 'failed', 'cancelled', 'timeout'], example: 'success'),
+        new OA\Property(property: 'rating', type: 'integer', minimum: 1, maximum: 5, example: 5),
+        new OA\Property(property: 'comment', type: 'string', example: 'Fast and reliable service'),
+        new OA\Property(property: 'transaction_value', type: 'number', example: 1000.00),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Feedback submitted',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'new_score', type: 'number'),
+        new OA\Property(property: 'score_change', type: 'number'),
+        new OA\Property(property: 'new_trust_level', type: 'string'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function submitFeedback(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -287,36 +278,25 @@ class AgentReputationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/reputation/history",
-     *     operationId="getAgentReputationHistory",
-     *     tags={"Agent Protocol - Reputation"},
-     *     summary="Get agent reputation history",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of history entries",
-     *         @OA\Schema(type="integer", default=20)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Reputation history",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/reputation/history',
+            operationId: 'getAgentReputationHistory',
+            tags: ['Agent Protocol - Reputation'],
+            summary: 'Get agent reputation history',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of history entries', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Reputation history',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function history(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -368,34 +348,24 @@ class AgentReputationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/reputation/leaderboard",
-     *     operationId="getReputationLeaderboard",
-     *     tags={"Agent Protocol - Reputation"},
-     *     summary="Get top-rated agents",
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of agents",
-     *         @OA\Schema(type="integer", default=10)
-     *     ),
-     *     @OA\Parameter(
-     *         name="capability",
-     *         in="query",
-     *         description="Filter by capability",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Top agents by reputation",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/reputation/leaderboard',
+            operationId: 'getReputationLeaderboard',
+            tags: ['Agent Protocol - Reputation'],
+            summary: 'Get top-rated agents',
+            parameters: [
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of agents', schema: new OA\Schema(type: 'integer', default: 10)),
+        new OA\Parameter(name: 'capability', in: 'query', description: 'Filter by capability', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Top agents by reputation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function leaderboard(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -429,41 +399,29 @@ class AgentReputationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{agentA}/trust/{agentB}",
-     *     operationId="evaluateTrustRelationship",
-     *     tags={"Agent Protocol - Reputation"},
-     *     summary="Evaluate trust relationship between two agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="agentA",
-     *         in="path",
-     *         required=true,
-     *         description="First agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="agentB",
-     *         in="path",
-     *         required=true,
-     *         description="Second agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Trust evaluation",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="trust_score", type="number"),
-     *                 @OA\Property(property="recommended_escrow", type="boolean"),
-     *                 @OA\Property(property="max_transaction_value", type="number")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{agentA}/trust/{agentB}',
+            operationId: 'evaluateTrustRelationship',
+            tags: ['Agent Protocol - Reputation'],
+            summary: 'Evaluate trust relationship between two agents',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'agentA', in: 'path', required: true, description: 'First agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'agentB', in: 'path', required: true, description: 'Second agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Trust evaluation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'trust_score', type: 'number'),
+        new OA\Property(property: 'recommended_escrow', type: 'boolean'),
+        new OA\Property(property: 'max_transaction_value', type: 'number'),
+        ]),
+        ])
+    )]
     public function evaluateTrust(string $agentA, string $agentB): JsonResponse
     {
         try {

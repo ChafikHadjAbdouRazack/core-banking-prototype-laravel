@@ -7,29 +7,31 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use OpenApi\Attributes as OA;
 use Spatie\Permission\Models\Role;
 
-/**
- * @OA\Tag(
- *     name="Team Members",
- *     description="Team member management and role assignment"
- * )
- */
+#[OA\Tag(
+    name: 'Team Members',
+    description: 'Team member management and role assignment'
+)]
 class TeamMemberController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/team/members",
-     *     operationId="teamMembersIndex",
-     *     tags={"Team Members"},
-     *     summary="List team members",
-     *     description="Returns the team members management page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/team/members',
+            operationId: 'teamMembersIndex',
+            tags: ['Team Members'],
+            summary: 'List team members',
+            description: 'Returns the team members management page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Team $team)
     {
         $this->authorize('update', $team);
@@ -46,19 +48,22 @@ class TeamMemberController extends Controller
         return view('teams.members.index', compact('team', 'members', 'teamRoles', 'availableRoles'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/team/members/create",
-     *     operationId="teamMembersCreate",
-     *     tags={"Team Members"},
-     *     summary="Show invite member form",
-     *     description="Shows the form to invite a new team member",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/team/members/create',
+            operationId: 'teamMembersCreate',
+            tags: ['Team Members'],
+            summary: 'Show invite member form',
+            description: 'Shows the form to invite a new team member',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create(Team $team)
     {
         $this->authorize('update', $team);
@@ -77,19 +82,22 @@ class TeamMemberController extends Controller
         return view('teams.members.create', compact('team', 'availableRoles'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/team/members",
-     *     operationId="teamMembersStore",
-     *     tags={"Team Members"},
-     *     summary="Invite team member",
-     *     description="Invites a new member to the team",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/team/members',
+            operationId: 'teamMembersStore',
+            tags: ['Team Members'],
+            summary: 'Invite team member',
+            description: 'Invites a new member to the team',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request, Team $team)
     {
         $this->authorize('update', $team);
@@ -138,21 +146,25 @@ class TeamMemberController extends Controller
             ->with('success', 'Team member added successfully.');
     }
 
-    /**
-     * @OA\Get(
-     *     path="/team/members/{id}/edit",
-     *     operationId="teamMembersEdit",
-     *     tags={"Team Members"},
-     *     summary="Show edit member form",
-     *     description="Shows the form to edit a team member",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/team/members/{id}/edit',
+            operationId: 'teamMembersEdit',
+            tags: ['Team Members'],
+            summary: 'Show edit member form',
+            description: 'Shows the form to edit a team member',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function edit(Team $team, User $user)
     {
         $this->authorize('update', $team);
@@ -173,21 +185,25 @@ class TeamMemberController extends Controller
         return view('teams.members.edit', compact('team', 'user', 'teamRole', 'availableRoles'));
     }
 
-    /**
-     * @OA\Put(
-     *     path="/team/members/{id}",
-     *     operationId="teamMembersUpdate",
-     *     tags={"Team Members"},
-     *     summary="Update team member",
-     *     description="Updates a team member role or details",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Put(
+            path: '/team/members/{id}',
+            operationId: 'teamMembersUpdate',
+            tags: ['Team Members'],
+            summary: 'Update team member',
+            description: 'Updates a team member role or details',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function update(Request $request, Team $team, User $user)
     {
         $this->authorize('update', $team);
@@ -217,21 +233,25 @@ class TeamMemberController extends Controller
             ->with('success', 'Team member role updated successfully.');
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/team/members/{id}",
-     *     operationId="teamMembersDestroy",
-     *     tags={"Team Members"},
-     *     summary="Remove team member",
-     *     description="Removes a member from the team",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Delete(
+            path: '/team/members/{id}',
+            operationId: 'teamMembersDestroy',
+            tags: ['Team Members'],
+            summary: 'Remove team member',
+            description: 'Removes a member from the team',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function destroy(Team $team, User $user)
     {
         $this->authorize('update', $team);

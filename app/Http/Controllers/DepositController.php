@@ -9,13 +9,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Deposits",
- *     description="Fiat deposit and payment method management"
- * )
- */
+#[OA\Tag(
+    name: 'Deposits',
+    description: 'Fiat deposit and payment method management'
+)]
 class DepositController extends Controller
 {
     protected PaymentGatewayService $paymentGateway;
@@ -28,19 +27,22 @@ class DepositController extends Controller
         $this->paymentService = $paymentService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/deposits/create",
-     *     operationId="depositsCreate",
-     *     tags={"Deposits"},
-     *     summary="Show deposit form",
-     *     description="Shows the deposit initiation form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/deposits/create',
+            operationId: 'depositsCreate',
+            tags: ['Deposits'],
+            summary: 'Show deposit form',
+            description: 'Shows the deposit initiation form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create()
     {
         $user = Auth::user();
@@ -65,19 +67,22 @@ class DepositController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/deposits",
-     *     operationId="depositsStore",
-     *     tags={"Deposits"},
-     *     summary="Initiate deposit",
-     *     description="Initiates a new fiat deposit",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/deposits',
+            operationId: 'depositsStore',
+            tags: ['Deposits'],
+            summary: 'Initiate deposit',
+            description: 'Initiates a new fiat deposit',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request)
     {
         $request->validate(
@@ -115,21 +120,25 @@ class DepositController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/deposits/{id}/confirm",
-     *     operationId="depositsConfirm",
-     *     tags={"Deposits"},
-     *     summary="Confirm deposit",
-     *     description="Confirms a pending deposit",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/deposits/{id}/confirm',
+            operationId: 'depositsConfirm',
+            tags: ['Deposits'],
+            summary: 'Confirm deposit',
+            description: 'Confirms a pending deposit',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function confirm(Request $request)
     {
         $request->validate(
@@ -149,19 +158,22 @@ class DepositController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/deposits/simulate",
-     *     operationId="depositsSimulateDeposit",
-     *     tags={"Deposits"},
-     *     summary="Simulate deposit",
-     *     description="Simulates a deposit for testing",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/deposits/simulate',
+            operationId: 'depositsSimulateDeposit',
+            tags: ['Deposits'],
+            summary: 'Simulate deposit',
+            description: 'Simulates a deposit for testing',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function simulateDeposit(Request $request)
     {
         // Only allow in demo environment or sandbox mode
@@ -209,19 +221,22 @@ class DepositController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/deposits/payment-methods",
-     *     operationId="depositsAddPaymentMethod",
-     *     tags={"Deposits"},
-     *     summary="Add payment method",
-     *     description="Adds a new payment method",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/deposits/payment-methods',
+            operationId: 'depositsAddPaymentMethod',
+            tags: ['Deposits'],
+            summary: 'Add payment method',
+            description: 'Adds a new payment method',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function addPaymentMethod(Request $request)
     {
         $request->validate(
@@ -252,21 +267,25 @@ class DepositController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/deposits/payment-methods/{id}",
-     *     operationId="depositsRemovePaymentMethod",
-     *     tags={"Deposits"},
-     *     summary="Remove payment method",
-     *     description="Removes a payment method",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Delete(
+            path: '/deposits/payment-methods/{id}',
+            operationId: 'depositsRemovePaymentMethod',
+            tags: ['Deposits'],
+            summary: 'Remove payment method',
+            description: 'Removes a payment method',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function removePaymentMethod(Request $request, string $paymentMethodId)
     {
         try {

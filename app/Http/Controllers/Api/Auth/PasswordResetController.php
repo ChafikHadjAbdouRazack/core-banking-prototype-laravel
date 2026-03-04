@@ -12,57 +12,42 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
 class PasswordResetController extends Controller
 {
     /**
      * Send a password reset link to the given user.
-     *
-     * @OA\Post(
-     *     path="/api/auth/forgot-password",
-     *     operationId="forgotPassword",
-     *     tags={"Authentication"},
-     *     summary="Request password reset link",
-     *     description="Send a password reset link to the user's email address",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"email"},
-     *
-     * @OA\Property(property="email",                              type="string", format="email", example="user@example.com")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Password reset link sent",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                            type="string", example="If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=429,
-     *         description="Too many requests",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                            type="string", example="Too many requests. Please try again later.")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/forgot-password',
+        operationId: 'forgotPassword',
+        tags: ['Authentication'],
+        summary: 'Request password reset link',
+        description: 'Send a password reset link to the user\'s email address',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['email'], properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Password reset link sent',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes.'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Too many requests',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Too many requests. Please try again later.'),
+        ])
+    )]
     public function forgotPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -118,45 +103,32 @@ class PasswordResetController extends Controller
 
     /**
      * Reset the given user's password.
-     *
-     * @OA\Post(
-     *     path="/api/auth/reset-password",
-     *     operationId="resetPassword",
-     *     tags={"Authentication"},
-     *     summary="Reset password",
-     *     description="Reset user password using token received via email",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"email", "password", "password_confirmation", "token"},
-     *
-     * @OA\Property(property="email",                              type="string", format="email", example="user@example.com"),
-     * @OA\Property(property="password",                           type="string", format="password", example="newpassword123"),
-     * @OA\Property(property="password_confirmation",              type="string", format="password", example="newpassword123"),
-     * @OA\Property(property="token",                              type="string", example="reset-token-here")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Password reset successful",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",                            type="string", example="Your password has been reset.")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error or invalid token",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/reset-password',
+        operationId: 'resetPassword',
+        tags: ['Authentication'],
+        summary: 'Reset password',
+        description: 'Reset user password using token received via email',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['email', 'password', 'password_confirmation', 'token'], properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'newpassword123'),
+        new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'newpassword123'),
+        new OA\Property(property: 'token', type: 'string', example: 'reset-token-here'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Password reset successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Your password has been reset.'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error or invalid token',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')
+    )]
     public function resetPassword(Request $request)
     {
         $request->validate(

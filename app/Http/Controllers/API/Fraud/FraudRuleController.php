@@ -7,28 +7,30 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Fraud Rules",
- *     description="Fraud rule management, testing, import/export"
- * )
- */
+#[OA\Tag(
+    name: 'Fraud Rules',
+    description: 'Fraud rule management, testing, import/export'
+)]
 class FraudRuleController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/rules",
-     *     operationId="fraudRulesIndex",
-     *     tags={"Fraud Rules"},
-     *     summary="List fraud rules",
-     *     description="Returns paginated list of fraud rules with filters",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/rules',
+            operationId: 'fraudRulesIndex',
+            tags: ['Fraud Rules'],
+            summary: 'List fraud rules',
+            description: 'Returns paginated list of fraud rules with filters',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request): JsonResponse
     {
         $request->validate(
@@ -77,21 +79,25 @@ class FraudRuleController extends Controller
         return response()->json($rules);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/rules/{rule}",
-     *     operationId="fraudRulesShow",
-     *     tags={"Fraud Rules"},
-     *     summary="Get fraud rule details",
-     *     description="Returns detailed information about a fraud rule",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="rule", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/rules/{rule}',
+            operationId: 'fraudRulesShow',
+            tags: ['Fraud Rules'],
+            summary: 'Get fraud rule details',
+            description: 'Returns detailed information about a fraud rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'rule', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
@@ -104,19 +110,22 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/rules",
-     *     operationId="fraudRulesStore",
-     *     tags={"Fraud Rules"},
-     *     summary="Create fraud rule",
-     *     description="Creates a new fraud detection rule",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/rules',
+            operationId: 'fraudRulesStore',
+            tags: ['Fraud Rules'],
+            summary: 'Create fraud rule',
+            description: 'Creates a new fraud detection rule',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request): JsonResponse
     {
         $request->validate(
@@ -156,21 +165,25 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/v2/fraud/rules/{rule}",
-     *     operationId="fraudRulesUpdate",
-     *     tags={"Fraud Rules"},
-     *     summary="Update fraud rule",
-     *     description="Updates an existing fraud detection rule",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="rule", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Put(
+            path: '/api/v2/fraud/rules/{rule}',
+            operationId: 'fraudRulesUpdate',
+            tags: ['Fraud Rules'],
+            summary: 'Update fraud rule',
+            description: 'Updates an existing fraud detection rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'rule', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function update(Request $request, string $ruleId): JsonResponse
     {
         $request->validate(
@@ -210,21 +223,25 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/v2/fraud/rules/{rule}",
-     *     operationId="fraudRulesDestroy",
-     *     tags={"Fraud Rules"},
-     *     summary="Delete fraud rule",
-     *     description="Deletes a fraud detection rule",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="rule", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/v2/fraud/rules/{rule}',
+            operationId: 'fraudRulesDestroy',
+            tags: ['Fraud Rules'],
+            summary: 'Delete fraud rule',
+            description: 'Deletes a fraud detection rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'rule', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function destroy(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
@@ -244,21 +261,25 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/rules/{rule}/toggle",
-     *     operationId="fraudRulesToggleStatus",
-     *     tags={"Fraud Rules"},
-     *     summary="Toggle rule status",
-     *     description="Toggles the active status of a fraud rule",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="rule", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/rules/{rule}/toggle',
+            operationId: 'fraudRulesToggleStatus',
+            tags: ['Fraud Rules'],
+            summary: 'Toggle rule status',
+            description: 'Toggles the active status of a fraud rule',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'rule', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function toggleStatus(string $ruleId): JsonResponse
     {
         $rule = FraudRule::findOrFail($ruleId);
@@ -279,21 +300,25 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/rules/{rule}/test",
-     *     operationId="fraudRulesTest",
-     *     tags={"Fraud Rules"},
-     *     summary="Test fraud rule",
-     *     description="Tests a fraud rule against provided context",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="rule", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/rules/{rule}/test',
+            operationId: 'fraudRulesTest',
+            tags: ['Fraud Rules'],
+            summary: 'Test fraud rule',
+            description: 'Tests a fraud rule against provided context',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'rule', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function test(Request $request, string $ruleId): JsonResponse
     {
         $request->validate(
@@ -325,19 +350,22 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/rules/statistics",
-     *     operationId="fraudRulesStatistics",
-     *     tags={"Fraud Rules"},
-     *     summary="Get rule statistics",
-     *     description="Returns fraud rule statistics",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/rules/statistics',
+            operationId: 'fraudRulesStatistics',
+            tags: ['Fraud Rules'],
+            summary: 'Get rule statistics',
+            description: 'Returns fraud rule statistics',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function statistics(Request $request): JsonResponse
     {
         $request->validate(
@@ -378,19 +406,22 @@ class FraudRuleController extends Controller
         return response()->json(['statistics' => $statistics]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/rules/create-defaults",
-     *     operationId="fraudRulesCreateDefaults",
-     *     tags={"Fraud Rules"},
-     *     summary="Create default rules",
-     *     description="Creates default fraud detection rules",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/rules/create-defaults',
+            operationId: 'fraudRulesCreateDefaults',
+            tags: ['Fraud Rules'],
+            summary: 'Create default rules',
+            description: 'Creates default fraud detection rules',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function createDefaults(): JsonResponse
     {
         // Ensure user can create fraud rules
@@ -410,19 +441,22 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/rules/export/all",
-     *     operationId="fraudRulesExport",
-     *     tags={"Fraud Rules"},
-     *     summary="Export rules",
-     *     description="Exports all fraud rules as JSON",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/rules/export/all',
+            operationId: 'fraudRulesExport',
+            tags: ['Fraud Rules'],
+            summary: 'Export rules',
+            description: 'Exports all fraud rules as JSON',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function export(): JsonResponse
     {
         // Ensure user can export fraud rules
@@ -457,19 +491,22 @@ class FraudRuleController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/rules/import",
-     *     operationId="fraudRulesImport",
-     *     tags={"Fraud Rules"},
-     *     summary="Import rules",
-     *     description="Imports fraud rules from JSON",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/rules/import',
+            operationId: 'fraudRulesImport',
+            tags: ['Fraud Rules'],
+            summary: 'Import rules',
+            description: 'Imports fraud rules from JSON',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function import(Request $request): JsonResponse
     {
         $request->validate(

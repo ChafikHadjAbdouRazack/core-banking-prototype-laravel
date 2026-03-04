@@ -11,6 +11,10 @@ Route::prefix('v1/app')->name('api.app.')->group(function () {
     Route::get('/status', [MobileController::class, 'getAppStatus'])->name('status');
 });
 
+Route::prefix('v1/mobile')->name('api.mobile.v1.')->group(function () {
+    Route::get('/ssl-pins', [MobileController::class, 'getSslPins'])->name('ssl-pins');
+});
+
 Route::prefix('mobile')->name('api.mobile.')->group(function () {
     // Public endpoints (no auth required)
     Route::get('/config', [MobileController::class, 'getConfig'])->name('config');
@@ -26,7 +30,7 @@ Route::prefix('mobile')->name('api.mobile.')->group(function () {
         });
 
     // Protected endpoints (require authentication)
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         // Device management
         Route::prefix('devices')->name('devices.')->group(function () {
             Route::get('/', [MobileController::class, 'listDevices'])->name('index');
@@ -71,18 +75,26 @@ Route::prefix('mobile')->name('api.mobile.')->group(function () {
     });
 });
 
-// Notification endpoints (v5.6.0)
-Route::prefix('v1/notifications')->name('api.notifications.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+// Notification endpoints — v1 (v5.13.0)
+Route::prefix('v1/notifications')->name('api.v1.notifications.')
+    ->middleware(['auth:sanctum'])
     ->group(function () {
-        Route::get('/unread-count', [MobileController::class, 'getUnreadNotificationCount'])
+        Route::get('/', [App\Http\Controllers\Api\V1\NotificationController::class, 'index'])
+            ->name('index');
+        Route::get('/unread-count', [App\Http\Controllers\Api\V1\NotificationController::class, 'unreadCount'])
             ->middleware('api.rate_limit:query')
             ->name('unread-count');
+        Route::get('/{id}', [App\Http\Controllers\Api\V1\NotificationController::class, 'show'])
+            ->name('show');
+        Route::post('/read-all', [App\Http\Controllers\Api\V1\NotificationController::class, 'markAllRead'])
+            ->name('read-all');
+        Route::post('/{id}/read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markRead'])
+            ->name('read');
     });
 
 // User preferences (v3.3.4) + data export alias (v5.6.0)
 Route::prefix('v1/user')->name('api.user.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/preferences', [UserPreferencesController::class, 'show'])->name('preferences.show');
         Route::patch('/preferences', [UserPreferencesController::class, 'update'])->name('preferences.update');
@@ -91,4 +103,12 @@ Route::prefix('v1/user')->name('api.user.')
         Route::post('/data-export', [App\Http\Controllers\Api\GdprController::class, 'requestDataExport'])
             ->middleware('api.rate_limit:mutation')
             ->name('data-export');
+
+        // Data export status polling (mobile expects GET /api/v1/user/data-export/{exportId})
+        Route::get('/data-export/{exportId}', [App\Http\Controllers\Api\GdprController::class, 'getExportStatus'])
+            ->name('data-export.status');
+
+        // Data export download (signed URL)
+        Route::get('/data-export/{exportId}/download', [App\Http\Controllers\Api\GdprController::class, 'downloadExport'])
+            ->name('data-export.download');
     });

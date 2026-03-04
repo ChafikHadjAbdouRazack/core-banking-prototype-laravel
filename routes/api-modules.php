@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v2/modules')->name('api.modules.')->group(function () {
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [ModuleController::class, 'index'])->name('index');
         Route::get('/health', [ModuleController::class, 'health'])->name('health');
         Route::get('/{name}', [ModuleController::class, 'show'])->name('show');
@@ -42,7 +42,7 @@ Route::prefix('v2/modules')->name('api.modules.')->group(function () {
 */
 
 Route::prefix('v2/plugins')->name('api.plugins.')->group(function () {
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [PluginMarketplaceController::class, 'index'])->name('index');
         Route::get('/{id}', [PluginMarketplaceController::class, 'show'])->name('show');
 

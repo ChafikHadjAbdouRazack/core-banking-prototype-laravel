@@ -5,28 +5,30 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="External Exchanges",
- *     description="External exchange connectors, tickers, and arbitrage endpoints (stub)"
- * )
- */
+#[OA\Tag(
+    name: 'External Exchanges',
+    description: 'External exchange connectors, tickers, and arbitrage endpoints (stub)'
+)]
 class ExternalExchangeStubController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchanges/connectors",
-     *     operationId="externalExchangesConnectors",
-     *     tags={"External Exchanges"},
-     *     summary="List exchange connectors",
-     *     description="Returns available external exchange connectors",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchanges/connectors',
+            operationId: 'externalExchangesConnectors',
+            tags: ['External Exchanges'],
+            summary: 'List exchange connectors',
+            description: 'Returns available external exchange connectors',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function connectors(): JsonResponse
     {
         return response()->json(
@@ -50,22 +52,26 @@ class ExternalExchangeStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchanges/ticker/{base}/{quote}",
-     *     operationId="externalExchangesTicker",
-     *     tags={"External Exchanges"},
-     *     summary="Get ticker data",
-     *     description="Returns current ticker data for a trading pair",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="base", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="quote", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchanges/ticker/{base}/{quote}',
+            operationId: 'externalExchangesTicker',
+            tags: ['External Exchanges'],
+            summary: 'Get ticker data',
+            description: 'Returns current ticker data for a trading pair',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function ticker(Request $request, $base, $quote): JsonResponse
     {
         $request->merge(['base' => $base, 'quote' => $quote]);
@@ -93,22 +99,26 @@ class ExternalExchangeStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchanges/order-book/{base}/{quote}",
-     *     operationId="externalExchangesOrderBook",
-     *     tags={"External Exchanges"},
-     *     summary="Get order book",
-     *     description="Returns order book for a trading pair",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="base", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="quote", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchanges/order-book/{base}/{quote}',
+            operationId: 'externalExchangesOrderBook',
+            tags: ['External Exchanges'],
+            summary: 'Get order book',
+            description: 'Returns order book for a trading pair',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function orderBook(Request $request, $base, $quote): JsonResponse
     {
         $request->merge(['base' => $base, 'quote' => $quote]);
@@ -139,22 +149,26 @@ class ExternalExchangeStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchanges/arbitrage/{base}/{quote}",
-     *     operationId="externalExchangesArbitrage",
-     *     tags={"External Exchanges"},
-     *     summary="Get arbitrage opportunities",
-     *     description="Returns arbitrage opportunities for a trading pair",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="base", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="quote", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchanges/arbitrage/{base}/{quote}',
+            operationId: 'externalExchangesArbitrage',
+            tags: ['External Exchanges'],
+            summary: 'Get arbitrage opportunities',
+            description: 'Returns arbitrage opportunities for a trading pair',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function arbitrage(Request $request, $base, $quote): JsonResponse
     {
         $request->merge(['base' => $base, 'quote' => $quote]);

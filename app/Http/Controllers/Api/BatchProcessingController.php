@@ -11,77 +11,59 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 use Workflow\WorkflowStub;
 
-/**
- * @OA\Tag(
- *     name="Batch Processing",
- *     description="End-of-day batch operations and bulk financial processing"
- * )
- */
+#[OA\Tag(
+    name: 'Batch Processing',
+    description: 'End-of-day batch operations and bulk financial processing'
+)]
 class BatchProcessingController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/api/batch-operations/execute",
-     *     tags={"Batch Processing"},
-     *     summary="Execute batch operations",
-     *     description="Execute end-of-day batch processing operations with compensation support",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"operations"},
-     *
-     * @OA\Property(property="operations",         type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="type",               type="string", enum={"account_interest", "fee_collection", "balance_reconciliation", "report_generation"}, example="account_interest"),
-     * @OA\Property(property="parameters",         type="object", example={"rate": 0.05, "date": "2023-12-31"}),
-     * @OA\Property(property="priority",           type="integer", minimum=1, maximum=10, example=5)
-     *                 )
-     *             ),
-     * @OA\Property(property="batch_name",         type="string", example="EOD_2023_12_31"),
-     * @OA\Property(property="schedule_time",      type="string", format="date-time", nullable=true),
-     * @OA\Property(property="retry_attempts",     type="integer", minimum=0, maximum=5, default=3)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=202,
-     *         description="Batch processing initiated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",            type="string", example="Batch processing initiated successfully"),
-     * @OA\Property(property="data",               type="object",
-     * @OA\Property(property="batch_id",           type="string", example="batch_550e8400_e29b_41d4"),
-     * @OA\Property(property="status",             type="string", example="initiated"),
-     * @OA\Property(property="operations_count",   type="integer", example=4),
-     * @OA\Property(property="estimated_duration", type="string", example="15-30 minutes"),
-     * @OA\Property(property="started_at",         type="string", format="date-time"),
-     * @OA\Property(property="started_by",         type="string", example="admin@finaegis.org")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid batch operation request"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     ),
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/batch-operations/execute',
+            tags: ['Batch Processing'],
+            summary: 'Execute batch operations',
+            description: 'Execute end-of-day batch processing operations with compensation support',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['operations'], properties: [
+        new OA\Property(property: 'operations', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'type', type: 'string', enum: ['account_interest', 'fee_collection', 'balance_reconciliation', 'report_generation'], example: 'account_interest'),
+        new OA\Property(property: 'parameters', type: 'object', example: ['rate' => 0.05, 'date' => '2023-12-31']),
+        new OA\Property(property: 'priority', type: 'integer', minimum: 1, maximum: 10, example: 5),
+        ])),
+        new OA\Property(property: 'batch_name', type: 'string', example: 'EOD_2023_12_31'),
+        new OA\Property(property: 'schedule_time', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'retry_attempts', type: 'integer', minimum: 0, maximum: 5, default: 3),
+        ]))
+        )]
+    #[OA\Response(
+        response: 202,
+        description: 'Batch processing initiated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Batch processing initiated successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'batch_id', type: 'string', example: 'batch_550e8400_e29b_41d4'),
+        new OA\Property(property: 'status', type: 'string', example: 'initiated'),
+        new OA\Property(property: 'operations_count', type: 'integer', example: 4),
+        new OA\Property(property: 'estimated_duration', type: 'string', example: '15-30 minutes'),
+        new OA\Property(property: 'started_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'started_by', type: 'string', example: 'admin@finaegis.org'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid batch operation request'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function executeBatch(Request $request): JsonResponse
     {
         // Only admins can execute batch operations
@@ -196,62 +178,46 @@ class BatchProcessingController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/batch-operations/{batchId}/status",
-     *     tags={"Batch Processing"},
-     *     summary="Get batch operation status",
-     *     description="Get the current status and progress of a batch operation",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="batchId",
-     *         in="path",
-     *         required=true,
-     *         description="Batch ID",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Batch status retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                 type="object",
-     * @OA\Property(property="batch_id",             type="string", example="batch_550e8400_e29b_41d4"),
-     * @OA\Property(property="status",               type="string", enum={"initiated", "running", "completed", "failed", "compensating"}, example="running"),
-     * @OA\Property(property="progress",             type="integer", minimum=0, maximum=100, example=65),
-     * @OA\Property(property="operations_total",     type="integer", example=4),
-     * @OA\Property(property="operations_completed", type="integer", example=2),
-     * @OA\Property(property="operations_failed",    type="integer", example=0),
-     * @OA\Property(property="current_operation",    type="string", example="balance_reconciliation"),
-     * @OA\Property(property="started_at",           type="string", format="date-time"),
-     * @OA\Property(property="estimated_completion", type="string", format="date-time"),
-     * @OA\Property(property="error_message",        type="string", nullable=true),
-     * @OA\Property(property="operations",           type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="type",                 type="string", example="account_interest"),
-     * @OA\Property(property="status",               type="string", example="completed"),
-     * @OA\Property(property="started_at",           type="string", format="date-time"),
-     * @OA\Property(property="completed_at",         type="string", format="date-time"),
-     * @OA\Property(property="records_processed",    type="integer", example=1250),
-     * @OA\Property(property="error_message",        type="string", nullable=true)
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Batch operation not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/batch-operations/{batchId}/status',
+            tags: ['Batch Processing'],
+            summary: 'Get batch operation status',
+            description: 'Get the current status and progress of a batch operation',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'batchId', in: 'path', required: true, description: 'Batch ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Batch status retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'batch_id', type: 'string', example: 'batch_550e8400_e29b_41d4'),
+        new OA\Property(property: 'status', type: 'string', enum: ['initiated', 'running', 'completed', 'failed', 'compensating'], example: 'running'),
+        new OA\Property(property: 'progress', type: 'integer', minimum: 0, maximum: 100, example: 65),
+        new OA\Property(property: 'operations_total', type: 'integer', example: 4),
+        new OA\Property(property: 'operations_completed', type: 'integer', example: 2),
+        new OA\Property(property: 'operations_failed', type: 'integer', example: 0),
+        new OA\Property(property: 'current_operation', type: 'string', example: 'balance_reconciliation'),
+        new OA\Property(property: 'started_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'estimated_completion', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'error_message', type: 'string', nullable: true),
+        new OA\Property(property: 'operations', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'type', type: 'string', example: 'account_interest'),
+        new OA\Property(property: 'status', type: 'string', example: 'completed'),
+        new OA\Property(property: 'started_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'completed_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'records_processed', type: 'integer', example: 1250),
+        new OA\Property(property: 'error_message', type: 'string', nullable: true),
+        ])),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Batch operation not found'
+    )]
     public function getBatchStatus(string $batchId): JsonResponse
     {
         $batch = BatchJob::where('uuid', $batchId)->with('items')->first();
@@ -302,75 +268,40 @@ class BatchProcessingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/batch-operations",
-     *     tags={"Batch Processing"},
-     *     summary="Get batch operations history",
-     *     description="Get list of recent batch operations with filtering options",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *
-     * @OA\Schema(type="string",                 enum={"initiated", "running", "completed", "failed", "scheduled"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="date_from",
-     *         in="query",
-     *         description="Filter from date",
-     *
-     * @OA\Schema(type="string",                 format="date")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="date_to",
-     *         in="query",
-     *         description="Filter to date",
-     *
-     * @OA\Schema(type="string",                 format="date")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of results to return",
-     *
-     * @OA\Schema(type="integer",                minimum=1, maximum=100, default=20)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Batch operations history retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",             type="array",
-     *
-     * @OA\Items(type="object",
-     *
-     * @OA\Property(property="batch_id",         type="string", example="batch_550e8400_e29b_41d4"),
-     * @OA\Property(property="batch_name",       type="string", example="EOD_2023_12_31"),
-     * @OA\Property(property="status",           type="string", example="completed"),
-     * @OA\Property(property="operations_count", type="integer", example=4),
-     * @OA\Property(property="started_at",       type="string", format="date-time"),
-     * @OA\Property(property="completed_at",     type="string", format="date-time"),
-     * @OA\Property(property="duration_minutes", type="integer", example=23),
-     * @OA\Property(property="started_by",       type="string", example="admin@finaegis.org")
-     *                 )
-     *             ),
-     * @OA\Property(property="pagination",       type="object",
-     * @OA\Property(property="total",            type="integer", example=87),
-     * @OA\Property(property="limit",            type="integer", example=20),
-     * @OA\Property(property="offset",           type="integer", example=0)
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/batch-operations',
+            tags: ['Batch Processing'],
+            summary: 'Get batch operations history',
+            description: 'Get list of recent batch operations with filtering options',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', schema: new OA\Schema(type: 'string', enum: ['initiated', 'running', 'completed', 'failed', 'scheduled'])),
+        new OA\Parameter(name: 'date_from', in: 'query', description: 'Filter from date', schema: new OA\Schema(type: 'string', format: 'date')),
+        new OA\Parameter(name: 'date_to', in: 'query', description: 'Filter to date', schema: new OA\Schema(type: 'string', format: 'date')),
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of results to return', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Batch operations history retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'batch_id', type: 'string', example: 'batch_550e8400_e29b_41d4'),
+        new OA\Property(property: 'batch_name', type: 'string', example: 'EOD_2023_12_31'),
+        new OA\Property(property: 'status', type: 'string', example: 'completed'),
+        new OA\Property(property: 'operations_count', type: 'integer', example: 4),
+        new OA\Property(property: 'started_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'completed_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'duration_minutes', type: 'integer', example: 23),
+        new OA\Property(property: 'started_by', type: 'string', example: 'admin@finaegis.org'),
+        ])),
+        new OA\Property(property: 'pagination', type: 'object', properties: [
+        new OA\Property(property: 'total', type: 'integer', example: 87),
+        new OA\Property(property: 'limit', type: 'integer', example: 20),
+        new OA\Property(property: 'offset', type: 'integer', example: 0),
+        ]),
+        ])
+    )]
     public function getBatchHistory(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -440,52 +371,34 @@ class BatchProcessingController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/batch-operations/{batchId}/cancel",
-     *     tags={"Batch Processing"},
-     *     summary="Cancel batch operation",
-     *     description="Cancel a running or scheduled batch operation with compensation",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="batchId",
-     *         in="path",
-     *         required=true,
-     *         description="Batch ID",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"reason"},
-     *
-     * @OA\Property(property="reason",                type="string", example="Emergency maintenance required"),
-     * @OA\Property(property="compensate",            type="boolean", default=true, description="Whether to run compensation for completed operations")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Batch operation cancelled successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",               type="string", example="Batch operation cancelled successfully"),
-     * @OA\Property(property="data",                  type="object",
-     * @OA\Property(property="batch_id",              type="string", example="batch_550e8400_e29b_41d4"),
-     * @OA\Property(property="status",                type="string", example="cancelled"),
-     * @OA\Property(property="cancelled_at",          type="string", format="date-time"),
-     * @OA\Property(property="cancelled_by",          type="string", example="admin@finaegis.org"),
-     * @OA\Property(property="compensation_required", type="boolean", example=true)
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/batch-operations/{batchId}/cancel',
+            tags: ['Batch Processing'],
+            summary: 'Cancel batch operation',
+            description: 'Cancel a running or scheduled batch operation with compensation',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'batchId', in: 'path', required: true, description: 'Batch ID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['reason'], properties: [
+        new OA\Property(property: 'reason', type: 'string', example: 'Emergency maintenance required'),
+        new OA\Property(property: 'compensate', type: 'boolean', default: true, description: 'Whether to run compensation for completed operations'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Batch operation cancelled successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Batch operation cancelled successfully'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'batch_id', type: 'string', example: 'batch_550e8400_e29b_41d4'),
+        new OA\Property(property: 'status', type: 'string', example: 'cancelled'),
+        new OA\Property(property: 'cancelled_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'cancelled_by', type: 'string', example: 'admin@finaegis.org'),
+        new OA\Property(property: 'compensation_required', type: 'boolean', example: true),
+        ]),
+        ])
+    )]
     public function cancelBatch(Request $request, string $batchId): JsonResponse
     {
         /** @var \App\Models\User $user */

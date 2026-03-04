@@ -7,28 +7,30 @@ use App\Domain\Basket\Models\BasketPrice;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="GCU Trading",
- *     description="GCU token trading interface"
- * )
- */
+#[OA\Tag(
+    name: 'GCU Trading',
+    description: 'GCU token trading interface'
+)]
 class GcuTradingController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/gcu/trading",
-     *     operationId="gCUTradingIndex",
-     *     tags={"GCU Trading"},
-     *     summary="GCU trading dashboard",
-     *     description="Returns the GCU token trading interface",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu/trading',
+            operationId: 'gCUTradingIndex',
+            tags: ['GCU Trading'],
+            summary: 'GCU trading dashboard',
+            description: 'Returns the GCU token trading interface',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $user = Auth::user();

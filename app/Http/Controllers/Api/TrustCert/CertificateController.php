@@ -7,13 +7,12 @@ namespace App\Http\Controllers\Api\TrustCert;
 use App\Domain\TrustCert\Services\CertificateExportService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="TrustCert Certificates",
- *     description="TrustCert certificate viewing and export endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'TrustCert Certificates',
+    description: 'TrustCert certificate viewing and export endpoints'
+)]
 class CertificateController extends Controller
 {
     public function __construct(
@@ -21,21 +20,25 @@ class CertificateController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v1/trustcert/{certId}/certificate",
-     *     operationId="trustCertCertificatesShow",
-     *     tags={"TrustCert Certificates"},
-     *     summary="Get certificate details",
-     *     description="Returns detailed information about a TrustCert certificate",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="certId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v1/trustcert/{certId}/certificate',
+            operationId: 'trustCertCertificatesShow',
+            tags: ['TrustCert Certificates'],
+            summary: 'Get certificate details',
+            description: 'Returns detailed information about a TrustCert certificate',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'certId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(string $certId): JsonResponse
     {
         $details = $this->exportService->getCertificateDetails($certId);
@@ -56,21 +59,25 @@ class CertificateController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v1/trustcert/{certId}/export-pdf",
-     *     operationId="trustCertCertificatesExportPdf",
-     *     tags={"TrustCert Certificates"},
-     *     summary="Export certificate as PDF",
-     *     description="Exports a TrustCert certificate as a PDF document",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="certId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v1/trustcert/{certId}/export-pdf',
+            operationId: 'trustCertCertificatesExportPdf',
+            tags: ['TrustCert Certificates'],
+            summary: 'Export certificate as PDF',
+            description: 'Exports a TrustCert certificate as a PDF document',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'certId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function exportPdf(string $certId): JsonResponse
     {
         $result = $this->exportService->exportToPdf($certId);

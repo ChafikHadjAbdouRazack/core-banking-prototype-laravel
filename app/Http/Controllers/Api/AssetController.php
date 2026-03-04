@@ -8,83 +8,51 @@ use App\Domain\Asset\Models\Asset;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Assets",
- *     description="Asset management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Assets',
+    description: 'Asset management endpoints'
+)]
 class AssetController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/assets",
-     *     operationId="listAssets",
-     *     tags={"Assets"},
-     *     summary="List all supported assets",
-     *     description="Get a list of all assets supported by the platform, including fiat currencies, cryptocurrencies, and commodities",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="include_inactive",
-     *         in="query",
-     *         required=false,
-     *         description="Include inactive assets in the response (default: false)",
-     *
-     * @OA\Schema(type="boolean")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by asset type",
-     *
-     * @OA\Schema(type="string",          enum={"fiat", "crypto", "commodity"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="search",
-     *         in="query",
-     *         required=false,
-     *         description="Search by code or name",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",      type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="code",      type="string", example="USD"),
-     * @OA\Property(property="name",      type="string", example="US Dollar"),
-     * @OA\Property(property="type",      type="string", enum={"fiat", "crypto", "commodity"}),
-     * @OA\Property(property="symbol",    type="string", example="$"),
-     * @OA\Property(property="precision", type="integer", example=2),
-     * @OA\Property(property="is_active", type="boolean"),
-     * @OA\Property(property="metadata",  type="object")
-     *                 )
-     *             ),
-     * @OA\Property(property="meta",      type="object",
-     * @OA\Property(property="total",     type="integer"),
-     * @OA\Property(property="active",    type="integer"),
-     * @OA\Property(property="types",     type="object",
-     * @OA\Property(property="fiat",      type="integer"),
-     * @OA\Property(property="crypto",    type="integer"),
-     * @OA\Property(property="commodity", type="integer")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/assets',
+            operationId: 'listAssets',
+            tags: ['Assets'],
+            summary: 'List all supported assets',
+            description: 'Get a list of all assets supported by the platform, including fiat currencies, cryptocurrencies, and commodities',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'include_inactive', in: 'query', required: false, description: 'Include inactive assets in the response (default: false)', schema: new OA\Schema(type: 'boolean')),
+        new OA\Parameter(name: 'type', in: 'query', required: false, description: 'Filter by asset type', schema: new OA\Schema(type: 'string', enum: ['fiat', 'crypto', 'commodity'])),
+        new OA\Parameter(name: 'search', in: 'query', required: false, description: 'Search by code or name', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'USD'),
+        new OA\Property(property: 'name', type: 'string', example: 'US Dollar'),
+        new OA\Property(property: 'type', type: 'string', enum: ['fiat', 'crypto', 'commodity']),
+        new OA\Property(property: 'symbol', type: 'string', example: '$'),
+        new OA\Property(property: 'precision', type: 'integer', example: 2),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ])),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'total', type: 'integer'),
+        new OA\Property(property: 'active', type: 'integer'),
+        new OA\Property(property: 'types', type: 'object', properties: [
+        new OA\Property(property: 'fiat', type: 'integer'),
+        new OA\Property(property: 'crypto', type: 'integer'),
+        new OA\Property(property: 'commodity', type: 'integer'),
+        ]),
+        ]),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = Asset::query();

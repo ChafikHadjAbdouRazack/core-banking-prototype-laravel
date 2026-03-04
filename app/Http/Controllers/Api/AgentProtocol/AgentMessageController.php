@@ -14,14 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Messaging",
- *     description="Agent-to-Agent (A2A) messaging endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Messaging',
+    description: 'Agent-to-Agent (A2A) messaging endpoints'
+)]
 class AgentMessageController extends Controller
 {
     public function __construct(
@@ -30,50 +28,46 @@ class AgentMessageController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/messages",
-     *     operationId="sendAgentMessage",
-     *     tags={"Agent Protocol - Messaging"},
-     *     summary="Send a message to another agent",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Sender agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"to_agent_did", "message_type", "payload"},
-     *             @OA\Property(property="to_agent_did", type="string", example="did:finaegis:agent:receiver456"),
-     *             @OA\Property(property="message_type", type="string", enum={"direct", "broadcast", "protocol", "transaction", "notification"}, example="direct"),
-     *             @OA\Property(property="payload", type="object", example={"action": "quote_request", "data": {}}),
-     *             @OA\Property(property="priority", type="string", enum={"low", "normal", "high", "critical"}, example="normal"),
-     *             @OA\Property(property="requires_acknowledgment", type="boolean", example=true),
-     *             @OA\Property(property="correlation_id", type="string", nullable=true),
-     *             @OA\Property(property="reply_to", type="string", nullable=true),
-     *             @OA\Property(property="headers", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Message sent",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="message_id", type="string"),
-     *                 @OA\Property(property="status", type="string"),
-     *                 @OA\Property(property="sent_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/messages',
+            operationId: 'sendAgentMessage',
+            tags: ['Agent Protocol - Messaging'],
+            summary: 'Send a message to another agent',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Sender agent DID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['to_agent_did', 'message_type', 'payload'], properties: [
+        new OA\Property(property: 'to_agent_did', type: 'string', example: 'did:finaegis:agent:receiver456'),
+        new OA\Property(property: 'message_type', type: 'string', enum: ['direct', 'broadcast', 'protocol', 'transaction', 'notification'], example: 'direct'),
+        new OA\Property(property: 'payload', type: 'object', example: ['action' => 'quote_request', 'data' => []]),
+        new OA\Property(property: 'priority', type: 'string', enum: ['low', 'normal', 'high', 'critical'], example: 'normal'),
+        new OA\Property(property: 'requires_acknowledgment', type: 'boolean', example: true),
+        new OA\Property(property: 'correlation_id', type: 'string', nullable: true),
+        new OA\Property(property: 'reply_to', type: 'string', nullable: true),
+        new OA\Property(property: 'headers', type: 'object'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Message sent',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'message_id', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'sent_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function send(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -195,54 +189,28 @@ class AgentMessageController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/messages",
-     *     operationId="getAgentMessages",
-     *     tags={"Agent Protocol - Messaging"},
-     *     summary="Get messages for an agent",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Filter by inbox/outbox",
-     *         @OA\Schema(type="string", enum={"inbox", "outbox", "all"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="unacknowledged_only",
-     *         in="query",
-     *         description="Only show unacknowledged messages",
-     *         @OA\Schema(type="boolean")
-     *     ),
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of results",
-     *         @OA\Schema(type="integer", default=20)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of messages",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/messages',
+            operationId: 'getAgentMessages',
+            tags: ['Agent Protocol - Messaging'],
+            summary: 'Get messages for an agent',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'type', in: 'query', description: 'Filter by inbox/outbox', schema: new OA\Schema(type: 'string', enum: ['inbox', 'outbox', 'all'])),
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'unacknowledged_only', in: 'query', description: 'Only show unacknowledged messages', schema: new OA\Schema(type: 'boolean')),
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of results', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of messages',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function list(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -292,42 +260,36 @@ class AgentMessageController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/messages/{messageId}/ack",
-     *     operationId="acknowledgeAgentMessage",
-     *     tags={"Agent Protocol - Messaging"},
-     *     summary="Acknowledge receipt of a message",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Receiver agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="messageId",
-     *         in="path",
-     *         required=true,
-     *         description="Message ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Message acknowledged",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="message_id", type="string"),
-     *                 @OA\Property(property="acknowledged_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Cannot acknowledge message"),
-     *     @OA\Response(response=404, description="Message not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/messages/{messageId}/ack',
+            operationId: 'acknowledgeAgentMessage',
+            tags: ['Agent Protocol - Messaging'],
+            summary: 'Acknowledge receipt of a message',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Receiver agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'messageId', in: 'path', required: true, description: 'Message ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Message acknowledged',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'message_id', type: 'string'),
+        new OA\Property(property: 'acknowledged_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Cannot acknowledge message'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Message not found'
+    )]
     public function acknowledge(Request $request, string $did, string $messageId): JsonResponse
     {
         try {
@@ -415,38 +377,29 @@ class AgentMessageController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/messages/{messageId}",
-     *     operationId="getAgentMessage",
-     *     tags={"Agent Protocol - Messaging"},
-     *     summary="Get message details",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID (must be sender or receiver)",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="messageId",
-     *         in="path",
-     *         required=true,
-     *         description="Message ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Message details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Message not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/messages/{messageId}',
+            operationId: 'getAgentMessage',
+            tags: ['Agent Protocol - Messaging'],
+            summary: 'Get message details',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID (must be sender or receiver)', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'messageId', in: 'path', required: true, description: 'Message ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Message details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Message not found'
+    )]
     public function show(string $did, string $messageId): JsonResponse
     {
         try {

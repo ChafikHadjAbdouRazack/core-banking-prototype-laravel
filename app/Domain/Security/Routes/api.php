@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\TransactionMonitoringController;
 use Illuminate\Support\Facades\Route;
 
 // Risk Analysis endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('risk')->group(function () {
+Route::middleware('auth:sanctum')->prefix('risk')->group(function () {
     // User risk endpoints
     Route::prefix('users/{userId}')->group(function () {
         Route::get('/profile', [RiskAnalysisController::class, 'getUserRiskProfile']);
@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('risk')->gro
 });
 
 // Transaction Monitoring endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('transaction-monitoring')->group(function () {
+Route::middleware('auth:sanctum')->prefix('transaction-monitoring')->group(function () {
     // Transaction monitoring
     Route::get('/', [TransactionMonitoringController::class, 'getMonitoredTransactions']);
     Route::get('/transactions/{transaction}', [TransactionMonitoringController::class, 'getTransactionDetails']);

@@ -10,30 +10,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Log;
+use OpenApi\Attributes as OA;
 use Schema;
 use Str;
 
-/**
- * @OA\Tag(
- *     name="Transaction Status",
- *     description="Transaction status tracking and management"
- * )
- */
+#[OA\Tag(
+    name: 'Transaction Status',
+    description: 'Transaction status tracking and management'
+)]
 class TransactionStatusController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/transactions",
-     *     operationId="transactionStatusIndex",
-     *     tags={"Transaction Status"},
-     *     summary="List transactions",
-     *     description="Returns the transaction history page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/transactions',
+            operationId: 'transactionStatusIndex',
+            tags: ['Transaction Status'],
+            summary: 'List transactions',
+            description: 'Returns the transaction history page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -70,21 +72,25 @@ class TransactionStatusController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/transactions/{id}",
-     *     operationId="transactionStatusShow",
-     *     tags={"Transaction Status"},
-     *     summary="Show transaction details",
-     *     description="Returns details of a specific transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/transactions/{id}',
+            operationId: 'transactionStatusShow',
+            tags: ['Transaction Status'],
+            summary: 'Show transaction details',
+            description: 'Returns details of a specific transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show($transactionId)
     {
         $user = Auth::user();
@@ -113,21 +119,25 @@ class TransactionStatusController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/transactions/{id}/status",
-     *     operationId="transactionStatusStatus",
-     *     tags={"Transaction Status"},
-     *     summary="Get transaction status",
-     *     description="Returns the current status of a transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/transactions/{id}/status',
+            operationId: 'transactionStatusStatus',
+            tags: ['Transaction Status'],
+            summary: 'Get transaction status',
+            description: 'Returns the current status of a transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function status($transactionId)
     {
         $user = Auth::user();
@@ -154,21 +164,25 @@ class TransactionStatusController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/transactions/{id}/cancel",
-     *     operationId="transactionStatusCancel",
-     *     tags={"Transaction Status"},
-     *     summary="Cancel transaction",
-     *     description="Cancels a pending transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/transactions/{id}/cancel',
+            operationId: 'transactionStatusCancel',
+            tags: ['Transaction Status'],
+            summary: 'Cancel transaction',
+            description: 'Cancels a pending transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function cancel($transactionId)
     {
         $user = Auth::user();
@@ -212,21 +226,25 @@ class TransactionStatusController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/transactions/{id}/retry",
-     *     operationId="transactionStatusRetry",
-     *     tags={"Transaction Status"},
-     *     summary="Retry transaction",
-     *     description="Retries a failed transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/transactions/{id}/retry',
+            operationId: 'transactionStatusRetry',
+            tags: ['Transaction Status'],
+            summary: 'Retry transaction',
+            description: 'Retries a failed transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function retry($transactionId)
     {
         $user = Auth::user();

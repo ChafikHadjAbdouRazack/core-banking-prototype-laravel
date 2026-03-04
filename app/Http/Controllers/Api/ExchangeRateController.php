@@ -11,13 +11,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Exchange Rates",
- *     description="APIs for managing exchange rates between different assets"
- * )
- */
+#[OA\Tag(
+    name: 'Exchange Rates',
+    description: 'APIs for managing exchange rates between different assets'
+)]
 class ExchangeRateController extends Controller
 {
     public function __construct(
@@ -25,66 +24,44 @@ class ExchangeRateController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange-rates/{from}/{to}",
-     *     operationId="getExchangeRate",
-     *     tags={"Exchange Rates"},
-     *     summary="Get current exchange rate",
-     *     description="Retrieve the current exchange rate between two assets",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="from",
-     *         in="path",
-     *         required=true,
-     *         description="The source asset code",
-     *
-     * @OA\Schema(type="string",             example="USD")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="to",
-     *         in="path",
-     *         required=true,
-     *         description="The target asset code",
-     *
-     * @OA\Schema(type="string",             example="EUR")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",         type="object",
-     * @OA\Property(property="from_asset",   type="string"),
-     * @OA\Property(property="to_asset",     type="string"),
-     * @OA\Property(property="rate",         type="string"),
-     * @OA\Property(property="inverse_rate", type="string"),
-     * @OA\Property(property="source",       type="string"),
-     * @OA\Property(property="valid_at",     type="string", format="date-time"),
-     * @OA\Property(property="expires_at",   type="string", format="date-time"),
-     * @OA\Property(property="is_active",    type="boolean"),
-     * @OA\Property(property="age_minutes",  type="integer"),
-     * @OA\Property(property="metadata",     type="object")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Exchange rate not found",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",      type="string"),
-     * @OA\Property(property="error",        type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange-rates/{from}/{to}',
+            operationId: 'getExchangeRate',
+            tags: ['Exchange Rates'],
+            summary: 'Get current exchange rate',
+            description: 'Retrieve the current exchange rate between two assets',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'from', in: 'path', required: true, description: 'The source asset code', schema: new OA\Schema(type: 'string', example: 'USD')),
+        new OA\Parameter(name: 'to', in: 'path', required: true, description: 'The target asset code', schema: new OA\Schema(type: 'string', example: 'EUR')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'from_asset', type: 'string'),
+        new OA\Property(property: 'to_asset', type: 'string'),
+        new OA\Property(property: 'rate', type: 'string'),
+        new OA\Property(property: 'inverse_rate', type: 'string'),
+        new OA\Property(property: 'source', type: 'string'),
+        new OA\Property(property: 'valid_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'age_minutes', type: 'integer'),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Exchange rate not found',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'error', type: 'string'),
+        ])
+    )]
     public function show(string $from, string $to): JsonResponse
     {
         $fromAsset = strtoupper($from);
@@ -120,74 +97,44 @@ class ExchangeRateController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange-rates/{from}/{to}/convert",
-     *     operationId="convertCurrency",
-     *     tags={"Exchange Rates"},
-     *     summary="Convert amount between assets",
-     *     description="Convert an amount from one asset to another using current exchange rates",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="from",
-     *         in="path",
-     *         required=true,
-     *         description="The source asset code",
-     *
-     * @OA\Schema(type="string",                                   example="USD")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="to",
-     *         in="path",
-     *         required=true,
-     *         description="The target asset code",
-     *
-     * @OA\Schema(type="string",                                   example="EUR")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="amount",
-     *         in="query",
-     *         required=true,
-     *         description="The amount to convert (in smallest unit)",
-     *
-     * @OA\Schema(type="integer",                                  example=10000)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                               type="object",
-     * @OA\Property(property="from_asset",                         type="string"),
-     * @OA\Property(property="to_asset",                           type="string"),
-     * @OA\Property(property="from_amount",                        type="integer"),
-     * @OA\Property(property="to_amount",                          type="integer"),
-     * @OA\Property(property="from_formatted",                     type="string"),
-     * @OA\Property(property="to_formatted",                       type="string"),
-     * @OA\Property(property="rate",                               type="string"),
-     * @OA\Property(property="rate_age_minutes",                   type="integer")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Conversion not available"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange-rates/{from}/{to}/convert',
+            operationId: 'convertCurrency',
+            tags: ['Exchange Rates'],
+            summary: 'Convert amount between assets',
+            description: 'Convert an amount from one asset to another using current exchange rates',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'from', in: 'path', required: true, description: 'The source asset code', schema: new OA\Schema(type: 'string', example: 'USD')),
+        new OA\Parameter(name: 'to', in: 'path', required: true, description: 'The target asset code', schema: new OA\Schema(type: 'string', example: 'EUR')),
+        new OA\Parameter(name: 'amount', in: 'query', required: true, description: 'The amount to convert (in smallest unit)', schema: new OA\Schema(type: 'integer', example: 10000)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'from_asset', type: 'string'),
+        new OA\Property(property: 'to_asset', type: 'string'),
+        new OA\Property(property: 'from_amount', type: 'integer'),
+        new OA\Property(property: 'to_amount', type: 'integer'),
+        new OA\Property(property: 'from_formatted', type: 'string'),
+        new OA\Property(property: 'to_formatted', type: 'string'),
+        new OA\Property(property: 'rate', type: 'string'),
+        new OA\Property(property: 'rate_age_minutes', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Conversion not available'
+    )]
     public function convert(Request $request, string $from, string $to): JsonResponse
     {
         $request->validate(
@@ -237,100 +184,45 @@ class ExchangeRateController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/exchange-rates",
-     *     operationId="listExchangeRates",
-     *     tags={"Exchange Rates"},
-     *     summary="List exchange rates",
-     *     description="Get a list of available exchange rates with filtering options",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="from",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by source asset code",
-     *
-     * @OA\Schema(type="string",             example="USD")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="to",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by target asset code",
-     *
-     * @OA\Schema(type="string",             example="EUR")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="source",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by rate source",
-     *
-     * @OA\Schema(type="string",             enum={"manual", "api", "oracle", "market"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="active",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by active status",
-     *
-     * @OA\Schema(type="boolean")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="valid",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by validity (not expired)",
-     *
-     * @OA\Schema(type="boolean")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Number of results per page (max 100)",
-     *
-     * @OA\Schema(type="integer",            minimum=1, maximum=100)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",         type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="id",           type="integer"),
-     * @OA\Property(property="from_asset",   type="string"),
-     * @OA\Property(property="to_asset",     type="string"),
-     * @OA\Property(property="rate",         type="string"),
-     * @OA\Property(property="inverse_rate", type="string"),
-     * @OA\Property(property="source",       type="string"),
-     * @OA\Property(property="valid_at",     type="string", format="date-time"),
-     * @OA\Property(property="expires_at",   type="string", format="date-time"),
-     * @OA\Property(property="is_active",    type="boolean"),
-     * @OA\Property(property="age_minutes",  type="integer")
-     *                 )
-     *             ),
-     * @OA\Property(property="meta",         type="object",
-     * @OA\Property(property="total",        type="integer"),
-     * @OA\Property(property="valid",        type="integer"),
-     * @OA\Property(property="stale",        type="integer")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/exchange-rates',
+            operationId: 'listExchangeRates',
+            tags: ['Exchange Rates'],
+            summary: 'List exchange rates',
+            description: 'Get a list of available exchange rates with filtering options',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'from', in: 'query', required: false, description: 'Filter by source asset code', schema: new OA\Schema(type: 'string', example: 'USD')),
+        new OA\Parameter(name: 'to', in: 'query', required: false, description: 'Filter by target asset code', schema: new OA\Schema(type: 'string', example: 'EUR')),
+        new OA\Parameter(name: 'source', in: 'query', required: false, description: 'Filter by rate source', schema: new OA\Schema(type: 'string', enum: ['manual', 'api', 'oracle', 'market'])),
+        new OA\Parameter(name: 'active', in: 'query', required: false, description: 'Filter by active status', schema: new OA\Schema(type: 'boolean')),
+        new OA\Parameter(name: 'valid', in: 'query', required: false, description: 'Filter by validity (not expired)', schema: new OA\Schema(type: 'boolean')),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Number of results per page (max 100)', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'integer'),
+        new OA\Property(property: 'from_asset', type: 'string'),
+        new OA\Property(property: 'to_asset', type: 'string'),
+        new OA\Property(property: 'rate', type: 'string'),
+        new OA\Property(property: 'inverse_rate', type: 'string'),
+        new OA\Property(property: 'source', type: 'string'),
+        new OA\Property(property: 'valid_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'age_minutes', type: 'integer'),
+        ])),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'total', type: 'integer'),
+        new OA\Property(property: 'valid', type: 'integer'),
+        new OA\Property(property: 'stale', type: 'integer'),
+        ]),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         $request->validate(

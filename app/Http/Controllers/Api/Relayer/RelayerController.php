@@ -10,14 +10,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Throwable;
 
-/**
- * @OA\Tag(
- *     name="Gas Relayer",
- *     description="Meta-transaction relayer for gasless stablecoin transfers"
- * )
- */
+#[OA\Tag(
+    name: 'Gas Relayer',
+    description: 'Meta-transaction relayer for gasless stablecoin transfers'
+)]
 class RelayerController extends Controller
 {
     public function __construct(
@@ -33,43 +32,44 @@ class RelayerController extends Controller
      *
      * For first-time account deployment, include the init_code parameter with
      * the Smart Account factory call data.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/sponsor",
-     *     summary="Submit a sponsored transaction",
-     *     tags={"Gas Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"user_address", "call_data", "signature"},
-     *             @OA\Property(property="user_address", type="string", example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e"),
-     *             @OA\Property(property="call_data", type="string", description="Encoded transaction calldata"),
-     *             @OA\Property(property="signature", type="string", description="User's signature"),
-     *             @OA\Property(property="network", type="string", enum={"polygon", "arbitrum", "optimism", "base", "ethereum"}, example="polygon"),
-     *             @OA\Property(property="fee_token", type="string", enum={"USDC", "USDT"}, example="USDC"),
-     *             @OA\Property(property="init_code", type="string", nullable=true, description="Factory calldata for first-time account deployment")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Transaction sponsored",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="tx_hash", type="string"),
-     *                 @OA\Property(property="user_op_hash", type="string"),
-     *                 @OA\Property(property="gas_used", type="integer"),
-     *                 @OA\Property(property="fee_charged", type="string", example="0.050000"),
-     *                 @OA\Property(property="fee_currency", type="string", example="USDC"),
-     *                 @OA\Property(property="is_deployment", type="boolean", example=false)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Transaction failed"),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/sponsor',
+        summary: 'Submit a sponsored transaction',
+        tags: ['Gas Relayer'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['user_address', 'call_data', 'signature'], properties: [
+        new OA\Property(property: 'user_address', type: 'string', example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'),
+        new OA\Property(property: 'call_data', type: 'string', description: 'Encoded transaction calldata'),
+        new OA\Property(property: 'signature', type: 'string', description: 'User\'s signature'),
+        new OA\Property(property: 'network', type: 'string', enum: ['polygon', 'arbitrum', 'optimism', 'base', 'ethereum'], example: 'polygon'),
+        new OA\Property(property: 'fee_token', type: 'string', enum: ['USDC', 'USDT'], example: 'USDC'),
+        new OA\Property(property: 'init_code', type: 'string', nullable: true, description: 'Factory calldata for first-time account deployment'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction sponsored',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'tx_hash', type: 'string'),
+        new OA\Property(property: 'user_op_hash', type: 'string'),
+        new OA\Property(property: 'gas_used', type: 'integer'),
+        new OA\Property(property: 'fee_charged', type: 'string', example: '0.050000'),
+        new OA\Property(property: 'fee_currency', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'is_deployment', type: 'boolean', example: false),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Transaction failed'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function sponsor(Request $request): JsonResponse
     {
         // Max lengths: call_data 50KB (100000 hex chars), signature 132 chars (65 bytes), init_code 20KB
@@ -123,35 +123,30 @@ class RelayerController extends Controller
 
     /**
      * Estimate gas fee for a transaction.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/estimate",
-     *     summary="Estimate gas fee in stablecoins",
-     *     tags={"Gas Relayer"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"call_data"},
-     *             @OA\Property(property="call_data", type="string"),
-     *             @OA\Property(property="network", type="string", enum={"polygon", "arbitrum", "optimism", "base", "ethereum"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Fee estimate",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="estimated_gas", type="integer"),
-     *                 @OA\Property(property="fee_usdc", type="string", example="0.050000"),
-     *                 @OA\Property(property="fee_usdt", type="string", example="0.050000"),
-     *                 @OA\Property(property="network", type="string")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/estimate',
+        summary: 'Estimate gas fee in stablecoins',
+        tags: ['Gas Relayer'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['call_data'], properties: [
+        new OA\Property(property: 'call_data', type: 'string'),
+        new OA\Property(property: 'network', type: 'string', enum: ['polygon', 'arbitrum', 'optimism', 'base', 'ethereum']),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Fee estimate',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'estimated_gas', type: 'integer'),
+        new OA\Property(property: 'fee_usdc', type: 'string', example: '0.050000'),
+        new OA\Property(property: 'fee_usdt', type: 'string', example: '0.050000'),
+        new OA\Property(property: 'network', type: 'string'),
+        ]),
+        ])
+    )]
     public function estimate(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -190,31 +185,30 @@ class RelayerController extends Controller
      * Get supported networks and their detailed configuration.
      *
      * Returns ERC-4337 infrastructure addresses and current gas prices for each network.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/networks",
-     *     summary="List supported networks with ERC-4337 configuration",
-     *     tags={"Gas Relayer"},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of supported networks with detailed configuration",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="chain_id", type="integer", example=137),
-     *                 @OA\Property(property="name", type="string", example="polygon"),
-     *                 @OA\Property(property="entrypoint_address", type="string", example="0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"),
-     *                 @OA\Property(property="factory_address", type="string", example="0x..."),
-     *                 @OA\Property(property="paymaster_address", type="string", example="0x..."),
-     *                 @OA\Property(property="current_gas_price", type="string", example="30"),
-     *                 @OA\Property(property="average_fee_usdc", type="string", example="0.0200"),
-     *                 @OA\Property(property="congestion_level", type="string", enum={"low", "medium", "high"}, example="low"),
-     *                 @OA\Property(property="fee_token", type="string", example="USDC")
-     *             ))
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/networks',
+        summary: 'List supported networks with ERC-4337 configuration',
+        tags: ['Gas Relayer']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of supported networks with detailed configuration',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'chain_id', type: 'integer', example: 137),
+        new OA\Property(property: 'name', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'entrypoint_address', type: 'string', example: '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789'),
+        new OA\Property(property: 'factory_address', type: 'string', example: '0x...'),
+        new OA\Property(property: 'paymaster_address', type: 'string', example: '0x...'),
+        new OA\Property(property: 'current_gas_price', type: 'string', example: '30'),
+        new OA\Property(property: 'average_fee_usdc', type: 'string', example: '0.0200'),
+        new OA\Property(property: 'congestion_level', type: 'string', enum: ['low', 'medium', 'high'], example: 'low'),
+        new OA\Property(property: 'fee_token', type: 'string', example: 'USDC'),
+        ])),
+        ])
+    )]
     public function networks(): JsonResponse
     {
         $networks = $this->gasStationService->getSupportedNetworks();

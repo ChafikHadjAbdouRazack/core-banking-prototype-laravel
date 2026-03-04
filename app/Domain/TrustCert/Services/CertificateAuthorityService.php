@@ -6,6 +6,7 @@ namespace App\Domain\TrustCert\Services;
 
 use App\Domain\TrustCert\Contracts\CertificateAuthorityInterface;
 use App\Domain\TrustCert\Enums\CertificateStatus;
+use App\Domain\TrustCert\Events\Broadcast\TrustCertStatusChanged;
 use App\Domain\TrustCert\Events\CertificateIssued;
 use App\Domain\TrustCert\Events\CertificateRevoked;
 use App\Domain\TrustCert\ValueObjects\Certificate;
@@ -33,9 +34,15 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
     private array $subjectIndex = [];
 
     public function __construct(
-        private readonly string $caId = 'finaegis-root-ca',
-        private readonly string $signingKey = '',
+        private string $caId = '',
+        private string $signingKey = '',
     ) {
+        if (empty($this->caId)) {
+            $this->caId = (string) config('trustcert.certificate_authority.ca_id', 'finaegis-root-ca');
+        }
+        if (empty($this->signingKey)) {
+            $this->signingKey = (string) config('trustcert.certificate_authority.ca_signing_key', '');
+        }
         if (app()->environment('production') && empty($this->signingKey)) {
             throw new RuntimeException('CA signing key must be configured in production');
         }
@@ -98,6 +105,15 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             issuedAt: new DateTimeImmutable(),
         ));
 
+        // Broadcast certificate status change for mobile
+        TrustCertStatusChanged::dispatch(
+            userId: $subjectId,
+            certificateId: $certificateId,
+            status: CertificateStatus::ACTIVE->value,
+            subjectId: $subjectId,
+            changedAt: (new DateTimeImmutable())->format('c'),
+        );
+
         return $certificate;
     }
 
@@ -144,6 +160,15 @@ class CertificateAuthorityService implements CertificateAuthorityInterface
             reason: $reason,
             revokedAt: $revokedAt,
         ));
+
+        // Broadcast certificate status change for mobile
+        TrustCertStatusChanged::dispatch(
+            userId: $certificate->subjectId,
+            certificateId: $certificateId,
+            status: CertificateStatus::REVOKED->value,
+            subjectId: $certificate->subjectId,
+            changedAt: $revokedAt->format('c'),
+        );
 
         return true;
     }

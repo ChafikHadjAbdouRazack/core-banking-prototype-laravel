@@ -9,58 +9,45 @@ use App\Jobs\ProcessOndatoWebhook;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Ondato Webhooks",
- *     description="Endpoints for receiving webhook notifications from Ondato KYC"
- * )
- */
+#[OA\Tag(
+    name: 'Ondato Webhooks',
+    description: 'Endpoints for receiving webhook notifications from Ondato KYC'
+)]
 class OndatoWebhookController extends Controller
 {
     /**
      * Handle identity verification webhook from Ondato.
-     *
-     * @OA\Post(
-     *     path="/api/webhooks/ondato/identity-verification",
-     *     operationId="ondatoIdentityVerificationWebhook",
-     *     tags={"Ondato Webhooks"},
-     *     summary="Receive Ondato identity verification webhook",
-     *     description="Endpoint for receiving identity verification webhook notifications from Ondato",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *         description="Webhook payload from Ondato",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="id",                         type="string", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-     * @OA\Property(property="applicationId",              type="string", example="app-123"),
-     * @OA\Property(property="identityVerificationId",     type="string", example="idv-456"),
-     * @OA\Property(property="status",                     type="string", example="PROCESSED")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Webhook received",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status", type="string", example="received")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid payload"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Invalid signature"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/webhooks/ondato/identity-verification',
+        operationId: 'ondatoIdentityVerificationWebhook',
+        tags: ['Ondato Webhooks'],
+        summary: 'Receive Ondato identity verification webhook',
+        description: 'Endpoint for receiving identity verification webhook notifications from Ondato',
+        requestBody: new OA\RequestBody(required: true, description: 'Webhook payload from Ondato', content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'id', type: 'string', example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'),
+        new OA\Property(property: 'applicationId', type: 'string', example: 'app-123'),
+        new OA\Property(property: 'identityVerificationId', type: 'string', example: 'idv-456'),
+        new OA\Property(property: 'status', type: 'string', example: 'PROCESSED'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Webhook received',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'received'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid payload'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Invalid signature'
+    )]
     public function identityVerification(Request $request): JsonResponse
     {
         return $this->handleWebhook($request, 'identity-verification');
@@ -68,46 +55,34 @@ class OndatoWebhookController extends Controller
 
     /**
      * Handle identification webhook from Ondato.
-     *
-     * @OA\Post(
-     *     path="/api/webhooks/ondato/identification",
-     *     operationId="ondatoIdentificationWebhook",
-     *     tags={"Ondato Webhooks"},
-     *     summary="Receive Ondato identification webhook",
-     *     description="Endpoint for receiving identification result webhook notifications from Ondato",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *         description="Webhook payload from Ondato",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="id",                         type="string", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-     * @OA\Property(property="identityVerificationId",     type="string", example="idv-456"),
-     * @OA\Property(property="status",                     type="string", example="PROCESSED")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Webhook received",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status", type="string", example="received")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid payload"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Invalid signature"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/webhooks/ondato/identification',
+        operationId: 'ondatoIdentificationWebhook',
+        tags: ['Ondato Webhooks'],
+        summary: 'Receive Ondato identification webhook',
+        description: 'Endpoint for receiving identification result webhook notifications from Ondato',
+        requestBody: new OA\RequestBody(required: true, description: 'Webhook payload from Ondato', content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'id', type: 'string', example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'),
+        new OA\Property(property: 'identityVerificationId', type: 'string', example: 'idv-456'),
+        new OA\Property(property: 'status', type: 'string', example: 'PROCESSED'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Webhook received',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'received'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid payload'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Invalid signature'
+    )]
     public function identification(Request $request): JsonResponse
     {
         return $this->handleWebhook($request, 'identification');

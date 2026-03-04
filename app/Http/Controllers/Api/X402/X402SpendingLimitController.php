@@ -10,36 +10,40 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 /**
  * X402 Agent Spending Limit Controller.
  *
  * Manages per-agent spending limits for the x402 client mode
  * (AI agents making payments to external APIs).
- *
- * @OA\Tag(
- *     name="X402 Spending Limits",
- *     description="Agent spending limit management for x402 payments"
- * )
  */
+#[OA\Tag(
+    name: 'X402 Spending Limits',
+    description: 'Agent spending limit management for x402 payments'
+)]
 class X402SpendingLimitController extends Controller
 {
     /**
      * List all agent spending limits.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/spending-limits",
-     *     summary="List agent spending limits",
-     *     tags={"X402 Spending Limits"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="per_page", in="query", required=false, @OA\Schema(type="integer", default=20, maximum=100)),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of spending limits"
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/spending-limits',
+        summary: 'List agent spending limits',
+        tags: ['X402 Spending Limits'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 20, maximum: 100)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of spending limits'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function index(Request $request): JsonResponse
     {
         $perPage = min(max((int) $request->input('per_page', 20), 1), 100);
@@ -61,29 +65,36 @@ class X402SpendingLimitController extends Controller
 
     /**
      * Create or update an agent spending limit.
-     *
-     * @OA\Post(
-     *     path="/api/v1/x402/spending-limits",
-     *     summary="Set spending limit for an agent",
-     *     tags={"X402 Spending Limits"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"agent_id", "daily_limit"},
-     *             @OA\Property(property="agent_id", type="string"),
-     *             @OA\Property(property="agent_type", type="string", example="ai_agent"),
-     *             @OA\Property(property="daily_limit", type="string", example="10000000"),
-     *             @OA\Property(property="per_transaction_limit", type="string", example="1000000"),
-     *             @OA\Property(property="auto_pay_enabled", type="boolean", example=true)
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Spending limit created"),
-     *     @OA\Response(response=200, description="Spending limit updated"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/x402/spending-limits',
+        summary: 'Set spending limit for an agent',
+        tags: ['X402 Spending Limits'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['agent_id', 'daily_limit'], properties: [
+        new OA\Property(property: 'agent_id', type: 'string'),
+        new OA\Property(property: 'agent_type', type: 'string', example: 'ai_agent'),
+        new OA\Property(property: 'daily_limit', type: 'string', example: '10000000'),
+        new OA\Property(property: 'per_transaction_limit', type: 'string', example: '1000000'),
+        new OA\Property(property: 'auto_pay_enabled', type: 'boolean', example: true),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Spending limit created'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Spending limit updated'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -135,18 +146,28 @@ class X402SpendingLimitController extends Controller
 
     /**
      * Get spending limit for an agent.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/spending-limits/{agentId}",
-     *     summary="Get agent spending limit details",
-     *     tags={"X402 Spending Limits"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="agentId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Spending limit details"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/spending-limits/{agentId}',
+        summary: 'Get agent spending limit details',
+        tags: ['X402 Spending Limits'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'agentId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Spending limit details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function show(Request $request, string $agentId): JsonResponse
     {
         $limit = X402SpendingLimit::where('agent_id', $agentId)
@@ -160,27 +181,37 @@ class X402SpendingLimitController extends Controller
 
     /**
      * Update an agent spending limit.
-     *
-     * @OA\Put(
-     *     path="/api/v1/x402/spending-limits/{agentId}",
-     *     summary="Update agent spending limit",
-     *     tags={"X402 Spending Limits"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="agentId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="daily_limit", type="string"),
-     *             @OA\Property(property="per_transaction_limit", type="string"),
-     *             @OA\Property(property="auto_pay_enabled", type="boolean")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Spending limit updated"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Put(
+        path: '/api/v1/x402/spending-limits/{agentId}',
+        summary: 'Update agent spending limit',
+        tags: ['X402 Spending Limits'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'agentId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'daily_limit', type: 'string'),
+        new OA\Property(property: 'per_transaction_limit', type: 'string'),
+        new OA\Property(property: 'auto_pay_enabled', type: 'boolean'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Spending limit updated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function update(Request $request, string $agentId): JsonResponse
     {
         $limit = X402SpendingLimit::where('agent_id', $agentId)
@@ -208,18 +239,28 @@ class X402SpendingLimitController extends Controller
 
     /**
      * Delete an agent spending limit.
-     *
-     * @OA\Delete(
-     *     path="/api/v1/x402/spending-limits/{agentId}",
-     *     summary="Remove agent spending limit",
-     *     tags={"X402 Spending Limits"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="agentId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=204, description="Spending limit removed"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/v1/x402/spending-limits/{agentId}',
+        summary: 'Remove agent spending limit',
+        tags: ['X402 Spending Limits'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'agentId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 204,
+        description: 'Spending limit removed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function destroy(Request $request, string $agentId): Response
     {
         $limit = X402SpendingLimit::where('agent_id', $agentId)

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1/defi')->name('api.defi.')->group(function () {
     Route::get('/protocols', [DeFiController::class, 'protocols'])->name('protocols');
 
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/swap/quote', [DeFiController::class, 'swapQuote'])->name('swap.quote');
         Route::post('/swap/execute', [DeFiController::class, 'swapExecute'])
             ->middleware(['transaction.rate_limit:defi', 'idempotency'])

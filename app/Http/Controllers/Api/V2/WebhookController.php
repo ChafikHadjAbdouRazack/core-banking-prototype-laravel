@@ -11,47 +11,37 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Webhooks",
- *     description="Webhook management for real-time event notifications"
- * )
- */
+#[OA\Tag(
+    name: 'Webhooks',
+    description: 'Webhook management for real-time event notifications'
+)]
 class WebhookController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/webhooks",
-     *     operationId="listWebhooks",
-     *     tags={"Webhooks"},
-     *     summary="List webhooks",
-     *     description="Get a list of all configured webhooks for the authenticated user",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of webhooks",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",              type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="id",                type="string", format="uuid"),
-     * @OA\Property(property="url",               type="string", format="url"),
-     * @OA\Property(property="events",            type="array", @OA\Items(type="string")),
-     * @OA\Property(property="is_active",         type="boolean"),
-     * @OA\Property(property="description",       type="string"),
-     * @OA\Property(property="created_at",        type="string", format="date-time"),
-     * @OA\Property(property="last_triggered_at", type="string", format="date-time", nullable=true)
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/webhooks',
+            operationId: 'listWebhooks',
+            tags: ['Webhooks'],
+            summary: 'List webhooks',
+            description: 'Get a list of all configured webhooks for the authenticated user',
+            security: [['bearerAuth' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of webhooks',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'url', type: 'string', format: 'url'),
+        new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'last_triggered_at', type: 'string', format: 'date-time', nullable: true),
+        ])),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         // For now, return all webhooks until user association is implemented
@@ -77,46 +67,34 @@ class WebhookController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/webhooks",
-     *     operationId="createWebhook",
-     *     tags={"Webhooks"},
-     *     summary="Create webhook",
-     *     description="Create a new webhook endpoint",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"url", "events"},
-     *
-     * @OA\Property(property="url",         type="string", format="url", example="https://example.com/webhook"),
-     * @OA\Property(property="events",      type="array", @OA\Items(type="string"), example={"account.created", "transaction.completed"}),
-     * @OA\Property(property="description", type="string", example="Production webhook for transaction notifications"),
-     * @OA\Property(property="is_active",   type="boolean", default=true)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Webhook created",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",        type="object",
-     * @OA\Property(property="id",          type="string", format="uuid"),
-     * @OA\Property(property="url",         type="string"),
-     * @OA\Property(property="events",      type="array", @OA\Items(type="string")),
-     * @OA\Property(property="secret",      type="string", example="whsec_[redacted]"),
-     * @OA\Property(property="is_active",   type="boolean"),
-     * @OA\Property(property="created_at",  type="string", format="date-time")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/webhooks',
+            operationId: 'createWebhook',
+            tags: ['Webhooks'],
+            summary: 'Create webhook',
+            description: 'Create a new webhook endpoint',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['url', 'events'], properties: [
+        new OA\Property(property: 'url', type: 'string', format: 'url', example: 'https://example.com/webhook'),
+        new OA\Property(property: 'events', type: 'array', example: ['account.created', 'transaction.completed'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'description', type: 'string', example: 'Production webhook for transaction notifications'),
+        new OA\Property(property: 'is_active', type: 'boolean', default: true),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Webhook created',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'url', type: 'string'),
+        new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'secret', type: 'string', example: 'whsec_[redacted]'),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -158,48 +136,37 @@ class WebhookController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/webhooks/{id}",
-     *     operationId="getWebhook",
-     *     tags={"Webhooks"},
-     *     summary="Get webhook details",
-     *     description="Get details of a specific webhook",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Webhook ID",
-     *
-     * @OA\Schema(type="string",                      format="uuid")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Webhook details",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                  type="object",
-     * @OA\Property(property="id",                    type="string", format="uuid"),
-     * @OA\Property(property="url",                   type="string"),
-     * @OA\Property(property="events",                type="array", @OA\Items(type="string")),
-     * @OA\Property(property="is_active",             type="boolean"),
-     * @OA\Property(property="description",           type="string"),
-     * @OA\Property(property="created_at",            type="string", format="date-time"),
-     * @OA\Property(property="statistics",            type="object",
-     * @OA\Property(property="total_deliveries",      type="integer"),
-     * @OA\Property(property="successful_deliveries", type="integer"),
-     * @OA\Property(property="failed_deliveries",     type="integer"),
-     * @OA\Property(property="last_triggered_at",     type="string", format="date-time")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/webhooks/{id}',
+            operationId: 'getWebhook',
+            tags: ['Webhooks'],
+            summary: 'Get webhook details',
+            description: 'Get details of a specific webhook',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Webhook details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'url', type: 'string'),
+        new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'statistics', type: 'object', properties: [
+        new OA\Property(property: 'total_deliveries', type: 'integer'),
+        new OA\Property(property: 'successful_deliveries', type: 'integer'),
+        new OA\Property(property: 'failed_deliveries', type: 'integer'),
+        new OA\Property(property: 'last_triggered_at', type: 'string', format: 'date-time'),
+        ]),
+        ]),
+        ])
+    )]
     public function show(Request $request, string $id): JsonResponse
     {
         $webhook = Webhook::findOrFail($id);
@@ -226,42 +193,27 @@ class WebhookController extends Controller
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/webhooks/{id}",
-     *     operationId="updateWebhook",
-     *     tags={"Webhooks"},
-     *     summary="Update webhook",
-     *     description="Update webhook configuration",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Webhook ID",
-     *
-     * @OA\Schema(type="string",            format="uuid")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="url",         type="string", format="url"),
-     * @OA\Property(property="events",      type="array", @OA\Items(type="string")),
-     * @OA\Property(property="description", type="string"),
-     * @OA\Property(property="is_active",   type="boolean")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Webhook updated"
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/webhooks/{id}',
+            operationId: 'updateWebhook',
+            tags: ['Webhooks'],
+            summary: 'Update webhook',
+            description: 'Update webhook configuration',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'url', type: 'string', format: 'url'),
+        new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Webhook updated'
+    )]
     public function update(Request $request, string $id): JsonResponse
     {
         $webhook = Webhook::findOrFail($id);
@@ -291,30 +243,21 @@ class WebhookController extends Controller
         );
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/webhooks/{id}",
-     *     operationId="deleteWebhook",
-     *     tags={"Webhooks"},
-     *     summary="Delete webhook",
-     *     description="Delete a webhook endpoint",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Webhook ID",
-     *
-     * @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=204,
-     *         description="Webhook deleted"
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/webhooks/{id}',
+            operationId: 'deleteWebhook',
+            tags: ['Webhooks'],
+            summary: 'Delete webhook',
+            description: 'Delete a webhook endpoint',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 204,
+        description: 'Webhook deleted'
+    )]
     public function destroy(Request $request, string $id): JsonResponse
     {
         $webhook = Webhook::findOrFail($id);
@@ -324,39 +267,22 @@ class WebhookController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/webhooks/{id}/deliveries",
-     *     operationId="listWebhookDeliveries",
-     *     tags={"Webhooks"},
-     *     summary="List webhook deliveries",
-     *     description="Get delivery history for a webhook",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Webhook ID",
-     *
-     * @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by status",
-     *
-     * @OA\Schema(type="string", enum={"pending", "success", "failed"})
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Webhook deliveries"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/webhooks/{id}/deliveries',
+            operationId: 'listWebhookDeliveries',
+            tags: ['Webhooks'],
+            summary: 'List webhook deliveries',
+            description: 'Get delivery history for a webhook',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+        new OA\Parameter(name: 'status', in: 'query', required: false, description: 'Filter by status', schema: new OA\Schema(type: 'string', enum: ['pending', 'success', 'failed'])),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Webhook deliveries'
+    )]
     public function deliveries(Request $request, string $id): JsonResponse
     {
         $webhook = Webhook::findOrFail($id);
@@ -383,31 +309,26 @@ class WebhookController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/webhooks/events",
-     *     operationId="listWebhookEvents",
-     *     tags={"Webhooks"},
-     *     summary="List available webhook events",
-     *     description="Get a list of all available webhook events that can be subscribed to",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Available webhook events",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",        type="object",
-     * @OA\Property(property="account",     type="array", @OA\Items(type="string")),
-     * @OA\Property(property="transaction", type="array", @OA\Items(type="string")),
-     * @OA\Property(property="transfer",    type="array", @OA\Items(type="string")),
-     * @OA\Property(property="basket",      type="array", @OA\Items(type="string")),
-     * @OA\Property(property="governance",  type="array", @OA\Items(type="string"))
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/webhooks/events',
+            operationId: 'listWebhookEvents',
+            tags: ['Webhooks'],
+            summary: 'List available webhook events',
+            description: 'Get a list of all available webhook events that can be subscribed to'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Available webhook events',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'account', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'transaction', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'transfer', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'basket', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'governance', type: 'array', items: new OA\Items(type: 'string')),
+        ]),
+        ])
+    )]
     public function events(): JsonResponse
     {
         return response()->json(

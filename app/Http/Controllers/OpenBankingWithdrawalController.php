@@ -12,13 +12,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Open Banking Withdrawals",
- *     description="Open banking withdrawal initiation and processing"
- * )
- */
+#[OA\Tag(
+    name: 'Open Banking Withdrawals',
+    description: 'Open banking withdrawal initiation and processing'
+)]
 class OpenBankingWithdrawalController extends Controller
 {
     protected BankIntegrationService $bankIntegration;
@@ -33,19 +32,22 @@ class OpenBankingWithdrawalController extends Controller
         $this->paymentGateway = $paymentGateway;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/open-banking/withdrawals/create",
-     *     operationId="openBankingWithdrawalsCreate",
-     *     tags={"Open Banking Withdrawals"},
-     *     summary="Show withdrawal form",
-     *     description="Shows the open banking withdrawal form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/open-banking/withdrawals/create',
+            operationId: 'openBankingWithdrawalsCreate',
+            tags: ['Open Banking Withdrawals'],
+            summary: 'Show withdrawal form',
+            description: 'Shows the open banking withdrawal form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create()
     {
         $user = Auth::user();
@@ -87,19 +89,22 @@ class OpenBankingWithdrawalController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/open-banking/withdrawals/initiate",
-     *     operationId="openBankingWithdrawalsInitiate",
-     *     tags={"Open Banking Withdrawals"},
-     *     summary="Initiate withdrawal",
-     *     description="Initiates a withdrawal via open banking",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/open-banking/withdrawals/initiate',
+            operationId: 'openBankingWithdrawalsInitiate',
+            tags: ['Open Banking Withdrawals'],
+            summary: 'Initiate withdrawal',
+            description: 'Initiates a withdrawal via open banking',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function initiate(Request $request)
     {
         $request->validate(
@@ -161,19 +166,22 @@ class OpenBankingWithdrawalController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/open-banking/withdrawals/callback",
-     *     operationId="openBankingWithdrawalsCallback",
-     *     tags={"Open Banking Withdrawals"},
-     *     summary="Withdrawal callback",
-     *     description="Handles the open banking withdrawal callback",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/open-banking/withdrawals/callback',
+            operationId: 'openBankingWithdrawalsCallback',
+            tags: ['Open Banking Withdrawals'],
+            summary: 'Withdrawal callback',
+            description: 'Handles the open banking withdrawal callback',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function callback(Request $request)
     {
         // Verify state to prevent CSRF
@@ -284,19 +292,22 @@ class OpenBankingWithdrawalController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/open-banking/withdrawals/select-account",
-     *     operationId="openBankingWithdrawalsSelectAccount",
-     *     tags={"Open Banking Withdrawals"},
-     *     summary="Select bank account",
-     *     description="Shows bank account selection for withdrawal",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/open-banking/withdrawals/select-account',
+            operationId: 'openBankingWithdrawalsSelectAccount',
+            tags: ['Open Banking Withdrawals'],
+            summary: 'Select bank account',
+            description: 'Shows bank account selection for withdrawal',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function selectAccount(Request $request)
     {
         $request->validate(
@@ -330,19 +341,22 @@ class OpenBankingWithdrawalController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/open-banking/withdrawals/process",
-     *     operationId="openBankingWithdrawalsProcessWithAccount",
-     *     tags={"Open Banking Withdrawals"},
-     *     summary="Process with selected account",
-     *     description="Processes withdrawal with the selected bank account",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/open-banking/withdrawals/process',
+            operationId: 'openBankingWithdrawalsProcessWithAccount',
+            tags: ['Open Banking Withdrawals'],
+            summary: 'Process with selected account',
+            description: 'Processes withdrawal with the selected bank account',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function processWithAccount(Request $request)
     {
         $request->validate(

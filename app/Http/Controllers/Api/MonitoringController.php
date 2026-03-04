@@ -13,30 +13,29 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
+use OpenApi\Attributes as OA;
 
 class MonitoringController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/health",
-     *     operationId="getHealthStatus",
-     *     tags={"Monitoring"},
-     *     summary="Get application health status",
-     *     description="Returns comprehensive health check results",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Health status retrieved successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="status", type="string", enum={"healthy", "degraded", "unhealthy"}),
-     *             @OA\Property(property="healthy", type="boolean"),
-     *             @OA\Property(property="timestamp", type="string", format="date-time"),
-     *             @OA\Property(property="checks", type="object"),
-     *             @OA\Property(property="summary", type="object")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/health',
+            operationId: 'getHealthStatus',
+            tags: ['Monitoring'],
+            summary: 'Get application health status',
+            description: 'Returns comprehensive health check results',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Health status retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', enum: ['healthy', 'degraded', 'unhealthy']),
+        new OA\Property(property: 'healthy', type: 'boolean'),
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'checks', type: 'object'),
+        new OA\Property(property: 'summary', type: 'object'),
+        ])
+    )]
     public function health(HealthChecker $healthChecker): JsonResponse
     {
         $health = $healthChecker->check();
@@ -44,27 +43,25 @@ class MonitoringController extends Controller
         return response()->json($health, $health['healthy'] ? 200 : 503);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/ready",
-     *     operationId="getReadyStatus",
-     *     tags={"Monitoring"},
-     *     summary="Get application readiness status",
-     *     description="Returns whether the application is ready to serve traffic",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Application is ready",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="ready", type="boolean"),
-     *             @OA\Property(property="timestamp", type="string", format="date-time")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=503,
-     *         description="Application not ready"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/ready',
+            operationId: 'getReadyStatus',
+            tags: ['Monitoring'],
+            summary: 'Get application readiness status',
+            description: 'Returns whether the application is ready to serve traffic'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Application is ready',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'ready', type: 'boolean'),
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        ])
+    )]
+    #[OA\Response(
+        response: 503,
+        description: 'Application not ready'
+    )]
     public function ready(HealthChecker $healthChecker): JsonResponse
     {
         $readiness = $healthChecker->checkReadiness();
@@ -72,23 +69,21 @@ class MonitoringController extends Controller
         return response()->json($readiness, $readiness['ready'] ? 200 : 503);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/alive",
-     *     operationId="getAliveStatus",
-     *     tags={"Monitoring"},
-     *     summary="Get application liveness status",
-     *     description="Simple liveness check for Kubernetes",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Application is alive",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="alive", type="boolean", example=true),
-     *             @OA\Property(property="timestamp", type="string", format="date-time")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/alive',
+            operationId: 'getAliveStatus',
+            tags: ['Monitoring'],
+            summary: 'Get application liveness status',
+            description: 'Simple liveness check for Kubernetes'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Application is alive',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'alive', type: 'boolean', example: true),
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        ])
+    )]
     public function alive(): JsonResponse
     {
         // Calculate uptime from app start time if available
@@ -102,21 +97,19 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/metrics",
-     *     operationId="getMetrics",
-     *     tags={"Monitoring"},
-     *     summary="Get application metrics",
-     *     description="Returns current application metrics in JSON format",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Metrics retrieved successfully",
-     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/metrics',
+            operationId: 'getMetrics',
+            tags: ['Monitoring'],
+            summary: 'Get application metrics',
+            description: 'Returns current application metrics in JSON format',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Metrics retrieved successfully',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'object'))
+    )]
     public function metrics(MetricsCollector $collector): JsonResponse
     {
         // Collect current metrics from cache
@@ -150,23 +143,21 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/prometheus",
-     *     operationId="getPrometheusMetrics",
-     *     tags={"Monitoring"},
-     *     summary="Export metrics in Prometheus format",
-     *     description="Returns metrics formatted for Prometheus scraping",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Prometheus metrics exported",
-     *         @OA\MediaType(
-     *             mediaType="text/plain",
-     *             @OA\Schema(type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/prometheus',
+            operationId: 'getPrometheusMetrics',
+            tags: ['Monitoring'],
+            summary: 'Export metrics in Prometheus format',
+            description: 'Returns metrics formatted for Prometheus scraping'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Prometheus metrics exported',
+        content: new OA\MediaType(
+            mediaType: 'text/plain',
+            schema: new OA\Schema(type: 'string')
+        )
+    )]
     public function prometheus(PrometheusExporter $exporter): Response
     {
         $metrics = $exporter->export();
@@ -175,28 +166,22 @@ class MonitoringController extends Controller
             ->header('Content-Type', 'text/plain; version=0.0.4');
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/traces",
-     *     operationId="getTraces",
-     *     tags={"Monitoring"},
-     *     summary="Get distributed traces",
-     *     description="Returns list of distributed traces",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of traces to return",
-     *         required=false,
-     *         @OA\Schema(type="integer", default=100)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Traces retrieved successfully",
-     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/traces',
+            operationId: 'getTraces',
+            tags: ['Monitoring'],
+            summary: 'Get distributed traces',
+            description: 'Returns list of distributed traces',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of traces to return', required: false, schema: new OA\Schema(type: 'integer', default: 100)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Traces retrieved successfully',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'object'))
+    )]
     public function traces(Request $request): JsonResponse
     {
         $limit = $request->integer('limit', 100);
@@ -218,32 +203,26 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/trace/{traceId}",
-     *     operationId="getTrace",
-     *     tags={"Monitoring"},
-     *     summary="Get specific trace details",
-     *     description="Returns detailed information about a specific trace",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="traceId",
-     *         in="path",
-     *         description="Trace ID",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Trace details retrieved",
-     *         @OA\JsonContent(type="object")
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Trace not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/trace/{traceId}',
+            operationId: 'getTrace',
+            tags: ['Monitoring'],
+            summary: 'Get specific trace details',
+            description: 'Returns detailed information about a specific trace',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'traceId', in: 'path', description: 'Trace ID', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Trace details retrieved',
+        content: new OA\JsonContent(type: 'object')
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Trace not found'
+    )]
     public function trace(string $traceId): JsonResponse
     {
         // Get trace data from cache
@@ -271,28 +250,22 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/monitoring/alerts",
-     *     operationId="getAlerts",
-     *     tags={"Monitoring"},
-     *     summary="Get active alerts",
-     *     description="Returns list of active monitoring alerts",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="severity",
-     *         in="query",
-     *         description="Filter by severity",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"critical", "error", "warning", "info"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Alerts retrieved successfully",
-     *         @OA\JsonContent(type="array", @OA\Items(type="object"))
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/monitoring/alerts',
+            operationId: 'getAlerts',
+            tags: ['Monitoring'],
+            summary: 'Get active alerts',
+            description: 'Returns list of active monitoring alerts',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'severity', in: 'query', description: 'Filter by severity', required: false, schema: new OA\Schema(type: 'string', enum: ['critical', 'error', 'warning', 'info'])),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Alerts retrieved successfully',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(type: 'object'))
+    )]
     public function alerts(Request $request): JsonResponse
     {
         $query = DB::table('monitoring_alerts')
@@ -312,35 +285,29 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/monitoring/alerts/{alertId}/acknowledge",
-     *     operationId="acknowledgeAlert",
-     *     tags={"Monitoring"},
-     *     summary="Acknowledge an alert",
-     *     description="Marks an alert as acknowledged",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="alertId",
-     *         in="path",
-     *         description="Alert ID",
-     *         required=true,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Alert acknowledged",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="alert_id", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Alert not found"
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/monitoring/alerts/{alertId}/acknowledge',
+            operationId: 'acknowledgeAlert',
+            tags: ['Monitoring'],
+            summary: 'Acknowledge an alert',
+            description: 'Marks an alert as acknowledged',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'alertId', in: 'path', description: 'Alert ID', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Alert acknowledged',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'alert_id', type: 'integer'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Alert not found'
+    )]
     public function acknowledgeAlert(int $alertId): JsonResponse
     {
         $updated = DB::table('monitoring_alerts')
@@ -362,31 +329,26 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/monitoring/workflow/start",
-     *     operationId="startMonitoringWorkflow",
-     *     tags={"Monitoring"},
-     *     summary="Start monitoring workflow",
-     *     description="Starts the automated monitoring workflow",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=false,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="interval", type="integer", default=60),
-     *             @OA\Property(property="max_iterations", type="integer", nullable=true)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Workflow started",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="workflow_id", type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/monitoring/workflow/start',
+            operationId: 'startMonitoringWorkflow',
+            tags: ['Monitoring'],
+            summary: 'Start monitoring workflow',
+            description: 'Starts the automated monitoring workflow',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'interval', type: 'integer', default: 60),
+        new OA\Property(property: 'max_iterations', type: 'integer', nullable: true),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Workflow started',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'workflow_id', type: 'string'),
+        ])
+    )]
     public function startWorkflow(Request $request): JsonResponse
     {
         $config = $request->validate([
@@ -408,27 +370,25 @@ class MonitoringController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/monitoring/workflow/stop",
-     *     operationId="stopMonitoringWorkflow",
-     *     tags={"Monitoring"},
-     *     summary="Stop monitoring workflow",
-     *     description="Stops the automated monitoring workflow",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Workflow stopped",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="No active workflow found"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/monitoring/workflow/stop',
+            operationId: 'stopMonitoringWorkflow',
+            tags: ['Monitoring'],
+            summary: 'Stop monitoring workflow',
+            description: 'Stops the automated monitoring workflow',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Workflow stopped',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No active workflow found'
+    )]
     public function stopWorkflow(): JsonResponse
     {
         $workflowId = Cache::get('monitoring:workflow:id');

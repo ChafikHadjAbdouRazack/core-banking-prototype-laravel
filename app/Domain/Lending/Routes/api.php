@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\LoanController;
 use Illuminate\Support\Facades\Route;
 
 // P2P Lending endpoints
-Route::prefix('lending')->middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:lending'])->group(function () {
+Route::prefix('lending')->middleware(['auth:sanctum', 'sub_product:lending'])->group(function () {
     // Loan applications
     Route::middleware('api.rate_limit:query')->group(function () {
         Route::get('/applications', [LoanApplicationController::class, 'index']);

@@ -31,7 +31,7 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::post('/refresh', [App\Http\Controllers\Api\Auth\LoginController::class, 'refresh'])->middleware('throttle:20,1');
 
     // Protected auth endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/logout', [App\Http\Controllers\Api\Auth\LoginController::class, 'logout']);
         Route::post('/logout-all', [App\Http\Controllers\Api\Auth\LoginController::class, 'logoutAll']);
         Route::get('/user', [App\Http\Controllers\Api\Auth\LoginController::class, 'user']);

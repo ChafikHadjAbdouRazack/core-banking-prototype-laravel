@@ -10,6 +10,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Throwable;
 
 /**
@@ -18,12 +19,11 @@ use Throwable;
  * This endpoint receives real-time authorization requests from the card issuer
  * when a user taps their card at a merchant. The response must be returned
  * within 2000ms to approve/deny the transaction.
- *
- * @OA\Tag(
- *     name="Card Webhooks",
- *     description="Card issuer webhook endpoints (internal)"
- * )
  */
+#[OA\Tag(
+    name: 'Card Webhooks',
+    description: 'Card issuer webhook endpoints (internal)'
+)]
 class JitFundingWebhookController extends Controller
 {
     public function __construct(
@@ -35,37 +35,32 @@ class JitFundingWebhookController extends Controller
      * Handle card authorization webhook from issuer.
      *
      * CRITICAL: This endpoint has a 2000ms latency budget.
-     *
-     * @OA\Post(
-     *     path="/api/webhooks/card-issuer/authorization",
-     *     summary="JIT funding authorization webhook",
-     *     tags={"Card Webhooks"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"authorization_id", "card_token", "amount", "currency", "merchant_name"},
-     *             @OA\Property(property="authorization_id", type="string"),
-     *             @OA\Property(property="card_token", type="string"),
-     *             @OA\Property(property="amount", type="integer", description="Amount in cents"),
-     *             @OA\Property(property="currency", type="string", example="USD"),
-     *             @OA\Property(property="merchant_name", type="string"),
-     *             @OA\Property(property="merchant_category", type="string"),
-     *             @OA\Property(property="merchant_id", type="string"),
-     *             @OA\Property(property="merchant_city", type="string"),
-     *             @OA\Property(property="merchant_country", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Authorization decision",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="approved", type="boolean"),
-     *             @OA\Property(property="hold_id", type="string", nullable=true),
-     *             @OA\Property(property="decline_reason", type="string", nullable=true)
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/webhooks/card-issuer/authorization',
+        summary: 'JIT funding authorization webhook',
+        tags: ['Card Webhooks'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['authorization_id', 'card_token', 'amount', 'currency', 'merchant_name'], properties: [
+        new OA\Property(property: 'authorization_id', type: 'string'),
+        new OA\Property(property: 'card_token', type: 'string'),
+        new OA\Property(property: 'amount', type: 'integer', description: 'Amount in cents'),
+        new OA\Property(property: 'currency', type: 'string', example: 'USD'),
+        new OA\Property(property: 'merchant_name', type: 'string'),
+        new OA\Property(property: 'merchant_category', type: 'string'),
+        new OA\Property(property: 'merchant_id', type: 'string'),
+        new OA\Property(property: 'merchant_city', type: 'string'),
+        new OA\Property(property: 'merchant_country', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Authorization decision',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'approved', type: 'boolean'),
+        new OA\Property(property: 'hold_id', type: 'string', nullable: true),
+        new OA\Property(property: 'decline_reason', type: 'string', nullable: true),
+        ])
+    )]
     public function handleAuthorization(Request $request): JsonResponse
     {
         $startTime = microtime(true);
@@ -117,23 +112,22 @@ class JitFundingWebhookController extends Controller
 
     /**
      * Handle settlement webhook (post-authorization).
-     *
-     * @OA\Post(
-     *     path="/api/webhooks/card-issuer/settlement",
-     *     summary="Card settlement webhook",
-     *     tags={"Card Webhooks"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="authorization_id", type="string"),
-     *             @OA\Property(property="settlement_id", type="string"),
-     *             @OA\Property(property="final_amount", type="integer"),
-     *             @OA\Property(property="currency", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Settlement acknowledged")
-     * )
      */
+    #[OA\Post(
+        path: '/api/webhooks/card-issuer/settlement',
+        summary: 'Card settlement webhook',
+        tags: ['Card Webhooks'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'authorization_id', type: 'string'),
+        new OA\Property(property: 'settlement_id', type: 'string'),
+        new OA\Property(property: 'final_amount', type: 'integer'),
+        new OA\Property(property: 'currency', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Settlement acknowledged'
+    )]
     public function settlement(Request $request): JsonResponse
     {
         $validated = $request->validate([

@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 use Throwable;
 
 class CrossChainController extends Controller
@@ -26,31 +27,33 @@ class CrossChainController extends Controller
 
     /**
      * List supported chains with bridge availability.
-     *
-     * @OA\Get(
-     *     path="/api/v1/crosschain/chains",
-     *     operationId="crosschainChains",
-     *     summary="List supported chains with bridge availability",
-     *     description="Returns all supported blockchain networks and their bridge provider availability.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of supported chains",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="network", type="string", example="ethereum"),
-     *                 @OA\Property(property="chain_id", type="integer", nullable=true, example=1),
-     *                 @OA\Property(property="is_evm", type="boolean", example=true),
-     *                 @OA\Property(property="native_currency", type="string", example="ETH"),
-     *                 @OA\Property(property="bridge_providers", type="array", @OA\Items(type="string"), example={"wormhole", "layerzero", "axelar"})
-     *             ))
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/crosschain/chains',
+        operationId: 'crosschainChains',
+        summary: 'List supported chains with bridge availability',
+        description: 'Returns all supported blockchain networks and their bridge provider availability.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of supported chains',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'network', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'chain_id', type: 'integer', nullable: true, example: 1),
+        new OA\Property(property: 'is_evm', type: 'boolean', example: true),
+        new OA\Property(property: 'native_currency', type: 'string', example: 'ETH'),
+        new OA\Property(property: 'bridge_providers', type: 'array', example: ['wormhole', 'layerzero', 'axelar'], items: new OA\Items(type: 'string')),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function chains(): JsonResponse
     {
         $chains = $this->bridgeOrchestrator->getSupportedChains();
@@ -63,56 +66,57 @@ class CrossChainController extends Controller
 
     /**
      * Get bridge quotes from all providers.
-     *
-     * @OA\Post(
-     *     path="/api/v1/crosschain/bridge/quote",
-     *     operationId="crosschainBridgeQuote",
-     *     summary="Get bridge quotes from all available providers",
-     *     description="Fetches bridge transfer quotes from all supported bridge providers (Wormhole, LayerZero, Axelar) for the given source/destination chain, token, and amount.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"from_chain", "to_chain", "token", "amount"},
-     *             @OA\Property(property="from_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="ethereum"),
-     *             @OA\Property(property="to_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="polygon"),
-     *             @OA\Property(property="token", type="string", maxLength=20, example="USDC"),
-     *             @OA\Property(property="amount", type="string", example="1000.50", description="Numeric amount as string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Bridge quotes retrieved",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="provider", type="string", example="wormhole"),
-     *                 @OA\Property(property="from_chain", type="string", example="ethereum"),
-     *                 @OA\Property(property="to_chain", type="string", example="polygon"),
-     *                 @OA\Property(property="token", type="string", example="USDC"),
-     *                 @OA\Property(property="amount", type="string", example="1000.50"),
-     *                 @OA\Property(property="fee", type="string", example="2.50"),
-     *                 @OA\Property(property="estimated_time_seconds", type="integer", example=900),
-     *                 @OA\Property(property="output_amount", type="string", example="998.00")
-     *             ))
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Quote retrieval failed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="ERR_CROSSCHAIN_001"),
-     *                 @OA\Property(property="message", type="string", example="Bridge quote failed")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/crosschain/bridge/quote',
+        operationId: 'crosschainBridgeQuote',
+        summary: 'Get bridge quotes from all available providers',
+        description: 'Fetches bridge transfer quotes from all supported bridge providers (Wormhole, LayerZero, Axelar) for the given source/destination chain, token, and amount.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['from_chain', 'to_chain', 'token', 'amount'], properties: [
+        new OA\Property(property: 'from_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'polygon'),
+        new OA\Property(property: 'token', type: 'string', maxLength: 20, example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '1000.50', description: 'Numeric amount as string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bridge quotes retrieved',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'provider', type: 'string', example: 'wormhole'),
+        new OA\Property(property: 'from_chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '1000.50'),
+        new OA\Property(property: 'fee', type: 'string', example: '2.50'),
+        new OA\Property(property: 'estimated_time_seconds', type: 'integer', example: 900),
+        new OA\Property(property: 'output_amount', type: 'string', example: '998.00'),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Quote retrieval failed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'ERR_CROSSCHAIN_001'),
+        new OA\Property(property: 'message', type: 'string', example: 'Bridge quote failed'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function bridgeQuote(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -155,61 +159,62 @@ class CrossChainController extends Controller
      *
      * Selects the best available quote and initiates the cross-chain bridge
      * transfer from sender to recipient address.
-     *
-     * @OA\Post(
-     *     path="/api/v1/crosschain/bridge/initiate",
-     *     operationId="crosschainBridgeInitiate",
-     *     summary="Initiate a cross-chain bridge transfer",
-     *     description="Selects the best available bridge quote and initiates the cross-chain transfer from sender to recipient address.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"from_chain", "to_chain", "token", "amount", "sender_address", "recipient_address"},
-     *             @OA\Property(property="from_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="ethereum"),
-     *             @OA\Property(property="to_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="arbitrum"),
-     *             @OA\Property(property="token", type="string", maxLength=20, example="USDC"),
-     *             @OA\Property(property="amount", type="string", example="500.00", description="Numeric amount as string"),
-     *             @OA\Property(property="sender_address", type="string", maxLength=100, example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e"),
-     *             @OA\Property(property="recipient_address", type="string", maxLength=100, example="0x8ba1f109551bD432803012645Ac136ddd64DBA72")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Bridge transfer initiated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transaction_id", type="string", example="bridge-tx-abc123"),
-     *                 @OA\Property(property="status", type="string", example="pending"),
-     *                 @OA\Property(property="quote", type="object",
-     *                     @OA\Property(property="provider", type="string", example="wormhole"),
-     *                     @OA\Property(property="from_chain", type="string", example="ethereum"),
-     *                     @OA\Property(property="to_chain", type="string", example="arbitrum"),
-     *                     @OA\Property(property="token", type="string", example="USDC"),
-     *                     @OA\Property(property="amount", type="string", example="500.00"),
-     *                     @OA\Property(property="fee", type="string", example="1.25"),
-     *                     @OA\Property(property="estimated_time_seconds", type="integer", example=600)
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bridge initiation failed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="ERR_CROSSCHAIN_002"),
-     *                 @OA\Property(property="message", type="string", example="Bridge initiation failed")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/crosschain/bridge/initiate',
+        operationId: 'crosschainBridgeInitiate',
+        summary: 'Initiate a cross-chain bridge transfer',
+        description: 'Selects the best available bridge quote and initiates the cross-chain transfer from sender to recipient address.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['from_chain', 'to_chain', 'token', 'amount', 'sender_address', 'recipient_address'], properties: [
+        new OA\Property(property: 'from_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'arbitrum'),
+        new OA\Property(property: 'token', type: 'string', maxLength: 20, example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '500.00', description: 'Numeric amount as string'),
+        new OA\Property(property: 'sender_address', type: 'string', maxLength: 100, example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'),
+        new OA\Property(property: 'recipient_address', type: 'string', maxLength: 100, example: '0x8ba1f109551bD432803012645Ac136ddd64DBA72'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bridge transfer initiated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'transaction_id', type: 'string', example: 'bridge-tx-abc123'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        new OA\Property(property: 'quote', type: 'object', properties: [
+        new OA\Property(property: 'provider', type: 'string', example: 'wormhole'),
+        new OA\Property(property: 'from_chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', example: 'arbitrum'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '500.00'),
+        new OA\Property(property: 'fee', type: 'string', example: '1.25'),
+        new OA\Property(property: 'estimated_time_seconds', type: 'integer', example: 600),
+        ]),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bridge initiation failed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'ERR_CROSSCHAIN_002'),
+        new OA\Property(property: 'message', type: 'string', example: 'Bridge initiation failed'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function bridgeInitiate(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -261,55 +266,53 @@ class CrossChainController extends Controller
 
     /**
      * Get bridge transaction status.
-     *
-     * @OA\Get(
-     *     path="/api/v1/crosschain/bridge/{id}/status",
-     *     operationId="crosschainBridgeStatus",
-     *     summary="Get bridge transaction status",
-     *     description="Retrieves the current status and details of a previously initiated bridge transaction.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="Bridge transaction ID",
-     *         @OA\Schema(type="string", example="bridge-tx-abc123")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Bridge transaction status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transaction_id", type="string", example="bridge-tx-abc123"),
-     *                 @OA\Property(property="status", type="string", example="completed"),
-     *                 @OA\Property(property="from_chain", type="string", example="ethereum"),
-     *                 @OA\Property(property="to_chain", type="string", example="polygon"),
-     *                 @OA\Property(property="token", type="string", example="USDC"),
-     *                 @OA\Property(property="amount", type="string", example="1000.50"),
-     *                 @OA\Property(property="provider", type="string", example="wormhole"),
-     *                 @OA\Property(property="source_tx_hash", type="string", nullable=true),
-     *                 @OA\Property(property="destination_tx_hash", type="string", nullable=true),
-     *                 @OA\Property(property="created_at", type="string", format="date-time"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Bridge transaction not found",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="ERR_CROSSCHAIN_003"),
-     *                 @OA\Property(property="message", type="string", example="Bridge transaction not found.")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/crosschain/bridge/{id}/status',
+        operationId: 'crosschainBridgeStatus',
+        summary: 'Get bridge transaction status',
+        description: 'Retrieves the current status and details of a previously initiated bridge transaction.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Bridge transaction ID', schema: new OA\Schema(type: 'string', example: 'bridge-tx-abc123')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Bridge transaction status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'transaction_id', type: 'string', example: 'bridge-tx-abc123'),
+        new OA\Property(property: 'status', type: 'string', example: 'completed'),
+        new OA\Property(property: 'from_chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '1000.50'),
+        new OA\Property(property: 'provider', type: 'string', example: 'wormhole'),
+        new OA\Property(property: 'source_tx_hash', type: 'string', nullable: true),
+        new OA\Property(property: 'destination_tx_hash', type: 'string', nullable: true),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Bridge transaction not found',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'ERR_CROSSCHAIN_003'),
+        new OA\Property(property: 'message', type: 'string', example: 'Bridge transaction not found.'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function bridgeStatus(string $id): JsonResponse
     {
         $transaction = $this->bridgeTracker->getTransaction($id);
@@ -332,59 +335,60 @@ class CrossChainController extends Controller
 
     /**
      * Get a cross-chain swap quote (bridge + swap).
-     *
-     * @OA\Post(
-     *     path="/api/v1/crosschain/swap/quote",
-     *     operationId="crosschainSwapQuote",
-     *     summary="Get a cross-chain swap quote",
-     *     description="Gets a combined bridge + swap quote for swapping tokens across different chains. The quote includes bridge fees, swap fees, estimated output, and execution time.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"from_chain", "to_chain", "from_token", "to_token", "amount"},
-     *             @OA\Property(property="from_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="ethereum"),
-     *             @OA\Property(property="to_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="polygon"),
-     *             @OA\Property(property="from_token", type="string", maxLength=20, example="ETH"),
-     *             @OA\Property(property="to_token", type="string", maxLength=20, example="USDC"),
-     *             @OA\Property(property="amount", type="string", example="1.5", description="Numeric amount as string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Cross-chain swap quote",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="from_chain", type="string", example="ethereum"),
-     *                 @OA\Property(property="to_chain", type="string", example="polygon"),
-     *                 @OA\Property(property="from_token", type="string", example="ETH"),
-     *                 @OA\Property(property="to_token", type="string", example="USDC"),
-     *                 @OA\Property(property="input_amount", type="string", example="1.5"),
-     *                 @OA\Property(property="output_amount", type="string", example="2950.00"),
-     *                 @OA\Property(property="bridge_fee", type="string", example="3.50"),
-     *                 @OA\Property(property="swap_fee", type="string", example="1.25"),
-     *                 @OA\Property(property="estimated_time_seconds", type="integer", example=1200),
-     *                 @OA\Property(property="route", type="array", @OA\Items(type="string"))
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Swap quote failed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="ERR_CROSSCHAIN_004"),
-     *                 @OA\Property(property="message", type="string", example="Cross-chain swap quote failed")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/crosschain/swap/quote',
+        operationId: 'crosschainSwapQuote',
+        summary: 'Get a cross-chain swap quote',
+        description: 'Gets a combined bridge + swap quote for swapping tokens across different chains. The quote includes bridge fees, swap fees, estimated output, and execution time.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['from_chain', 'to_chain', 'from_token', 'to_token', 'amount'], properties: [
+        new OA\Property(property: 'from_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'polygon'),
+        new OA\Property(property: 'from_token', type: 'string', maxLength: 20, example: 'ETH'),
+        new OA\Property(property: 'to_token', type: 'string', maxLength: 20, example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '1.5', description: 'Numeric amount as string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Cross-chain swap quote',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'from_chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'from_token', type: 'string', example: 'ETH'),
+        new OA\Property(property: 'to_token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'input_amount', type: 'string', example: '1.5'),
+        new OA\Property(property: 'output_amount', type: 'string', example: '2950.00'),
+        new OA\Property(property: 'bridge_fee', type: 'string', example: '3.50'),
+        new OA\Property(property: 'swap_fee', type: 'string', example: '1.25'),
+        new OA\Property(property: 'estimated_time_seconds', type: 'integer', example: 1200),
+        new OA\Property(property: 'route', type: 'array', items: new OA\Items(type: 'string')),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Swap quote failed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'ERR_CROSSCHAIN_004'),
+        new OA\Property(property: 'message', type: 'string', example: 'Cross-chain swap quote failed'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function swapQuote(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -426,59 +430,60 @@ class CrossChainController extends Controller
 
     /**
      * Execute a cross-chain swap.
-     *
-     * @OA\Post(
-     *     path="/api/v1/crosschain/swap/execute",
-     *     operationId="crosschainSwapExecute",
-     *     summary="Execute a cross-chain swap",
-     *     description="Executes a cross-chain token swap by first obtaining the best quote and then executing the bridge + swap operations for the given wallet address.",
-     *     tags={"CrossChain"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"from_chain", "to_chain", "from_token", "to_token", "amount", "wallet_address"},
-     *             @OA\Property(property="from_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="ethereum"),
-     *             @OA\Property(property="to_chain", type="string", enum={"ethereum", "polygon", "bsc", "bitcoin", "solana", "tron", "arbitrum", "optimism", "base"}, example="polygon"),
-     *             @OA\Property(property="from_token", type="string", maxLength=20, example="ETH"),
-     *             @OA\Property(property="to_token", type="string", maxLength=20, example="USDC"),
-     *             @OA\Property(property="amount", type="string", example="1.5", description="Numeric amount as string"),
-     *             @OA\Property(property="wallet_address", type="string", maxLength=100, example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Cross-chain swap executed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="swap_id", type="string", example="swap-xyz789"),
-     *                 @OA\Property(property="status", type="string", example="pending"),
-     *                 @OA\Property(property="bridge_tx_id", type="string", example="bridge-tx-abc123"),
-     *                 @OA\Property(property="from_chain", type="string", example="ethereum"),
-     *                 @OA\Property(property="to_chain", type="string", example="polygon"),
-     *                 @OA\Property(property="from_token", type="string", example="ETH"),
-     *                 @OA\Property(property="to_token", type="string", example="USDC"),
-     *                 @OA\Property(property="input_amount", type="string", example="1.5"),
-     *                 @OA\Property(property="expected_output", type="string", example="2950.00")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Swap execution failed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="ERR_CROSSCHAIN_005"),
-     *                 @OA\Property(property="message", type="string", example="Cross-chain swap execution failed")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/crosschain/swap/execute',
+        operationId: 'crosschainSwapExecute',
+        summary: 'Execute a cross-chain swap',
+        description: 'Executes a cross-chain token swap by first obtaining the best quote and then executing the bridge + swap operations for the given wallet address.',
+        tags: ['CrossChain'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['from_chain', 'to_chain', 'from_token', 'to_token', 'amount', 'wallet_address'], properties: [
+        new OA\Property(property: 'from_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', enum: ['ethereum', 'polygon', 'bsc', 'bitcoin', 'solana', 'tron', 'arbitrum', 'optimism', 'base'], example: 'polygon'),
+        new OA\Property(property: 'from_token', type: 'string', maxLength: 20, example: 'ETH'),
+        new OA\Property(property: 'to_token', type: 'string', maxLength: 20, example: 'USDC'),
+        new OA\Property(property: 'amount', type: 'string', example: '1.5', description: 'Numeric amount as string'),
+        new OA\Property(property: 'wallet_address', type: 'string', maxLength: 100, example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Cross-chain swap executed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'swap_id', type: 'string', example: 'swap-xyz789'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        new OA\Property(property: 'bridge_tx_id', type: 'string', example: 'bridge-tx-abc123'),
+        new OA\Property(property: 'from_chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'to_chain', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'from_token', type: 'string', example: 'ETH'),
+        new OA\Property(property: 'to_token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'input_amount', type: 'string', example: '1.5'),
+        new OA\Property(property: 'expected_output', type: 'string', example: '2950.00'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Swap execution failed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'ERR_CROSSCHAIN_005'),
+        new OA\Property(property: 'message', type: 'string', example: 'Cross-chain swap execution failed'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function swapExecute(Request $request): JsonResponse
     {
         $validated = $request->validate([

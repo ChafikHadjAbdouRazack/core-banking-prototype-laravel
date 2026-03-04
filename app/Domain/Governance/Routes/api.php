@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\VoteController;
 use Illuminate\Support\Facades\Route;
 
 // Governance endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // Governance endpoints (query rate limiting for reads, vote rate limiting for votes)
     Route::prefix('polls')->group(function () {
         Route::middleware('api.rate_limit:query')->group(function () {

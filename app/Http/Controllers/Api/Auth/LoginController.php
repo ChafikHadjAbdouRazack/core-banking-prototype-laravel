@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Laravel\Sanctum\PersonalAccessToken;
+use OpenApi\Attributes as OA;
 
 class LoginController extends Controller
 {
@@ -25,69 +26,51 @@ class LoginController extends Controller
     /**
      * Login user and create token.
      *
-     * @OA\Post(
-     *     path="/api/auth/login",
-     *     summary="Login user",
-     *     description="Authenticate user with email and password to receive an access/refresh token pair",
-     *     operationId="login",
-     *     tags={"Authentication"},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"email","password"},
-     *
-     * @OA\Property(property="email",             type="string", format="email", example="john@example.com"),
-     * @OA\Property(property="password",          type="string", format="password", example="password123"),
-     * @OA\Property(property="device_name",       type="string", example="iPhone 12", description="Optional device name for token")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Login successful",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="success",           type="boolean", example=true),
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="user",
-     *                     type="object",
-     * @OA\Property(property="id",                type="integer", example=1),
-     * @OA\Property(property="name",              type="string", example="John Doe"),
-     * @OA\Property(property="email",             type="string", example="john@example.com"),
-     * @OA\Property(property="email_verified_at", type="string", nullable=true)
-     *                 ),
-     * @OA\Property(property="access_token",      type="string", example="2|VVGVrIVokPBXkWLOi2yK13eHlQwQtQQONX5GCngZ..."),
-     * @OA\Property(property="refresh_token",     type="string", example="3|rEfReShToKeNhErE..."),
-     * @OA\Property(property="token_type",        type="string", example="Bearer"),
-     * @OA\Property(property="expires_in",        type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
-     * @OA\Property(property="refresh_expires_in", type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Invalid credentials",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="message",           type="string", example="The provided credentials are incorrect."),
-     * @OA\Property(property="errors",            type="object",
-     * @OA\Property(property="email",             type="array",
-     * @OA\Items(type="string",                   example="The provided credentials are incorrect.")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
      *
      * @throws ValidationException
      */
+    #[OA\Post(
+        path: '/api/auth/login',
+        summary: 'Login user',
+        description: 'Authenticate user with email and password to receive an access/refresh token pair',
+        operationId: 'login',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['email', 'password'], properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+        new OA\Property(property: 'device_name', type: 'string', example: 'iPhone 12', description: 'Optional device name for token'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Login successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+        new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
+        new OA\Property(property: 'email_verified_at', type: 'string', nullable: true),
+        ]),
+        new OA\Property(property: 'access_token', type: 'string', example: '2|VVGVrIVokPBXkWLOi2yK13eHlQwQtQQONX5GCngZ...'),
+        new OA\Property(property: 'refresh_token', type: 'string', example: '3|rEfReShToKeNhErE...'),
+        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+        new OA\Property(property: 'expires_in', type: 'integer', nullable: true, example: 86400, description: 'Access token expiration time in seconds'),
+        new OA\Property(property: 'refresh_expires_in', type: 'integer', nullable: true, example: 2592000, description: 'Refresh token expiration time in seconds'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Invalid credentials',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'The provided credentials are incorrect.'),
+        new OA\Property(property: 'errors', type: 'object', properties: [
+        new OA\Property(property: 'email', type: 'array', items: new OA\Items(type: 'string', example: 'The provided credentials are incorrect.')),
+        ]),
+        ])
+    )]
     public function login(Request $request): JsonResponse
     {
         $request->validate(
@@ -148,34 +131,29 @@ class LoginController extends Controller
 
     /**
      * Logout user and revoke tokens.
-     *
-     * @OA\Post(
-     *     path="/api/auth/logout",
-     *     summary="Logout user",
-     *     description="Logout the authenticated user and revoke all their tokens",
-     *     operationId="logout",
-     *     tags={"Authentication"},
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Logout successful",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Logged out successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Unauthenticated")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/logout',
+        summary: 'Logout user',
+        description: 'Logout the authenticated user and revoke all their tokens',
+        operationId: 'logout',
+        tags: ['Authentication'],
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Logout successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Logged out successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated'),
+        ])
+    )]
     public function logout(Request $request): JsonResponse
     {
         // Revoke all tokens for the user
@@ -195,52 +173,39 @@ class LoginController extends Controller
      *
      * Accepts a refresh token (via body or Authorization header), validates it,
      * revokes the old token pair, and issues a new access/refresh pair.
-     *
-     * @OA\Post(
-     *     path="/api/auth/refresh",
-     *     summary="Refresh access token",
-     *     description="Uses a refresh token to obtain a new access/refresh token pair. Does not require auth:sanctum middleware.",
-     *     operationId="refreshToken",
-     *     tags={"Authentication"},
-     *
-     * @OA\RequestBody(
-     *         required=false,
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="refresh_token", type="string", example="2|xyz...", description="Refresh token (alternatively send via Authorization: Bearer header)")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Token refreshed successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="success",              type="boolean", example=true),
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="access_token",         type="string", example="3|newTokenHere..."),
-     * @OA\Property(property="refresh_token",        type="string", example="4|newRefreshHere..."),
-     * @OA\Property(property="token_type",           type="string", example="Bearer"),
-     * @OA\Property(property="expires_in",           type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
-     * @OA\Property(property="refresh_expires_in",   type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Invalid or expired refresh token",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="success", type="boolean", example=false),
-     * @OA\Property(property="message", type="string", example="Invalid or expired refresh token.")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/refresh',
+        summary: 'Refresh access token',
+        description: 'Uses a refresh token to obtain a new access/refresh token pair. Does not require auth:sanctum middleware.',
+        operationId: 'refreshToken',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'refresh_token', type: 'string', example: '2|xyz...', description: 'Refresh token (alternatively send via Authorization: Bearer header)'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Token refreshed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'access_token', type: 'string', example: '3|newTokenHere...'),
+        new OA\Property(property: 'refresh_token', type: 'string', example: '4|newRefreshHere...'),
+        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+        new OA\Property(property: 'expires_in', type: 'integer', nullable: true, example: 86400, description: 'Access token expiration time in seconds'),
+        new OA\Property(property: 'refresh_expires_in', type: 'integer', nullable: true, example: 2592000, description: 'Refresh token expiration time in seconds'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Invalid or expired refresh token',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'message', type: 'string', example: 'Invalid or expired refresh token.'),
+        ])
+    )]
     public function refresh(Request $request): JsonResponse
     {
         // Extract refresh token from body or Authorization header
@@ -315,38 +280,33 @@ class LoginController extends Controller
 
     /**
      * Logout from all devices by revoking all tokens.
-     *
-     * @OA\Post(
-     *     path="/api/auth/logout-all",
-     *     summary="Logout from all devices",
-     *     description="Revokes all tokens for the authenticated user across all devices",
-     *     operationId="logoutAll",
-     *     tags={"Authentication"},
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="All sessions terminated",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="success", type="boolean", example=true),
-     * @OA\Property(property="data",    type="object",
-     * @OA\Property(property="message", type="string", example="All sessions terminated successfully"),
-     * @OA\Property(property="revoked_count", type="integer", example=3)
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Unauthenticated")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/logout-all',
+        summary: 'Logout from all devices',
+        description: 'Revokes all tokens for the authenticated user across all devices',
+        operationId: 'logoutAll',
+        tags: ['Authentication'],
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'All sessions terminated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'All sessions terminated successfully'),
+        new OA\Property(property: 'revoked_count', type: 'integer', example: 3),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated'),
+        ])
+    )]
     public function logoutAll(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -373,45 +333,37 @@ class LoginController extends Controller
 
     /**
      * Get current user.
-     *
-     * @OA\Get(
-     *     path="/api/auth/user",
-     *     summary="Get current user",
-     *     description="Get the authenticated user's information",
-     *     operationId="getUser",
-     *     tags={"Authentication"},
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User information retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="success",           type="boolean", example=true),
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="id",                type="integer", example=1),
-     * @OA\Property(property="name",              type="string", example="John Doe"),
-     * @OA\Property(property="email",             type="string", format="email", example="john@example.com"),
-     * @OA\Property(property="email_verified_at", type="string", format="date-time", nullable=true),
-     * @OA\Property(property="created_at",        type="string", format="date-time"),
-     * @OA\Property(property="updated_at",        type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated",
-     *
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Unauthenticated")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/auth/user',
+        summary: 'Get current user',
+        description: 'Get the authenticated user\'s information',
+        operationId: 'getUser',
+        tags: ['Authentication'],
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'User information retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
+        new OA\Property(property: 'email_verified_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'updated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated'),
+        ])
+    )]
     public function user(Request $request): JsonResponse
     {
         return response()->json(

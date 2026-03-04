@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Commerce\MobileCommerceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/commerce')->name('mobile.commerce.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/merchants', [MobileCommerceController::class, 'merchants'])
             ->middleware('api.rate_limit:query')

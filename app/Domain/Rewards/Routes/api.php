@@ -6,7 +6,7 @@ use App\Http\Controllers\Api\Rewards\RewardsController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/rewards')->name('api.rewards.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/profile', [RewardsController::class, 'profile'])
             ->middleware('api.rate_limit:query')

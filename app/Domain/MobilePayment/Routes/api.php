@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\MobilePayment\WalletReceiveController;
 use App\Http\Controllers\Api\Wallet\WalletTransferController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('v1')->middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
     // Payment Intents
     Route::post('/payments/intents', [PaymentIntentController::class, 'create'])
         ->middleware(['transaction.rate_limit:payment_intent', 'idempotency'])

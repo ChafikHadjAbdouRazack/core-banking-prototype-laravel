@@ -5,28 +5,30 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Stablecoin Operations (Stub)",
- *     description="Stablecoin minting, burning, collateral, and liquidation endpoints (stub)"
- * )
- */
+#[OA\Tag(
+    name: 'Stablecoin Operations (Stub)',
+    description: 'Stablecoin minting, burning, collateral, and liquidation endpoints (stub)'
+)]
 class StablecoinOperationsStubController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/mint",
-     *     operationId="stablecoinOperationsStubMint",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Mint stablecoins",
-     *     description="Mints new stablecoins with collateral",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/mint',
+            operationId: 'stablecoinOperationsStubMint',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Mint stablecoins',
+            description: 'Mints new stablecoins with collateral',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function mint(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -53,19 +55,22 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/burn",
-     *     operationId="stablecoinOperationsStubBurn",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Burn stablecoins",
-     *     description="Burns stablecoins and returns collateral",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/burn',
+            operationId: 'stablecoinOperationsStubBurn',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Burn stablecoins',
+            description: 'Burns stablecoins and returns collateral',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function burn(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -90,19 +95,22 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/collateral/add",
-     *     operationId="stablecoinOperationsStubAddCollateral",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Add collateral to position",
-     *     description="Adds collateral to an existing position",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/collateral/add',
+            operationId: 'stablecoinOperationsStubAddCollateral',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Add collateral to position',
+            description: 'Adds collateral to an existing position',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function addCollateral(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -127,21 +135,25 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/stablecoins/operations/positions/{accountUuid}",
-     *     operationId="stablecoinOperationsStubGetAccountPositions",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Get account positions",
-     *     description="Returns stablecoin positions for an account",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="accountUuid", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/stablecoins/operations/positions/{accountUuid}',
+            operationId: 'stablecoinOperationsStubGetAccountPositions',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Get account positions',
+            description: 'Returns stablecoin positions for an account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'accountUuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function getAccountPositions($accountUuid): JsonResponse
     {
         return response()->json(
@@ -152,19 +164,22 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/stablecoins/operations/positions/at-risk",
-     *     operationId="stablecoinOperationsStubGetPositionsAtRisk",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Get positions at risk",
-     *     description="Returns positions at risk of liquidation",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/stablecoins/operations/positions/at-risk',
+            operationId: 'stablecoinOperationsStubGetPositionsAtRisk',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Get positions at risk',
+            description: 'Returns positions at risk of liquidation',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function getPositionsAtRisk(): JsonResponse
     {
         return response()->json(
@@ -175,21 +190,25 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/stablecoins/operations/positions/{positionUuid}/details",
-     *     operationId="stablecoinOperationsStubGetPositionDetails",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Get position details",
-     *     description="Returns details for a specific position",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="positionUuid", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/stablecoins/operations/positions/{positionUuid}/details',
+            operationId: 'stablecoinOperationsStubGetPositionDetails',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Get position details',
+            description: 'Returns details for a specific position',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'positionUuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function getPositionDetails($positionUuid): JsonResponse
     {
         return response()->json(
@@ -200,19 +219,22 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/stablecoins/operations/liquidation/opportunities",
-     *     operationId="stablecoinOperationsStubGetLiquidationOpportunities",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Get liquidation opportunities",
-     *     description="Returns available liquidation opportunities",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/stablecoins/operations/liquidation/opportunities',
+            operationId: 'stablecoinOperationsStubGetLiquidationOpportunities',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Get liquidation opportunities',
+            description: 'Returns available liquidation opportunities',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function getLiquidationOpportunities(): JsonResponse
     {
         return response()->json(
@@ -223,19 +245,22 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/liquidation/auto",
-     *     operationId="stablecoinOperationsStubExecuteAutoLiquidation",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Execute auto-liquidation",
-     *     description="Executes automatic liquidation of at-risk positions",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/liquidation/auto',
+            operationId: 'stablecoinOperationsStubExecuteAutoLiquidation',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Execute auto-liquidation',
+            description: 'Executes automatic liquidation of at-risk positions',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function executeAutoLiquidation(): JsonResponse
     {
         return response()->json(
@@ -251,21 +276,25 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/liquidation/{positionUuid}",
-     *     operationId="stablecoinOperationsStubLiquidatePosition",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Liquidate a position",
-     *     description="Liquidates a specific position",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="positionUuid", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/liquidation/{positionUuid}',
+            operationId: 'stablecoinOperationsStubLiquidatePosition',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Liquidate a position',
+            description: 'Liquidates a specific position',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'positionUuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function liquidatePosition($positionUuid): JsonResponse
     {
         return response()->json(
@@ -283,21 +312,25 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/stablecoins/operations/liquidation/{positionUuid}/reward",
-     *     operationId="stablecoinOperationsStubCalculateLiquidationReward",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Calculate liquidation reward",
-     *     description="Calculates expected reward for liquidating a position",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="positionUuid", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/stablecoins/operations/liquidation/{positionUuid}/reward',
+            operationId: 'stablecoinOperationsStubCalculateLiquidationReward',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Calculate liquidation reward',
+            description: 'Calculates expected reward for liquidating a position',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'positionUuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function calculateLiquidationReward($positionUuid): JsonResponse
     {
         return response()->json(
@@ -316,21 +349,25 @@ class StablecoinOperationsStubController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/stablecoins/operations/liquidation/simulate/{stablecoinCode}",
-     *     operationId="stablecoinOperationsStubSimulateMassLiquidation",
-     *     tags={"Stablecoin Operations (Stub)"},
-     *     summary="Simulate mass liquidation",
-     *     description="Simulates mass liquidation scenario with price drop",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="stablecoinCode", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/stablecoins/operations/liquidation/simulate/{stablecoinCode}',
+            operationId: 'stablecoinOperationsStubSimulateMassLiquidation',
+            tags: ['Stablecoin Operations (Stub)'],
+            summary: 'Simulate mass liquidation',
+            description: 'Simulates mass liquidation scenario with price drop',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'stablecoinCode', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function simulateMassLiquidation(Request $request, $stablecoinCode): JsonResponse
     {
         $validated = $request->validate(

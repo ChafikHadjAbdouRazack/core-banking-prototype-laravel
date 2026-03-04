@@ -370,7 +370,7 @@
 
                         {{-- App Store Badges --}}
                         <div class="pt-1 border-t border-white/5">
-                            <p class="text-[11px] uppercase tracking-widest text-slate-600 font-semibold mb-4">Coming soon to mobile</p>
+                            <p class="text-[11px] uppercase tracking-widest text-slate-600 font-semibold mb-4">Available on mobile</p>
                             <div class="flex gap-3 justify-center lg:justify-start" id="store-badges">
                                 <div class="store-badge">
                                     <div class="bg-[#111827] border border-white/5 rounded-xl py-2 px-4 flex items-center gap-3 h-12">
@@ -713,11 +713,11 @@
                 {{-- Capabilities grid --}}
                 <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
                     <div class="text-center p-4 rounded-xl bg-white/[0.02] border border-white/5">
-                        <div class="text-2xl font-bold text-white">42</div>
+                        <div class="text-2xl font-bold text-white">43</div>
                         <div class="text-[11px] text-slate-500 mt-1">Banking Domains</div>
                     </div>
                     <div class="text-center p-4 rounded-xl bg-white/[0.02] border border-white/5">
-                        <div class="text-2xl font-bold text-white">1,200+</div>
+                        <div class="text-2xl font-bold text-white">1,250+</div>
                         <div class="text-[11px] text-slate-500 mt-1">API Endpoints</div>
                     </div>
                     <div class="text-center p-4 rounded-xl bg-white/[0.02] border border-white/5">

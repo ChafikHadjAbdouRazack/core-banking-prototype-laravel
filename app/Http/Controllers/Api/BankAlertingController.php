@@ -11,13 +11,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Bank Alerting",
- *     description="Bank health monitoring and alerting system (Admin only)"
- * )
- */
+#[OA\Tag(
+    name: 'Bank Alerting',
+    description: 'Bank health monitoring and alerting system (Admin only)'
+)]
 class BankAlertingController extends Controller
 {
     public function __construct(
@@ -30,47 +29,38 @@ class BankAlertingController extends Controller
 
     /**
      * Trigger system-wide health check and alerting.
-     *
-     * @OA\Post(
-     *     path="/api/bank-alerting/health-check",
-     *     operationId="triggerBankHealthCheck",
-     *     tags={"Bank Alerting"},
-     *     summary="Trigger bank health check",
-     *     description="Manually trigger a system-wide health check for all custodian banks",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Health check completed successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="health_check_completed", type="boolean", example=true),
-     * @OA\Property(property="checked_at",             type="string", format="date-time"),
-     * @OA\Property(property="custodians_checked",     type="integer", example=4),
-     * @OA\Property(
-     *                     property="summary",
-     *                     type="object",
-     * @OA\Property(property="healthy",                type="integer", example=3),
-     * @OA\Property(property="degraded",               type="integer", example=1),
-     * @OA\Property(property="unhealthy",              type="integer", example=0),
-     * @OA\Property(property="unknown",                type="integer", example=0)
-     *                 ),
-     * @OA\Property(property="custodian_details",      type="array", @OA\Items(type="object"))
-     *             ),
-     * @OA\Property(property="message",                type="string")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Health check failed"
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Post(
+        path: '/api/bank-alerting/health-check',
+        operationId: 'triggerBankHealthCheck',
+        tags: ['Bank Alerting'],
+        summary: 'Trigger bank health check',
+        description: 'Manually trigger a system-wide health check for all custodian banks',
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Health check completed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'health_check_completed', type: 'boolean', example: true),
+        new OA\Property(property: 'checked_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'custodians_checked', type: 'integer', example: 4),
+        new OA\Property(property: 'summary', type: 'object', properties: [
+        new OA\Property(property: 'healthy', type: 'integer', example: 3),
+        new OA\Property(property: 'degraded', type: 'integer', example: 1),
+        new OA\Property(property: 'unhealthy', type: 'integer', example: 0),
+        new OA\Property(property: 'unknown', type: 'integer', example: 0),
+        ]),
+        new OA\Property(property: 'custodian_details', type: 'array', items: new OA\Items(type: 'object')),
+        ]),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Health check failed'
+    )]
     public function triggerHealthCheck(): JsonResponse
     {
         try {
@@ -127,55 +117,41 @@ class BankAlertingController extends Controller
 
     /**
      * Get current health status of all custodians.
-     *
-     * @OA\Get(
-     *     path="/api/bank-alerting/health-status",
-     *     operationId="getBankHealthStatus",
-     *     tags={"Bank Alerting"},
-     *     summary="Get current bank health status",
-     *     description="Retrieve the current health status of all custodian banks",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Health status retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="summary",
-     *                     type="object",
-     * @OA\Property(property="healthy",              type="integer"),
-     * @OA\Property(property="degraded",             type="integer"),
-     * @OA\Property(property="unhealthy",            type="integer"),
-     * @OA\Property(property="unknown",              type="integer")
-     *                 ),
-     * @OA\Property(property="total_custodians",     type="integer"),
-     * @OA\Property(
-     *                     property="custodians",
-     *                     type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="custodian",            type="string"),
-     * @OA\Property(property="status",               type="string", enum={"healthy", "degraded", "unhealthy", "unknown"}),
-     * @OA\Property(property="overall_failure_rate", type="number"),
-     * @OA\Property(property="last_check",           type="string", format="date-time"),
-     * @OA\Property(property="response_time_ms",     type="integer"),
-     * @OA\Property(property="consecutive_failures", type="integer"),
-     * @OA\Property(property="available_since",      type="string", format="date-time"),
-     * @OA\Property(property="last_failure",         type="string", format="date-time")
-     *                     )
-     *                 ),
-     * @OA\Property(property="checked_at",           type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Get(
+        path: '/api/bank-alerting/health-status',
+        operationId: 'getBankHealthStatus',
+        tags: ['Bank Alerting'],
+        summary: 'Get current bank health status',
+        description: 'Retrieve the current health status of all custodian banks',
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Health status retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'summary', type: 'object', properties: [
+        new OA\Property(property: 'healthy', type: 'integer'),
+        new OA\Property(property: 'degraded', type: 'integer'),
+        new OA\Property(property: 'unhealthy', type: 'integer'),
+        new OA\Property(property: 'unknown', type: 'integer'),
+        ]),
+        new OA\Property(property: 'total_custodians', type: 'integer'),
+        new OA\Property(property: 'custodians', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'custodian', type: 'string'),
+        new OA\Property(property: 'status', type: 'string', enum: ['healthy', 'degraded', 'unhealthy', 'unknown']),
+        new OA\Property(property: 'overall_failure_rate', type: 'number'),
+        new OA\Property(property: 'last_check', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'response_time_ms', type: 'integer'),
+        new OA\Property(property: 'consecutive_failures', type: 'integer'),
+        new OA\Property(property: 'available_since', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'last_failure', type: 'string', format: 'date-time'),
+        ])),
+        new OA\Property(property: 'checked_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getHealthStatus(): JsonResponse
     {
         try {
@@ -229,46 +205,33 @@ class BankAlertingController extends Controller
 
     /**
      * Get health status for specific custodian.
-     *
-     * @OA\Get(
-     *     path="/api/bank-alerting/custodian/{custodian}/health",
-     *     operationId="getSpecificCustodianHealth",
-     *     tags={"Bank Alerting"},
-     *     summary="Get specific custodian health",
-     *     description="Retrieve health status for a specific custodian bank",
-     *
-     * @OA\Parameter(
-     *         name="custodian",
-     *         in="path",
-     *         required=true,
-     *         description="Custodian identifier",
-     *
-     * @OA\Schema(type="string",           example="paysera")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Custodian health retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="custodian",  type="string"),
-     * @OA\Property(property="health",     type="object"),
-     * @OA\Property(property="checked_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Custodian not found"
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Get(
+        path: '/api/bank-alerting/custodian/{custodian}/health',
+        operationId: 'getSpecificCustodianHealth',
+        tags: ['Bank Alerting'],
+        summary: 'Get specific custodian health',
+        description: 'Retrieve health status for a specific custodian bank',
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'custodian', in: 'path', required: true, description: 'Custodian identifier', schema: new OA\Schema(type: 'string', example: 'paysera')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Custodian health retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'custodian', type: 'string'),
+        new OA\Property(property: 'health', type: 'object'),
+        new OA\Property(property: 'checked_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Custodian not found'
+    )]
     public function getCustodianHealth(string $custodian): JsonResponse
     {
         try {
@@ -306,51 +269,31 @@ class BankAlertingController extends Controller
 
     /**
      * Get alert history for a custodian.
-     *
-     * @OA\Get(
-     *     path="/api/bank-alerting/custodian/{custodian}/alerts",
-     *     operationId="getCustodianAlertHistory",
-     *     tags={"Bank Alerting"},
-     *     summary="Get custodian alert history",
-     *     description="Retrieve alert history for a specific custodian",
-     *
-     * @OA\Parameter(
-     *         name="custodian",
-     *         in="path",
-     *         required=true,
-     *         description="Custodian identifier",
-     *
-     * @OA\Schema(type="string",              example="paysera")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="days",
-     *         in="query",
-     *         required=false,
-     *         description="Number of days to retrieve (1-90)",
-     *
-     * @OA\Schema(type="integer",             default=7, minimum=1, maximum=90)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Alert history retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="custodian",     type="string"),
-     * @OA\Property(property="period_days",   type="integer"),
-     * @OA\Property(property="alert_history", type="array", @OA\Items(type="object")),
-     * @OA\Property(property="retrieved_at",  type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Get(
+        path: '/api/bank-alerting/custodian/{custodian}/alerts',
+        operationId: 'getCustodianAlertHistory',
+        tags: ['Bank Alerting'],
+        summary: 'Get custodian alert history',
+        description: 'Retrieve alert history for a specific custodian',
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'custodian', in: 'path', required: true, description: 'Custodian identifier', schema: new OA\Schema(type: 'string', example: 'paysera')),
+        new OA\Parameter(name: 'days', in: 'query', required: false, description: 'Number of days to retrieve (1-90)', schema: new OA\Schema(type: 'integer', default: 7, minimum: 1, maximum: 90)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Alert history retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'custodian', type: 'string'),
+        new OA\Property(property: 'period_days', type: 'integer'),
+        new OA\Property(property: 'alert_history', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'retrieved_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getAlertHistory(Request $request, string $custodian): JsonResponse
     {
         $request->validate(
@@ -387,52 +330,38 @@ class BankAlertingController extends Controller
 
     /**
      * Get overall alerting statistics.
-     *
-     * @OA\Get(
-     *     path="/api/bank-alerting/statistics",
-     *     operationId="getBankAlertingStatistics",
-     *     tags={"Bank Alerting"},
-     *     summary="Get alerting statistics",
-     *     description="Retrieve overall alerting system statistics",
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Time period for statistics",
-     *
-     * @OA\Schema(type="string",                     enum={"hour", "day", "week", "month"}, default="day")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Statistics retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="statistics",
-     *                     type="object",
-     * @OA\Property(property="period",               type="string"),
-     * @OA\Property(property="total_alerts_sent",    type="integer"),
-     * @OA\Property(property="alerts_by_severity",   type="object"),
-     * @OA\Property(property="alerts_by_custodian",  type="object"),
-     * @OA\Property(property="most_common_issues",   type="object"),
-     * @OA\Property(property="alert_response_times", type="object"),
-     * @OA\Property(property="false_positive_rate",  type="number"),
-     * @OA\Property(property="period_start",         type="string", format="date-time"),
-     * @OA\Property(property="period_end",           type="string", format="date-time")
-     *                 ),
-     * @OA\Property(property="calculated_at",        type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Get(
+        path: '/api/bank-alerting/statistics',
+        operationId: 'getBankAlertingStatistics',
+        tags: ['Bank Alerting'],
+        summary: 'Get alerting statistics',
+        description: 'Retrieve overall alerting system statistics',
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Time period for statistics', schema: new OA\Schema(type: 'string', enum: ['hour', 'day', 'week', 'month'], default: 'day')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Statistics retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'statistics', type: 'object', properties: [
+        new OA\Property(property: 'period', type: 'string'),
+        new OA\Property(property: 'total_alerts_sent', type: 'integer'),
+        new OA\Property(property: 'alerts_by_severity', type: 'object'),
+        new OA\Property(property: 'alerts_by_custodian', type: 'object'),
+        new OA\Property(property: 'most_common_issues', type: 'object'),
+        new OA\Property(property: 'alert_response_times', type: 'object'),
+        new OA\Property(property: 'false_positive_rate', type: 'number'),
+        new OA\Property(property: 'period_start', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'period_end', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'calculated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getAlertingStats(Request $request): JsonResponse
     {
         $request->validate(
@@ -498,55 +427,36 @@ class BankAlertingController extends Controller
 
     /**
      * Configure alert settings.
-     *
-     * @OA\Put(
-     *     path="/api/bank-alerting/configuration",
-     *     operationId="configureBankAlerts",
-     *     tags={"Bank Alerting"},
-     *     summary="Configure alert settings",
-     *     description="Update alerting system configuration",
-     *
-     * @OA\RequestBody(
-     *         required=false,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="cooldown_minutes",       type="integer", minimum=1, maximum=1440, example=30),
-     * @OA\Property(
-     *                 property="severity_thresholds",
-     *                 type="object",
-     * @OA\Property(property="failure_rate_warning",   type="number", minimum=0, maximum=100),
-     * @OA\Property(property="failure_rate_critical",  type="number", minimum=0, maximum=100),
-     * @OA\Property(property="response_time_warning",  type="integer", minimum=0),
-     * @OA\Property(property="response_time_critical", type="integer", minimum=0)
-     *             ),
-     * @OA\Property(
-     *                 property="notification_channels",
-     *                 type="array",
-     *
-     * @OA\Items(type="string",                        enum={"mail", "database", "slack", "webhook"})
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Configuration updated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="configuration_updated",  type="boolean"),
-     * @OA\Property(property="new_configuration",      type="object")
-     *             ),
-     * @OA\Property(property="message",                type="string")
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Put(
+        path: '/api/bank-alerting/configuration',
+        operationId: 'configureBankAlerts',
+        tags: ['Bank Alerting'],
+        summary: 'Configure alert settings',
+        description: 'Update alerting system configuration',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'cooldown_minutes', type: 'integer', minimum: 1, maximum: 1440, example: 30),
+        new OA\Property(property: 'severity_thresholds', type: 'object', properties: [
+        new OA\Property(property: 'failure_rate_warning', type: 'number', minimum: 0, maximum: 100),
+        new OA\Property(property: 'failure_rate_critical', type: 'number', minimum: 0, maximum: 100),
+        new OA\Property(property: 'response_time_warning', type: 'integer', minimum: 0),
+        new OA\Property(property: 'response_time_critical', type: 'integer', minimum: 0),
+        ]),
+        new OA\Property(property: 'notification_channels', type: 'array', items: new OA\Items(type: 'string', enum: ['mail', 'database', 'slack', 'webhook'])),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Configuration updated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'configuration_updated', type: 'boolean'),
+        new OA\Property(property: 'new_configuration', type: 'object'),
+        ]),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
     public function configureAlerts(Request $request): JsonResponse
     {
         $request->validate(
@@ -603,39 +513,31 @@ class BankAlertingController extends Controller
 
     /**
      * Get current alert configuration.
-     *
-     * @OA\Get(
-     *     path="/api/bank-alerting/configuration",
-     *     operationId="getBankAlertConfiguration",
-     *     tags={"Bank Alerting"},
-     *     summary="Get alert configuration",
-     *     description="Retrieve current alerting system configuration",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Configuration retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="configuration",
-     *                     type="object",
-     * @OA\Property(property="cooldown_minutes",      type="integer"),
-     * @OA\Property(property="severity_thresholds",   type="object"),
-     * @OA\Property(property="notification_channels", type="array", @OA\Items(type="string")),
-     * @OA\Property(property="alert_recipients",      type="object"),
-     * @OA\Property(property="last_updated",          type="string", format="date-time")
-     *                 ),
-     * @OA\Property(property="retrieved_at",          type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Get(
+        path: '/api/bank-alerting/configuration',
+        operationId: 'getBankAlertConfiguration',
+        tags: ['Bank Alerting'],
+        summary: 'Get alert configuration',
+        description: 'Retrieve current alerting system configuration',
+        security: [['bearerAuth' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Configuration retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'configuration', type: 'object', properties: [
+        new OA\Property(property: 'cooldown_minutes', type: 'integer'),
+        new OA\Property(property: 'severity_thresholds', type: 'object'),
+        new OA\Property(property: 'notification_channels', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'alert_recipients', type: 'object'),
+        new OA\Property(property: 'last_updated', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'retrieved_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getAlertConfiguration(): JsonResponse
     {
         try {
@@ -678,47 +580,34 @@ class BankAlertingController extends Controller
 
     /**
      * Test alert system by sending a test alert.
-     *
-     * @OA\Post(
-     *     path="/api/bank-alerting/test",
-     *     operationId="testBankAlert",
-     *     tags={"Bank Alerting"},
-     *     summary="Send test alert",
-     *     description="Test the alerting system by sending a test alert",
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"severity"},
-     *
-     * @OA\Property(property="severity",        type="string", enum={"info", "warning", "critical"}),
-     * @OA\Property(property="custodian",       type="string", example="test_custodian"),
-     * @OA\Property(property="message",         type="string", maxLength=500, example="Test alert from API")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Test alert sent successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="test_alert_sent", type="boolean"),
-     * @OA\Property(property="severity",        type="string"),
-     * @OA\Property(property="custodian",       type="string"),
-     * @OA\Property(property="message",         type="string"),
-     * @OA\Property(property="sent_at",         type="string", format="date-time")
-     *             ),
-     * @OA\Property(property="message",         type="string")
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Post(
+        path: '/api/bank-alerting/test',
+        operationId: 'testBankAlert',
+        tags: ['Bank Alerting'],
+        summary: 'Send test alert',
+        description: 'Test the alerting system by sending a test alert',
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['severity'], properties: [
+        new OA\Property(property: 'severity', type: 'string', enum: ['info', 'warning', 'critical']),
+        new OA\Property(property: 'custodian', type: 'string', example: 'test_custodian'),
+        new OA\Property(property: 'message', type: 'string', maxLength: 500, example: 'Test alert from API'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Test alert sent successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'test_alert_sent', type: 'boolean'),
+        new OA\Property(property: 'severity', type: 'string'),
+        new OA\Property(property: 'custodian', type: 'string'),
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'sent_at', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
     public function testAlert(Request $request): JsonResponse
     {
         $request->validate(
@@ -771,53 +660,35 @@ class BankAlertingController extends Controller
 
     /**
      * Acknowledge an alert (mark as resolved).
-     *
-     * @OA\Post(
-     *     path="/api/bank-alerting/alerts/{alertId}/acknowledge",
-     *     operationId="acknowledgeBankAlert",
-     *     tags={"Bank Alerting"},
-     *     summary="Acknowledge alert",
-     *     description="Mark an alert as acknowledged/resolved",
-     *
-     * @OA\Parameter(
-     *         name="alertId",
-     *         in="path",
-     *         required=true,
-     *         description="Alert identifier",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=false,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="resolution_notes", type="string", maxLength=1000)
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Alert acknowledged successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="alert_id",         type="string"),
-     * @OA\Property(property="acknowledged",     type="boolean"),
-     * @OA\Property(property="acknowledged_by",  type="string"),
-     * @OA\Property(property="acknowledged_at",  type="string", format="date-time"),
-     * @OA\Property(property="resolution_notes", type="string")
-     *             ),
-     * @OA\Property(property="message",          type="string")
-     *         )
-     *     ),
-     *     security={{"bearerAuth":{}}}
-     * )
      */
+    #[OA\Post(
+        path: '/api/bank-alerting/alerts/{alertId}/acknowledge',
+        operationId: 'acknowledgeBankAlert',
+        tags: ['Bank Alerting'],
+        summary: 'Acknowledge alert',
+        description: 'Mark an alert as acknowledged/resolved',
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'alertId', in: 'path', required: true, description: 'Alert identifier', schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'resolution_notes', type: 'string', maxLength: 1000),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Alert acknowledged successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'alert_id', type: 'string'),
+        new OA\Property(property: 'acknowledged', type: 'boolean'),
+        new OA\Property(property: 'acknowledged_by', type: 'string'),
+        new OA\Property(property: 'acknowledged_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'resolution_notes', type: 'string'),
+        ]),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
     public function acknowledgeAlert(Request $request, string $alertId): JsonResponse
     {
         $request->validate(

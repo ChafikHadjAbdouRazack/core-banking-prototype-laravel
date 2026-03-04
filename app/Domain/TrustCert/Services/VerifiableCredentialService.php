@@ -26,9 +26,15 @@ class VerifiableCredentialService
     public function __construct(
         private readonly RevocationRegistryInterface $revocationRegistry,
         private readonly TrustFrameworkInterface $trustFramework,
-        private readonly string $issuerId = 'did:finaegis:issuer:default',
-        private readonly string $signingKey = '',
+        private string $issuerId = '',
+        private string $signingKey = '',
     ) {
+        if (empty($this->issuerId)) {
+            $this->issuerId = (string) config('trustcert.credentials.default_issuer', 'did:finaegis:issuer:default');
+        }
+        if (empty($this->signingKey)) {
+            $this->signingKey = (string) config('trustcert.credentials.credential_signing_key', '');
+        }
         if (app()->environment('production') && empty($this->signingKey)) {
             throw new RuntimeException('Credential signing key must be configured in production');
         }

@@ -10,13 +10,12 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Liquidity Pools",
- *     description="Liquidity pool creation and management"
- * )
- */
+#[OA\Tag(
+    name: 'Liquidity Pools',
+    description: 'Liquidity pool creation and management'
+)]
 class LiquidityPoolController extends Controller
 {
     public function __construct(
@@ -25,19 +24,22 @@ class LiquidityPoolController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/pools",
-     *     operationId="liquidityPoolsIndex",
-     *     tags={"Liquidity Pools"},
-     *     summary="List liquidity pools",
-     *     description="Returns the liquidity pools overview page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/pools',
+            operationId: 'liquidityPoolsIndex',
+            tags: ['Liquidity Pools'],
+            summary: 'List liquidity pools',
+            description: 'Returns the liquidity pools overview page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $pools = $this->liquidityPoolService->getAllPools();
@@ -47,21 +49,25 @@ class LiquidityPoolController extends Controller
         return view('liquidity.index', compact('pools', 'userLiquidity', 'marketData'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/pools/{id}",
-     *     operationId="liquidityPoolsShow",
-     *     tags={"Liquidity Pools"},
-     *     summary="Show pool details",
-     *     description="Returns details of a specific liquidity pool",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/pools/{id}',
+            operationId: 'liquidityPoolsShow',
+            tags: ['Liquidity Pools'],
+            summary: 'Show pool details',
+            description: 'Returns details of a specific liquidity pool',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
@@ -89,19 +95,22 @@ class LiquidityPoolController extends Controller
         return view('liquidity.show', compact('pool', 'metrics', 'userPosition', 'priceHistory'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/pools/create",
-     *     operationId="liquidityPoolsCreate",
-     *     tags={"Liquidity Pools"},
-     *     summary="Show create pool form",
-     *     description="Shows the form to create a liquidity pool",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/pools/create',
+            operationId: 'liquidityPoolsCreate',
+            tags: ['Liquidity Pools'],
+            summary: 'Show create pool form',
+            description: 'Shows the form to create a liquidity pool',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
@@ -123,19 +132,22 @@ class LiquidityPoolController extends Controller
         return view('liquidity.add', compact('pool', 'userBalances', 'metrics'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/pools",
-     *     operationId="liquidityPoolsStore",
-     *     tags={"Liquidity Pools"},
-     *     summary="Create liquidity pool",
-     *     description="Creates a new liquidity pool",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/pools',
+            operationId: 'liquidityPoolsStore',
+            tags: ['Liquidity Pools'],
+            summary: 'Create liquidity pool',
+            description: 'Creates a new liquidity pool',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request, $poolId)
     {
         $validated = $request->validate(
@@ -182,21 +194,25 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/pools/{id}/remove",
-     *     operationId="liquidityPoolsRemove",
-     *     tags={"Liquidity Pools"},
-     *     summary="Show remove liquidity form",
-     *     description="Shows the form to remove liquidity",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/pools/{id}/remove',
+            operationId: 'liquidityPoolsRemove',
+            tags: ['Liquidity Pools'],
+            summary: 'Show remove liquidity form',
+            description: 'Shows the form to remove liquidity',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function remove($poolId)
     {
         $poolProjection = $this->liquidityPoolService->getPool($poolId);
@@ -225,21 +241,25 @@ class LiquidityPoolController extends Controller
         return view('liquidity.remove', compact('pool', 'userPosition', 'metrics'));
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/pools/{id}",
-     *     operationId="liquidityPoolsDestroy",
-     *     tags={"Liquidity Pools"},
-     *     summary="Close liquidity pool",
-     *     description="Closes a liquidity pool",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Delete(
+            path: '/pools/{id}',
+            operationId: 'liquidityPoolsDestroy',
+            tags: ['Liquidity Pools'],
+            summary: 'Close liquidity pool',
+            description: 'Closes a liquidity pool',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function destroy(Request $request, $poolId)
     {
         $validated = $request->validate(

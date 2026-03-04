@@ -214,24 +214,15 @@ class AuthenticationSecurityTest extends TestCase
             ->getJson('/api/auth/user')
             ->assertOk();
 
-        // Fast-forward time past expiration
-        $this->travel(61)->minutes();
+        // Fast-forward time past the configured expiration (default 1440 minutes = 24 hours)
+        $expirationMinutes = (int) config('sanctum.expiration', 1440);
+        $this->travel($expirationMinutes + 1)->minutes();
 
-        // Token expiration check
-        // Note: The current implementation doesn't enforce expiration properly in tests
-        // This is a known issue to be fixed
-        if (config('sanctum.expiration')) {
-            // For now, we just check that the endpoint is accessible
-            // TODO: Fix token expiration enforcement
-            $response = $this->withHeader('Authorization', 'Bearer ' . $token)
-                ->getJson('/api/auth/user');
+        // Token should be rejected as expired (CheckTokenExpiration middleware in api group)
+        $response = $this->withHeader('Authorization', 'Bearer ' . $token)
+            ->getJson('/api/auth/user');
 
-            // Should be 401 but currently returns 200 - marking as known issue
-            $this->assertContains($response->status(), [200, 401], 'Token expiration check (known issue)');
-        } else {
-            // Token expiration not configured - this is expected
-            $this->expectNotToPerformAssertions();
-        }
+        $this->assertEquals(401, $response->status(), 'Expired token must return 401');
     }
 
     #[Test]

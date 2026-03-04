@@ -11,18 +11,18 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Throwable;
 
 /**
  * Smart Account Controller.
  *
  * Handles ERC-4337 smart account creation and nonce management.
- *
- * @OA\Tag(
- *     name="Smart Accounts",
- *     description="ERC-4337 account abstraction management"
- * )
  */
+#[OA\Tag(
+    name: 'Smart Accounts',
+    description: 'ERC-4337 account abstraction management'
+)]
 class SmartAccountController extends Controller
 {
     public function __construct(
@@ -36,38 +36,40 @@ class SmartAccountController extends Controller
      * Returns the first smart account created for the authenticated user,
      * optionally filtered by network. Useful for mobile apps that need
      * a single account reference.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/account",
-     *     summary="Get user's primary smart account",
-     *     tags={"Smart Accounts"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="network",
-     *         in="query",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"polygon", "base", "arbitrum"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Primary smart account",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="owner_address", type="string"),
-     *                 @OA\Property(property="account_address", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="deployed", type="boolean"),
-     *                 @OA\Property(property="nonce", type="integer"),
-     *                 @OA\Property(property="pending_ops", type="integer")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=404, description="No smart account found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/account',
+        summary: 'Get user\'s primary smart account',
+        tags: ['Smart Accounts'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'network', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['polygon', 'base', 'arbitrum'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Primary smart account',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'owner_address', type: 'string'),
+        new OA\Property(property: 'account_address', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'deployed', type: 'boolean'),
+        new OA\Property(property: 'nonce', type: 'integer'),
+        new OA\Property(property: 'pending_ops', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No smart account found'
+    )]
     public function getAccount(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -108,41 +110,45 @@ class SmartAccountController extends Controller
      * If owner_address is omitted, the server derives a deterministic address
      * from the authenticated user, enabling initial account creation during
      * onboarding when the user has no wallet yet.
-     *
-     * @OA\Post(
-     *     path="/api/v1/relayer/account",
-     *     summary="Create or retrieve a smart account",
-     *     tags={"Smart Accounts"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"network"},
-     *             @OA\Property(property="owner_address", type="string", nullable=true, example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e", description="EOA owner address. If omitted, derived from authenticated user."),
-     *             @OA\Property(property="network", type="string", enum={"polygon", "base", "arbitrum"}, example="polygon")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Smart account details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="owner_address", type="string"),
-     *                 @OA\Property(property="account_address", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="deployed", type="boolean"),
-     *                 @OA\Property(property="nonce", type="integer"),
-     *                 @OA\Property(property="pending_ops", type="integer")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/relayer/account',
+        summary: 'Create or retrieve a smart account',
+        tags: ['Smart Accounts'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['network'], properties: [
+        new OA\Property(property: 'owner_address', type: 'string', nullable: true, example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e', description: 'EOA owner address. If omitted, derived from authenticated user.'),
+        new OA\Property(property: 'network', type: 'string', enum: ['polygon', 'base', 'arbitrum'], example: 'polygon'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Smart account details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'owner_address', type: 'string'),
+        new OA\Property(property: 'account_address', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'deployed', type: 'boolean'),
+        new OA\Property(property: 'nonce', type: 'integer'),
+        new OA\Property(property: 'pending_ops', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function createAccount(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -195,42 +201,41 @@ class SmartAccountController extends Controller
 
     /**
      * Get nonce and pending operations for a smart account.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/nonce/{address}",
-     *     summary="Get nonce and pending ops for a smart account",
-     *     tags={"Smart Accounts"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="address",
-     *         in="path",
-     *         required=true,
-     *         description="Owner address (EOA)",
-     *         @OA\Schema(type="string", example="0x742d35Cc6634C0532925a3b844Bc454e4438f44e")
-     *     ),
-     *     @OA\Parameter(
-     *         name="network",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"polygon", "base", "arbitrum"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Nonce information",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="nonce", type="integer", example=5),
-     *                 @OA\Property(property="pending_ops", type="integer", example=1),
-     *                 @OA\Property(property="deployed", type="boolean", example=true)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=404, description="Account not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/nonce/{address}',
+        summary: 'Get nonce and pending ops for a smart account',
+        tags: ['Smart Accounts'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'address', in: 'path', required: true, description: 'Owner address (EOA)', schema: new OA\Schema(type: 'string', example: '0x742d35Cc6634C0532925a3b844Bc454e4438f44e')),
+        new OA\Parameter(name: 'network', in: 'query', required: true, schema: new OA\Schema(type: 'string', enum: ['polygon', 'base', 'arbitrum'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Nonce information',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'nonce', type: 'integer', example: 5),
+        new OA\Property(property: 'pending_ops', type: 'integer', example: 1),
+        new OA\Property(property: 'deployed', type: 'boolean', example: true),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Account not found'
+    )]
     public function getNonce(Request $request, string $address): JsonResponse
     {
         // Validate address format
@@ -278,38 +283,28 @@ class SmartAccountController extends Controller
      *
      * Returns the init code needed to deploy the smart account on first transaction.
      * Returns empty string if account is already deployed.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/init-code/{address}",
-     *     summary="Get init code for account deployment",
-     *     tags={"Smart Accounts"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="address",
-     *         in="path",
-     *         required=true,
-     *         description="Owner address (EOA)",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="network",
-     *         in="query",
-     *         required=true,
-     *         @OA\Schema(type="string", enum={"polygon", "base", "arbitrum"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Init code",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="init_code", type="string"),
-     *                 @OA\Property(property="needs_deployment", type="boolean")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/init-code/{address}',
+        summary: 'Get init code for account deployment',
+        tags: ['Smart Accounts'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'address', in: 'path', required: true, description: 'Owner address (EOA)', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'network', in: 'query', required: true, schema: new OA\Schema(type: 'string', enum: ['polygon', 'base', 'arbitrum'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Init code',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'init_code', type: 'string'),
+        new OA\Property(property: 'needs_deployment', type: 'boolean'),
+        ]),
+        ])
+    )]
     public function getInitCode(Request $request, string $address): JsonResponse
     {
         if (! preg_match('/^0x[a-fA-F0-9]{40}$/', $address)) {
@@ -357,28 +352,27 @@ class SmartAccountController extends Controller
 
     /**
      * List user's smart accounts.
-     *
-     * @OA\Get(
-     *     path="/api/v1/relayer/accounts",
-     *     summary="List user's smart accounts",
-     *     tags={"Smart Accounts"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of smart accounts",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(
-     *                 @OA\Property(property="id", type="string", format="uuid"),
-     *                 @OA\Property(property="owner_address", type="string"),
-     *                 @OA\Property(property="account_address", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="deployed", type="boolean")
-     *             ))
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/relayer/accounts',
+        summary: 'List user\'s smart accounts',
+        tags: ['Smart Accounts'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of smart accounts',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'owner_address', type: 'string'),
+        new OA\Property(property: 'account_address', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'deployed', type: 'boolean'),
+        ])),
+        ])
+    )]
     public function listAccounts(Request $request): JsonResponse
     {
         /** @var User $user */

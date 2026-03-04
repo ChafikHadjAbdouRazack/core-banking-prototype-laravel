@@ -24,7 +24,7 @@ Route::prefix('v1/privacy')->name('api.privacy.')->group(function () {
     Route::get('/pool-stats', [PrivacyController::class, 'getPoolStats'])->name('pool-stats');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration', 'throttle:60,1'])->group(function () {
+    Route::middleware(['auth:sanctum', 'throttle:60,1'])->group(function () {
         Route::get('/merkle-root', [PrivacyController::class, 'getMerkleRoot'])->name('merkle-root');
         Route::post('/merkle-path', [PrivacyController::class, 'getMerklePath'])->middleware('throttle:10,1')->name('merkle-path');
         Route::post('/verify-commitment', [PrivacyController::class, 'verifyCommitment'])->middleware('throttle:10,1')->name('verify-commitment');
@@ -74,5 +74,11 @@ Route::prefix('v1/privacy')->name('api.privacy.')->group(function () {
 
         // SRS status
         Route::get('/srs-status', [PrivacyController::class, 'getSrsStatus'])->name('srs-status');
+
+        // Transaction calldata
+        Route::get('/transaction-calldata/{txHash}', [PrivacyController::class, 'getTransactionCalldata'])
+            ->name('transaction-calldata');
+        Route::put('/transactions/{transactionId}/tx-hash', [PrivacyController::class, 'updateTransactionHash'])
+            ->name('transaction.update-hash');
     });
 });

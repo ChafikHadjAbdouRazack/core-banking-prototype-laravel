@@ -13,7 +13,7 @@ Route::prefix('v1/trustcert')->name('api.trustcert.')->group(function () {
     Route::get('/verify/{token}', [PresentationController::class, 'verify'])->name('verify');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{certificateId}/present', [PresentationController::class, 'present'])->name('present');
 
         // Certificate details and PDF export
@@ -23,7 +23,7 @@ Route::prefix('v1/trustcert')->name('api.trustcert.')->group(function () {
 });
 
 Route::prefix('v1/trustcert')->name('mobile.trustcert.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/current', [MobileTrustCertController::class, 'current'])
             ->middleware('api.rate_limit:query')

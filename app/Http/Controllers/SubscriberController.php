@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Domain\Newsletter\Services\SubscriberEmailService;
 use Exception;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Newsletter",
- *     description="Newsletter subscription management"
- * )
- */
+#[OA\Tag(
+    name: 'Newsletter',
+    description: 'Newsletter subscription management'
+)]
 class SubscriberController extends Controller
 {
     public function __construct(
@@ -19,18 +18,21 @@ class SubscriberController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/newsletter/unsubscribe",
-     *     operationId="newsletterUnsubscribe",
-     *     tags={"Newsletter"},
-     *     summary="Unsubscribe from newsletter",
-     *     description="Unsubscribes an email from the newsletter",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/newsletter/unsubscribe',
+            operationId: 'newsletterUnsubscribe',
+            tags: ['Newsletter'],
+            summary: 'Unsubscribe from newsletter',
+            description: 'Unsubscribes an email from the newsletter'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function unsubscribe(Request $request, string $encryptedEmail)
     {
         try {
@@ -63,18 +65,21 @@ class SubscriberController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/newsletter/subscribe",
-     *     operationId="newsletterSubscribe",
-     *     tags={"Newsletter"},
-     *     summary="Subscribe to newsletter",
-     *     description="Subscribes an email to the newsletter",
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/newsletter/subscribe',
+            operationId: 'newsletterSubscribe',
+            tags: ['Newsletter'],
+            summary: 'Subscribe to newsletter',
+            description: 'Subscribes an email to the newsletter'
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function subscribe(Request $request, string $source)
     {
         $validated = $request->validate(

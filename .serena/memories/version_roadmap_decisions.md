@@ -259,6 +259,19 @@ Key deliverables:
 - 4-chain support: Ethereum, Polygon, Arbitrum, BSC (NOT Base)
 - 57 tests with Http::fake() bridge mocking
 
+v5.8.0 — Mobile Go-Live (COMPLETED)
+Status: Released (2026-03-01)
+Key deliverables:
+- Rewards GraphQL schema (35th domain) + Filament admin resources
+- OpenAPI PHP 8 attributes migration (from docblock annotations)
+- Pimlico v2 bundler production submission + receipt query + config-driven tokens
+- Marqeta card listing + transactions, DB-backed merchants, Chainalysis sanctions
+- Recovery shard cloud backup CRUD endpoints
+- WebSocket mobile channels (privacy/commerce/trustcert/user)
+- Privacy transaction calldata persistence (AES-256 encrypted, dual-lookup retrieval)
+- Transaction hash update endpoint for post-submission tracking
+- 7 PRs (#670-#676), all 13 mobile go-live items resolved
+
 v5.7.0 — Mobile Rewards & Security Hardening (COMPLETED)
 Status: Released (2026-02-28)
 Key deliverables:
@@ -269,5 +282,30 @@ Key deliverables:
 - 44 feature tests covering edge cases and race conditions
 - Breaking: registration challenge path changed to /register-challenge
 
+v5.9.0 — OpenAPI Migration & Security Hardening (COMPLETED)
+Status: Released (2026-03-01)
+Key deliverables:
+- Global token expiration enforcement via api middleware group
+- EnforceMethodScope middleware: GET→read, POST/PUT/PATCH→write, DELETE→delete
+- OpenBanking 501→503 cleanup
+- Full OpenAPI PHP 8 attributes migration (173 files, custom migration script)
+- doctrine/annotations dependency removed
+- WebAuthn COSE hardening: reject null alg/crv, remove unsupported RS256
+- SSL pinning endpoint: GET /api/v1/mobile/ssl-pins
+- GDPR async export: 202 Accepted + ProcessGdprDataExport job + status polling
+- NotificationCountUpdated WebSocket broadcast on user.{userId} channel
+- 5 PRs (#679-#683)
+
+v5.10.0 — Performance Wiring & API Maturity (COMPLETED)
+Status: Released (2026-03-02)
+Key deliverables:
+- Wire 5 observability middleware to API route group: StructuredLogging, Metrics, QueryPerformance, CachePerformance, Tracing
+- Register missing middleware aliases: metrics, cache.performance, tracing
+- Standardized API error responses with semantic error codes + request_id
+- RFC 8594 deprecation headers (Deprecation, Sunset, Link) for legacy endpoints
+- Legacy routes tagged: /api/profile and /api/kyc/documents (sunset 2026-09-01)
+- 11 middleware integration tests + 5 error response tests + 8 deprecation tests
+- 4 PRs (#691-#694)
+
 Future roadmap:
-- OpenAPI Attribute Migration (10,385 @OA\ docblocks → PHP 8 #[OA\] attributes, drop doctrine/annotations), Laravel 13 upgrade when available, PHP 8.5 features
+- Laravel 13 upgrade when available, PHP 8.5 features

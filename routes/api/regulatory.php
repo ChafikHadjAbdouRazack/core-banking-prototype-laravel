@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     // Regulatory Reporting
     Route::prefix('regulatory')->group(function () {
         Route::get('/reports', [RegulatoryReportingController::class, 'getReports']);

@@ -8,27 +8,29 @@ use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="System Status",
- *     description="System status and health monitoring"
- * )
- */
+#[OA\Tag(
+    name: 'System Status',
+    description: 'System status and health monitoring'
+)]
 class StatusController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/status",
-     *     operationId="systemStatusIndex",
-     *     tags={"System Status"},
-     *     summary="System status page",
-     *     description="Returns the system status page",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/status',
+            operationId: 'systemStatusIndex',
+            tags: ['System Status'],
+            summary: 'System status page',
+            description: 'Returns the system status page'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $status = $this->checkSystemStatus();
@@ -39,18 +41,21 @@ class StatusController extends Controller
         return view('status', compact('status', 'services', 'incidents', 'uptime'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/status/api",
-     *     operationId="systemStatusApi",
-     *     tags={"System Status"},
-     *     summary="API status endpoint",
-     *     description="Returns the API health status as JSON",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/status/api',
+            operationId: 'systemStatusApi',
+            tags: ['System Status'],
+            summary: 'API status endpoint',
+            description: 'Returns the API health status as JSON'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function api()
     {
         $status = $this->checkSystemStatus();

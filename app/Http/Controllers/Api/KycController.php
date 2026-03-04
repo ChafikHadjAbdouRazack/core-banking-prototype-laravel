@@ -16,13 +16,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="KYC",
- *     description="Know Your Customer (KYC) verification operations"
- * )
- */
+#[OA\Tag(
+    name: 'KYC',
+    description: 'Know Your Customer (KYC) verification operations'
+)]
 class KycController extends Controller
 {
     public function __construct(
@@ -30,42 +29,36 @@ class KycController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/kyc/status",
-     *     operationId="getKycStatus",
-     *     tags={"KYC"},
-     *     summary="Get KYC status for authenticated user",
-     *     description="Retrieve the current KYC verification status and documents for the authenticated user",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",       type="string", enum={"unverified", "pending", "approved", "rejected"}, example="pending"),
-     * @OA\Property(property="level",        type="string", enum={"basic", "enhanced", "full"}, example="enhanced"),
-     * @OA\Property(property="submitted_at", type="string", format="date-time", example="2025-01-15T10:00:00Z"),
-     * @OA\Property(property="approved_at",  type="string", format="date-time", nullable=true),
-     * @OA\Property(property="expires_at",   type="string", format="date-time", nullable=true),
-     * @OA\Property(property="needs_kyc",    type="boolean", example=true),
-     * @OA\Property(property="documents",    type="array", @OA\Items(
-     * @OA\Property(property="id",           type="string", example="123"),
-     * @OA\Property(property="type",         type="string", example="passport"),
-     * @OA\Property(property="status",       type="string", example="approved"),
-     * @OA\Property(property="uploaded_at",  type="string", format="date-time")
-     *             ))
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/kyc/status',
+            operationId: 'getKycStatus',
+            tags: ['KYC'],
+            summary: 'Get KYC status for authenticated user',
+            description: 'Retrieve the current KYC verification status and documents for the authenticated user',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', enum: ['unverified', 'pending', 'approved', 'rejected'], example: 'pending'),
+        new OA\Property(property: 'level', type: 'string', enum: ['basic', 'enhanced', 'full'], example: 'enhanced'),
+        new OA\Property(property: 'submitted_at', type: 'string', format: 'date-time', example: '2025-01-15T10:00:00Z'),
+        new OA\Property(property: 'approved_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'needs_kyc', type: 'boolean', example: true),
+        new OA\Property(property: 'documents', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'string', example: '123'),
+        new OA\Property(property: 'type', type: 'string', example: 'passport'),
+        new OA\Property(property: 'status', type: 'string', example: 'approved'),
+        new OA\Property(property: 'uploaded_at', type: 'string', format: 'date-time'),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function status(): JsonResponse
     {
         /**
@@ -94,46 +87,33 @@ class KycController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/kyc/requirements",
-     *     operationId="getKycRequirements",
-     *     tags={"KYC"},
-     *     summary="Get KYC requirements for a level",
-     *     description="Retrieve the document requirements for a specific KYC verification level",
-     *
-     * @OA\Parameter(
-     *         name="level",
-     *         in="query",
-     *         description="KYC verification level",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",                                   enum={"basic", "enhanced", "full"})
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="level",                              type="string", example="enhanced"),
-     * @OA\Property(property="requirements",                       type="array", @OA\Items(
-     * @OA\Property(property="document_type",                      type="string", example="passport"),
-     * @OA\Property(property="description",                        type="string", example="Valid passport copy"),
-     * @OA\Property(property="required",                           type="boolean", example=true)
-     *             ))
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/kyc/requirements',
+            operationId: 'getKycRequirements',
+            tags: ['KYC'],
+            summary: 'Get KYC requirements for a level',
+            description: 'Retrieve the document requirements for a specific KYC verification level',
+            parameters: [
+        new OA\Parameter(name: 'level', in: 'query', description: 'KYC verification level', required: true, schema: new OA\Schema(type: 'string', enum: ['basic', 'enhanced', 'full'])),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'level', type: 'string', example: 'enhanced'),
+        new OA\Property(property: 'requirements', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'document_type', type: 'string', example: 'passport'),
+        new OA\Property(property: 'description', type: 'string', example: 'Valid passport copy'),
+        new OA\Property(property: 'required', type: 'boolean', example: true),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')
+    )]
     public function requirements(Request $request): JsonResponse
     {
         $request->validate(
@@ -152,73 +132,54 @@ class KycController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/kyc/submit",
-     *     operationId="submitKycDocuments",
-     *     tags={"KYC"},
-     *     summary="Submit KYC documents",
-     *     description="Submit KYC verification documents for review",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\MediaType(
-     *             mediaType="multipart/form-data",
-     *
-     * @OA\Schema(
-     *
-     * @OA\Property(
-     *                     property="documents",
-     *                     type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="type",    type="string", enum={"passport", "national_id", "drivers_license", "residence_permit", "utility_bill", "bank_statement", "selfie", "proof_of_income", "other"}),
-     * @OA\Property(property="file",    type="string", format="binary", description="Document file (jpg, jpeg, png, pdf - max 10MB)")
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Documents submitted successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message", type="string", example="KYC documents submitted successfully"),
-     * @OA\Property(property="status",  type="string", example="pending")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Bad request - KYC already approved",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",   type="string", example="KYC already approved")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     ),
-     * @OA\Response(
-     *         response=500,
-     *         description="Server error",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",   type="string", example="Failed to submit KYC documents")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/kyc/submit',
+            operationId: 'submitKycDocuments',
+            tags: ['KYC'],
+            summary: 'Submit KYC documents',
+            description: 'Submit KYC verification documents for review',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\MediaType(mediaType: 'multipart/form-data', schema: new OA\Schema(
+                properties: [
+        new OA\Property(
+            property: 'documents',
+            type: 'array',
+            items: new OA\Items(
+                properties: [
+        new OA\Property(property: 'type', type: 'string', enum: ['passport', 'national_id', 'drivers_license', 'residence_permit', 'utility_bill', 'bank_statement', 'selfie', 'proof_of_income', 'other']),
+        new OA\Property(property: 'file', type: 'string', format: 'binary', description: 'Document file (jpg, jpeg, png, pdf - max 10MB)'),
+        ]
+            )
+        ),
+        ]
+            )))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Documents submitted successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'KYC documents submitted successfully'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Bad request - KYC already approved',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string', example: 'KYC already approved'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string', example: 'Failed to submit KYC documents'),
+        ])
+    )]
     public function submit(Request $request): JsonResponse
     {
         /**
@@ -271,45 +232,33 @@ class KycController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/kyc/documents/{documentId}/download",
-     *     operationId="downloadKycDocument",
-     *     tags={"KYC"},
-     *     summary="Download a KYC document",
-     *     description="Download a previously uploaded KYC document. Users can only download their own documents.",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="documentId",
-     *         in="path",
-     *         description="The document ID",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Document file download",
-     *
-     * @OA\MediaType(
-     *             mediaType="application/octet-stream",
-     *
-     * @OA\Schema(type="string", format="binary")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Document not found"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/kyc/documents/{documentId}/download',
+            operationId: 'downloadKycDocument',
+            tags: ['KYC'],
+            summary: 'Download a KYC document',
+            description: 'Download a previously uploaded KYC document. Users can only download their own documents.',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'documentId', in: 'path', description: 'The document ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Document file download',
+        content: new OA\MediaType(
+            mediaType: 'application/octet-stream',
+            schema: new OA\Schema(type: 'string', format: 'binary')
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Document not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function downloadDocument(string $documentId): mixed
     {
         /**
@@ -413,57 +362,43 @@ class KycController extends Controller
 
     /**
      * Start Ondato KYC verification for the authenticated user.
-     *
-     * @OA\Post(
-     *     path="/api/compliance/kyc/ondato/start",
-     *     operationId="startOndatoVerification",
-     *     tags={"KYC"},
-     *     summary="Start Ondato identity verification",
-     *     description="Creates an Ondato identity verification session linked to a TrustCert application",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="application_id", type="string", example="app_abc123", description="TrustCertApplication ID"),
-     * @OA\Property(property="target_level",   type="integer", example=2, description="Trust level (0-3)"),
-     * @OA\Property(property="first_name",     type="string", example="John"),
-     * @OA\Property(property="last_name",      type="string", example="Doe")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Verification session created",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data", type="object",
-     * @OA\Property(property="identity_verification_id", type="string", example="3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-     * @OA\Property(property="verification_id",          type="string", example="9c1a2b3d-4e5f-6789-abcd-ef0123456789"),
-     * @OA\Property(property="status",                   type="string", example="pending")
-     *         )
-     *     )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="KYC already approved or invalid application",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error", type="string", example="KYC already approved")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to start verification"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/compliance/kyc/ondato/start',
+        operationId: 'startOndatoVerification',
+        tags: ['KYC'],
+        summary: 'Start Ondato identity verification',
+        description: 'Creates an Ondato identity verification session linked to a TrustCert application',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'application_id', type: 'string', example: 'app_abc123', description: 'TrustCertApplication ID'),
+        new OA\Property(property: 'target_level', type: 'integer', example: 2, description: 'Trust level (0-3)'),
+        new OA\Property(property: 'first_name', type: 'string', example: 'John'),
+        new OA\Property(property: 'last_name', type: 'string', example: 'Doe'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Verification session created',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'identity_verification_id', type: 'string', example: '3fa85f64-5717-4562-b3fc-2c963f66afa6'),
+        new OA\Property(property: 'verification_id', type: 'string', example: '9c1a2b3d-4e5f-6789-abcd-ef0123456789'),
+        new OA\Property(property: 'status', type: 'string', example: 'pending'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'KYC already approved or invalid application',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string', example: 'KYC already approved'),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to start verification'
+    )]
     public function startOndatoVerification(Request $request, OndatoService $ondatoService): JsonResponse
     {
         /** @var User $user */
@@ -518,46 +453,35 @@ class KycController extends Controller
 
     /**
      * Get Ondato verification status for the authenticated user.
-     *
-     * @OA\Get(
-     *     path="/api/compliance/kyc/ondato/status/{verificationId}",
-     *     operationId="getOndatoVerificationStatus",
-     *     tags={"KYC"},
-     *     summary="Get Ondato verification status",
-     *     description="Retrieve the status of a specific Ondato KYC verification",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="verificationId",
-     *         in="path",
-     *         required=true,
-     *         description="The KycVerification ID",
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Verification status",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data", type="object",
-     * @OA\Property(property="verification_id",   type="string"),
-     * @OA\Property(property="status",            type="string", enum={"pending", "in_progress", "completed", "failed", "expired"}),
-     * @OA\Property(property="completed_at",      type="string", format="date-time", nullable=true),
-     * @OA\Property(property="failure_reason",    type="string", nullable=true),
-     * @OA\Property(property="trust_cert_level",  type="integer", nullable=true, description="Trust level (1-3) when completed")
-     *         )
-     *     )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Verification not found"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/compliance/kyc/ondato/status/{verificationId}',
+        operationId: 'getOndatoVerificationStatus',
+        tags: ['KYC'],
+        summary: 'Get Ondato verification status',
+        description: 'Retrieve the status of a specific Ondato KYC verification',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'verificationId', in: 'path', required: true, description: 'The KycVerification ID', schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Verification status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'verification_id', type: 'string'),
+        new OA\Property(property: 'status', type: 'string', enum: ['pending', 'in_progress', 'completed', 'failed', 'expired']),
+        new OA\Property(property: 'completed_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'failure_reason', type: 'string', nullable: true),
+        new OA\Property(property: 'trust_cert_level', type: 'integer', nullable: true, description: 'Trust level (1-3) when completed'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Verification not found'
+    )]
     public function getOndatoVerificationStatus(string $verificationId): JsonResponse
     {
         /** @var User $user */

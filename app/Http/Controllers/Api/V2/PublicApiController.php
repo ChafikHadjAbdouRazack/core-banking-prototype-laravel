@@ -9,46 +9,40 @@ use Cache;
 use DB;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Public API",
- *     description="Public API endpoints for external developers"
- * )
- */
+#[OA\Tag(
+    name: 'Public API',
+    description: 'Public API endpoints for external developers'
+)]
 class PublicApiController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/",
-     *     operationId="getApiInfo",
-     *     tags={"Public API"},
-     *     summary="Get API information",
-     *     description="Returns information about the API including version, status, and available endpoints",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="API information",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="name",           type="string", example="FinAegis Public API"),
-     * @OA\Property(property="version",        type="string", example="2.0.0"),
-     * @OA\Property(property="description",    type="string"),
-     * @OA\Property(property="status",         type="string", example="operational"),
-     * @OA\Property(property="endpoints",      type="object",
-     * @OA\Property(property="accounts",       type="string", example="/v2/accounts"),
-     * @OA\Property(property="assets",         type="string", example="/v2/assets"),
-     * @OA\Property(property="exchange_rates", type="string", example="/v2/exchange-rates"),
-     * @OA\Property(property="baskets",        type="string", example="/v2/baskets"),
-     * @OA\Property(property="webhooks",       type="string", example="/v2/webhooks")
-     *             ),
-     * @OA\Property(property="documentation",  type="string", example="https://docs.finaegis.org"),
-     * @OA\Property(property="support",        type="string", example="api@finaegis.org")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/',
+            operationId: 'getApiInfo',
+            tags: ['Public API'],
+            summary: 'Get API information',
+            description: 'Returns information about the API including version, status, and available endpoints'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'API information',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'FinAegis Public API'),
+        new OA\Property(property: 'version', type: 'string', example: '2.0.0'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'status', type: 'string', example: 'operational'),
+        new OA\Property(property: 'endpoints', type: 'object', properties: [
+        new OA\Property(property: 'accounts', type: 'string', example: '/v2/accounts'),
+        new OA\Property(property: 'assets', type: 'string', example: '/v2/assets'),
+        new OA\Property(property: 'exchange_rates', type: 'string', example: '/v2/exchange-rates'),
+        new OA\Property(property: 'baskets', type: 'string', example: '/v2/baskets'),
+        new OA\Property(property: 'webhooks', type: 'string', example: '/v2/webhooks'),
+        ]),
+        new OA\Property(property: 'documentation', type: 'string', example: 'https://docs.finaegis.org'),
+        new OA\Property(property: 'support', type: 'string', example: 'api@finaegis.org'),
+        ])
+    )]
     public function index(): JsonResponse
     {
         return response()->json(
@@ -87,40 +81,35 @@ class PublicApiController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/status",
-     *     operationId="getApiStatus",
-     *     tags={"Public API"},
-     *     summary="Get API status",
-     *     description="Returns the current operational status of the API and its components",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="API status",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",            type="string", example="operational"),
-     * @OA\Property(property="timestamp",         type="string", format="date-time"),
-     * @OA\Property(property="components",        type="object",
-     * @OA\Property(property="api",               type="string", example="operational"),
-     * @OA\Property(property="database",          type="string", example="operational"),
-     * @OA\Property(property="redis",             type="string", example="operational"),
-     * @OA\Property(property="bank_connectors",   type="object",
-     * @OA\Property(property="paysera",           type="string", example="operational"),
-     * @OA\Property(property="deutsche_bank",     type="string", example="operational"),
-     * @OA\Property(property="santander",         type="string", example="degraded")
-     *                 )
-     *             ),
-     * @OA\Property(property="metrics",           type="object",
-     * @OA\Property(property="response_time_ms",  type="integer", example=45),
-     * @OA\Property(property="uptime_percentage", type="number", example=99.95)
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/status',
+            operationId: 'getApiStatus',
+            tags: ['Public API'],
+            summary: 'Get API status',
+            description: 'Returns the current operational status of the API and its components'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'API status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'operational'),
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'components', type: 'object', properties: [
+        new OA\Property(property: 'api', type: 'string', example: 'operational'),
+        new OA\Property(property: 'database', type: 'string', example: 'operational'),
+        new OA\Property(property: 'redis', type: 'string', example: 'operational'),
+        new OA\Property(property: 'bank_connectors', type: 'object', properties: [
+        new OA\Property(property: 'paysera', type: 'string', example: 'operational'),
+        new OA\Property(property: 'deutsche_bank', type: 'string', example: 'operational'),
+        new OA\Property(property: 'santander', type: 'string', example: 'degraded'),
+        ]),
+        ]),
+        new OA\Property(property: 'metrics', type: 'object', properties: [
+        new OA\Property(property: 'response_time_ms', type: 'integer', example: 45),
+        new OA\Property(property: 'uptime_percentage', type: 'number', example: 99.95),
+        ]),
+        ])
+    )]
     public function status(): JsonResponse
     {
         $startTime = microtime(true);

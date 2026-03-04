@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use RuntimeException;
 
 class YieldOptimizationController extends Controller
@@ -24,37 +25,35 @@ class YieldOptimizationController extends Controller
 
     /**
      * Optimize portfolio for yield.
-     *
-     * @OA\Post(
-     *     path="/api/v2/treasury/optimize",
-     *     summary="Optimize portfolio for yield",
-     *     tags={"Treasury"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"account_id", "total_amount", "target_yield", "risk_level"},
-     *             @OA\Property(property="account_id", type="string", format="uuid"),
-     *             @OA\Property(property="total_amount", type="number", format="float", minimum=10000),
-     *             @OA\Property(property="target_yield", type="number", format="float", minimum=0, maximum=20),
-     *             @OA\Property(property="risk_level", type="string", enum={"low", "medium", "high", "very_high"}),
-     *             @OA\Property(property="constraints", type="object",
-     *                 @OA\Property(property="min_liquidity", type="number", format="float"),
-     *                 @OA\Property(property="max_concentration", type="number", format="float")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio optimization result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v2/treasury/optimize',
+        summary: 'Optimize portfolio for yield',
+        tags: ['Treasury'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['account_id', 'total_amount', 'target_yield', 'risk_level'], properties: [
+        new OA\Property(property: 'account_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'total_amount', type: 'number', format: 'float', minimum: 10000),
+        new OA\Property(property: 'target_yield', type: 'number', format: 'float', minimum: 0, maximum: 20),
+        new OA\Property(property: 'risk_level', type: 'string', enum: ['low', 'medium', 'high', 'very_high']),
+        new OA\Property(property: 'constraints', type: 'object', properties: [
+        new OA\Property(property: 'min_liquidity', type: 'number', format: 'float'),
+        new OA\Property(property: 'max_concentration', type: 'number', format: 'float'),
+        ]),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio optimization result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function optimizePortfolio(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -99,29 +98,28 @@ class YieldOptimizationController extends Controller
 
     /**
      * Get portfolio details.
-     *
-     * @OA\Get(
-     *     path="/api/v2/treasury/{treasuryId}/portfolio",
-     *     summary="Get portfolio details",
-     *     tags={"Treasury"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="treasuryId",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Portfolio not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v2/treasury/{treasuryId}/portfolio',
+        summary: 'Get portfolio details',
+        tags: ['Treasury'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'treasuryId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Portfolio not found'
+    )]
     public function getPortfolio(Request $request, string $treasuryId): JsonResponse
     {
         try {
@@ -158,28 +156,24 @@ class YieldOptimizationController extends Controller
 
     /**
      * Get portfolio summary for a treasury.
-     *
-     * @OA\Get(
-     *     path="/api/v2/treasury/{treasuryId}/summary",
-     *     summary="Get portfolio summary",
-     *     tags={"Treasury"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="treasuryId",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Portfolio summary",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v2/treasury/{treasuryId}/summary',
+        summary: 'Get portfolio summary',
+        tags: ['Treasury'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'treasuryId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Portfolio summary',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
     public function getPortfolioSummary(Request $request, string $treasuryId): JsonResponse
     {
         try {
@@ -204,31 +198,27 @@ class YieldOptimizationController extends Controller
 
     /**
      * Check if portfolio needs rebalancing.
-     *
-     * @OA\Get(
-     *     path="/api/v2/treasury/{treasuryId}/rebalance-check",
-     *     summary="Check if portfolio needs rebalancing",
-     *     tags={"Treasury"},
-     *     security={{"bearerAuth": {}}},
-     *     @OA\Parameter(
-     *         name="treasuryId",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Rebalancing check result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="needs_rebalancing", type="boolean"),
-     *                 @OA\Property(property="treasury_id", type="string")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v2/treasury/{treasuryId}/rebalance-check',
+        summary: 'Check if portfolio needs rebalancing',
+        tags: ['Treasury'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+        new OA\Parameter(name: 'treasuryId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rebalancing check result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'needs_rebalancing', type: 'boolean'),
+        new OA\Property(property: 'treasury_id', type: 'string'),
+        ]),
+        ])
+    )]
     public function checkRebalancing(Request $request, string $treasuryId): JsonResponse
     {
         try {

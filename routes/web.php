@@ -2,12 +2,11 @@
 
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GCUController;
-use App\Http\Controllers\ProductionRedirectController;
 use App\Http\Controllers\StatusController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// Public Pages — production serves app landing at root; non-production serves welcome
+// Public Pages — production (Zelta.app) serves app landing at root; demo/other serves full marketing site
 Route::get('/', function () {
     if (app()->environment('production')) {
         return view('app');
@@ -16,14 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-// /app — production redirects to /, non-production shows app landing
-if (app()->environment('production')) {
-    Route::get('/app', ProductionRedirectController::class)->name('app.landing');
-} else {
-    Route::get('/app', function () {
-        return view('app');
-    })->name('app.landing');
-}
+Route::get('/app', function () {
+    return view('app');
+})->name('app.landing');
 
 // WebSocket endpoint with origin validation
 Route::get('/ws', function (Request $request) {
@@ -60,8 +54,10 @@ Route::get('/ws', function (Request $request) {
         ->header('Connection', 'Upgrade');
 })->name('websocket');
 
-// Promotional / demo-only routes — hidden in production, redirect to / to keep named routes alive
-if (! app()->environment('production')) {
+// Promotional / marketing routes — controlled by SHOW_PROMO_PAGES env flag
+// FinAegis.org (demo): defaults true → full marketing site visible
+// Zelta.app (production): SHOW_PROMO_PAGES=false → redirects to /
+if (config('brand.show_promo_pages')) {
     Route::get('/about', function () {
         return view('about');
     })->name('about');
@@ -92,7 +88,7 @@ if (! app()->environment('production')) {
     })->name('features');
 
     Route::get('/features/{feature}', function ($feature) {
-        $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol'];
+        $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol', 'plugin-marketplace'];
 
         if (! in_array($feature, $validFeatures)) {
             abort(404);
@@ -194,7 +190,7 @@ if (! app()->environment('production')) {
         return view('partners');
     })->name('partners');
 } else {
-    // Production: register named route fallbacks so route() calls don't throw RouteNotFoundException
+    // Promo pages disabled: register named route fallbacks that redirect to /
     $promoRoutes = [
         'about', 'platform', 'gcu', 'sub-products', 'features', 'ai-framework',
         'pricing', 'security', 'compliance', 'developers', 'partners',
@@ -204,22 +200,25 @@ if (! app()->environment('production')) {
         'financial-institutions.apply',
     ];
 
+    $redirectHome = function () {
+        return redirect('/', 301);
+    };
+
     foreach ($promoRoutes as $name) {
         $path = '/' . str_replace('.', '/', $name);
-        Route::get($path, ProductionRedirectController::class)->name($name);
+        Route::get($path, $redirectHome)->name($name);
     }
 
-    // Wildcard promo routes that take parameters
-    Route::get('/sub-products/{product}', ProductionRedirectController::class)->name('sub-products.show');
-    Route::get('/features/{feature}', ProductionRedirectController::class)->name('features.show');
-    Route::get('/developers/{section}', ProductionRedirectController::class)->name('developers.show');
-    Route::get('/ai-framework/demo', ProductionRedirectController::class)->name('ai-framework.demo');
-    Route::get('/ai-framework/docs', ProductionRedirectController::class)->name('ai-framework.docs');
-    Route::get('/demo/ai-agent', ProductionRedirectController::class)->name('demo.ai-agent');
-    Route::get('/blog/{slug}', ProductionRedirectController::class)->name('blog.show');
-    Route::post('/blog/subscribe', ProductionRedirectController::class)->name('blog.subscribe');
-    Route::post('/support/contact', ProductionRedirectController::class)->name('support.contact.submit');
-    Route::post('/financial-institutions/submit', ProductionRedirectController::class)->name('financial-institutions.submit');
+    Route::get('/sub-products/{product}', $redirectHome)->name('sub-products.show');
+    Route::get('/features/{feature}', $redirectHome)->name('features.show');
+    Route::get('/developers/{section}', $redirectHome)->name('developers.show');
+    Route::get('/ai-framework/demo', $redirectHome)->name('ai-framework.demo');
+    Route::get('/ai-framework/docs', $redirectHome)->name('ai-framework.docs');
+    Route::get('/demo/ai-agent', $redirectHome)->name('demo.ai-agent');
+    Route::get('/blog/{slug}', $redirectHome)->name('blog.show');
+    Route::post('/blog/subscribe', $redirectHome)->name('blog.subscribe');
+    Route::post('/support/contact', $redirectHome)->name('support.contact.submit');
+    Route::post('/financial-institutions/submit', $redirectHome)->name('financial-institutions.submit');
 }
 
 Route::get('/legal/terms', function () {

@@ -21,7 +21,7 @@ class MobileControllerTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create();
-        $this->token = $this->user->createToken('test-token', ['read', 'write'])->plainTextToken;
+        $this->token = $this->user->createToken('test-token', ['read', 'write', 'delete'])->plainTextToken;
     }
 
     public function test_can_get_mobile_config_without_auth(): void

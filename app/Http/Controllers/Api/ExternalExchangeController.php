@@ -9,14 +9,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Log;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="External Exchange",
- *     description="External exchange integration endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'External Exchange',
+    description: 'External exchange integration endpoints'
+)]
 class ExternalExchangeController extends Controller
 {
     public function __construct(
@@ -25,31 +23,22 @@ class ExternalExchangeController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchange/connectors",
-     *     tags={"External Exchange"},
-     *     summary="Get available external exchange connectors",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of available connectors",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="connectors",   type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="name",         type="string", example="binance"),
-     * @OA\Property(property="display_name", type="string", example="Binance"),
-     * @OA\Property(property="available",    type="boolean", example=true)
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchange/connectors',
+            tags: ['External Exchange'],
+            summary: 'Get available external exchange connectors'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of available connectors',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'connectors', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'binance'),
+        new OA\Property(property: 'display_name', type: 'string', example: 'Binance'),
+        new OA\Property(property: 'available', type: 'boolean', example: true),
+        ])),
+        ])
+    )]
     public function connectors(): JsonResponse
     {
         $connectors = $this->connectorRegistry->all()->map(
@@ -69,34 +58,19 @@ class ExternalExchangeController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchange/ticker/{base}/{quote}",
-     *     tags={"External Exchange"},
-     *     summary="Get aggregated ticker data from external exchanges",
-     *
-     * @OA\Parameter(
-     *         name="base",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string", example="BTC")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quote",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string", example="EUR")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Aggregated ticker data"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchange/ticker/{base}/{quote}',
+            tags: ['External Exchange'],
+            summary: 'Get aggregated ticker data from external exchanges',
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'BTC')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'EUR')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Aggregated ticker data'
+    )]
     public function ticker(string $base, string $quote): JsonResponse
     {
         $tickers = [];
@@ -125,42 +99,20 @@ class ExternalExchangeController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchange/orderbook/{base}/{quote}",
-     *     tags={"External Exchange"},
-     *     summary="Get aggregated order book from external exchanges",
-     *
-     * @OA\Parameter(
-     *         name="base",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",  example="BTC")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quote",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string",  example="EUR")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="depth",
-     *         in="query",
-     *         required=false,
-     *
-     * @OA\Schema(type="integer", default=20)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Aggregated order book"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchange/orderbook/{base}/{quote}',
+            tags: ['External Exchange'],
+            summary: 'Get aggregated order book from external exchanges',
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'BTC')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'EUR')),
+        new OA\Parameter(name: 'depth', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Aggregated order book'
+    )]
     public function orderBook(Request $request, string $base, string $quote): JsonResponse
     {
         $depth = (int) $request->get('depth', 20);
@@ -175,35 +127,20 @@ class ExternalExchangeController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/external-exchange/arbitrage/{base}/{quote}",
-     *     tags={"External Exchange"},
-     *     summary="Check arbitrage opportunities",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="base",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string", example="BTC")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="quote",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string", example="EUR")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Arbitrage opportunities"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/external-exchange/arbitrage/{base}/{quote}',
+            tags: ['External Exchange'],
+            summary: 'Check arbitrage opportunities',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'base', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'BTC')),
+        new OA\Parameter(name: 'quote', in: 'path', required: true, schema: new OA\Schema(type: 'string', example: 'EUR')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Arbitrage opportunities'
+    )]
     public function arbitrage(string $base, string $quote): JsonResponse
     {
         $this->middleware('auth:sanctum');

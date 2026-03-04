@@ -24,18 +24,18 @@ use App\Http\Requests\Mobile\VerifyBiometricRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 use RuntimeException;
 
 /**
  * Mobile API Controller.
  *
  * Handles mobile device registration, biometric authentication, and push notifications.
- *
- * @OA\Tag(
- *     name="Mobile",
- *     description="Mobile device management and authentication endpoints"
- * )
  */
+#[OA\Tag(
+    name: 'Mobile',
+    description: 'Mobile device management and authentication endpoints'
+)]
 class MobileController extends Controller
 {
     public function __construct(
@@ -49,30 +49,31 @@ class MobileController extends Controller
 
     /**
      * Register a mobile device.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/devices",
-     *     operationId="registerMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Register a mobile device",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id", "platform", "app_version"},
-     *             @OA\Property(property="device_id", type="string", maxLength=100),
-     *             @OA\Property(property="platform", type="string", enum={"ios", "android"}),
-     *             @OA\Property(property="app_version", type="string", maxLength=20),
-     *             @OA\Property(property="push_token", type="string", maxLength=500),
-     *             @OA\Property(property="device_name", type="string", maxLength=100),
-     *             @OA\Property(property="device_model", type="string", maxLength=100),
-     *             @OA\Property(property="os_version", type="string", maxLength=50)
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Device registered successfully"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/devices',
+        operationId: 'registerMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Register a mobile device',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'platform', 'app_version'], properties: [
+        new OA\Property(property: 'device_id', type: 'string', maxLength: 100),
+        new OA\Property(property: 'platform', type: 'string', enum: ['ios', 'android']),
+        new OA\Property(property: 'app_version', type: 'string', maxLength: 20),
+        new OA\Property(property: 'push_token', type: 'string', maxLength: 500),
+        new OA\Property(property: 'device_name', type: 'string', maxLength: 100),
+        new OA\Property(property: 'device_model', type: 'string', maxLength: 100),
+        new OA\Property(property: 'os_version', type: 'string', maxLength: 50),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Device registered successfully'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function registerDevice(RegisterDeviceRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -96,16 +97,18 @@ class MobileController extends Controller
 
     /**
      * List user's mobile devices.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/devices",
-     *     operationId="listMobileDevices",
-     *     tags={"Mobile"},
-     *     summary="List user's registered mobile devices",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response=200, description="List of devices")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/devices',
+        operationId: 'listMobileDevices',
+        tags: ['Mobile'],
+        summary: 'List user\'s registered mobile devices',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of devices'
+    )]
     public function listDevices(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -122,18 +125,25 @@ class MobileController extends Controller
 
     /**
      * Get a specific device.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/devices/{id}",
-     *     operationId="getMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Get a specific mobile device",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Device details"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/devices/{id}',
+        operationId: 'getMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Get a specific mobile device',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Device details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function getDevice(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -160,18 +170,25 @@ class MobileController extends Controller
 
     /**
      * Unregister a mobile device.
-     *
-     * @OA\Delete(
-     *     path="/api/mobile/devices/{id}",
-     *     operationId="unregisterMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Unregister a mobile device",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Device unregistered"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/mobile/devices/{id}',
+        operationId: 'unregisterMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Unregister a mobile device',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Device unregistered'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function unregisterDevice(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -195,25 +212,28 @@ class MobileController extends Controller
 
     /**
      * Update push token for a device.
-     *
-     * @OA\Patch(
-     *     path="/api/mobile/devices/{id}/token",
-     *     operationId="updatePushToken",
-     *     tags={"Mobile"},
-     *     summary="Update push notification token",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"push_token"},
-     *             @OA\Property(property="push_token", type="string", maxLength=500)
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Token updated"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Patch(
+        path: '/api/mobile/devices/{id}/token',
+        operationId: 'updatePushToken',
+        tags: ['Mobile'],
+        summary: 'Update push notification token',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['push_token'], properties: [
+        new OA\Property(property: 'push_token', type: 'string', maxLength: 500),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Token updated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function updatePushToken(UpdatePushTokenRequest $request, string $id): JsonResponse
     {
         /** @var User $user */
@@ -238,27 +258,31 @@ class MobileController extends Controller
 
     /**
      * Enable biometric authentication.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/auth/biometric/enable",
-     *     operationId="enableBiometric",
-     *     tags={"Mobile"},
-     *     summary="Enable biometric authentication for a device",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id", "public_key"},
-     *             @OA\Property(property="device_id", type="string"),
-     *             @OA\Property(property="public_key", type="string", description="Base64 encoded ECDSA P-256 public key"),
-     *             @OA\Property(property="key_id", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Biometric enabled"),
-     *     @OA\Response(response=400, description="Invalid public key"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/auth/biometric/enable',
+        operationId: 'enableBiometric',
+        tags: ['Mobile'],
+        summary: 'Enable biometric authentication for a device',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'public_key'], properties: [
+        new OA\Property(property: 'device_id', type: 'string'),
+        new OA\Property(property: 'public_key', type: 'string', description: 'Base64 encoded ECDSA P-256 public key'),
+        new OA\Property(property: 'key_id', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Biometric enabled'
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid public key'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function enableBiometric(EnableBiometricRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -309,24 +333,25 @@ class MobileController extends Controller
 
     /**
      * Disable biometric authentication.
-     *
-     * @OA\Delete(
-     *     path="/api/mobile/auth/biometric/disable",
-     *     operationId="disableBiometric",
-     *     tags={"Mobile"},
-     *     summary="Disable biometric authentication for a device",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id"},
-     *             @OA\Property(property="device_id", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Biometric disabled"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/mobile/auth/biometric/disable',
+        operationId: 'disableBiometric',
+        tags: ['Mobile'],
+        summary: 'Disable biometric authentication for a device',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id'], properties: [
+        new OA\Property(property: 'device_id', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Biometric disabled'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function disableBiometric(DeviceIdRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -351,24 +376,28 @@ class MobileController extends Controller
 
     /**
      * Get biometric challenge for authentication.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/auth/biometric/challenge",
-     *     operationId="getBiometricChallenge",
-     *     tags={"Mobile"},
-     *     summary="Get a challenge for biometric authentication",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id"},
-     *             @OA\Property(property="device_id", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Challenge created"),
-     *     @OA\Response(response=400, description="Biometric not enabled"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/auth/biometric/challenge',
+        operationId: 'getBiometricChallenge',
+        tags: ['Mobile'],
+        summary: 'Get a challenge for biometric authentication',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id'], properties: [
+        new OA\Property(property: 'device_id', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Challenge created'
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Biometric not enabled'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function getBiometricChallenge(DeviceIdRequest $request): JsonResponse
     {
         $device = $this->deviceService->findByDeviceId($request->device_id);
@@ -403,26 +432,30 @@ class MobileController extends Controller
 
     /**
      * Verify biometric signature and get access token.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/auth/biometric/verify",
-     *     operationId="verifyBiometric",
-     *     tags={"Mobile"},
-     *     summary="Verify biometric signature and get access token",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_id", "challenge", "signature"},
-     *             @OA\Property(property="device_id", type="string"),
-     *             @OA\Property(property="challenge", type="string"),
-     *             @OA\Property(property="signature", type="string", description="Base64 encoded signature")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Authentication successful"),
-     *     @OA\Response(response=401, description="Authentication failed"),
-     *     @OA\Response(response=404, description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/auth/biometric/verify',
+        operationId: 'verifyBiometric',
+        tags: ['Mobile'],
+        summary: 'Verify biometric signature and get access token',
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'challenge', 'signature'], properties: [
+        new OA\Property(property: 'device_id', type: 'string'),
+        new OA\Property(property: 'challenge', type: 'string'),
+        new OA\Property(property: 'signature', type: 'string', description: 'Base64 encoded signature'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Authentication successful'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Authentication failed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
     public function verifyBiometric(VerifyBiometricRequest $request): JsonResponse
     {
         $device = $this->deviceService->findByDeviceId($request->device_id);
@@ -464,17 +497,21 @@ class MobileController extends Controller
 
     /**
      * Get notification history.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/notifications",
-     *     operationId="getNotifications",
-     *     tags={"Mobile"},
-     *     summary="Get notification history",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", default=50)),
-     *     @OA\Response(response=200, description="Notification list")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/notifications',
+        operationId: 'getNotifications',
+        tags: ['Mobile'],
+        summary: 'Get notification history',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'limit', in: 'query', schema: new OA\Schema(type: 'integer', default: 50)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Notification list'
+    )]
     public function getNotifications(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -500,18 +537,25 @@ class MobileController extends Controller
 
     /**
      * Mark notification as read.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/notifications/{id}/read",
-     *     operationId="markNotificationRead",
-     *     tags={"Mobile"},
-     *     summary="Mark a notification as read",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="Marked as read"),
-     *     @OA\Response(response=404, description="Notification not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/notifications/{id}/read',
+        operationId: 'markNotificationRead',
+        tags: ['Mobile'],
+        summary: 'Mark a notification as read',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Marked as read'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Notification not found'
+    )]
     public function markNotificationRead(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -544,16 +588,18 @@ class MobileController extends Controller
 
     /**
      * Mark all notifications as read.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/notifications/read-all",
-     *     operationId="markAllNotificationsRead",
-     *     tags={"Mobile"},
-     *     summary="Mark all notifications as read",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response=200, description="All marked as read")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/notifications/read-all',
+        operationId: 'markAllNotificationsRead',
+        tags: ['Mobile'],
+        summary: 'Mark all notifications as read',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'All marked as read'
+    )]
     public function markAllNotificationsRead(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -569,21 +615,24 @@ class MobileController extends Controller
 
     /**
      * Get unread notification count.
-     *
-     * @OA\Get(
-     *     path="/api/v1/notifications/unread-count",
-     *     operationId="getNotificationUnreadCount",
-     *     tags={"Mobile"},
-     *     summary="Get unread notification count",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response=200, description="Unread count", @OA\JsonContent(
-     *         @OA\Property(property="success", type="boolean", example=true),
-     *         @OA\Property(property="data", type="object",
-     *             @OA\Property(property="unread_count", type="integer", example=5)
-     *         )
-     *     ))
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/notifications/unread-count',
+        operationId: 'getNotificationUnreadCount',
+        tags: ['Mobile'],
+        summary: 'Get unread notification count',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Unread count',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'unread_count', type: 'integer', example: 5),
+        ]),
+        ])
+    )]
     public function getUnreadNotificationCount(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -598,15 +647,17 @@ class MobileController extends Controller
 
     /**
      * Get mobile app configuration.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/config",
-     *     operationId="getMobileConfig",
-     *     tags={"Mobile"},
-     *     summary="Get mobile app configuration",
-     *     @OA\Response(response=200, description="App configuration")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/config',
+        operationId: 'getMobileConfig',
+        tags: ['Mobile'],
+        summary: 'Get mobile app configuration'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'App configuration'
+    )]
     public function getConfig(): JsonResponse
     {
         return response()->json([
@@ -633,23 +684,25 @@ class MobileController extends Controller
 
     /**
      * Block a mobile device.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/devices/{id}/block",
-     *     operationId="blockMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Block a mobile device",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(response="200", description="Device blocked"),
-     *     @OA\Response(response="404", description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/devices/{id}/block',
+        operationId: 'blockMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Block a mobile device',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Device blocked'
+    )]
+    #[OA\Response(
+        response: '404',
+        description: 'Device not found'
+    )]
     public function blockDevice(BlockDeviceRequest $request, string $id): JsonResponse
     {
         /** @var User $user */
@@ -681,23 +734,25 @@ class MobileController extends Controller
 
     /**
      * Unblock a mobile device.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/devices/{id}/unblock",
-     *     operationId="unblockMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Unblock a mobile device",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(response="200", description="Device unblocked"),
-     *     @OA\Response(response="404", description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/devices/{id}/unblock',
+        operationId: 'unblockMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Unblock a mobile device',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Device unblocked'
+    )]
+    #[OA\Response(
+        response: '404',
+        description: 'Device not found'
+    )]
     public function unblockDevice(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -725,23 +780,25 @@ class MobileController extends Controller
 
     /**
      * Trust a mobile device.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/devices/{id}/trust",
-     *     operationId="trustMobileDevice",
-     *     tags={"Mobile"},
-     *     summary="Mark a device as trusted",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(response="200", description="Device trusted"),
-     *     @OA\Response(response="404", description="Device not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/devices/{id}/trust',
+        operationId: 'trustMobileDevice',
+        tags: ['Mobile'],
+        summary: 'Mark a device as trusted',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Device trusted'
+    )]
+    #[OA\Response(
+        response: '404',
+        description: 'Device not found'
+    )]
     public function trustDevice(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -778,16 +835,18 @@ class MobileController extends Controller
 
     /**
      * List active sessions for the authenticated user.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/sessions",
-     *     operationId="listMobileSessions",
-     *     tags={"Mobile"},
-     *     summary="List active mobile sessions",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response="200", description="List of active sessions")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/sessions',
+        operationId: 'listMobileSessions',
+        tags: ['Mobile'],
+        summary: 'List active mobile sessions',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'List of active sessions'
+    )]
     public function listSessions(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -822,23 +881,25 @@ class MobileController extends Controller
 
     /**
      * Revoke a specific session.
-     *
-     * @OA\Delete(
-     *     path="/api/mobile/sessions/{id}",
-     *     operationId="revokeMobileSession",
-     *     tags={"Mobile"},
-     *     summary="Revoke a specific mobile session",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string", format="uuid")
-     *     ),
-     *     @OA\Response(response="200", description="Session revoked"),
-     *     @OA\Response(response="404", description="Session not found")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/mobile/sessions/{id}',
+        operationId: 'revokeMobileSession',
+        tags: ['Mobile'],
+        summary: 'Revoke a specific mobile session',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Session revoked'
+    )]
+    #[OA\Response(
+        response: '404',
+        description: 'Session not found'
+    )]
     public function revokeSession(Request $request, string $id): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -862,16 +923,18 @@ class MobileController extends Controller
 
     /**
      * Revoke all sessions except the current one.
-     *
-     * @OA\Delete(
-     *     path="/api/mobile/sessions",
-     *     operationId="revokeAllMobileSessions",
-     *     tags={"Mobile"},
-     *     summary="Revoke all mobile sessions except current",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response="200", description="Sessions revoked")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/mobile/sessions',
+        operationId: 'revokeAllMobileSessions',
+        tags: ['Mobile'],
+        summary: 'Revoke all mobile sessions except current',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Sessions revoked'
+    )]
     public function revokeAllSessions(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -889,16 +952,18 @@ class MobileController extends Controller
 
     /**
      * Refresh the authentication token.
-     *
-     * @OA\Post(
-     *     path="/api/mobile/auth/refresh",
-     *     operationId="refreshMobileToken",
-     *     tags={"Mobile"},
-     *     summary="Refresh the authentication token",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response="200", description="Token refreshed")
-     * )
      */
+    #[OA\Post(
+        path: '/api/mobile/auth/refresh',
+        operationId: 'refreshMobileToken',
+        tags: ['Mobile'],
+        summary: 'Refresh the authentication token',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Token refreshed'
+    )]
     public function refreshToken(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -926,16 +991,18 @@ class MobileController extends Controller
 
     /**
      * Get notification preferences.
-     *
-     * @OA\Get(
-     *     path="/api/mobile/notifications/preferences",
-     *     operationId="getNotificationPreferences",
-     *     tags={"Mobile"},
-     *     summary="Get notification preferences",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(response="200", description="Notification preferences")
-     * )
      */
+    #[OA\Get(
+        path: '/api/mobile/notifications/preferences',
+        operationId: 'getNotificationPreferences',
+        tags: ['Mobile'],
+        summary: 'Get notification preferences',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Notification preferences'
+    )]
     public function getNotificationPreferences(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);
@@ -959,28 +1026,21 @@ class MobileController extends Controller
 
     /**
      * Update notification preferences.
-     *
-     * @OA\Put(
-     *     path="/api/mobile/notifications/preferences",
-     *     operationId="updateNotificationPreferences",
-     *     tags={"Mobile"},
-     *     summary="Update notification preferences",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"preferences"},
-     *             @OA\Property(
-     *                 property="preferences",
-     *                 type="object",
-     *                 description="Map of notification category to preference settings",
-     *                 example={"transactions": {"push_enabled": true, "email_enabled": false}}
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response="200", description="Preferences updated")
-     * )
      */
+    #[OA\Put(
+        path: '/api/mobile/notifications/preferences',
+        operationId: 'updateNotificationPreferences',
+        tags: ['Mobile'],
+        summary: 'Update notification preferences',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['preferences'], properties: [
+        new OA\Property(property: 'preferences', type: 'object', description: 'Map of notification category to preference settings', example: ['transactions' => ['push_enabled' => true, 'email_enabled' => false]]),
+        ]))
+    )]
+    #[OA\Response(
+        response: '200',
+        description: 'Preferences updated'
+    )]
     public function updateNotificationPreferences(UpdateNotificationPreferencesRequest $request): JsonResponse
     {
         /** @var User $user */
@@ -1014,28 +1074,27 @@ class MobileController extends Controller
 
     /**
      * Get app status for mobile version/maintenance check.
-     *
-     * @OA\Get(
-     *     path="/api/v1/app/status",
-     *     operationId="getAppStatus",
-     *     tags={"Mobile"},
-     *     summary="Get app version and maintenance status",
-     *     @OA\Response(
-     *         response=200,
-     *         description="App status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="min_version", type="string", example="1.0.0"),
-     *                 @OA\Property(property="latest_version", type="string", example="1.2.0"),
-     *                 @OA\Property(property="force_update", type="boolean", example=false),
-     *                 @OA\Property(property="maintenance", type="boolean", example=false),
-     *                 @OA\Property(property="maintenance_message", type="string", nullable=true)
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/app/status',
+        operationId: 'getAppStatus',
+        tags: ['Mobile'],
+        summary: 'Get app version and maintenance status'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'App status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'min_version', type: 'string', example: '1.0.0'),
+        new OA\Property(property: 'latest_version', type: 'string', example: '1.2.0'),
+        new OA\Property(property: 'force_update', type: 'boolean', example: false),
+        new OA\Property(property: 'maintenance', type: 'boolean', example: false),
+        new OA\Property(property: 'maintenance_message', type: 'string', nullable: true),
+        ]),
+        ])
+    )]
     public function getAppStatus(): JsonResponse
     {
         return response()->json([
@@ -1051,27 +1110,73 @@ class MobileController extends Controller
     }
 
     /**
-     * Bulk remove all devices for the authenticated user.
-     *
-     * @OA\Delete(
-     *     path="/api/mobile/devices/all",
-     *     operationId="bulkRemoveDevices",
-     *     tags={"Mobile"},
-     *     summary="Remove all registered devices for the current user",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="All devices removed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="removed_count", type="integer", example=3)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
+     * Get SSL certificate pins for mobile certificate pinning.
      */
+    #[OA\Get(
+        path: '/api/v1/mobile/ssl-pins',
+        operationId: 'getSslPins',
+        tags: ['Mobile'],
+        summary: 'Get SSL certificate pins for client-side certificate pinning'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'SSL certificate pins',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'pins', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'algorithm', type: 'string', example: 'sha256'),
+        new OA\Property(property: 'hash', type: 'string', example: 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='),
+        ])),
+        new OA\Property(property: 'max_age', type: 'integer', example: 86400),
+        new OA\Property(property: 'include_subdomains', type: 'boolean', example: true),
+        ]),
+        ])
+    )]
+    public function getSslPins(): JsonResponse
+    {
+        /** @var array<int, string> $configuredPins */
+        $configuredPins = (array) config('mobile.ssl_pins', []);
+
+        $pins = collect($configuredPins)->map(fn (string $hash) => [
+            'algorithm' => 'sha256',
+            'hash'      => $hash,
+        ])->values()->all();
+
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'pins'               => $pins,
+                'max_age'            => (int) config('mobile.ssl_pin_max_age', 86400),
+                'include_subdomains' => (bool) config('mobile.ssl_pin_include_subdomains', true),
+            ],
+        ]);
+    }
+
+    /**
+     * Bulk remove all devices for the authenticated user.
+     */
+    #[OA\Delete(
+        path: '/api/mobile/devices/all',
+        operationId: 'bulkRemoveDevices',
+        tags: ['Mobile'],
+        summary: 'Remove all registered devices for the current user',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'All devices removed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'removed_count', type: 'integer', example: 3),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function bulkRemoveDevices(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);

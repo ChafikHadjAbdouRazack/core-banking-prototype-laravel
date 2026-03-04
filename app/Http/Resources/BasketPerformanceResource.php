@@ -4,35 +4,35 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     schema="BasketPerformance",
- *     type="object",
- *
- * @OA\Property(property="id",                 type="integer"),
- * @OA\Property(property="basket_code",        type="string"),
- * @OA\Property(property="period_type",        type="string", enum={"hour", "day", "week", "month", "quarter", "year", "all_time"}),
- * @OA\Property(property="period_start",       type="string", format="date-time"),
- * @OA\Property(property="period_end",         type="string", format="date-time"),
- * @OA\Property(property="start_value",        type="number"),
- * @OA\Property(property="end_value",          type="number"),
- * @OA\Property(property="high_value",         type="number"),
- * @OA\Property(property="low_value",          type="number"),
- * @OA\Property(property="average_value",      type="number"),
- * @OA\Property(property="return_value",       type="number"),
- * @OA\Property(property="return_percentage",  type="number"),
- * @OA\Property(property="formatted_return",   type="string"),
- * @OA\Property(property="volatility",         type="number"),
- * @OA\Property(property="sharpe_ratio",       type="number"),
- * @OA\Property(property="max_drawdown",       type="number"),
- * @OA\Property(property="performance_rating", type="string"),
- * @OA\Property(property="risk_rating",        type="string"),
- * @OA\Property(property="annualized_return",  type="number"),
- * @OA\Property(property="value_count",        type="integer"),
- * @OA\Property(property="components",         type="array", @OA\Items(ref="#/components/schemas/ComponentPerformance"))
- * )
- */
+#[OA\Schema(
+    schema: 'BasketPerformance',
+    type: 'object',
+    properties: [
+    new OA\Property(property: 'id', type: 'integer'),
+    new OA\Property(property: 'basket_code', type: 'string'),
+    new OA\Property(property: 'period_type', type: 'string', enum: ['hour', 'day', 'week', 'month', 'quarter', 'year', 'all_time']),
+    new OA\Property(property: 'period_start', type: 'string', format: 'date-time'),
+    new OA\Property(property: 'period_end', type: 'string', format: 'date-time'),
+    new OA\Property(property: 'start_value', type: 'number'),
+    new OA\Property(property: 'end_value', type: 'number'),
+    new OA\Property(property: 'high_value', type: 'number'),
+    new OA\Property(property: 'low_value', type: 'number'),
+    new OA\Property(property: 'average_value', type: 'number'),
+    new OA\Property(property: 'return_value', type: 'number'),
+    new OA\Property(property: 'return_percentage', type: 'number'),
+    new OA\Property(property: 'formatted_return', type: 'string'),
+    new OA\Property(property: 'volatility', type: 'number'),
+    new OA\Property(property: 'sharpe_ratio', type: 'number'),
+    new OA\Property(property: 'max_drawdown', type: 'number'),
+    new OA\Property(property: 'performance_rating', type: 'string'),
+    new OA\Property(property: 'risk_rating', type: 'string'),
+    new OA\Property(property: 'annualized_return', type: 'number'),
+    new OA\Property(property: 'value_count', type: 'integer'),
+    new OA\Property(property: 'components', type: 'array', items: new OA\Items(ref: '#/components/schemas/ComponentPerformance')),
+    ]
+)]
 class BasketPerformanceResource extends JsonResource
 {
     /**

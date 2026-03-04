@@ -13,14 +13,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Authentication",
- *     description="Agent authentication, API key management, and session handling"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Authentication',
+    description: 'Agent authentication, API key management, and session handling'
+)]
 class AgentAuthController extends Controller
 {
     public function __construct(
@@ -28,35 +26,35 @@ class AgentAuthController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/auth/challenge",
-     *     operationId="getAuthChallenge",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Get authentication challenge for DID signature verification",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"did"},
-     *             @OA\Property(property="did", type="string", example="did:finaegis:agent:abc123def456")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Challenge generated successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="challenge", type="string"),
-     *                 @OA\Property(property="nonce", type="string"),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid DID format"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/auth/challenge',
+            operationId: 'getAuthChallenge',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Get authentication challenge for DID signature verification',
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['did'], properties: [
+        new OA\Property(property: 'did', type: 'string', example: 'did:finaegis:agent:abc123def456'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Challenge generated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'challenge', type: 'string'),
+        new OA\Property(property: 'nonce', type: 'string'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid DID format'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function getChallenge(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -87,38 +85,38 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/auth/did",
-     *     operationId="authenticateWithDID",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Authenticate agent using DID signature",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"did", "signature", "challenge"},
-     *             @OA\Property(property="did", type="string", example="did:finaegis:agent:abc123def456"),
-     *             @OA\Property(property="signature", type="string", example="base64_encoded_signature"),
-     *             @OA\Property(property="challenge", type="string", example="base64_encoded_challenge"),
-     *             @OA\Property(property="nonce", type="string", example="random_nonce_string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Authentication successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="session_token", type="string"),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time"),
-     *                 @OA\Property(property="agent", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Authentication failed"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/auth/did',
+            operationId: 'authenticateWithDID',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Authenticate agent using DID signature',
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['did', 'signature', 'challenge'], properties: [
+        new OA\Property(property: 'did', type: 'string', example: 'did:finaegis:agent:abc123def456'),
+        new OA\Property(property: 'signature', type: 'string', example: 'base64_encoded_signature'),
+        new OA\Property(property: 'challenge', type: 'string', example: 'base64_encoded_challenge'),
+        new OA\Property(property: 'nonce', type: 'string', example: 'random_nonce_string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Authentication successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'session_token', type: 'string'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'agent', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Authentication failed'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function authenticateWithDID(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -171,35 +169,35 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/auth/api-key",
-     *     operationId="authenticateWithApiKey",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Authenticate agent using API key",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"api_key"},
-     *             @OA\Property(property="api_key", type="string", example="your_64_char_api_key")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Authentication successful",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="session_token", type="string"),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time"),
-     *                 @OA\Property(property="agent", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Invalid API key"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/auth/api-key',
+            operationId: 'authenticateWithApiKey',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Authenticate agent using API key',
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['api_key'], properties: [
+        new OA\Property(property: 'api_key', type: 'string', example: 'your_64_char_api_key'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Authentication successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'session_token', type: 'string'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'agent', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Invalid API key'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function authenticateWithApiKey(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -241,30 +239,24 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/auth/session/validate",
-     *     operationId="validateSession",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Validate an existing session token",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"session_token"},
-     *             @OA\Property(property="session_token", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Session validation result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="valid", type="boolean"),
-     *             @OA\Property(property="data", type="object", nullable=true)
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/auth/session/validate',
+            operationId: 'validateSession',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Validate an existing session token',
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['session_token'], properties: [
+        new OA\Property(property: 'session_token', type: 'string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Session validation result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean'),
+        new OA\Property(property: 'valid', type: 'boolean'),
+        new OA\Property(property: 'data', type: 'object', nullable: true),
+        ])
+    )]
     public function validateSession(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -295,30 +287,24 @@ class AgentAuthController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/auth/session/revoke",
-     *     operationId="revokeSession",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Revoke a session token",
-     *     security={{"agentAuth": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"session_token"},
-     *             @OA\Property(property="session_token", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Session revoked successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Session revoked")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/auth/session/revoke',
+            operationId: 'revokeSession',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Revoke a session token',
+            security: [['agentAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['session_token'], properties: [
+        new OA\Property(property: 'session_token', type: 'string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Session revoked successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string', example: 'Session revoked'),
+        ])
+    )]
     public function revokeSession(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -333,46 +319,42 @@ class AgentAuthController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/api-keys",
-     *     operationId="generateApiKey",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Generate a new API key for an agent",
-     *     security={{"sanctum": {}, "agentAuth": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name"},
-     *             @OA\Property(property="name", type="string", example="Production API Key"),
-     *             @OA\Property(property="scopes", type="array", @OA\Items(type="string"), example={"payments:read", "wallet:read"}),
-     *             @OA\Property(property="expires_at", type="string", format="date-time", nullable=true)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="API key generated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="api_key", type="string", description="Only shown once"),
-     *                 @OA\Property(property="key_id", type="string"),
-     *                 @OA\Property(property="created_at", type="string", format="date-time")
-     *             ),
-     *             @OA\Property(property="warning", type="string", example="Store this API key securely. It will not be shown again.")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/api-keys',
+            operationId: 'generateApiKey',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Generate a new API key for an agent',
+            security: [['sanctum' => [], 'agentAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Production API Key'),
+        new OA\Property(property: 'scopes', type: 'array', example: ['payments:read', 'wallet:read'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', nullable: true),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'API key generated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'api_key', type: 'string', description: 'Only shown once'),
+        new OA\Property(property: 'key_id', type: 'string'),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'warning', type: 'string', example: 'Store this API key securely. It will not be shown again.'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function generateApiKey(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -428,39 +410,36 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/api-keys",
-     *     operationId="listApiKeys",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="List all API keys for an agent",
-     *     security={{"sanctum": {}, "agentAuth": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of API keys",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object",
-     *                 @OA\Property(property="key_id", type="string"),
-     *                 @OA\Property(property="name", type="string"),
-     *                 @OA\Property(property="key_prefix", type="string"),
-     *                 @OA\Property(property="scopes", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="is_active", type="boolean"),
-     *                 @OA\Property(property="last_used_at", type="string", format="date-time", nullable=true),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time", nullable=true)
-     *             ))
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/api-keys',
+            operationId: 'listApiKeys',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'List all API keys for an agent',
+            security: [['sanctum' => [], 'agentAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of API keys',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'key_id', type: 'string'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'key_prefix', type: 'string'),
+        new OA\Property(property: 'scopes', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'last_used_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', nullable: true),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function listApiKeys(string $did): JsonResponse
     {
         try {
@@ -498,38 +477,29 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/agent-protocol/agents/{did}/api-keys/{keyId}",
-     *     operationId="revokeApiKey",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Revoke an API key",
-     *     security={{"sanctum": {}, "agentAuth": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="keyId",
-     *         in="path",
-     *         required=true,
-     *         description="API key ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="API key revoked",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="API key revoked")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent or API key not found")
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/agent-protocol/agents/{did}/api-keys/{keyId}',
+            operationId: 'revokeApiKey',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Revoke an API key',
+            security: [['sanctum' => [], 'agentAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'keyId', in: 'path', required: true, description: 'API key ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'API key revoked',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string', example: 'API key revoked'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent or API key not found'
+    )]
     public function revokeApiKey(string $did, string $keyId): JsonResponse
     {
         try {
@@ -576,31 +546,28 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/sessions",
-     *     operationId="listAgentSessions",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="List active sessions for an agent",
-     *     security={{"sanctum": {}, "agentAuth": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of active sessions",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/sessions',
+            operationId: 'listAgentSessions',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'List active sessions for an agent',
+            security: [['sanctum' => [], 'agentAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of active sessions',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function listSessions(string $did): JsonResponse
     {
         try {
@@ -638,32 +605,29 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/agent-protocol/agents/{did}/sessions",
-     *     operationId="revokeAllAgentSessions",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="Revoke all sessions for an agent",
-     *     security={{"sanctum": {}, "agentAuth": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="All sessions revoked",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string"),
-     *             @OA\Property(property="revoked_count", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Agent not found")
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/agent-protocol/agents/{did}/sessions',
+            operationId: 'revokeAllAgentSessions',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'Revoke all sessions for an agent',
+            security: [['sanctum' => [], 'agentAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'All sessions revoked',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'revoked_count', type: 'integer'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
     public function revokeAllSessions(string $did): JsonResponse
     {
         try {
@@ -704,25 +668,23 @@ class AgentAuthController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/auth/scopes",
-     *     operationId="listAvailableScopes",
-     *     tags={"Agent Protocol - Authentication"},
-     *     summary="List all available OAuth2-style scopes",
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of available scopes",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="scopes", type="object"),
-     *                 @OA\Property(property="default_scopes", type="array", @OA\Items(type="string"))
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/auth/scopes',
+            operationId: 'listAvailableScopes',
+            tags: ['Agent Protocol - Authentication'],
+            summary: 'List all available OAuth2-style scopes'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of available scopes',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'scopes', type: 'object'),
+        new OA\Property(property: 'default_scopes', type: 'array', items: new OA\Items(type: 'string')),
+        ]),
+        ])
+    )]
     public function listScopes(): JsonResponse
     {
         $configScopes = config('agent_protocol.authentication.scopes', []);

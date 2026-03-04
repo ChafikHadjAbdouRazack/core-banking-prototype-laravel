@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Domain\Basket\Models\BasketAsset;
-use App\Domain\Basket\Models\BasketPerformance;
 use App\Domain\Basket\Services\BasketPerformanceService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BasketPerformanceResource;
@@ -12,13 +11,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Basket Performance",
- *     description="Basket asset performance tracking and analytics"
- * )
- */
+#[OA\Tag(
+    name: 'Basket Performance',
+    description: 'Basket asset performance tracking and analytics'
+)]
 class BasketPerformanceController extends Controller
 {
     public function __construct(
@@ -26,54 +24,31 @@ class BasketPerformanceController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance",
-     *     operationId="getBasketPerformance",
-     *     tags={"Basket Performance"},
-     *     summary="Get performance metrics for a basket",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",                  example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Performance period",
-     *
-     * @OA\Schema(
-     *             type="string",
-     *             enum={"hour", "day", "week", "month", "quarter", "year", "all_time"},
-     *             default="month"
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Performance data",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",              type="object",
-     * @OA\Property(property="basket_code",       type="string"),
-     * @OA\Property(property="period_type",       type="string"),
-     * @OA\Property(property="return_percentage", type="number"),
-     * @OA\Property(property="volatility",        type="number"),
-     * @OA\Property(property="sharpe_ratio",      type="number"),
-     * @OA\Property(property="max_drawdown",      type="number")
-     *             )
-     *         )
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance',
+            operationId: 'getBasketPerformance',
+            tags: ['Basket Performance'],
+            summary: 'Get performance metrics for a basket',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Performance period', schema: new OA\Schema(type: 'string', enum: ['hour', 'day', 'week', 'month', 'quarter', 'year', 'all_time'], default: 'month')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Performance data',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'basket_code', type: 'string'),
+        new OA\Property(property: 'period_type', type: 'string'),
+        new OA\Property(property: 'return_percentage', type: 'number'),
+        new OA\Property(property: 'volatility', type: 'number'),
+        new OA\Property(property: 'sharpe_ratio', type: 'number'),
+        new OA\Property(property: 'max_drawdown', type: 'number'),
+        ]),
+        ])
+    )]
     public function show(Request $request, string $code): JsonResponse
     {
         $request->validate(
@@ -131,55 +106,25 @@ class BasketPerformanceController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/history",
-     *     operationId="getBasketPerformanceHistory",
-     *     tags={"Basket Performance"},
-     *     summary="Get historical performance data for a basket",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",                               example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period_type",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by period type",
-     *
-     * @OA\Schema(type="string",                               enum={"hour", "day", "week", "month", "quarter", "year"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Number of records to return",
-     *
-     * @OA\Schema(type="integer",                              default=30)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Historical performance data",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                           type="array",
-     *
-     * @OA\Items(ref="#/components/schemas/BasketPerformance")
-     *             )
-     *         )
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/history',
+            operationId: 'getBasketPerformanceHistory',
+            tags: ['Basket Performance'],
+            summary: 'Get historical performance data for a basket',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'period_type', in: 'query', required: false, description: 'Filter by period type', schema: new OA\Schema(type: 'string', enum: ['hour', 'day', 'week', 'month', 'quarter', 'year'])),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Number of records to return', schema: new OA\Schema(type: 'integer', default: 30)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Historical performance data',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/BasketPerformance')),
+        ])
+    )]
     public function history(Request $request, string $code): AnonymousResourceCollection
     {
         $request->validate(
@@ -207,44 +152,33 @@ class BasketPerformanceController extends Controller
         return BasketPerformanceResource::collection($performances);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/summary",
-     *     operationId="getBasketPerformanceSummary",
-     *     tags={"Basket Performance"},
-     *     summary="Get performance summary across multiple periods",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",              example="GCU")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Performance summary",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",          type="object",
-     * @OA\Property(property="basket_code",   type="string"),
-     * @OA\Property(property="basket_name",   type="string"),
-     * @OA\Property(property="current_value", type="number"),
-     * @OA\Property(property="performances",  type="object",
-     * @OA\Property(property="day",           type="object"),
-     * @OA\Property(property="week",          type="object"),
-     * @OA\Property(property="month",         type="object"),
-     * @OA\Property(property="year",          type="object")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/summary',
+            operationId: 'getBasketPerformanceSummary',
+            tags: ['Basket Performance'],
+            summary: 'Get performance summary across multiple periods',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Performance summary',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'basket_code', type: 'string'),
+        new OA\Property(property: 'basket_name', type: 'string'),
+        new OA\Property(property: 'current_value', type: 'number'),
+        new OA\Property(property: 'performances', type: 'object', properties: [
+        new OA\Property(property: 'day', type: 'object'),
+        new OA\Property(property: 'week', type: 'object'),
+        new OA\Property(property: 'month', type: 'object'),
+        new OA\Property(property: 'year', type: 'object'),
+        ]),
+        ]),
+        ])
+    )]
     public function summary(string $code): JsonResponse
     {
         $basket = BasketAsset::where('code', $code)->firstOrFail();
@@ -257,50 +191,24 @@ class BasketPerformanceController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/components",
-     *     operationId="getBasketComponentPerformance",
-     *     tags={"Basket Performance"},
-     *     summary="Get component-level performance breakdown",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",                                  example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Performance period",
-     *
-     * @OA\Schema(
-     *             type="string",
-     *             enum={"hour", "day", "week", "month", "quarter", "year"},
-     *             default="month"
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Component performance data",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                              type="array",
-     *
-     * @OA\Items(ref="#/components/schemas/ComponentPerformance")
-     *             )
-     *         )
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/components',
+            operationId: 'getBasketComponentPerformance',
+            tags: ['Basket Performance'],
+            summary: 'Get component-level performance breakdown',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Performance period', schema: new OA\Schema(type: 'string', enum: ['hour', 'day', 'week', 'month', 'quarter', 'year'], default: 'month')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Component performance data',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/ComponentPerformance')),
+        ])
+    )]
     public function components(Request $request, string $code): AnonymousResourceCollection
     {
         $request->validate(
@@ -328,47 +236,22 @@ class BasketPerformanceController extends Controller
         return ComponentPerformanceResource::collection($components);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/top-performers",
-     *     operationId="getBasketTopPerformers",
-     *     tags={"Basket Performance"},
-     *     summary="Get top performing components",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",  example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Performance period",
-     *
-     * @OA\Schema(type="string",  default="month")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Number of components to return",
-     *
-     * @OA\Schema(type="integer", default=5)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Top performing components"
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/top-performers',
+            operationId: 'getBasketTopPerformers',
+            tags: ['Basket Performance'],
+            summary: 'Get top performing components',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Performance period', schema: new OA\Schema(type: 'string', default: 'month')),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Number of components to return', schema: new OA\Schema(type: 'integer', default: 5)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Top performing components'
+    )]
     public function topPerformers(Request $request, string $code): AnonymousResourceCollection
     {
         $request->validate(
@@ -388,47 +271,22 @@ class BasketPerformanceController extends Controller
         return ComponentPerformanceResource::collection($performers);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/worst-performers",
-     *     operationId="getBasketWorstPerformers",
-     *     tags={"Basket Performance"},
-     *     summary="Get worst performing components",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",  example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Performance period",
-     *
-     * @OA\Schema(type="string",  default="month")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Number of components to return",
-     *
-     * @OA\Schema(type="integer", default=5)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Worst performing components"
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/worst-performers',
+            operationId: 'getBasketWorstPerformers',
+            tags: ['Basket Performance'],
+            summary: 'Get worst performing components',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Performance period', schema: new OA\Schema(type: 'string', default: 'month')),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Number of components to return', schema: new OA\Schema(type: 'integer', default: 5)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Worst performing components'
+    )]
     public function worstPerformers(Request $request, string $code): AnonymousResourceCollection
     {
         $request->validate(
@@ -448,44 +306,27 @@ class BasketPerformanceController extends Controller
         return ComponentPerformanceResource::collection($performers);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/baskets/{code}/performance/calculate",
-     *     operationId="calculateBasketPerformance",
-     *     tags={"Basket Performance"},
-     *     summary="Trigger performance calculation for a basket",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string",                   example="GCU")
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=false,
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="period",             type="string", enum={"all", "hour", "day", "week", "month", "quarter", "year"})
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Calculation triggered",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",            type="string"),
-     * @OA\Property(property="calculated_periods", type="array", @OA\Items(type="string"))
-     *         )
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Post(
+            path: '/api/baskets/{code}/performance/calculate',
+            operationId: 'calculateBasketPerformance',
+            tags: ['Basket Performance'],
+            summary: 'Trigger performance calculation for a basket',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        ],
+            requestBody: new OA\RequestBody(required: false, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'period', type: 'string', enum: ['all', 'hour', 'day', 'week', 'month', 'quarter', 'year']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Calculation triggered',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string'),
+        new OA\Property(property: 'calculated_periods', type: 'array', items: new OA\Items(type: 'string')),
+        ])
+    )]
     public function calculate(Request $request, string $code): JsonResponse
     {
         $request->validate(
@@ -529,38 +370,21 @@ class BasketPerformanceController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/baskets/{code}/performance/compare",
-     *     operationId="compareBasketPerformance",
-     *     tags={"Basket Performance"},
-     *     summary="Compare basket performance against benchmarks",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         required=true,
-     *         description="Basket asset code",
-     *
-     * @OA\Schema(type="string", example="GCU")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="benchmarks",
-     *         in="query",
-     *         required=true,
-     *         description="Comma-separated list of benchmark basket codes",
-     *
-     * @OA\Schema(type="string", example="USD_STABLE,EUR_STABLE")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Performance comparison data"
-     *     ),
-     *     security={{"sanctum": {}}}
-     * )
-     */
+        #[OA\Get(
+            path: '/api/baskets/{code}/performance/compare',
+            operationId: 'compareBasketPerformance',
+            tags: ['Basket Performance'],
+            summary: 'Compare basket performance against benchmarks',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', required: true, description: 'Basket asset code', schema: new OA\Schema(type: 'string', example: 'GCU')),
+        new OA\Parameter(name: 'benchmarks', in: 'query', required: true, description: 'Comma-separated list of benchmark basket codes', schema: new OA\Schema(type: 'string', example: 'USD_STABLE,EUR_STABLE')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Performance comparison data'
+    )]
     public function compare(Request $request, string $code): JsonResponse
     {
         $request->validate(

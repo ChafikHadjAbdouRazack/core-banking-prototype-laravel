@@ -6,27 +6,29 @@ use App\Domain\Contact\Mail\ContactFormSubmission;
 use App\Domain\Contact\Models\ContactSubmission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Contact",
- *     description="Public contact form"
- * )
- */
+#[OA\Tag(
+    name: 'Contact',
+    description: 'Public contact form'
+)]
 class ContactController extends Controller
 {
-    /**
-     * @OA\Post(
-     *     path="/contact",
-     *     operationId="contactSubmit",
-     *     tags={"Contact"},
-     *     summary="Submit contact form",
-     *     description="Submits a contact form message",
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/contact',
+            operationId: 'contactSubmit',
+            tags: ['Contact'],
+            summary: 'Submit contact form',
+            description: 'Submits a contact form message'
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function submit(Request $request)
     {
         $validated = $request->validate(

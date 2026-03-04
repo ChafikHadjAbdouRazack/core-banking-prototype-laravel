@@ -10,7 +10,7 @@ use App\Http\Controllers\Api\Wallet\RecoveryShardController;
 use Illuminate\Support\Facades\Route;
 
 // Blockchain wallet endpoints
-Route::prefix('blockchain-wallets')->middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:blockchain'])->group(function () {
+Route::prefix('blockchain-wallets')->middleware(['auth:sanctum', 'sub_product:blockchain'])->group(function () {
     Route::middleware('api.rate_limit:query')->group(function () {
         Route::get('/', [BlockchainWalletController::class, 'index']);
         Route::get('/{walletId}', [BlockchainWalletController::class, 'show']);
@@ -35,7 +35,7 @@ Route::prefix('hardware-wallet')->name('api.hardware-wallet.')->group(function (
         ->name('supported');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:blockchain'])->group(function () {
+    Route::middleware(['auth:sanctum', 'sub_product:blockchain'])->group(function () {
         // Device registration
         Route::post('/register', [HardwareWalletController::class, 'register'])
             ->middleware('transaction.rate_limit:blockchain')
@@ -72,7 +72,7 @@ Route::prefix('multi-sig')->name('api.multi-sig.')->group(function () {
         ->name('supported');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration', 'sub_product:blockchain'])->group(function () {
+    Route::middleware(['auth:sanctum', 'sub_product:blockchain'])->group(function () {
         // Wallet management
         Route::post('/wallets', [MultiSigWalletController::class, 'createWallet'])
             ->middleware('transaction.rate_limit:blockchain')
@@ -112,7 +112,7 @@ Route::prefix('multi-sig')->name('api.multi-sig.')->group(function () {
 
 // Mobile Wallet API (v2.10.0)
 Route::prefix('v1/wallet')->name('mobile.wallet.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/tokens', [MobileWalletController::class, 'tokens'])
             ->middleware('api.rate_limit:query')
@@ -151,6 +151,8 @@ Route::prefix('v1/wallet')->name('mobile.wallet.')
             ->name('recovery-shard-backup.store');
         Route::get('/recovery-shard-backup', [RecoveryShardController::class, 'show'])
             ->name('recovery-shard-backup.show');
+        Route::get('/recovery-shard-backup/retrieve', [RecoveryShardController::class, 'retrieve'])
+            ->name('recovery-shard-backup.retrieve');
         Route::delete('/recovery-shard-backup', [RecoveryShardController::class, 'destroy'])
             ->name('recovery-shard-backup.destroy');
     });

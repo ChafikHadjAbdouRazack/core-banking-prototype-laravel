@@ -13,6 +13,7 @@ use App\Http\Requests\Mobile\PasskeyAuthenticateRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use RuntimeException;
 
 class PasskeyController extends Controller
@@ -31,28 +32,43 @@ class PasskeyController extends Controller
      * Default is assertion (login) flow.
      *
      * POST /v1/auth/passkey/challenge
-     *
-     * @OA\Post(
-     *     path="/api/v1/auth/passkey/challenge",
-     *     operationId="passkeyChallenge",
-     *     summary="Generate WebAuthn challenge",
-     *     description="Generates a WebAuthn challenge for passkey authentication or registration. Pass type=registration (with auth) for PublicKeyCredentialCreationOptions.",
-     *     tags={"WebAuthn"},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(
-     *         @OA\Property(property="device_id", type="string", description="Unique device identifier (optional if email provided)"),
-     *         @OA\Property(property="email", type="string", format="email", description="User email (optional if device_id provided)"),
-     *         @OA\Property(property="type", type="string", enum={"assertion", "registration"}, description="Challenge type (default: assertion)")
-     *     )),
-     *     @OA\Response(response=200, description="Challenge generated", @OA\JsonContent(
-     *         @OA\Property(property="success", type="boolean", example=true),
-     *         @OA\Property(property="data", type="object")
-     *     )),
-     *     @OA\Response(response=400, description="No passkeys available"),
-     *     @OA\Response(response=401, description="Unauthorized (required for registration)"),
-     *     @OA\Response(response=404, description="User or device not found"),
-     *     @OA\Response(response=422, description="Validation error — provide device_id or email")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/auth/passkey/challenge',
+        operationId: 'passkeyChallenge',
+        summary: 'Generate WebAuthn challenge',
+        description: 'Generates a WebAuthn challenge for passkey authentication or registration. Pass type=registration (with auth) for PublicKeyCredentialCreationOptions.',
+        tags: ['WebAuthn'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'device_id', type: 'string', description: 'Unique device identifier (optional if email provided)'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', description: 'User email (optional if device_id provided)'),
+        new OA\Property(property: 'type', type: 'string', enum: ['assertion', 'registration'], description: 'Challenge type (default: assertion)'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Challenge generated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'No passkeys available'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized (required for registration)'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'User or device not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error — provide device_id or email'
+    )]
     public function challenge(Request $request): JsonResponse
     {
         $request->validate([
@@ -230,37 +246,48 @@ class PasskeyController extends Controller
      * Verify a WebAuthn assertion and authenticate.
      *
      * POST /v1/auth/passkey/authenticate
-     *
-     * @OA\Post(
-     *     path="/api/v1/auth/passkey/authenticate",
-     *     operationId="passkeyAuthenticate",
-     *     summary="Verify WebAuthn assertion and authenticate",
-     *     description="Verifies a WebAuthn assertion response and returns an access token on success.",
-     *     tags={"WebAuthn"},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(
-     *         required={"device_id", "challenge", "credential_id", "authenticator_data", "client_data_json", "signature"},
-     *         @OA\Property(property="device_id", type="string", description="Unique device identifier"),
-     *         @OA\Property(property="challenge", type="string", description="The challenge string from the challenge endpoint"),
-     *         @OA\Property(property="credential_id", type="string", description="WebAuthn credential ID"),
-     *         @OA\Property(property="authenticator_data", type="string", description="Base64-encoded authenticator data"),
-     *         @OA\Property(property="client_data_json", type="string", description="Base64-encoded client data JSON"),
-     *         @OA\Property(property="signature", type="string", description="Base64-encoded assertion signature")
-     *     )),
-     *     @OA\Response(response=200, description="Authentication successful", @OA\JsonContent(
-     *         @OA\Property(property="success", type="boolean", example=true),
-     *         @OA\Property(property="data", type="object",
-     *             @OA\Property(property="user", type="object"),
-     *             @OA\Property(property="access_token", type="string"),
-     *             @OA\Property(property="token_type", type="string", example="Bearer"),
-     *             @OA\Property(property="expires_in", type="integer", nullable=true, example=86400),
-     *             @OA\Property(property="expires_at", type="string", format="date-time")
-     *         )
-     *     )),
-     *     @OA\Response(response=401, description="Authentication failed"),
-     *     @OA\Response(response=404, description="Device not found"),
-     *     @OA\Response(response=429, description="Too many failed attempts, passkey blocked")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/auth/passkey/authenticate',
+        operationId: 'passkeyAuthenticate',
+        summary: 'Verify WebAuthn assertion and authenticate',
+        description: 'Verifies a WebAuthn assertion response and returns an access token on success.',
+        tags: ['WebAuthn'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'challenge', 'credential_id', 'authenticator_data', 'client_data_json', 'signature'], properties: [
+        new OA\Property(property: 'device_id', type: 'string', description: 'Unique device identifier'),
+        new OA\Property(property: 'challenge', type: 'string', description: 'The challenge string from the challenge endpoint'),
+        new OA\Property(property: 'credential_id', type: 'string', description: 'WebAuthn credential ID'),
+        new OA\Property(property: 'authenticator_data', type: 'string', description: 'Base64-encoded authenticator data'),
+        new OA\Property(property: 'client_data_json', type: 'string', description: 'Base64-encoded client data JSON'),
+        new OA\Property(property: 'signature', type: 'string', description: 'Base64-encoded assertion signature'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Authentication successful',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user', type: 'object'),
+        new OA\Property(property: 'access_token', type: 'string'),
+        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+        new OA\Property(property: 'expires_in', type: 'integer', nullable: true, example: 86400),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Authentication failed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Too many failed attempts, passkey blocked'
+    )]
     public function authenticate(PasskeyAuthenticateRequest $request): JsonResponse
     {
         $device = $this->deviceService->findByDeviceId($request->device_id);
@@ -328,36 +355,50 @@ class PasskeyController extends Controller
      * 2. Legacy (direct key): device_id + credential_id + public_key
      *
      * POST /auth/passkey/register
-     *
-     * @OA\Post(
-     *     path="/api/auth/passkey/register",
-     *     operationId="passkeyRegister",
-     *     summary="Register a new passkey credential",
-     *     description="Registers a new WebAuthn passkey credential. Supports attestation-based flow (challenge + attestation_object) or legacy flow (direct public_key).",
-     *     tags={"WebAuthn"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(required=true, @OA\JsonContent(
-     *         required={"device_id", "credential_id"},
-     *         @OA\Property(property="device_id", type="string", description="Unique device identifier"),
-     *         @OA\Property(property="credential_id", type="string", description="WebAuthn credential ID (base64url)"),
-     *         @OA\Property(property="challenge", type="string", description="The challenge from registration challenge endpoint"),
-     *         @OA\Property(property="client_data_json", type="string", description="Base64-encoded clientDataJSON from navigator.credentials.create()"),
-     *         @OA\Property(property="attestation_object", type="string", description="Base64-encoded attestationObject from navigator.credentials.create()"),
-     *         @OA\Property(property="public_key", type="string", description="Base64-encoded public key (legacy flow, used if attestation_object not provided)")
-     *     )),
-     *     @OA\Response(response=201, description="Passkey registered successfully", @OA\JsonContent(
-     *         @OA\Property(property="success", type="boolean", example=true),
-     *         @OA\Property(property="data", type="object",
-     *             @OA\Property(property="credential_id", type="string"),
-     *             @OA\Property(property="registered_at", type="string", format="date-time")
-     *         )
-     *     )),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=403, description="Device does not belong to authenticated user"),
-     *     @OA\Response(response=404, description="Device not found"),
-     *     @OA\Response(response=422, description="Validation error or attestation verification failed")
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/passkey/register',
+        operationId: 'passkeyRegister',
+        summary: 'Register a new passkey credential',
+        description: 'Registers a new WebAuthn passkey credential. Supports attestation-based flow (challenge + attestation_object) or legacy flow (direct public_key).',
+        tags: ['WebAuthn'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'credential_id'], properties: [
+        new OA\Property(property: 'device_id', type: 'string', description: 'Unique device identifier'),
+        new OA\Property(property: 'credential_id', type: 'string', description: 'WebAuthn credential ID (base64url)'),
+        new OA\Property(property: 'challenge', type: 'string', description: 'The challenge from registration challenge endpoint'),
+        new OA\Property(property: 'client_data_json', type: 'string', description: 'Base64-encoded clientDataJSON from navigator.credentials.create()'),
+        new OA\Property(property: 'attestation_object', type: 'string', description: 'Base64-encoded attestationObject from navigator.credentials.create()'),
+        new OA\Property(property: 'public_key', type: 'string', description: 'Base64-encoded public key (legacy flow, used if attestation_object not provided)'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Passkey registered successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'credential_id', type: 'string'),
+        new OA\Property(property: 'registered_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Device does not belong to authenticated user'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Device not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error or attestation verification failed'
+    )]
     public function register(Request $request): JsonResponse
     {
         $hasAttestation = $request->has('attestation_object');

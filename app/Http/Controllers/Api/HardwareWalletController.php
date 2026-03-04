@@ -15,18 +15,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 
 /**
  * Hardware Wallet API Controller.
  *
  * Handles hardware wallet device registration, signing requests,
  * and signature submission for Ledger and Trezor devices.
- *
- * @OA\Tag(
- *     name="Hardware Wallets",
- *     description="Hardware wallet management and signing operations"
- * )
  */
+#[OA\Tag(
+    name: 'Hardware Wallets',
+    description: 'Hardware wallet management and signing operations'
+)]
 class HardwareWalletController extends Controller
 {
     public function __construct(
@@ -36,35 +36,36 @@ class HardwareWalletController extends Controller
 
     /**
      * Register a hardware wallet device.
-     *
-     * @OA\Post(
-     *     path="/api/hardware-wallet/register",
-     *     summary="Register a hardware wallet device",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"device_type", "device_id", "public_key", "address", "chain"},
-     *             @OA\Property(property="device_type", type="string", enum={"ledger_nano_s", "ledger_nano_x", "trezor_one", "trezor_model_t"}),
-     *             @OA\Property(property="device_id", type="string"),
-     *             @OA\Property(property="device_label", type="string"),
-     *             @OA\Property(property="firmware_version", type="string"),
-     *             @OA\Property(property="public_key", type="string"),
-     *             @OA\Property(property="address", type="string"),
-     *             @OA\Property(property="chain", type="string", enum={"ethereum", "bitcoin", "polygon", "bsc"}),
-     *             @OA\Property(property="derivation_path", type="string"),
-     *             @OA\Property(property="supported_chains", type="array", @OA\Items(type="string"))
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Device registered successfully"
-     *     ),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/hardware-wallet/register',
+        summary: 'Register a hardware wallet device',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_type', 'device_id', 'public_key', 'address', 'chain'], properties: [
+        new OA\Property(property: 'device_type', type: 'string', enum: ['ledger_nano_s', 'ledger_nano_x', 'trezor_one', 'trezor_model_t']),
+        new OA\Property(property: 'device_id', type: 'string'),
+        new OA\Property(property: 'device_label', type: 'string'),
+        new OA\Property(property: 'firmware_version', type: 'string'),
+        new OA\Property(property: 'public_key', type: 'string'),
+        new OA\Property(property: 'address', type: 'string'),
+        new OA\Property(property: 'chain', type: 'string', enum: ['ethereum', 'bitcoin', 'polygon', 'bsc']),
+        new OA\Property(property: 'derivation_path', type: 'string'),
+        new OA\Property(property: 'supported_chains', type: 'array', items: new OA\Items(type: 'string')),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Device registered successfully'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -138,37 +139,38 @@ class HardwareWalletController extends Controller
 
     /**
      * Create a signing request for a hardware wallet transaction.
-     *
-     * @OA\Post(
-     *     path="/api/hardware-wallet/signing-request",
-     *     summary="Create a signing request",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"association_id", "transaction"},
-     *             @OA\Property(property="association_id", type="string", format="uuid"),
-     *             @OA\Property(
-     *                 property="transaction",
-     *                 type="object",
-     *                 required={"from", "to", "value", "chain"},
-     *                 @OA\Property(property="from", type="string"),
-     *                 @OA\Property(property="to", type="string"),
-     *                 @OA\Property(property="value", type="string"),
-     *                 @OA\Property(property="chain", type="string"),
-     *                 @OA\Property(property="data", type="string"),
-     *                 @OA\Property(property="gas_limit", type="string"),
-     *                 @OA\Property(property="gas_price", type="string"),
-     *                 @OA\Property(property="nonce", type="integer")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Signing request created"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=404, description="Association not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/hardware-wallet/signing-request',
+        summary: 'Create a signing request',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['association_id', 'transaction'], properties: [
+        new OA\Property(property: 'association_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'transaction', type: 'object', required: ['from', 'to', 'value', 'chain'], properties: [
+        new OA\Property(property: 'from', type: 'string'),
+        new OA\Property(property: 'to', type: 'string'),
+        new OA\Property(property: 'value', type: 'string'),
+        new OA\Property(property: 'chain', type: 'string'),
+        new OA\Property(property: 'data', type: 'string'),
+        new OA\Property(property: 'gas_limit', type: 'string'),
+        new OA\Property(property: 'gas_price', type: 'string'),
+        new OA\Property(property: 'nonce', type: 'integer'),
+        ]),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Signing request created'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Association not found'
+    )]
     public function createSigningRequest(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -246,26 +248,32 @@ class HardwareWalletController extends Controller
 
     /**
      * Submit a signature for a pending signing request.
-     *
-     * @OA\Post(
-     *     path="/api/hardware-wallet/signing-request/{id}/submit",
-     *     summary="Submit signature for signing request",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"signature", "public_key"},
-     *             @OA\Property(property="signature", type="string"),
-     *             @OA\Property(property="public_key", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Signature submitted successfully"),
-     *     @OA\Response(response=422, description="Validation error or signature invalid"),
-     *     @OA\Response(response=404, description="Signing request not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/hardware-wallet/signing-request/{id}/submit',
+        summary: 'Submit signature for signing request',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['signature', 'public_key'], properties: [
+        new OA\Property(property: 'signature', type: 'string'),
+        new OA\Property(property: 'public_key', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Signature submitted successfully'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error or signature invalid'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Signing request not found'
+    )]
     public function submitSignature(Request $request, string $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -321,17 +329,24 @@ class HardwareWalletController extends Controller
 
     /**
      * Get status of a signing request.
-     *
-     * @OA\Get(
-     *     path="/api/hardware-wallet/signing-request/{id}",
-     *     summary="Get signing request status",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Signing request details"),
-     *     @OA\Response(response=404, description="Signing request not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/hardware-wallet/signing-request/{id}',
+        summary: 'Get signing request status',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Signing request details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Signing request not found'
+    )]
     public function getSigningRequestStatus(Request $request, string $id): JsonResponse
     {
         /** @var \App\Models\User $user */
@@ -363,16 +378,20 @@ class HardwareWalletController extends Controller
 
     /**
      * List user's hardware wallet associations.
-     *
-     * @OA\Get(
-     *     path="/api/hardware-wallet/associations",
-     *     summary="List user's registered hardware wallets",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="chain", in="query", @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="List of hardware wallet associations")
-     * )
      */
+    #[OA\Get(
+        path: '/api/hardware-wallet/associations',
+        summary: 'List user\'s registered hardware wallets',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'chain', in: 'query', schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of hardware wallet associations'
+    )]
     public function listAssociations(Request $request): JsonResponse
     {
         /** @var \App\Models\User $user */
@@ -401,17 +420,24 @@ class HardwareWalletController extends Controller
 
     /**
      * Remove a hardware wallet association.
-     *
-     * @OA\Delete(
-     *     path="/api/hardware-wallet/associations/{uuid}",
-     *     summary="Remove a hardware wallet association",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="uuid", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Association removed"),
-     *     @OA\Response(response=404, description="Association not found")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/hardware-wallet/associations/{uuid}',
+        summary: 'Remove a hardware wallet association',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Association removed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Association not found'
+    )]
     public function removeAssociation(Request $request, string $uuid): JsonResponse
     {
         /** @var \App\Models\User $user */
@@ -433,18 +459,28 @@ class HardwareWalletController extends Controller
 
     /**
      * Cancel a pending signing request.
-     *
-     * @OA\Post(
-     *     path="/api/hardware-wallet/signing-request/{id}/cancel",
-     *     summary="Cancel a pending signing request",
-     *     tags={"Hardware Wallets"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Signing request cancelled"),
-     *     @OA\Response(response=404, description="Signing request not found"),
-     *     @OA\Response(response=422, description="Cannot cancel request")
-     * )
      */
+    #[OA\Post(
+        path: '/api/hardware-wallet/signing-request/{id}/cancel',
+        summary: 'Cancel a pending signing request',
+        tags: ['Hardware Wallets'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Signing request cancelled'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Signing request not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Cannot cancel request'
+    )]
     public function cancelSigningRequest(Request $request, string $id): JsonResponse
     {
         /** @var \App\Models\User $user */
@@ -469,14 +505,16 @@ class HardwareWalletController extends Controller
 
     /**
      * Get supported device types and chains.
-     *
-     * @OA\Get(
-     *     path="/api/hardware-wallet/supported",
-     *     summary="Get supported hardware wallet types and chains",
-     *     tags={"Hardware Wallets"},
-     *     @OA\Response(response=200, description="Supported devices and chains")
-     * )
      */
+    #[OA\Get(
+        path: '/api/hardware-wallet/supported',
+        summary: 'Get supported hardware wallet types and chains',
+        tags: ['Hardware Wallets']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Supported devices and chains'
+    )]
     public function supported(): JsonResponse
     {
         return response()->json([

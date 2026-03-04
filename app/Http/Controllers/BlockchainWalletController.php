@@ -12,13 +12,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Blockchain Wallets",
- *     description="Blockchain wallet management and transactions"
- * )
- */
+#[OA\Tag(
+    name: 'Blockchain Wallets',
+    description: 'Blockchain wallet management and transactions'
+)]
 class BlockchainWalletController extends Controller
 {
     public function __construct(
@@ -28,19 +27,22 @@ class BlockchainWalletController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets",
-     *     operationId="blockchainWalletsIndex",
-     *     tags={"Blockchain Wallets"},
-     *     summary="List blockchain wallets",
-     *     description="Returns the blockchain wallet management page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets',
+            operationId: 'blockchainWalletsIndex',
+            tags: ['Blockchain Wallets'],
+            summary: 'List blockchain wallets',
+            description: 'Returns the blockchain wallet management page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $user = Auth::user();
@@ -73,19 +75,22 @@ class BlockchainWalletController extends Controller
         return view('wallet.blockchain.index', compact('addresses', 'balances', 'recentTransactions', 'supportedChains', 'usdRates'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets/create",
-     *     operationId="blockchainWalletsCreateAddress",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Show create address form",
-     *     description="Shows the form to generate a new blockchain address",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets/create',
+            operationId: 'blockchainWalletsCreateAddress',
+            tags: ['Blockchain Wallets'],
+            summary: 'Show create address form',
+            description: 'Shows the form to generate a new blockchain address',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function createAddress()
     {
         $supportedChains = $this->getSupportedChains();
@@ -93,19 +98,22 @@ class BlockchainWalletController extends Controller
         return view('wallet.blockchain.create-address', compact('supportedChains'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/blockchain/wallets/generate",
-     *     operationId="blockchainWalletsGenerateAddress",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Generate blockchain address",
-     *     description="Generates a new blockchain address",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/blockchain/wallets/generate',
+            operationId: 'blockchainWalletsGenerateAddress',
+            tags: ['Blockchain Wallets'],
+            summary: 'Generate blockchain address',
+            description: 'Generates a new blockchain address',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function generateAddress(Request $request)
     {
         $validated = $request->validate(
@@ -151,21 +159,25 @@ class BlockchainWalletController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets/{address}",
-     *     operationId="blockchainWalletsShowAddress",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Show address details",
-     *     description="Returns details for a specific blockchain address",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="address", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets/{address}',
+            operationId: 'blockchainWalletsShowAddress',
+            tags: ['Blockchain Wallets'],
+            summary: 'Show address details',
+            description: 'Returns details for a specific blockchain address',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'address', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function showAddress($addressId)
     {
         $address = BlockchainAddress::where('uuid', $addressId)
@@ -192,19 +204,22 @@ class BlockchainWalletController extends Controller
         return view('wallet.blockchain.address', compact('address', 'balance', 'transactions', 'statistics', 'supportedChains', 'usdRates'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets/send",
-     *     operationId="blockchainWalletsSendForm",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Show send transaction form",
-     *     description="Shows the form to send a blockchain transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets/send',
+            operationId: 'blockchainWalletsSendForm',
+            tags: ['Blockchain Wallets'],
+            summary: 'Show send transaction form',
+            description: 'Shows the form to send a blockchain transaction',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function sendForm($addressId)
     {
         $address = BlockchainAddress::where('uuid', $addressId)
@@ -223,19 +238,22 @@ class BlockchainWalletController extends Controller
         return view('wallet.blockchain.send', compact('address', 'balance', 'networkFees', 'supportedChains'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/blockchain/wallets/send",
-     *     operationId="blockchainWalletsSend",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Send blockchain transaction",
-     *     description="Sends a blockchain transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/blockchain/wallets/send',
+            operationId: 'blockchainWalletsSend',
+            tags: ['Blockchain Wallets'],
+            summary: 'Send blockchain transaction',
+            description: 'Sends a blockchain transaction',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function send(Request $request, $addressId)
     {
         $address = BlockchainAddress::where('uuid', $addressId)
@@ -309,21 +327,25 @@ class BlockchainWalletController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets/tx/{txHash}",
-     *     operationId="blockchainWalletsShowTransaction",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Show transaction details",
-     *     description="Returns details for a specific blockchain transaction",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="txHash", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets/tx/{txHash}',
+            operationId: 'blockchainWalletsShowTransaction',
+            tags: ['Blockchain Wallets'],
+            summary: 'Show transaction details',
+            description: 'Returns details for a specific blockchain transaction',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'txHash', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function showTransaction($transactionId)
     {
         $transaction = BlockchainTransaction::where('uuid', $transactionId)
@@ -347,19 +369,22 @@ class BlockchainWalletController extends Controller
         return view('wallet.blockchain.transaction', compact('transaction', 'blockchainData', 'supportedChains'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/blockchain/wallets/backup",
-     *     operationId="blockchainWalletsExportBackup",
-     *     tags={"Blockchain Wallets"},
-     *     summary="Export wallet backup",
-     *     description="Exports an encrypted wallet backup",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/blockchain/wallets/backup',
+            operationId: 'blockchainWalletsExportBackup',
+            tags: ['Blockchain Wallets'],
+            summary: 'Export wallet backup',
+            description: 'Exports an encrypted wallet backup',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function exportBackup(Request $request)
     {
         $validated = $request->validate(

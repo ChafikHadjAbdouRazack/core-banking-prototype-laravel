@@ -21,7 +21,7 @@ class RecoveryShardBackupTest extends TestCase
         Cache::flush();
 
         $this->user = User::factory()->create();
-        $this->token = $this->user->createToken('test-token', ['read', 'write'])->plainTextToken;
+        $this->token = $this->user->createToken('test-token', ['read', 'write', 'delete'])->plainTextToken;
     }
 
     // --- Store ---

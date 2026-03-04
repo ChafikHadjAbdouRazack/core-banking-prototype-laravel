@@ -12,37 +12,41 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
 /**
  * X402 Monetized Endpoint Management Controller.
  *
  * Manages which API endpoints require x402 payment and their pricing.
- *
- * @OA\Tag(
- *     name="X402 Endpoints",
- *     description="Manage monetized API endpoints"
- * )
  */
+#[OA\Tag(
+    name: 'X402 Endpoints',
+    description: 'Manage monetized API endpoints'
+)]
 class X402EndpointController extends Controller
 {
     /**
      * List all monetized endpoints.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/endpoints",
-     *     summary="List monetized endpoints",
-     *     tags={"X402 Endpoints"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="active", in="query", required=false, @OA\Schema(type="boolean")),
-     *     @OA\Parameter(name="network", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Parameter(name="per_page", in="query", required=false, @OA\Schema(type="integer", default=20, maximum=100)),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of monetized endpoints"
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/endpoints',
+        summary: 'List monetized endpoints',
+        tags: ['X402 Endpoints'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'active', in: 'query', required: false, schema: new OA\Schema(type: 'boolean')),
+        new OA\Parameter(name: 'network', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 20, maximum: 100)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of monetized endpoints'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = X402MonetizedEndpoint::query()
@@ -73,29 +77,33 @@ class X402EndpointController extends Controller
 
     /**
      * Create a monetized endpoint.
-     *
-     * @OA\Post(
-     *     path="/api/v1/x402/endpoints",
-     *     summary="Register an endpoint for x402 payment",
-     *     tags={"X402 Endpoints"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"method", "path", "price"},
-     *             @OA\Property(property="method", type="string", enum={"GET", "POST", "PUT", "PATCH", "DELETE"}),
-     *             @OA\Property(property="path", type="string", example="api/v1/ai/query"),
-     *             @OA\Property(property="price", type="string", example="0.01"),
-     *             @OA\Property(property="network", type="string", example="eip155:8453"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="is_active", type="boolean", example=true)
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Endpoint monetized"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/x402/endpoints',
+        summary: 'Register an endpoint for x402 payment',
+        tags: ['X402 Endpoints'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['method', 'path', 'price'], properties: [
+        new OA\Property(property: 'method', type: 'string', enum: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']),
+        new OA\Property(property: 'path', type: 'string', example: 'api/v1/ai/query'),
+        new OA\Property(property: 'price', type: 'string', example: '0.01'),
+        new OA\Property(property: 'network', type: 'string', example: 'eip155:8453'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'is_active', type: 'boolean', example: true),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Endpoint monetized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -131,18 +139,28 @@ class X402EndpointController extends Controller
 
     /**
      * Get a monetized endpoint.
-     *
-     * @OA\Get(
-     *     path="/api/v1/x402/endpoints/{id}",
-     *     summary="Get monetized endpoint details",
-     *     tags={"X402 Endpoints"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Endpoint details"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/x402/endpoints/{id}',
+        summary: 'Get monetized endpoint details',
+        tags: ['X402 Endpoints'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Endpoint details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function show(Request $request, string $id): JsonResponse
     {
         $endpoint = X402MonetizedEndpoint::where('team_id', $request->user()?->currentTeam?->id)
@@ -155,31 +173,41 @@ class X402EndpointController extends Controller
 
     /**
      * Update a monetized endpoint.
-     *
-     * @OA\Put(
-     *     path="/api/v1/x402/endpoints/{id}",
-     *     summary="Update monetized endpoint pricing or status",
-     *     tags={"X402 Endpoints"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="price", type="string", example="0.02"),
-     *             @OA\Property(property="network", type="string"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="is_active", type="boolean"),
-     *             @OA\Property(property="asset", type="string", enum={"USDC"}),
-     *             @OA\Property(property="scheme", type="string", enum={"exact", "upto"}),
-     *             @OA\Property(property="mime_type", type="string", example="application/json")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Endpoint updated"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=422, description="Validation error"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Put(
+        path: '/api/v1/x402/endpoints/{id}',
+        summary: 'Update monetized endpoint pricing or status',
+        tags: ['X402 Endpoints'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'price', type: 'string', example: '0.02'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'is_active', type: 'boolean'),
+        new OA\Property(property: 'asset', type: 'string', enum: ['USDC']),
+        new OA\Property(property: 'scheme', type: 'string', enum: ['exact', 'upto']),
+        new OA\Property(property: 'mime_type', type: 'string', example: 'application/json'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Endpoint updated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function update(Request $request, string $id): JsonResponse
     {
         $endpoint = X402MonetizedEndpoint::where('team_id', $request->user()?->currentTeam?->id)
@@ -215,18 +243,28 @@ class X402EndpointController extends Controller
 
     /**
      * Delete a monetized endpoint.
-     *
-     * @OA\Delete(
-     *     path="/api/v1/x402/endpoints/{id}",
-     *     summary="Remove monetization from an endpoint",
-     *     tags={"X402 Endpoints"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=204, description="Endpoint removed"),
-     *     @OA\Response(response=404, description="Not found"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Delete(
+        path: '/api/v1/x402/endpoints/{id}',
+        summary: 'Remove monetization from an endpoint',
+        tags: ['X402 Endpoints'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 204,
+        description: 'Endpoint removed'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function destroy(Request $request, string $id): Response
     {
         $endpoint = X402MonetizedEndpoint::where('team_id', $request->user()?->currentTeam?->id)

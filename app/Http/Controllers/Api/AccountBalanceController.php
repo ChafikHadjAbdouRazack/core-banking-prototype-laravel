@@ -11,95 +11,60 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Account Balances",
- *     description="APIs for managing multi-asset account balances"
- * )
- */
+#[OA\Tag(
+    name: 'Account Balances',
+    description: 'APIs for managing multi-asset account balances'
+)]
 class AccountBalanceController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/accounts/{uuid}/balances",
-     *     operationId="getAccountBalances",
-     *     tags={"Account Balances"},
-     *     summary="Get account balances",
-     *     description="Retrieve all asset balances for a specific account",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="uuid",
-     *         in="path",
-     *         required=true,
-     *         description="The account UUID",
-     *
-     * @OA\Schema(type="string",                     format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="asset",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by specific asset code",
-     *
-     * @OA\Schema(type="string",                     example="USD")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="positive",
-     *         in="query",
-     *         required=false,
-     *         description="Only show positive balances",
-     *
-     * @OA\Schema(type="boolean",                    example=true)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                 type="object",
-     * @OA\Property(property="account_uuid",         type="string", format="uuid"),
-     * @OA\Property(property="balances",             type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="asset_code",           type="string"),
-     * @OA\Property(property="balance",              type="integer"),
-     * @OA\Property(property="formatted",            type="string"),
-     * @OA\Property(property="asset",                type="object",
-     * @OA\Property(property="code",                 type="string"),
-     * @OA\Property(property="name",                 type="string"),
-     * @OA\Property(property="type",                 type="string"),
-     * @OA\Property(property="symbol",               type="string"),
-     * @OA\Property(property="precision",            type="integer")
-     *                         )
-     *                     )
-     *                 ),
-     * @OA\Property(property="summary",              type="object",
-     * @OA\Property(property="total_assets",         type="integer"),
-     * @OA\Property(property="total_usd_equivalent", type="string")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Account not found",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",              type="string", example="Account not found"),
-     * @OA\Property(property="error",                type="string", example="The specified account UUID was not found")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/accounts/{uuid}/balances',
+            operationId: 'getAccountBalances',
+            tags: ['Account Balances'],
+            summary: 'Get account balances',
+            description: 'Retrieve all asset balances for a specific account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', required: true, description: 'The account UUID', schema: new OA\Schema(type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440000')),
+        new OA\Parameter(name: 'asset', in: 'query', required: false, description: 'Filter by specific asset code', schema: new OA\Schema(type: 'string', example: 'USD')),
+        new OA\Parameter(name: 'positive', in: 'query', required: false, description: 'Only show positive balances', schema: new OA\Schema(type: 'boolean', example: true)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'account_uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'balances', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'asset_code', type: 'string'),
+        new OA\Property(property: 'balance', type: 'integer'),
+        new OA\Property(property: 'formatted', type: 'string'),
+        new OA\Property(property: 'asset', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'type', type: 'string'),
+        new OA\Property(property: 'symbol', type: 'string'),
+        new OA\Property(property: 'precision', type: 'integer'),
+        ]),
+        ])),
+        new OA\Property(property: 'summary', type: 'object', properties: [
+        new OA\Property(property: 'total_assets', type: 'integer'),
+        new OA\Property(property: 'total_usd_equivalent', type: 'string'),
+        ]),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Account not found',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Account not found'),
+        new OA\Property(property: 'error', type: 'string', example: 'The specified account UUID was not found'),
+        ])
+    )]
     public function show(Request $request, string $uuid): JsonResponse
     {
         $account = Account::where('uuid', $uuid)->first();
@@ -163,89 +128,46 @@ class AccountBalanceController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/balances",
-     *     operationId="listAllBalances",
-     *     tags={"Account Balances"},
-     *     summary="List all account balances",
-     *     description="Get balances across all accounts with filtering and aggregation options",
-     *     security={{"sanctum":{}}},
-     *
-     * @OA\Parameter(
-     *         name="asset",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by specific asset code",
-     *
-     * @OA\Schema(type="string",                                   example="USD")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="min_balance",
-     *         in="query",
-     *         required=false,
-     *         description="Minimum balance filter (in smallest unit)",
-     *
-     * @OA\Schema(type="integer",                                  example=1000)
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="user_uuid",
-     *         in="query",
-     *         required=false,
-     *         description="Filter by account owner",
-     *
-     * @OA\Schema(type="string",                                   format="uuid", example="550e8400-e29b-41d4-a716-446655440000")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Number of results per page (max 100)",
-     *
-     * @OA\Schema(type="integer",                                  minimum=1, maximum=100, example=20)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Successful operation",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                               type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="account_uuid",                       type="string", format="uuid"),
-     * @OA\Property(property="asset_code",                         type="string"),
-     * @OA\Property(property="balance",                            type="integer"),
-     * @OA\Property(property="formatted",                          type="string"),
-     * @OA\Property(property="account",                            type="object",
-     * @OA\Property(property="uuid",                               type="string", format="uuid"),
-     * @OA\Property(property="user_uuid",                          type="string", format="uuid")
-     *                     )
-     *                 )
-     *             ),
-     * @OA\Property(property="meta",                               type="object",
-     * @OA\Property(property="total_accounts",                     type="integer"),
-     * @OA\Property(property="total_balances",                     type="integer"),
-     * @OA\Property(property="asset_totals",                       type="object",
-     *                     additionalProperties=@OA\Property(type="string")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/ValidationError")
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/balances',
+            operationId: 'listAllBalances',
+            tags: ['Account Balances'],
+            summary: 'List all account balances',
+            description: 'Get balances across all accounts with filtering and aggregation options',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'asset', in: 'query', required: false, description: 'Filter by specific asset code', schema: new OA\Schema(type: 'string', example: 'USD')),
+        new OA\Parameter(name: 'min_balance', in: 'query', required: false, description: 'Minimum balance filter (in smallest unit)', schema: new OA\Schema(type: 'integer', example: 1000)),
+        new OA\Parameter(name: 'user_uuid', in: 'query', required: false, description: 'Filter by account owner', schema: new OA\Schema(type: 'string', format: 'uuid', example: '550e8400-e29b-41d4-a716-446655440000')),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Number of results per page (max 100)', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, example: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'account_uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'asset_code', type: 'string'),
+        new OA\Property(property: 'balance', type: 'integer'),
+        new OA\Property(property: 'formatted', type: 'string'),
+        new OA\Property(property: 'account', type: 'object', properties: [
+        new OA\Property(property: 'uuid', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'user_uuid', type: 'string', format: 'uuid'),
+        ]),
+        ])),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'total_accounts', type: 'integer'),
+        new OA\Property(property: 'total_balances', type: 'integer'),
+        new OA\Property(property: 'asset_totals', type: 'object', additionalProperties: new OA\AdditionalProperties(type: 'string')),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationError')
+    )]
     public function index(Request $request): JsonResponse
     {
         $request->validate(

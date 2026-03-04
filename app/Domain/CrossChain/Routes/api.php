@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1/crosschain')->name('api.crosschain.')->group(function () {
     Route::get('/chains', [CrossChainController::class, 'chains'])->name('chains');
 
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/bridge/quote', [CrossChainController::class, 'bridgeQuote'])->name('bridge.quote');
         Route::post('/bridge/initiate', [CrossChainController::class, 'bridgeInitiate'])
             ->middleware(['transaction.rate_limit:crosschain', 'idempotency'])

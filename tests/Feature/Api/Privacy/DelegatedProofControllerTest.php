@@ -24,7 +24,7 @@ class DelegatedProofControllerTest extends TestCase
         Queue::fake();
 
         $this->user = User::factory()->create();
-        $this->token = $this->user->createToken('test-token', ['read', 'write'])->plainTextToken;
+        $this->token = $this->user->createToken('test-token', ['read', 'write', 'delete'])->plainTextToken;
     }
 
     public function test_get_supported_types_returns_proof_types(): void

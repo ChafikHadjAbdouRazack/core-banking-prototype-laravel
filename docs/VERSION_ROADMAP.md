@@ -1951,6 +1951,94 @@ The `/app` landing page rendered correctly locally but broke in production becau
 
 ---
 
-*Document Version: 5.7.0*
+---
+
+## v5.8.0 — Mobile Go-Live ✅ COMPLETED
+
+**Released**: March 1, 2026
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Rewards GraphQL | ✅ | 35th GraphQL domain schema |
+| Rewards Admin | ✅ | Filament admin resources for quests, XP, shop, streaks |
+| OpenAPI Attributes | ✅ | Documentation schemas + RewardsController migrated to PHP 8 attributes |
+| Mobile v5.7.1 hotfix | ✅ | Handover items #2, #4, #7 resolved |
+| Pimlico Bundler | ✅ | Real ERC-4337 submission, receipt query, config-driven tokens |
+| Marqeta Cards | ✅ | Card listing + transactions via Marqeta adapter |
+| DB Merchants | ✅ | Commerce merchants backed by database with search/pagination |
+| Chainalysis Sanctions | ✅ | Sanctions screening endpoint via Chainalysis adapter |
+| Recovery Shard Backup | ✅ | Cloud backup CRUD endpoints for Shamir key recovery |
+| WebSocket Channels | ✅ | 4 mobile-aligned channels (privacy, commerce, trustcert, user) |
+| Privacy Calldata | ✅ | Encrypted calldata persistence, dual-lookup retrieval, tx-hash update |
+
+### Key Details
+- PRs #670-#677 (7 feature PRs + 1 release doc PR)
+- All 13 mobile go-live items resolved (11 code + SSL deferred + env ops)
+- `privacy_transactions` table with AES-256 encrypted calldata
+- `PrivacyTransaction` model with UUID PK, user scopes, dual-lookup (tx_hash/UUID)
+- 21+ new tests for privacy calldata
+
+---
+
+## v5.9.0 — OpenAPI Migration & Security Hardening ✅ COMPLETED
+
+**Released**: March 1, 2026
+
+### Delivered
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Token Expiration Enforcement | ✅ | Global `CheckTokenExpiration` middleware in api group |
+| Scope-Based Authorization | ✅ | `EnforceMethodScope` middleware: GET→read, POST/PUT/PATCH→write, DELETE→delete |
+| OpenBanking Cleanup | ✅ | 501 stubs replaced with 503 Service Unavailable |
+| OpenAPI PHP 8 Migration | ✅ | 173 files migrated from `@OA\` docblocks to `#[OA\]` attributes |
+| Doctrine Annotations Removed | ✅ | `doctrine/annotations` dependency removed from composer.json |
+| WebAuthn COSE Hardening | ✅ | Fixed null bypass in algorithm/curve validation, removed unsupported RS256 |
+| SSL Pinning Endpoint | ✅ | `GET /api/v1/mobile/ssl-pins` for certificate pinning |
+| GDPR Async Export | ✅ | 202 Accepted + `ProcessGdprDataExport` job + status polling |
+| Notification WebSocket | ✅ | `NotificationCountUpdated` broadcast on `user.{userId}` channel |
+
+### Key Details
+- PRs #679-#683 (5 PRs: 3 security + 1 migration + 1 mobile feedback)
+- Phase 1: Security Hardening — global token expiration, method-based scope enforcement, OpenBanking stub cleanup
+- Phase 2: OpenAPI Migration — custom `bin/migrate-openapi-v2.php` script, batch conversion, `doctrine/annotations` removed
+- Phase 3: Mobile Feedback — WebAuthn COSE fixes, SSL pinning, GDPR async, notification real-time count
+- Mobile developer feedback triaged: 4 items fixed, 4 already resolved in v5.8.0, 4 not actionable
+
+---
+
+## Version 5.10.0 - Performance Wiring & API Maturity ✅ RELEASED
+
+**Release Date**: March 2, 2026
+**Theme**: Performance Wiring & API Maturity
+
+### Summary
+
+Wire existing observability infrastructure to production routes and improve API maturity with standardized error responses and RFC 8594 deprecation headers.
+
+### Delivered Features
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Observability Middleware Wiring | ✅ | 5 middleware applied to API group: StructuredLogging, Metrics, QueryPerformance, CachePerformance, Tracing |
+| Middleware Aliases | ✅ | Register `metrics`, `cache.performance`, `tracing` aliases |
+| Standardized Error Responses | ✅ | All API errors include `error` code + `request_id` fields |
+| Error Code Mapping | ✅ | `VALIDATION_ERROR`, `UNAUTHENTICATED`, `FORBIDDEN`, `NOT_FOUND`, `RATE_LIMITED`, `SERVER_ERROR` |
+| RFC 8594 Deprecation Headers | ✅ | `Deprecation`, `Sunset`, `Link` headers on legacy endpoints |
+| Legacy Route Tagging | ✅ | `/api/profile` and `/api/kyc/documents` sunset 2026-09-01 |
+| Integration Tests | ✅ | 11 middleware integration tests + 5 error response tests + 8 deprecation tests |
+
+### Key Details
+- PRs #691-#694 (4 PRs)
+- Phase 1: Wire 5 existing observability middleware to API route group
+- Phase 2: Add comprehensive integration tests for middleware stack
+- Phase 3: Standardize API error responses with semantic error codes and request_id
+- Phase 4: RFC 8594 deprecation headers for legacy API endpoints
+
+---
+
+*Document Version: 5.10.0*
 *Created: January 11, 2026*
-*Updated: February 28, 2026 (v5.7.0 Mobile Rewards & Security Hardening released)*
+*Updated: March 2, 2026 (v5.10.0 Performance Wiring & API Maturity released)*

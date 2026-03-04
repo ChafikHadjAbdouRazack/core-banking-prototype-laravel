@@ -8,30 +8,32 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
 // use Inertia\Inertia; // Inertia not installed
 
-/**
- * @OA\Tag(
- *     name="Fund Flow",
- *     description="Fund flow analysis and visualization"
- * )
- */
+#[OA\Tag(
+    name: 'Fund Flow',
+    description: 'Fund flow analysis and visualization'
+)]
 class FundFlowController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/fund-flow",
-     *     operationId="fundFlowIndex",
-     *     tags={"Fund Flow"},
-     *     summary="Fund flow dashboard",
-     *     description="Returns the fund flow analysis dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fund-flow',
+            operationId: 'fundFlowIndex',
+            tags: ['Fund Flow'],
+            summary: 'Fund flow dashboard',
+            description: 'Returns the fund flow analysis dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -71,21 +73,25 @@ class FundFlowController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/fund-flow/account/{id}",
-     *     operationId="fundFlowAccountFlow",
-     *     tags={"Fund Flow"},
-     *     summary="Account fund flow",
-     *     description="Returns fund flow data for a specific account",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fund-flow/account/{id}',
+            operationId: 'fundFlowAccountFlow',
+            tags: ['Fund Flow'],
+            summary: 'Account fund flow',
+            description: 'Returns fund flow data for a specific account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function accountFlow($accountUuid)
     {
         $user = Auth::user();
@@ -112,19 +118,22 @@ class FundFlowController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/fund-flow/data",
-     *     operationId="fundFlowData",
-     *     tags={"Fund Flow"},
-     *     summary="Get fund flow data",
-     *     description="Returns raw fund flow data for visualization",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fund-flow/data',
+            operationId: 'fundFlowData',
+            tags: ['Fund Flow'],
+            summary: 'Get fund flow data',
+            description: 'Returns raw fund flow data for visualization',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function data(Request $request)
     {
         $user = Auth::user();

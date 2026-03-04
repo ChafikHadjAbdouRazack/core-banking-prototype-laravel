@@ -269,8 +269,7 @@ class PasskeyAuthenticationService
                 'displayName' => $user->name ?? $user->email,
             ],
             'pubKeyCredParams' => [
-                ['type' => 'public-key', 'alg' => -7],   // ES256 (ECDSA w/ SHA-256)
-                ['type' => 'public-key', 'alg' => -257],  // RS256 (RSASSA-PKCS1-v1_5 w/ SHA-256)
+                ['type' => 'public-key', 'alg' => -7],   // ES256 (ECDSA w/ SHA-256) — only supported algorithm
             ],
             'timeout'                => (int) config('mobile.webauthn.timeout', 60000),
             'authenticatorSelection' => [
@@ -750,14 +749,14 @@ class PasskeyAuthenticationService
             throw new RuntimeException('Unsupported COSE key type: ' . ($kty ?? 'null') . '. Only EC2 (kty=2) is supported.');
         }
 
-        // Validate algorithm: must be ES256 (alg=-7)
-        if ($alg !== null && $alg !== -7) {
-            throw new RuntimeException('Unsupported COSE algorithm: ' . $alg . '. Only ES256 (alg=-7) is supported.');
+        // Validate algorithm: must be ES256 (alg=-7), reject null (must be explicitly set)
+        if ($alg === null || $alg !== -7) {
+            throw new RuntimeException('Unsupported COSE algorithm: ' . ($alg ?? 'null') . '. Only ES256 (alg=-7) is supported.');
         }
 
-        // Validate curve: must be P-256 (crv=1)
-        if ($crv !== null && $crv !== 1) {
-            throw new RuntimeException('Unsupported COSE curve: ' . $crv . '. Only P-256 (crv=1) is supported.');
+        // Validate curve: must be P-256 (crv=1), reject null (must be explicitly set)
+        if ($crv === null || $crv !== 1) {
+            throw new RuntimeException('Unsupported COSE curve: ' . ($crv ?? 'null') . '. Only P-256 (crv=1) is supported.');
         }
 
         if ($xCoord === null || $yCoord === null) {

@@ -8,13 +8,12 @@ use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Withdrawals",
- *     description="Fiat withdrawal and bank account management"
- * )
- */
+#[OA\Tag(
+    name: 'Withdrawals',
+    description: 'Fiat withdrawal and bank account management'
+)]
 class WithdrawalController extends Controller
 {
     protected PaymentGatewayService $paymentGateway;
@@ -24,19 +23,22 @@ class WithdrawalController extends Controller
         $this->paymentGateway = $paymentGateway;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/withdrawals/create",
-     *     operationId="withdrawalsCreate",
-     *     tags={"Withdrawals"},
-     *     summary="Show withdrawal form",
-     *     description="Shows the fiat withdrawal form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/withdrawals/create',
+            operationId: 'withdrawalsCreate',
+            tags: ['Withdrawals'],
+            summary: 'Show withdrawal form',
+            description: 'Shows the fiat withdrawal form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create()
     {
         $user = Auth::user();
@@ -66,19 +68,22 @@ class WithdrawalController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/withdrawals",
-     *     operationId="withdrawalsStore",
-     *     tags={"Withdrawals"},
-     *     summary="Initiate withdrawal",
-     *     description="Initiates a new fiat withdrawal",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/withdrawals',
+            operationId: 'withdrawalsStore',
+            tags: ['Withdrawals'],
+            summary: 'Initiate withdrawal',
+            description: 'Initiates a new fiat withdrawal',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request)
     {
         $request->validate(
@@ -168,19 +173,22 @@ class WithdrawalController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/withdrawals/bank-accounts",
-     *     operationId="withdrawalsAddBankAccount",
-     *     tags={"Withdrawals"},
-     *     summary="Add bank account",
-     *     description="Adds a new bank account for withdrawals",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/withdrawals/bank-accounts',
+            operationId: 'withdrawalsAddBankAccount',
+            tags: ['Withdrawals'],
+            summary: 'Add bank account',
+            description: 'Adds a new bank account for withdrawals',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function addBankAccount(Request $request)
     {
         $request->validate(
@@ -215,21 +223,25 @@ class WithdrawalController extends Controller
             ->with('success', 'Bank account added. Verification required before withdrawals.');
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/withdrawals/bank-accounts/{id}",
-     *     operationId="withdrawalsRemoveBankAccount",
-     *     tags={"Withdrawals"},
-     *     summary="Remove bank account",
-     *     description="Removes a bank account",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Delete(
+            path: '/withdrawals/bank-accounts/{id}',
+            operationId: 'withdrawalsRemoveBankAccount',
+            tags: ['Withdrawals'],
+            summary: 'Remove bank account',
+            description: 'Removes a bank account',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function removeBankAccount(BankAccountModel $bankAccount)
     {
         if ($bankAccount->user_uuid !== Auth::user()->uuid) {

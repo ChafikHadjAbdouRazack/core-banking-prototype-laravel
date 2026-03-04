@@ -9,13 +9,12 @@ use App\Traits\HasApiScopes;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Authentication",
- *     description="User authentication and registration endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Authentication',
+    description: 'User authentication and registration endpoints'
+)]
 class RegisterController extends Controller
 {
     use HasApiScopes;
@@ -23,77 +22,53 @@ class RegisterController extends Controller
     /**
      * Register a new user.
      *
-     * @OA\Post(
-     *     path="/api/auth/register",
-     *     summary="Register a new user",
-     *     description="Create a new user account with email and password",
-     *     operationId="register",
-     *     tags={"Authentication"},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"name","email","password","password_confirmation"},
-     *
-     * @OA\Property(property="name",                  type="string", example="John Doe", description="User's full name"),
-     * @OA\Property(property="email",                 type="string", format="email", example="john@example.com", description="User's email address"),
-     * @OA\Property(property="password",              type="string", format="password", example="password123", description="User's password (min 8 characters)"),
-     * @OA\Property(property="password_confirmation", type="string", format="password", example="password123", description="Password confirmation"),
-     * @OA\Property(property="is_business_customer",  type="boolean", example=false, description="Whether the user is a business customer")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="User registered successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="success",               type="boolean", example=true),
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="user",
-     *                     type="object",
-     * @OA\Property(property="id",                    type="integer", example=1),
-     * @OA\Property(property="name",                  type="string", example="John Doe"),
-     * @OA\Property(property="email",                 type="string", example="john@example.com"),
-     * @OA\Property(property="email_verified_at",     type="string", nullable=true, example=null)
-     *                 ),
-     * @OA\Property(property="access_token",          type="string", example="1|aBcDeFgHiJkLmNoPqRsTuVwXyZ..."),
-     * @OA\Property(property="refresh_token",         type="string", example="2|rEfReShToKeNhErE..."),
-     * @OA\Property(property="token_type",            type="string", example="Bearer"),
-     * @OA\Property(property="expires_in",            type="integer", nullable=true, example=86400, description="Access token expiration time in seconds"),
-     * @OA\Property(property="refresh_expires_in",    type="integer", nullable=true, example=2592000, description="Refresh token expiration time in seconds")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="message",               type="string", example="The given data was invalid."),
-     * @OA\Property(
-     *                 property="errors",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="email",
-     *                     type="array",
-     *
-     * @OA\Items(type="string",                       example="The email has already been taken.")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
      *
      * @throws ValidationException
      */
+    #[OA\Post(
+        path: '/api/auth/register',
+        summary: 'Register a new user',
+        description: 'Create a new user account with email and password',
+        operationId: 'register',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'email', 'password', 'password_confirmation'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'John Doe', description: 'User\'s full name'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com', description: 'User\'s email address'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123', description: 'User\'s password (min 8 characters)'),
+        new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123', description: 'Password confirmation'),
+        new OA\Property(property: 'is_business_customer', type: 'boolean', example: false, description: 'Whether the user is a business customer'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'User registered successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'user', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+        new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
+        new OA\Property(property: 'email_verified_at', type: 'string', nullable: true, example: null),
+        ]),
+        new OA\Property(property: 'access_token', type: 'string', example: '1|aBcDeFgHiJkLmNoPqRsTuVwXyZ...'),
+        new OA\Property(property: 'refresh_token', type: 'string', example: '2|rEfReShToKeNhErE...'),
+        new OA\Property(property: 'token_type', type: 'string', example: 'Bearer'),
+        new OA\Property(property: 'expires_in', type: 'integer', nullable: true, example: 86400, description: 'Access token expiration time in seconds'),
+        new OA\Property(property: 'refresh_expires_in', type: 'integer', nullable: true, example: 2592000, description: 'Refresh token expiration time in seconds'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'The given data was invalid.'),
+        new OA\Property(property: 'errors', type: 'object', properties: [
+        new OA\Property(property: 'email', type: 'array', items: new OA\Items(type: 'string', example: 'The email has already been taken.')),
+        ]),
+        ])
+    )]
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate(

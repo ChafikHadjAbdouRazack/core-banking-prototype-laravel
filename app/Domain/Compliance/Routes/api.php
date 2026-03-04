@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // Mobile sanctions check endpoint (v5.8.0)
 Route::prefix('v1/compliance')->name('api.compliance.mobile.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/check-address', SanctionsCheckController::class)
             ->middleware('throttle:30,1')
@@ -21,7 +21,7 @@ Route::prefix('v1/compliance')->name('api.compliance.mobile.')
     });
 
 // Compliance and KYC endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance')->group(function () {
+Route::middleware('auth:sanctum')->prefix('compliance')->group(function () {
     // Compliance alerts
     Route::prefix('alerts')->group(function () {
         Route::get('/', [ComplianceAlertController::class, 'index']);
@@ -94,6 +94,8 @@ Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance'
         Route::get('/consent', [GdprController::class, 'consentStatus']);
         Route::post('/consent', [GdprController::class, 'updateConsent']);
         Route::post('/export', [GdprController::class, 'requestDataExport']);
+        Route::get('/export/{exportId}', [GdprController::class, 'getExportStatus']);
+        Route::get('/export/{exportId}/download', [GdprController::class, 'downloadExport']);
         Route::post('/delete', [GdprController::class, 'requestDeletion']);
         Route::get('/retention-policy', [GdprController::class, 'retentionPolicy']);
     });

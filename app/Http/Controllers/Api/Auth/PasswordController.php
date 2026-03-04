@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
 class PasswordController extends Controller
 {
@@ -17,51 +18,37 @@ class PasswordController extends Controller
 
     /**
      * Change the authenticated user's password.
-     *
-     * @OA\Post(
-     *     path="/api/v2/auth/change-password",
-     *     summary="Change user password",
-     *     description="Change the authenticated user's password and invalidate all existing tokens",
-     *     operationId="changePassword",
-     *     tags={"Authentication"},
-     *     security={{"sanctum": {}}},
-     *
-     *     @OA\RequestBody(
-     *         required=true,
-     *
-     *         @OA\JsonContent(
-     *             required={"current_password","new_password","new_password_confirmation"},
-     *
-     *             @OA\Property(property="current_password", type="string", format="password", example="oldpassword123"),
-     *             @OA\Property(property="new_password", type="string", format="password", example="newpassword123"),
-     *             @OA\Property(property="new_password_confirmation", type="string", format="password", example="newpassword123")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=200,
-     *         description="Password changed successfully",
-     *
-     *         @OA\JsonContent(
-     *
-     *             @OA\Property(property="message", type="string", example="Password changed successfully"),
-     *             @OA\Property(property="new_token", type="string", example="1|laravel_sanctum_token...")
-     *         )
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *
-     *         @OA\JsonContent(ref="#/components/schemas/Error")
-     *     ),
-     *
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized - Invalid current password"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/v2/auth/change-password',
+        summary: 'Change user password',
+        description: 'Change the authenticated user\'s password and invalidate all existing tokens',
+        operationId: 'changePassword',
+        tags: ['Authentication'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['current_password', 'new_password', 'new_password_confirmation'], properties: [
+        new OA\Property(property: 'current_password', type: 'string', format: 'password', example: 'oldpassword123'),
+        new OA\Property(property: 'new_password', type: 'string', format: 'password', example: 'newpassword123'),
+        new OA\Property(property: 'new_password_confirmation', type: 'string', format: 'password', example: 'newpassword123'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Password changed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'message', type: 'string', example: 'Password changed successfully'),
+        new OA\Property(property: 'new_token', type: 'string', example: '1|laravel_sanctum_token...'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error',
+        content: new OA\JsonContent(ref: '#/components/schemas/Error')
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized - Invalid current password'
+    )]
     public function changePassword(Request $request): JsonResponse
     {
         $validated = $request->validate([

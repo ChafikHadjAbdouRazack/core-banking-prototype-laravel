@@ -10,52 +10,29 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
 class ComplianceCaseController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/compliance/cases",
-     *     operationId="getComplianceCases",
-     *     tags={"Compliance Cases"},
-     *     summary="Get compliance cases",
-     *     description="Retrieve compliance cases with filtering options",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"open", "investigating", "pending_review", "resolved", "closed"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="priority",
-     *         in="query",
-     *         description="Filter by priority",
-     *         required=false,
-     *         @OA\Schema(type="string", enum={"low", "medium", "high", "critical"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="assigned_to",
-     *         in="query",
-     *         description="Filter by assigned user ID",
-     *         required=false,
-     *         @OA\Schema(type="integer")
-     *     ),
-     *     @OA\Parameter(
-     *         name="page",
-     *         in="query",
-     *         description="Page number",
-     *         required=false,
-     *         @OA\Schema(type="integer", default=1)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of compliance cases",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/compliance/cases',
+            operationId: 'getComplianceCases',
+            tags: ['Compliance Cases'],
+            summary: 'Get compliance cases',
+            description: 'Retrieve compliance cases with filtering options',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', required: false, schema: new OA\Schema(type: 'string', enum: ['open', 'investigating', 'pending_review', 'resolved', 'closed'])),
+        new OA\Parameter(name: 'priority', in: 'query', description: 'Filter by priority', required: false, schema: new OA\Schema(type: 'string', enum: ['low', 'medium', 'high', 'critical'])),
+        new OA\Parameter(name: 'assigned_to', in: 'query', description: 'Filter by assigned user ID', required: false, schema: new OA\Schema(type: 'integer')),
+        new OA\Parameter(name: 'page', in: 'query', description: 'Page number', required: false, schema: new OA\Schema(type: 'integer', default: 1)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of compliance cases',
+        content: new OA\JsonContent()
+    )]
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -93,32 +70,26 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/compliance/cases/{id}",
-     *     operationId="getComplianceCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Get case details",
-     *     description="Retrieve detailed information about a specific compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case details",
-     *         @OA\JsonContent()
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Case not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/compliance/cases/{id}',
+            operationId: 'getComplianceCase',
+            tags: ['Compliance Cases'],
+            summary: 'Get case details',
+            description: 'Retrieve detailed information about a specific compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case details',
+        content: new OA\JsonContent()
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Case not found'
+    )]
     public function show(string $id): JsonResponse
     {
         $case = ComplianceCase::with([
@@ -132,32 +103,26 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/compliance/cases",
-     *     operationId="createComplianceCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Create case",
-     *     description="Create a new compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"title", "priority"},
-     *             @OA\Property(property="title", type="string"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="priority", type="string", enum={"low", "medium", "high", "critical"}),
-     *             @OA\Property(property="entities", type="array", @OA\Items(type="object")),
-     *             @OA\Property(property="evidence", type="array", @OA\Items(type="object"))
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Case created successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/compliance/cases',
+            operationId: 'createComplianceCase',
+            tags: ['Compliance Cases'],
+            summary: 'Create case',
+            description: 'Create a new compliance case',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['title', 'priority'], properties: [
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'priority', type: 'string', enum: ['low', 'medium', 'high', 'critical']),
+        new OA\Property(property: 'entities', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'evidence', type: 'array', items: new OA\Items(type: 'object')),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Case created successfully',
+        content: new OA\JsonContent()
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -204,37 +169,28 @@ class ComplianceCaseController extends Controller
         ], 201);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/compliance/cases/{id}",
-     *     operationId="updateComplianceCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Update case",
-     *     description="Update a compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="title", type="string"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="priority", type="string", enum={"low", "medium", "high", "critical"}),
-     *             @OA\Property(property="status", type="string", enum={"open", "investigating", "pending_review", "resolved", "closed"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case updated successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/compliance/cases/{id}',
+            operationId: 'updateComplianceCase',
+            tags: ['Compliance Cases'],
+            summary: 'Update case',
+            description: 'Update a compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'priority', type: 'string', enum: ['low', 'medium', 'high', 'critical']),
+        new OA\Property(property: 'status', type: 'string', enum: ['open', 'investigating', 'pending_review', 'resolved', 'closed']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case updated successfully',
+        content: new OA\JsonContent()
+    )]
     public function update(string $id, Request $request): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);
@@ -277,36 +233,26 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/compliance/cases/{id}/assign",
-     *     operationId="assignCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Assign case",
-     *     description="Assign a compliance case to a user",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"user_id"},
-     *             @OA\Property(property="user_id", type="integer"),
-     *             @OA\Property(property="notes", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case assigned successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Put(
+            path: '/api/compliance/cases/{id}/assign',
+            operationId: 'assignCase',
+            tags: ['Compliance Cases'],
+            summary: 'Assign case',
+            description: 'Assign a compliance case to a user',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['user_id'], properties: [
+        new OA\Property(property: 'user_id', type: 'integer'),
+        new OA\Property(property: 'notes', type: 'string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case assigned successfully',
+        content: new OA\JsonContent()
+    )]
     public function assign(string $id, Request $request): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);
@@ -327,38 +273,28 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/compliance/cases/{id}/evidence",
-     *     operationId="addCaseEvidence",
-     *     tags={"Compliance Cases"},
-     *     summary="Add evidence",
-     *     description="Add evidence to a compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"type", "description"},
-     *             @OA\Property(property="type", type="string"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="data", type="object"),
-     *             @OA\Property(property="source", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Evidence added successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/compliance/cases/{id}/evidence',
+            operationId: 'addCaseEvidence',
+            tags: ['Compliance Cases'],
+            summary: 'Add evidence',
+            description: 'Add evidence to a compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['type', 'description'], properties: [
+        new OA\Property(property: 'type', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'data', type: 'object'),
+        new OA\Property(property: 'source', type: 'string'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Evidence added successfully',
+        content: new OA\JsonContent()
+    )]
     public function addEvidence(string $id, Request $request): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);
@@ -384,36 +320,26 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/compliance/cases/{id}/notes",
-     *     operationId="addCaseNote",
-     *     tags={"Compliance Cases"},
-     *     summary="Add case note",
-     *     description="Add a note to a compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"note"},
-     *             @OA\Property(property="note", type="string"),
-     *             @OA\Property(property="type", type="string", enum={"general", "investigation", "review", "decision"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Note added successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/compliance/cases/{id}/notes',
+            operationId: 'addCaseNote',
+            tags: ['Compliance Cases'],
+            summary: 'Add case note',
+            description: 'Add a note to a compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['note'], properties: [
+        new OA\Property(property: 'note', type: 'string'),
+        new OA\Property(property: 'type', type: 'string', enum: ['general', 'investigation', 'review', 'decision']),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Note added successfully',
+        content: new OA\JsonContent()
+    )]
     public function addNote(string $id, Request $request): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);
@@ -439,36 +365,26 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/compliance/cases/{id}/escalate",
-     *     operationId="escalateCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Escalate case",
-     *     description="Escalate a compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"reason"},
-     *             @OA\Property(property="reason", type="string"),
-     *             @OA\Property(property="escalate_to", type="integer")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case escalated successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/compliance/cases/{id}/escalate',
+            operationId: 'escalateCase',
+            tags: ['Compliance Cases'],
+            summary: 'Escalate case',
+            description: 'Escalate a compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['reason'], properties: [
+        new OA\Property(property: 'reason', type: 'string'),
+        new OA\Property(property: 'escalate_to', type: 'integer'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case escalated successfully',
+        content: new OA\JsonContent()
+    )]
     public function escalate(string $id, Request $request): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);
@@ -511,28 +427,22 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/compliance/cases/{id}/timeline",
-     *     operationId="getCaseTimeline",
-     *     tags={"Compliance Cases"},
-     *     summary="Get case timeline",
-     *     description="Get the timeline of events for a compliance case",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case timeline",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/compliance/cases/{id}/timeline',
+            operationId: 'getCaseTimeline',
+            tags: ['Compliance Cases'],
+            summary: 'Get case timeline',
+            description: 'Get the timeline of events for a compliance case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case timeline',
+        content: new OA\JsonContent()
+    )]
     public function timeline(string $id): JsonResponse
     {
         $case = ComplianceCase::with(['alerts'])->findOrFail($id);
@@ -578,28 +488,22 @@ class ComplianceCaseController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/compliance/cases/{id}",
-     *     operationId="deleteComplianceCase",
-     *     tags={"Compliance Cases"},
-     *     summary="Delete case",
-     *     description="Delete a compliance case (soft delete)",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         description="Case ID",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Case deleted successfully",
-     *         @OA\JsonContent()
-     *     )
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/compliance/cases/{id}',
+            operationId: 'deleteComplianceCase',
+            tags: ['Compliance Cases'],
+            summary: 'Delete case',
+            description: 'Delete a compliance case (soft delete)',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', description: 'Case ID', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Case deleted successfully',
+        content: new OA\JsonContent()
+    )]
     public function destroy(string $id): JsonResponse
     {
         $case = ComplianceCase::findOrFail($id);

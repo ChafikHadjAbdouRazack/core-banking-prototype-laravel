@@ -6,12 +6,37 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Foundation\Events\DiagnosingHealth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         using: function () {
             $isApiSubdomain = str_starts_with(request()->getHost(), 'api.');
+
+            // Health check route — must be registered inside `using` callback
+            // because Laravel skips buildRoutingCallback when `using` is provided
+            Route::get('/up', function () {
+                $exception = null;
+
+                try {
+                    Event::dispatch(new DiagnosingHealth);
+                } catch (\Throwable $e) {
+                    if (app()->hasDebugModeEnabled()) {
+                        throw $e;
+                    }
+
+                    report($e);
+                    $exception = $e->getMessage();
+                }
+
+                return response(View::file(
+                    base_path('vendor/laravel/framework/src/Illuminate/Foundation/resources/health-up.blade.php'),
+                    ['exception' => $exception],
+                ), status: $exception ? 500 : 200);
+            });
 
             // Always load console routes
             Route::group([], base_path('routes/console.php'));
@@ -46,9 +71,10 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         },
         commands: __DIR__ . '/../routes/console.php',
-        health: '/up',
     )
-    ->withBroadcasting(base_path('routes/channels.php'))
+    ->withBroadcasting(base_path('routes/channels.php'), [
+        'middleware' => ['api', 'auth:sanctum'],
+    ])
     ->withMiddleware(function (Middleware $middleware) {
         // Register rate limiting middleware
         $middleware->alias([
@@ -77,10 +103,16 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => App\Http\Middleware\InitializeTenancyByTeam::class,
             // Performance monitoring middleware
             'query.performance' => App\Http\Middleware\QueryPerformanceMiddleware::class,
+            'metrics'           => App\Http\Middleware\MetricsMiddleware::class,
+            'cache.performance' => App\Http\Middleware\CachePerformance::class,
             // Structured logging middleware (v3.3.0)
             'structured.logging' => App\Http\Middleware\StructuredLoggingMiddleware::class,
+            // Distributed tracing middleware (v3.3.0)
+            'tracing' => App\Http\Middleware\TracingMiddleware::class,
             // API versioning middleware (v3.4.0)
             'api.version' => App\Http\Middleware\ApiVersionMiddleware::class,
+            // API deprecation headers middleware (v5.10.0)
+            'deprecated' => App\Http\Middleware\ApiDeprecationMiddleware::class,
             // X402 Payment Protocol middleware (v5.2.0)
             'x402.payment' => App\Http\Middleware\X402PaymentGateMiddleware::class,
         ]);
@@ -98,6 +130,14 @@ return Application::configure(basePath: dirname(__DIR__))
             Illuminate\Routing\Middleware\SubstituteBindings::class,
             App\Http\Middleware\SecurityHeaders::class,
             App\Http\Middleware\ApiVersionMiddleware::class,
+            App\Http\Middleware\CheckTokenExpiration::class,
+            App\Http\Middleware\EnforceMethodScope::class,
+            // Observability middleware stack (v5.10.0)
+            App\Http\Middleware\StructuredLoggingMiddleware::class,
+            App\Http\Middleware\MetricsMiddleware::class,
+            App\Http\Middleware\QueryPerformanceMiddleware::class,
+            App\Http\Middleware\CachePerformance::class,
+            App\Http\Middleware\TracingMiddleware::class,
         ]);
 
         // Apply security headers to web routes
@@ -130,6 +170,45 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return $request->expectsJson();
+        });
+
+        // Standardize API error responses (v5.10.0)
+        $exceptions->respond(function (Symfony\Component\HttpFoundation\Response $response, Throwable $e, Illuminate\Http\Request $request) {
+            if (! $response instanceof Illuminate\Http\JsonResponse) {
+                return $response;
+            }
+
+            $isApi = $request->is('api/*') || str_starts_with($request->getHost(), 'api.') || $request->expectsJson();
+            if (! $isApi) {
+                return $response;
+            }
+
+            $data = $response->getData(true);
+
+            // Map exception types to error codes
+            $errorCode = match (true) {
+                $e instanceof Illuminate\Validation\ValidationException => 'VALIDATION_ERROR',
+                $e instanceof Illuminate\Auth\AuthenticationException => 'UNAUTHENTICATED',
+                $e instanceof Illuminate\Auth\Access\AuthorizationException => 'FORBIDDEN',
+                $e instanceof Illuminate\Database\Eloquent\ModelNotFoundException => 'NOT_FOUND',
+                $e instanceof Symfony\Component\HttpKernel\Exception\NotFoundHttpException => 'NOT_FOUND',
+                $e instanceof Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException => 'METHOD_NOT_ALLOWED',
+                $e instanceof Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException => 'RATE_LIMITED',
+                $e instanceof Symfony\Component\HttpKernel\Exception\HttpException => 'HTTP_ERROR',
+                default => 'SERVER_ERROR',
+            };
+
+            // Add standardized fields without overwriting existing ones
+            if (! isset($data['error'])) {
+                $data['error'] = $errorCode;
+            }
+            if (! isset($data['request_id'])) {
+                $data['request_id'] = $request->header('X-Request-ID');
+            }
+
+            $response->setData($data);
+
+            return $response;
         });
 
         // Don't report certain exceptions in demo environment

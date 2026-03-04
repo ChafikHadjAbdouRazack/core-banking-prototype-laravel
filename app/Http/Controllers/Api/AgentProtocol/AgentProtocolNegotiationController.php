@@ -11,14 +11,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Negotiation",
- *     description="Protocol version negotiation and agreement management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Negotiation',
+    description: 'Protocol version negotiation and agreement management endpoints'
+)]
 class AgentProtocolNegotiationController extends Controller
 {
     public function __construct(
@@ -27,25 +25,23 @@ class AgentProtocolNegotiationController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/protocol/versions",
-     *     operationId="getProtocolVersions",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Get supported protocol versions",
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of supported protocol versions",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="versions", type="array", @OA\Items(type="string"), example={"1.1", "1.0"}),
-     *                 @OA\Property(property="preferred", type="string", example="1.1")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/protocol/versions',
+            operationId: 'getProtocolVersions',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Get supported protocol versions'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of supported protocol versions',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'versions', type: 'array', example: ['1.1', '1.0'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'preferred', type: 'string', example: '1.1'),
+        ]),
+        ])
+    )]
     public function listVersions(): JsonResponse
     {
         $versions = $this->negotiationService->getSupportedVersions();
@@ -59,33 +55,30 @@ class AgentProtocolNegotiationController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/protocol/versions/{version}/capabilities",
-     *     operationId="getVersionCapabilities",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Get capabilities for a specific protocol version",
-     *     @OA\Parameter(
-     *         name="version",
-     *         in="path",
-     *         required=true,
-     *         description="Protocol version",
-     *         @OA\Schema(type="string", example="1.1")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Version capabilities",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="version", type="string", example="1.1"),
-     *                 @OA\Property(property="capabilities", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Version not supported")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/protocol/versions/{version}/capabilities',
+            operationId: 'getVersionCapabilities',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Get capabilities for a specific protocol version',
+            parameters: [
+        new OA\Parameter(name: 'version', in: 'path', required: true, description: 'Protocol version', schema: new OA\Schema(type: 'string', example: '1.1')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Version capabilities',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'version', type: 'string', example: '1.1'),
+        new OA\Property(property: 'capabilities', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Version not supported'
+    )]
     public function getVersionCapabilities(string $version): JsonResponse
     {
         $capabilities = $this->negotiationService->getVersionCapabilities($version);
@@ -110,43 +103,38 @@ class AgentProtocolNegotiationController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/protocol/negotiate",
-     *     operationId="initiateProtocolNegotiation",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Initiate protocol negotiation with another agent",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Initiator agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"target_did"},
-     *             @OA\Property(property="target_did", type="string", description="Target agent DID"),
-     *             @OA\Property(property="preferred_capabilities", type="array", @OA\Items(type="string"),
-     *                 description="Preferred capabilities for the negotiation", example={"messaging", "payments"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Negotiation result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="negotiation", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=500, description="Negotiation failed")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/protocol/negotiate',
+            operationId: 'initiateProtocolNegotiation',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Initiate protocol negotiation with another agent',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Initiator agent DID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['target_did'], properties: [
+        new OA\Property(property: 'target_did', type: 'string', description: 'Target agent DID'),
+        new OA\Property(property: 'preferred_capabilities', type: 'array', description: 'Preferred capabilities for the negotiation', example: ['messaging', 'payments'], items: new OA\Items(type: 'string')),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Negotiation result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'negotiation', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Negotiation failed'
+    )]
     public function negotiate(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -198,42 +186,33 @@ class AgentProtocolNegotiationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}",
-     *     operationId="getProtocolAgreement",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Get protocol agreement between two agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="otherDid",
-     *         in="path",
-     *         required=true,
-     *         description="Other agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Protocol agreement details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="agreement", type="object"),
-     *                 @OA\Property(property="has_agreement", type="boolean"),
-     *                 @OA\Property(property="is_valid", type="boolean")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid DID format")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}',
+            operationId: 'getProtocolAgreement',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Get protocol agreement between two agents',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'otherDid', in: 'path', required: true, description: 'Other agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Protocol agreement details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'agreement', type: 'object'),
+        new OA\Property(property: 'has_agreement', type: 'boolean'),
+        new OA\Property(property: 'is_valid', type: 'boolean'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid DID format'
+    )]
     public function getAgreement(Request $request, string $did, string $otherDid): JsonResponse
     {
         // Validate DIDs
@@ -264,38 +243,29 @@ class AgentProtocolNegotiationController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Delete(
-     *     path="/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}",
-     *     operationId="revokeProtocolAgreement",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Revoke protocol agreement between two agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="otherDid",
-     *         in="path",
-     *         required=true,
-     *         description="Other agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Agreement revoked successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Protocol agreement revoked")
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid DID format")
-     * )
-     */
+        #[OA\Delete(
+            path: '/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}',
+            operationId: 'revokeProtocolAgreement',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Revoke protocol agreement between two agents',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'otherDid', in: 'path', required: true, description: 'Other agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Agreement revoked successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'message', type: 'string', example: 'Protocol agreement revoked'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid DID format'
+    )]
     public function revokeAgreement(Request $request, string $did, string $otherDid): JsonResponse
     {
         // Validate DIDs
@@ -321,41 +291,35 @@ class AgentProtocolNegotiationController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}/refresh",
-     *     operationId="refreshProtocolAgreement",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Refresh/extend protocol agreement between two agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="otherDid",
-     *         in="path",
-     *         required=true,
-     *         description="Other agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Agreement refresh result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="negotiation", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid DID format"),
-     *     @OA\Response(response=500, description="Refresh failed")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}/refresh',
+            operationId: 'refreshProtocolAgreement',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Refresh/extend protocol agreement between two agents',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'otherDid', in: 'path', required: true, description: 'Other agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Agreement refresh result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'negotiation', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid DID format'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Refresh failed'
+    )]
     public function refreshAgreement(Request $request, string $did, string $otherDid): JsonResponse
     {
         // Validate DIDs
@@ -396,40 +360,31 @@ class AgentProtocolNegotiationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}/check",
-     *     operationId="checkProtocolAgreement",
-     *     tags={"Agent Protocol - Negotiation"},
-     *     summary="Check if a valid protocol agreement exists",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="otherDid",
-     *         in="path",
-     *         required=true,
-     *         description="Other agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Agreement check result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="has_valid_agreement", type="boolean")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid DID format")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/protocol/agreements/{otherDid}/check',
+            operationId: 'checkProtocolAgreement',
+            tags: ['Agent Protocol - Negotiation'],
+            summary: 'Check if a valid protocol agreement exists',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'otherDid', in: 'path', required: true, description: 'Other agent DID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Agreement check result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'has_valid_agreement', type: 'boolean'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid DID format'
+    )]
     public function checkAgreement(Request $request, string $did, string $otherDid): JsonResponse
     {
         // Validate DIDs

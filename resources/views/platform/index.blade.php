@@ -5,7 +5,7 @@
 @section('seo')
     @include('partials.seo', [
         'title' => 'FinAegis Platform - Open Banking for Developers',
-        'description' => 'FinAegis Platform - Open-source core banking infrastructure with 42 DDD domains, event sourcing, REST + GraphQL APIs, and cross-chain DeFi. MIT licensed.',
+        'description' => 'FinAegis Platform - Open-source core banking infrastructure with 43 DDD domains, event sourcing, REST + GraphQL APIs, and cross-chain DeFi. MIT licensed.',
         'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development, DDD, event sourcing',
     ])
 
@@ -180,7 +180,7 @@
                                 <div class="text-sm text-gray-500">License</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-blue-400 code-font">42</div>
+                                <div class="text-2xl font-bold text-blue-400 code-font">43</div>
                                 <div class="text-sm text-gray-500">Domains</div>
                             </div>
                             <div>
@@ -478,7 +478,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold mb-2">GraphQL API</h3>
-                        <p class="text-pink-100 text-sm mb-4">34 domains, subscriptions, DataLoaders, and real-time queries</p>
+                        <p class="text-pink-100 text-sm mb-4">35 domains, subscriptions, DataLoaders, and real-time queries</p>
                         <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
                     </div>
 
@@ -509,7 +509,7 @@
                         </div>
                         <h3 class="text-xl font-bold mb-2">Plugin Marketplace</h3>
                         <p class="text-violet-100 text-sm mb-4">Sandbox execution, security scanner, and extensible hook system</p>
-                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
+                        <a href="{{ route('features.show', 'plugin-marketplace') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
                     </div>
                 </div>
             </div>

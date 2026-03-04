@@ -10,54 +10,34 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Governance - Votes",
- *     description="Vote management and history operations"
- * )
- */
+#[OA\Tag(
+    name: 'Governance - Votes',
+    description: 'Vote management and history operations'
+)]
 class VoteController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/votes",
-     *     summary="Get user's voting history",
-     *     description="Retrieve the authenticated user's voting history",
-     *     tags={"Governance - Votes"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="poll_id",
-     *         in="query",
-     *         description="Filter by specific poll ID",
-     *         required=false,
-     *
-     * @OA\Schema(type="integer")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="per_page",
-     *         in="query",
-     *         description="Number of votes per page",
-     *         required=false,
-     *
-     * @OA\Schema(type="integer",     minimum=1, maximum=100, default=15)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User's voting history",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",  type="array", @OA\Items(ref="#/components/schemas/Vote")),
-     * @OA\Property(property="meta",  type="object"),
-     * @OA\Property(property="links", type="object")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/votes',
+            summary: 'Get user\'s voting history',
+            description: 'Retrieve the authenticated user\'s voting history',
+            tags: ['Governance - Votes'],
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'poll_id', in: 'query', description: 'Filter by specific poll ID', required: false, schema: new OA\Schema(type: 'integer')),
+        new OA\Parameter(name: 'per_page', in: 'query', description: 'Number of votes per page', required: false, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 100, default: 15)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'User\'s voting history',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(ref: '#/components/schemas/Vote')),
+        new OA\Property(property: 'meta', type: 'object'),
+        new OA\Property(property: 'links', type: 'object'),
+        ])
+    )]
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -80,36 +60,31 @@ class VoteController extends Controller
         return response()->json($votes);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/votes/{id}",
-     *     summary="Get vote details",
-     *     description="Retrieve detailed information about a specific vote",
-     *     tags={"Governance - Votes"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="integer")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Vote details",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data", ref="#/components/schemas/Vote")
-     *         )
-     *     ),
-     *
-     * @OA\Response(response=404,    description="Vote not found"),
-     * @OA\Response(response=403,    description="Access denied")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/votes/{id}',
+            summary: 'Get vote details',
+            description: 'Retrieve detailed information about a specific vote',
+            tags: ['Governance - Votes'],
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Vote details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', ref: '#/components/schemas/Vote'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Vote not found'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
     public function show(string $id): JsonResponse
     {
         $vote = Vote::with(['poll', 'user'])->find($id);
@@ -140,37 +115,32 @@ class VoteController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/votes/{id}/verify",
-     *     summary="Verify vote integrity",
-     *     description="Verify the cryptographic signature of a vote",
-     *     tags={"Governance - Votes"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="integer")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Vote verification result",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="verified", type="boolean"),
-     * @OA\Property(property="message",  type="string")
-     *         )
-     *     ),
-     *
-     * @OA\Response(response=404,        description="Vote not found"),
-     * @OA\Response(response=403,        description="Access denied")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/votes/{id}/verify',
+            summary: 'Verify vote integrity',
+            description: 'Verify the cryptographic signature of a vote',
+            tags: ['Governance - Votes'],
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Vote verification result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'verified', type: 'boolean'),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Vote not found'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Access denied'
+    )]
     public function verify(string $id): JsonResponse
     {
         $vote = Vote::find($id);
@@ -206,29 +176,24 @@ class VoteController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/votes/stats",
-     *     summary="Get user's voting statistics",
-     *     description="Retrieve statistics about the user's voting activity",
-     *     tags={"Governance - Votes"},
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User's voting statistics",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="total_votes",        type="integer"),
-     * @OA\Property(property="total_voting_power", type="integer"),
-     * @OA\Property(property="recent_votes",       type="integer", description="Votes in last 30 days"),
-     * @OA\Property(property="avg_voting_power",   type="number", format="float"),
-     * @OA\Property(property="participation_rate", type="number", format="float")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/votes/stats',
+            summary: 'Get user\'s voting statistics',
+            description: 'Retrieve statistics about the user\'s voting activity',
+            tags: ['Governance - Votes'],
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'User\'s voting statistics',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'total_votes', type: 'integer'),
+        new OA\Property(property: 'total_voting_power', type: 'integer'),
+        new OA\Property(property: 'recent_votes', type: 'integer', description: 'Votes in last 30 days'),
+        new OA\Property(property: 'avg_voting_power', type: 'number', format: 'float'),
+        new OA\Property(property: 'participation_rate', type: 'number', format: 'float'),
+        ])
+    )]
     public function stats(): JsonResponse
     {
         $userUuid = Auth::user()->uuid;

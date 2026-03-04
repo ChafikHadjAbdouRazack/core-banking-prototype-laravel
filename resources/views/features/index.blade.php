@@ -38,7 +38,7 @@
     <section class="pt-16 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
             <div class="text-center">
-                <h1 class="text-5xl font-bold text-gray-900 mb-6">42 Domain Modules. One Platform.</h1>
+                <h1 class="text-5xl font-bold text-gray-900 mb-6">43 Domain Modules. One Platform.</h1>
                 <p class="text-xl text-gray-600 max-w-3xl mx-auto">
                     Every building block a modern fintech needs—from democratic currency governance to AI agent commerce, cross-chain DeFi, and privacy-preserving identity.
                 </p>
@@ -261,7 +261,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">Developer APIs</h3>
                     <p class="text-gray-600 mb-4">
-                        Full REST coverage with OpenAPI specs, GraphQL across 34 domains with real-time subscriptions, and configurable webhooks.
+                        Full REST coverage with OpenAPI specs, GraphQL across 35 domains with real-time subscriptions, and configurable webhooks.
                     </p>
                     <a href="{{ route('features.show', 'api') }}" class="text-blue-600 font-medium hover:text-blue-700">
                         View docs →
@@ -405,7 +405,7 @@
                     </div>
                     <h3 class="text-xl font-semibold mb-3">GraphQL API</h3>
                     <p class="text-gray-600 mb-4">
-                        Lighthouse-powered GraphQL covering 34 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination.
+                        Lighthouse-powered GraphQL covering 35 domains with real-time subscriptions, N+1 safe DataLoaders, and cursor-based pagination.
                     </p>
                     <a href="{{ route('features.show', 'api') }}" class="text-pink-600 font-medium hover:text-pink-700">
                         View API &rarr;
@@ -423,7 +423,7 @@
                     <p class="text-gray-600 mb-4">
                         Extensible plugin system with sandbox execution, static security scanning, hook-based integration, and a plugin manager UI.
                     </p>
-                    <a href="{{ route('features') }}" class="text-violet-600 font-medium hover:text-violet-700">
+                    <a href="{{ route('features.show', 'plugin-marketplace') }}" class="text-violet-600 font-medium hover:text-violet-700">
                         Explore plugins &rarr;
                     </a>
                 </div>

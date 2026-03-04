@@ -12,7 +12,7 @@ Route::prefix('v1/relayer')->name('api.relayer.')->group(function () {
     Route::get('/networks', [RelayerController::class, 'networks'])->name('networks');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/sponsor', [RelayerController::class, 'sponsor'])
             ->middleware('transaction.rate_limit:relayer')
             ->name('sponsor');
@@ -30,7 +30,7 @@ Route::prefix('v1/relayer')->name('api.relayer.')->group(function () {
 });
 
 Route::prefix('v1/relayer')->name('mobile.relayer.')
-    ->middleware(['auth:sanctum', 'check.token.expiration'])
+    ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/status', [MobileRelayerController::class, 'status'])
             ->middleware('api.rate_limit:query')

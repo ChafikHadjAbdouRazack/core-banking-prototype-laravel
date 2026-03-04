@@ -270,47 +270,29 @@ class AuthorizationSecurityTest extends DomainTestCase
     #[Test]
     public function test_api_scope_limitations()
     {
-        // WARNING: This test documents that API scopes are not currently enforced
-        // TODO: Implement scope-based authorization for better security
-
-        // Create tokens with different scopes
-        $readToken = $this->user1->createToken('read-only', ['read'])->plainTextToken;
-        $fullToken = $this->user1->createToken('full-access', ['read', 'write', 'delete'])->plainTextToken;
-
-        // Both tokens can currently read (expected)
-        $response = $this->withToken($readToken)
-            ->getJson("/api/accounts/{$this->user1Account->uuid}");
-        $this->assertEquals(200, $response->status());
-
-        // WARNING: Testing if read-only token can delete (vulnerability check)
-        // First ensure account has zero balance for delete
+        // Remove balances so delete is possible
         \App\Domain\Account\Models\AccountBalance::where('account_uuid', $this->user1Account->uuid)
             ->delete();
 
-        $response = $this->withToken($readToken)
-            ->deleteJson("/api/accounts/{$this->user1Account->uuid}");
+        // Test 1: Read-only token can read
+        \Laravel\Sanctum\Sanctum::actingAs($this->user1, ['read']);
+        $response = $this->getJson("/api/accounts/{$this->user1Account->uuid}");
+        $this->assertEquals(200, $response->status());
 
-        // Check if scopes are enforced
-        if ($response->status() === 403) {
-            $this->assertEquals(
-                403,
-                $response->status(),
-                'Good: API scopes are enforced. Read-only tokens cannot perform delete operations.'
-            );
-        } else {
-            // Currently allows deletion (vulnerability)
-            $this->assertContains(
-                $response->status(),
-                [200, 204],
-                'SECURITY WARNING: API scopes are not enforced. Read-only tokens can perform delete operations.'
-            );
-        }
+        // Test 2: Read-only token cannot delete (EnforceMethodScope blocks it)
+        $response = $this->deleteJson("/api/accounts/{$this->user1Account->uuid}");
+        $this->assertEquals(403, $response->status(), 'Read-only tokens must not perform delete operations');
+        $this->assertEquals('INSUFFICIENT_SCOPE', $response->json('error'));
 
-        // Document that scopes are not being checked
-        $this->assertTrue(
-            true,
-            'API scope limitations are not implemented. All tokens have full access regardless of assigned scopes.'
-        );
+        // Test 3: Write token cannot delete either
+        \Laravel\Sanctum\Sanctum::actingAs($this->user1, ['read', 'write']);
+        $response = $this->deleteJson("/api/accounts/{$this->user1Account->uuid}");
+        $this->assertEquals(403, $response->status(), 'Write tokens must not perform delete operations');
+
+        // Test 4: Full token can delete
+        \Laravel\Sanctum\Sanctum::actingAs($this->user1, ['read', 'write', 'delete']);
+        $response = $this->deleteJson("/api/accounts/{$this->user1Account->uuid}");
+        $this->assertNotEquals(403, $response->status(), 'Full-access token must not be blocked by scope middleware');
     }
 
     // Test removed: Transaction limits feature not implemented in accounts table

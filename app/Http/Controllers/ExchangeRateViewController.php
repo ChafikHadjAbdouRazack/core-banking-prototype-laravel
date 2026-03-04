@@ -7,27 +7,29 @@ use App\Domain\Asset\Models\ExchangeRate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Exchange Rates",
- *     description="Exchange rate viewing and historical data"
- * )
- */
+#[OA\Tag(
+    name: 'Exchange Rates',
+    description: 'Exchange rate viewing and historical data'
+)]
 class ExchangeRateViewController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/exchange-rates",
-     *     operationId="exchangeRatesIndex",
-     *     tags={"Exchange Rates"},
-     *     summary="Exchange rates page",
-     *     description="Returns the exchange rates overview page",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/exchange-rates',
+            operationId: 'exchangeRatesIndex',
+            tags: ['Exchange Rates'],
+            summary: 'Exchange rates page',
+            description: 'Returns the exchange rates overview page'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         // Get all active assets
@@ -62,18 +64,21 @@ class ExchangeRateViewController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/exchange-rates/rates",
-     *     operationId="exchangeRatesRates",
-     *     tags={"Exchange Rates"},
-     *     summary="Get current rates",
-     *     description="Returns current exchange rates",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/exchange-rates/rates',
+            operationId: 'exchangeRatesRates',
+            tags: ['Exchange Rates'],
+            summary: 'Get current rates',
+            description: 'Returns current exchange rates'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function rates(Request $request)
     {
         $baseCurrency = $request->get('base', 'USD');
@@ -90,18 +95,21 @@ class ExchangeRateViewController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/exchange-rates/historical",
-     *     operationId="exchangeRatesHistorical",
-     *     tags={"Exchange Rates"},
-     *     summary="Get historical rates",
-     *     description="Returns historical exchange rate data",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/exchange-rates/historical',
+            operationId: 'exchangeRatesHistorical',
+            tags: ['Exchange Rates'],
+            summary: 'Get historical rates',
+            description: 'Returns historical exchange rate data'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function historical(Request $request)
     {
         $base = $request->get('base', 'USD');

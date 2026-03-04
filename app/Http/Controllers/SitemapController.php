@@ -4,27 +4,29 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Response;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Sitemap",
- *     description="XML sitemap and robots.txt generation"
- * )
- */
+#[OA\Tag(
+    name: 'Sitemap',
+    description: 'XML sitemap and robots.txt generation'
+)]
 class SitemapController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/sitemap.xml",
-     *     operationId="sitemapIndex",
-     *     tags={"Sitemap"},
-     *     summary="Get XML sitemap",
-     *     description="Returns the XML sitemap for search engines",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/sitemap.xml',
+            operationId: 'sitemapIndex',
+            tags: ['Sitemap'],
+            summary: 'Get XML sitemap',
+            description: 'Returns the XML sitemap for search engines'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(): Response
     {
         $sitemap = $this->generateSitemap();
@@ -288,18 +290,21 @@ class SitemapController extends Controller
         return $routes;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/robots.txt",
-     *     operationId="sitemapRobots",
-     *     tags={"Sitemap"},
-     *     summary="Get robots.txt",
-     *     description="Returns the robots.txt file",
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/robots.txt',
+            operationId: 'sitemapRobots',
+            tags: ['Sitemap'],
+            summary: 'Get robots.txt',
+            description: 'Returns the robots.txt file'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function robots(): Response
     {
         $content = "User-agent: *\n";

@@ -7,13 +7,12 @@ use App\Domain\Fraud\Services\FraudCaseService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Fraud Cases",
- *     description="Fraud case management, investigation, and resolution"
- * )
- */
+#[OA\Tag(
+    name: 'Fraud Cases',
+    description: 'Fraud case management, investigation, and resolution'
+)]
 class FraudCaseController extends Controller
 {
     private FraudCaseService $caseService;
@@ -23,19 +22,22 @@ class FraudCaseController extends Controller
         $this->caseService = $caseService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/cases",
-     *     operationId="fraudCasesIndex",
-     *     tags={"Fraud Cases"},
-     *     summary="List fraud cases",
-     *     description="Returns paginated list of fraud cases with filters",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/cases',
+            operationId: 'fraudCasesIndex',
+            tags: ['Fraud Cases'],
+            summary: 'List fraud cases',
+            description: 'Returns paginated list of fraud cases with filters',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request): JsonResponse
     {
         $request->validate(
@@ -60,21 +62,25 @@ class FraudCaseController extends Controller
         return response()->json($cases);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/cases/{caseId}",
-     *     operationId="fraudCasesShow",
-     *     tags={"Fraud Cases"},
-     *     summary="Get fraud case details",
-     *     description="Returns detailed information about a fraud case",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/cases/{caseId}',
+            operationId: 'fraudCasesShow',
+            tags: ['Fraud Cases'],
+            summary: 'Get fraud case details',
+            description: 'Returns detailed information about a fraud case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(string $caseId): JsonResponse
     {
         $case = FraudCase::with(
@@ -108,21 +114,25 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Put(
-     *     path="/api/v2/fraud/cases/{caseId}",
-     *     operationId="fraudCasesUpdate",
-     *     tags={"Fraud Cases"},
-     *     summary="Update fraud case",
-     *     description="Updates a fraud case with new information",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Put(
+            path: '/api/v2/fraud/cases/{caseId}',
+            operationId: 'fraudCasesUpdate',
+            tags: ['Fraud Cases'],
+            summary: 'Update fraud case',
+            description: 'Updates a fraud case with new information',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function update(Request $request, string $caseId): JsonResponse
     {
         $request->validate(
@@ -156,21 +166,25 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/cases/{caseId}/resolve",
-     *     operationId="fraudCasesResolve",
-     *     tags={"Fraud Cases"},
-     *     summary="Resolve fraud case",
-     *     description="Resolves a fraud case with outcome",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/cases/{caseId}/resolve',
+            operationId: 'fraudCasesResolve',
+            tags: ['Fraud Cases'],
+            summary: 'Resolve fraud case',
+            description: 'Resolves a fraud case with outcome',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function resolve(Request $request, string $caseId): JsonResponse
     {
         $request->validate(
@@ -205,21 +219,25 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/cases/{caseId}/escalate",
-     *     operationId="fraudCasesEscalate",
-     *     tags={"Fraud Cases"},
-     *     summary="Escalate fraud case",
-     *     description="Escalates a fraud case with reason",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/cases/{caseId}/escalate',
+            operationId: 'fraudCasesEscalate',
+            tags: ['Fraud Cases'],
+            summary: 'Escalate fraud case',
+            description: 'Escalates a fraud case with reason',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function escalate(Request $request, string $caseId): JsonResponse
     {
         $request->validate(
@@ -243,19 +261,22 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/cases/statistics",
-     *     operationId="fraudCasesStatistics",
-     *     tags={"Fraud Cases"},
-     *     summary="Get fraud case statistics",
-     *     description="Returns fraud case statistics with optional date filters",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/cases/statistics',
+            operationId: 'fraudCasesStatistics',
+            tags: ['Fraud Cases'],
+            summary: 'Get fraud case statistics',
+            description: 'Returns fraud case statistics with optional date filters',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function statistics(Request $request): JsonResponse
     {
         $request->validate(
@@ -270,21 +291,25 @@ class FraudCaseController extends Controller
         return response()->json(['statistics' => $statistics]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/cases/{caseId}/assign",
-     *     operationId="fraudCasesAssign",
-     *     tags={"Fraud Cases"},
-     *     summary="Assign case to investigator",
-     *     description="Assigns a fraud case to an investigator",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/cases/{caseId}/assign',
+            operationId: 'fraudCasesAssign',
+            tags: ['Fraud Cases'],
+            summary: 'Assign case to investigator',
+            description: 'Assigns a fraud case to an investigator',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function assign(Request $request, string $caseId): JsonResponse
     {
         $request->validate(
@@ -314,21 +339,25 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/fraud/cases/{caseId}/evidence",
-     *     operationId="fraudCasesAddEvidence",
-     *     tags={"Fraud Cases"},
-     *     summary="Add evidence to case",
-     *     description="Adds evidence to a fraud case",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/fraud/cases/{caseId}/evidence',
+            operationId: 'fraudCasesAddEvidence',
+            tags: ['Fraud Cases'],
+            summary: 'Add evidence to case',
+            description: 'Adds evidence to a fraud case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function addEvidence(Request $request, string $caseId): JsonResponse
     {
         $request->validate(
@@ -372,21 +401,25 @@ class FraudCaseController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/fraud/cases/{caseId}/timeline",
-     *     operationId="fraudCasesTimeline",
-     *     tags={"Fraud Cases"},
-     *     summary="Get case timeline",
-     *     description="Returns the investigation timeline for a fraud case",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="caseId", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/fraud/cases/{caseId}/timeline',
+            operationId: 'fraudCasesTimeline',
+            tags: ['Fraud Cases'],
+            summary: 'Get case timeline',
+            description: 'Returns the investigation timeline for a fraud case',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'caseId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function timeline(string $caseId): JsonResponse
     {
         $case = FraudCase::findOrFail($caseId);

@@ -251,6 +251,23 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | SSL Certificate Pinning
+    |--------------------------------------------------------------------------
+    |
+    | SHA-256 hashes of the server's public key certificates for mobile
+    | certificate pinning. Mobile clients use these to validate the server
+    | identity and prevent MITM attacks.
+    |
+    */
+
+    'ssl_pins' => array_filter(explode(',', (string) env('MOBILE_SSL_PINS', ''))),
+
+    'ssl_pin_max_age' => env('MOBILE_SSL_PIN_MAX_AGE', 86400),
+
+    'ssl_pin_include_subdomains' => env('MOBILE_SSL_PIN_INCLUDE_SUBDOMAINS', true),
+
     'android_channels' => [
         'default' => [
             'id'          => 'finaegis_default',

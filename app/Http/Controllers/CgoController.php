@@ -18,28 +18,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="CGO Investments",
- *     description="CGO investment management and payments"
- * )
- */
+#[OA\Tag(
+    name: 'CGO Investments',
+    description: 'CGO investment management and payments'
+)]
 class CgoController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/cgo/investments",
-     *     operationId="cGOInvestmentsMyInvestments",
-     *     tags={"CGO Investments"},
-     *     summary="List user investments",
-     *     description="Returns the user investments dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/investments',
+            operationId: 'cGOInvestmentsMyInvestments',
+            tags: ['CGO Investments'],
+            summary: 'List user investments',
+            description: 'Returns the user investments dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function myInvestments()
     {
         $investments = CgoInvestment::where('user_id', auth()->id())
@@ -113,19 +115,22 @@ class CgoController extends Controller
         return view('cgo.notify-success');
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/invest",
-     *     operationId="cGOInvestmentsInvest",
-     *     tags={"CGO Investments"},
-     *     summary="Show investment form",
-     *     description="Shows the CGO investment form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/invest',
+            operationId: 'cGOInvestmentsInvest',
+            tags: ['CGO Investments'],
+            summary: 'Show investment form',
+            description: 'Shows the CGO investment form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function invest(CgoKycService $kycService)
     {
         /** @var CgoPricingRound|null $currentRound */
@@ -169,19 +174,22 @@ class CgoController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/cgo/invest",
-     *     operationId="cGOInvestmentsProcessInvestment",
-     *     tags={"CGO Investments"},
-     *     summary="Process investment",
-     *     description="Processes a new CGO investment",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/cgo/invest',
+            operationId: 'cGOInvestmentsProcessInvestment',
+            tags: ['CGO Investments'],
+            summary: 'Process investment',
+            description: 'Processes a new CGO investment',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function processInvestment(Request $request, CgoKycService $kycService)
     {
         $validated = $request->validate(
@@ -390,19 +398,22 @@ class CgoController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/thank-you",
-     *     operationId="cGOInvestmentsThankYou",
-     *     tags={"CGO Investments"},
-     *     summary="Investment confirmation",
-     *     description="Returns the investment confirmation page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/thank-you',
+            operationId: 'cGOInvestmentsThankYou',
+            tags: ['CGO Investments'],
+            summary: 'Investment confirmation',
+            description: 'Returns the investment confirmation page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function thankYou($investmentId)
     {
         /** @var CgoInvestment $investment */
@@ -495,21 +506,25 @@ class CgoController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/certificate/{uuid}",
-     *     operationId="cGOInvestmentsDownloadCertificate",
-     *     tags={"CGO Investments"},
-     *     summary="Download certificate",
-     *     description="Downloads an investment certificate",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="uuid", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/certificate/{uuid}',
+            operationId: 'cGOInvestmentsDownloadCertificate',
+            tags: ['CGO Investments'],
+            summary: 'Download certificate',
+            description: 'Downloads an investment certificate',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'uuid', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function downloadCertificate($uuid)
     {
         $investment = CgoInvestment::where('uuid', $uuid)

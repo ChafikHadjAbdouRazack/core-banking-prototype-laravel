@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Privacy;
 
 use App\Domain\Privacy\Contracts\MerkleTreeServiceInterface;
+use App\Domain\Privacy\Events\Broadcast\PrivacyOperationCompleted;
 use App\Domain\Privacy\Exceptions\CommitmentNotFoundException;
 use App\Domain\Privacy\Models\DelegatedProofJob;
 use App\Domain\Privacy\Services\DelegatedProofService;
@@ -16,17 +17,17 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 
 /**
  * Privacy API Controller.
  *
  * Handles privacy pool Merkle tree operations for mobile clients.
- *
- * @OA\Tag(
- *     name="Privacy",
- *     description="Privacy pool Merkle tree and proof endpoints"
- * )
  */
+#[OA\Tag(
+    name: 'Privacy',
+    description: 'Privacy pool Merkle tree and proof endpoints'
+)]
 class PrivacyController extends Controller
 {
     public function __construct(
@@ -53,38 +54,39 @@ class PrivacyController extends Controller
 
     /**
      * Get the current Merkle root for a network.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/merkle-root",
-     *     operationId="getMerkleRoot",
-     *     tags={"Privacy"},
-     *     summary="Get the current Merkle root for a privacy pool",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(
-     *         name="network",
-     *         in="query",
-     *         required=true,
-     *         description="Blockchain network (polygon, base, arbitrum)",
-     *         @OA\Schema(type="string", enum={"polygon", "base", "arbitrum"})
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Current Merkle root",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="root", type="string", example="0x1234..."),
-     *                 @OA\Property(property="network", type="string", example="polygon"),
-     *                 @OA\Property(property="leaf_count", type="integer", example=1000),
-     *                 @OA\Property(property="tree_depth", type="integer", example=32),
-     *                 @OA\Property(property="block_number", type="integer", example=55000000),
-     *                 @OA\Property(property="synced_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid network"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/merkle-root',
+        operationId: 'getMerkleRoot',
+        tags: ['Privacy'],
+        summary: 'Get the current Merkle root for a privacy pool',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'network', in: 'query', required: true, description: 'Blockchain network (polygon, base, arbitrum)', schema: new OA\Schema(type: 'string', enum: ['polygon', 'base', 'arbitrum'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Current Merkle root',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'root', type: 'string', example: '0x1234...'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'leaf_count', type: 'integer', example: 1000),
+        new OA\Property(property: 'tree_depth', type: 'integer', example: 32),
+        new OA\Property(property: 'block_number', type: 'integer', example: 55000000),
+        new OA\Property(property: 'synced_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid network'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getMerkleRoot(Request $request): JsonResponse
     {
         $network = $request->query('network');
@@ -117,41 +119,45 @@ class PrivacyController extends Controller
 
     /**
      * Get the Merkle proof path for a commitment.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/merkle-path",
-     *     operationId="getMerklePath",
-     *     tags={"Privacy"},
-     *     summary="Get Merkle proof path for a commitment",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"commitment", "network"},
-     *             @OA\Property(property="commitment", type="string", description="32-byte hex commitment with 0x prefix"),
-     *             @OA\Property(property="network", type="string", enum={"polygon", "base", "arbitrum"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Merkle proof path",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="commitment", type="string"),
-     *                 @OA\Property(property="root", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="leaf_index", type="integer"),
-     *                 @OA\Property(property="siblings", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="path_indices", type="array", @OA\Items(type="integer")),
-     *                 @OA\Property(property="proof_depth", type="integer")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid parameters"),
-     *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=404, description="Commitment not found in tree")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/merkle-path',
+        operationId: 'getMerklePath',
+        tags: ['Privacy'],
+        summary: 'Get Merkle proof path for a commitment',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['commitment', 'network'], properties: [
+        new OA\Property(property: 'commitment', type: 'string', description: '32-byte hex commitment with 0x prefix'),
+        new OA\Property(property: 'network', type: 'string', enum: ['polygon', 'base', 'arbitrum']),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Merkle proof path',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'commitment', type: 'string'),
+        new OA\Property(property: 'root', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'leaf_index', type: 'integer'),
+        new OA\Property(property: 'siblings', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'path_indices', type: 'array', items: new OA\Items(type: 'integer')),
+        new OA\Property(property: 'proof_depth', type: 'integer'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid parameters'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Commitment not found in tree'
+    )]
     public function getMerklePath(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -190,40 +196,41 @@ class PrivacyController extends Controller
 
     /**
      * Verify a commitment against a Merkle proof.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/verify-commitment",
-     *     operationId="verifyCommitment",
-     *     tags={"Privacy"},
-     *     summary="Verify a commitment exists in the tree",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"commitment", "network", "siblings", "path_indices"},
-     *             @OA\Property(property="commitment", type="string"),
-     *             @OA\Property(property="network", type="string"),
-     *             @OA\Property(property="root", type="string"),
-     *             @OA\Property(property="leaf_index", type="integer"),
-     *             @OA\Property(property="siblings", type="array", @OA\Items(type="string")),
-     *             @OA\Property(property="path_indices", type="array", @OA\Items(type="integer"))
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Verification result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="valid", type="boolean"),
-     *                 @OA\Property(property="commitment", type="string"),
-     *                 @OA\Property(property="network", type="string")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid parameters"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/verify-commitment',
+        operationId: 'verifyCommitment',
+        tags: ['Privacy'],
+        summary: 'Verify a commitment exists in the tree',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['commitment', 'network', 'siblings', 'path_indices'], properties: [
+        new OA\Property(property: 'commitment', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'root', type: 'string'),
+        new OA\Property(property: 'leaf_index', type: 'integer'),
+        new OA\Property(property: 'siblings', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'path_indices', type: 'array', items: new OA\Items(type: 'integer')),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Verification result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'valid', type: 'boolean'),
+        new OA\Property(property: 'commitment', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid parameters'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function verifyCommitment(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -268,25 +275,24 @@ class PrivacyController extends Controller
 
     /**
      * Get supported networks.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/networks",
-     *     operationId="getPrivacyNetworks",
-     *     tags={"Privacy"},
-     *     summary="Get supported privacy pool networks",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Supported networks",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="networks", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="tree_depth", type="integer"),
-     *                 @OA\Property(property="provider", type="string")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/networks',
+        operationId: 'getPrivacyNetworks',
+        tags: ['Privacy'],
+        summary: 'Get supported privacy pool networks'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Supported networks',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'networks', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'tree_depth', type: 'integer'),
+        new OA\Property(property: 'provider', type: 'string'),
+        ]),
+        ])
+    )]
     public function getNetworks(): JsonResponse
     {
         return response()->json([
@@ -300,36 +306,37 @@ class PrivacyController extends Controller
 
     /**
      * Trigger a Merkle tree sync.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/sync",
-     *     operationId="syncMerkleTree",
-     *     tags={"Privacy"},
-     *     summary="Trigger a Merkle tree sync from the blockchain",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"network"},
-     *             @OA\Property(property="network", type="string", enum={"polygon", "base", "arbitrum"})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Sync completed",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="root", type="string"),
-     *                 @OA\Property(property="network", type="string"),
-     *                 @OA\Property(property="synced_at", type="string", format="date-time")
-     *             ),
-     *             @OA\Property(property="message", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid network"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/sync',
+        operationId: 'syncMerkleTree',
+        tags: ['Privacy'],
+        summary: 'Trigger a Merkle tree sync from the blockchain',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['network'], properties: [
+        new OA\Property(property: 'network', type: 'string', enum: ['polygon', 'base', 'arbitrum']),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Sync completed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'root', type: 'string'),
+        new OA\Property(property: 'network', type: 'string'),
+        new OA\Property(property: 'synced_at', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid network'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function syncTree(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -356,44 +363,38 @@ class PrivacyController extends Controller
 
     /**
      * Get the SRS manifest for mobile ZK proof generation.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/srs-manifest",
-     *     operationId="getSrsManifest",
-     *     tags={"Privacy"},
-     *     summary="Get SRS (Structured Reference String) manifest for ZK circuits",
-     *     description="Returns the manifest of SRS files required for mobile ZK proof generation. Mobile clients use this to download the required cryptographic parameters.",
-     *     @OA\Response(
-     *         response=200,
-     *         description="SRS manifest",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="version", type="string", example="1.0.0"),
-     *                 @OA\Property(property="cdn_base_url", type="string", example="https://cdn.finaegis.com/srs"),
-     *                 @OA\Property(property="total_size", type="integer", example=47000000),
-     *                 @OA\Property(property="required_size", type="integer", example=27000000),
-     *                 @OA\Property(property="required_count", type="integer", example=2),
-     *                 @OA\Property(property="total_count", type="integer", example=3),
-     *                 @OA\Property(
-     *                     property="circuits",
-     *                     type="array",
-     *                     @OA\Items(
-     *                         type="object",
-     *                         @OA\Property(property="name", type="string", example="shield_1_1"),
-     *                         @OA\Property(property="version", type="string", example="1.0.0"),
-     *                         @OA\Property(property="size", type="integer", example=15000000),
-     *                         @OA\Property(property="size_human", type="string", example="14.31 MB"),
-     *                         @OA\Property(property="required", type="boolean", example=true),
-     *                         @OA\Property(property="download_url", type="string", example="https://cdn.finaegis.com/srs/1.0.0/shield_1_1.srs"),
-     *                         @OA\Property(property="checksum", type="string", example="abc123..."),
-     *                         @OA\Property(property="checksum_algorithm", type="string", example="sha256")
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/srs-manifest',
+        operationId: 'getSrsManifest',
+        tags: ['Privacy'],
+        summary: 'Get SRS (Structured Reference String) manifest for ZK circuits',
+        description: 'Returns the manifest of SRS files required for mobile ZK proof generation. Mobile clients use this to download the required cryptographic parameters.'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'SRS manifest',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'version', type: 'string', example: '1.0.0'),
+        new OA\Property(property: 'cdn_base_url', type: 'string', example: 'https://cdn.finaegis.com/srs'),
+        new OA\Property(property: 'total_size', type: 'integer', example: 47000000),
+        new OA\Property(property: 'required_size', type: 'integer', example: 27000000),
+        new OA\Property(property: 'required_count', type: 'integer', example: 2),
+        new OA\Property(property: 'total_count', type: 'integer', example: 3),
+        new OA\Property(property: 'circuits', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'shield_1_1'),
+        new OA\Property(property: 'version', type: 'string', example: '1.0.0'),
+        new OA\Property(property: 'size', type: 'integer', example: 15000000),
+        new OA\Property(property: 'size_human', type: 'string', example: '14.31 MB'),
+        new OA\Property(property: 'required', type: 'boolean', example: true),
+        new OA\Property(property: 'download_url', type: 'string', example: 'https://cdn.finaegis.com/srs/1.0.0/shield_1_1.srs'),
+        new OA\Property(property: 'checksum', type: 'string', example: 'abc123...'),
+        new OA\Property(property: 'checksum_algorithm', type: 'string', example: 'sha256'),
+        ])),
+        ]),
+        ])
+    )]
     public function getSrsManifest(): JsonResponse
     {
         return response()->json([
@@ -403,47 +404,38 @@ class PrivacyController extends Controller
 
     /**
      * Track SRS download for analytics.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/srs-downloaded",
-     *     operationId="trackSrsDownload",
-     *     tags={"Privacy"},
-     *     summary="Track SRS file download completion",
-     *     description="Allows mobile clients to report successful SRS downloads for analytics and capability tracking.",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"circuits"},
-     *             @OA\Property(
-     *                 property="circuits",
-     *                 type="array",
-     *                 description="Names of the circuits that were downloaded",
-     *                 @OA\Items(type="string", example="shield_1_1")
-     *             ),
-     *             @OA\Property(
-     *                 property="device_info",
-     *                 type="string",
-     *                 description="Optional device information for analytics",
-     *                 example="iPhone 14 Pro / iOS 17.2"
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Download tracked successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="tracked", type="boolean", example=true),
-     *                 @OA\Property(property="circuits", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="srs_version", type="string", example="1.0.0")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid circuits"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/srs-downloaded',
+        operationId: 'trackSrsDownload',
+        tags: ['Privacy'],
+        summary: 'Track SRS file download completion',
+        description: 'Allows mobile clients to report successful SRS downloads for analytics and capability tracking.',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['circuits'], properties: [
+        new OA\Property(property: 'circuits', type: 'array', description: 'Names of the circuits that were downloaded', items: new OA\Items(type: 'string', example: 'shield_1_1')),
+        new OA\Property(property: 'device_info', type: 'string', description: 'Optional device information for analytics', example: 'iPhone 14 Pro / iOS 17.2'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Download tracked successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'tracked', type: 'boolean', example: true),
+        new OA\Property(property: 'circuits', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'srs_version', type: 'string', example: '1.0.0'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid circuits'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function trackSrsDownload(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -490,28 +482,27 @@ class PrivacyController extends Controller
 
     /**
      * Get privacy pool statistics.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/pool-stats",
-     *     operationId="getPrivacyPoolStats",
-     *     tags={"Privacy"},
-     *     summary="Get privacy pool statistics",
-     *     description="Returns aggregate statistics about the privacy pool including participant count and anonymity strength.",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Pool statistics",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="totalPoolSize", type="number", example=67630),
-     *                 @OA\Property(property="poolSizeCurrency", type="string", example="USD"),
-     *                 @OA\Property(property="participantCount", type="integer", example=10),
-     *                 @OA\Property(property="privacyStrength", type="string", example="weak"),
-     *                 @OA\Property(property="lastUpdated", type="string", format="date-time")
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/pool-stats',
+        operationId: 'getPrivacyPoolStats',
+        tags: ['Privacy'],
+        summary: 'Get privacy pool statistics',
+        description: 'Returns aggregate statistics about the privacy pool including participant count and anonymity strength.'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Pool statistics',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'totalPoolSize', type: 'number', example: 67630),
+        new OA\Property(property: 'poolSizeCurrency', type: 'string', example: 'USD'),
+        new OA\Property(property: 'participantCount', type: 'integer', example: 10),
+        new OA\Property(property: 'privacyStrength', type: 'string', example: 'weak'),
+        new OA\Property(property: 'lastUpdated', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
     public function getPoolStats(): JsonResponse
     {
         $networks = $this->merkleService->getSupportedNetworks();
@@ -544,28 +535,37 @@ class PrivacyController extends Controller
 
     /**
      * Get shielded balances per token.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/balances",
-     *     operationId="getShieldedBalances",
-     *     tags={"Privacy"},
-     *     summary="Get shielded balances per token",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Shielded balances",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object",
-     *                 @OA\Property(property="token", type="string", example="USDC"),
-     *                 @OA\Property(property="balance", type="string", example="0.00"),
-     *                 @OA\Property(property="network", type="string", example="polygon")
-     *             ))
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/balances',
+        operationId: 'getShieldedBalances',
+        tags: ['Privacy'],
+        summary: 'Get shielded balances per token',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Shielded balances',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'token', type: 'object', properties: [
+        new OA\Property(property: 'symbol', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'name', type: 'string', example: 'USD Coin'),
+        new OA\Property(property: 'address', type: 'string', example: '0x...'),
+        new OA\Property(property: 'decimals', type: 'integer', example: 6),
+        new OA\Property(property: 'chain_id', type: 'integer', example: 137),
+        new OA\Property(property: 'is_stablecoin', type: 'boolean', example: true),
+        ]),
+        new OA\Property(property: 'balance', type: 'string', example: '0.00'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getShieldedBalances(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -588,10 +588,32 @@ class PrivacyController extends Controller
         $networks = $this->merkleService->getSupportedNetworks();
         $balances = [];
 
+        $tokenMeta = [
+            'USDC' => ['name' => 'USD Coin', 'decimals' => 6, 'is_stablecoin' => true],
+            'USDT' => ['name' => 'Tether USD', 'decimals' => 6, 'is_stablecoin' => true],
+            'WETH' => ['name' => 'Wrapped Ether', 'decimals' => 18, 'is_stablecoin' => false],
+        ];
+
+        $chainIds = [
+            'ethereum' => 1,
+            'polygon'  => 137,
+            'arbitrum' => 42161,
+            'bsc'      => 56,
+        ];
+
         foreach ($networks as $network) {
-            foreach (['USDC', 'USDT', 'WETH'] as $token) {
+            $chainId = $chainIds[$network] ?? 0;
+            foreach (['USDC', 'USDT', 'WETH'] as $symbol) {
+                $meta = $tokenMeta[$symbol];
                 $balances[] = [
-                    'token'   => $token,
+                    'token' => [
+                        'symbol'        => $symbol,
+                        'name'          => $meta['name'],
+                        'address'       => '0x0000000000000000000000000000000000000000',
+                        'decimals'      => $meta['decimals'],
+                        'chain_id'      => $chainId,
+                        'is_stablecoin' => $meta['is_stablecoin'],
+                    ],
                     'balance' => '0.00',
                     'network' => $network,
                 ];
@@ -606,27 +628,29 @@ class PrivacyController extends Controller
 
     /**
      * Get total shielded balance aggregated across tokens.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/total-balance",
-     *     operationId="getTotalShieldedBalance",
-     *     tags={"Privacy"},
-     *     summary="Get total shielded balance in USD",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Total shielded balance",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="total_balance", type="string", example="0.00"),
-     *                 @OA\Property(property="currency", type="string", example="USD")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/total-balance',
+        operationId: 'getTotalShieldedBalance',
+        tags: ['Privacy'],
+        summary: 'Get total shielded balance in USD',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Total shielded balance',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'total_balance', type: 'string', example: '0.00'),
+        new OA\Property(property: 'currency', type: 'string', example: 'USD'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getTotalShieldedBalance(Request $request): JsonResponse
     {
         if ($this->isRailgunMode()) {
@@ -652,25 +676,29 @@ class PrivacyController extends Controller
 
     /**
      * Get privacy transactions for the authenticated user.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/transactions",
-     *     operationId="getPrivacyTransactions",
-     *     tags={"Privacy"},
-     *     summary="Get privacy transaction history",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="limit", in="query", @OA\Schema(type="integer", default=20)),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Privacy transactions",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/transactions',
+        operationId: 'getPrivacyTransactions',
+        tags: ['Privacy'],
+        summary: 'Get privacy transaction history',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'limit', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Privacy transactions',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getPrivacyTransactions(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -690,28 +718,32 @@ class PrivacyController extends Controller
 
     /**
      * Shield tokens (create shielded notes).
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/shield",
-     *     operationId="shieldTokens",
-     *     tags={"Privacy"},
-     *     summary="Shield tokens into the privacy pool",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"amount", "token", "network"},
-     *             @OA\Property(property="amount", type="string", example="100.00"),
-     *             @OA\Property(property="token", type="string", example="USDC"),
-     *             @OA\Property(property="network", type="string", example="polygon"),
-     *             @OA\Property(property="encrypted_inputs", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Shield operation initiated"),
-     *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/shield',
+        operationId: 'shieldTokens',
+        tags: ['Privacy'],
+        summary: 'Shield tokens into the privacy pool',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['amount', 'token', 'network'], properties: [
+        new OA\Property(property: 'amount', type: 'string', example: '100.00'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'encrypted_inputs', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Shield operation initiated'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function shield(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -732,6 +764,15 @@ class PrivacyController extends Controller
                 $validated['network'],
             );
 
+            PrivacyOperationCompleted::dispatch(
+                userId: $user->id,
+                operation: 'shield',
+                token: $validated['token'],
+                amount: $validated['amount'],
+                network: $validated['network'],
+                status: 'completed',
+            );
+
             return response()->json([
                 'success' => true,
                 'data'    => $result,
@@ -747,6 +788,15 @@ class PrivacyController extends Controller
             $validated['encrypted_inputs'] ?? '',
         );
 
+        PrivacyOperationCompleted::dispatch(
+            userId: $user->id,
+            operation: 'shield',
+            token: $validated['token'],
+            amount: $validated['amount'],
+            network: $validated['network'],
+            status: 'pending',
+        );
+
         return response()->json([
             'success' => true,
             'data'    => $job->toApiResponse(),
@@ -755,29 +805,33 @@ class PrivacyController extends Controller
 
     /**
      * Unshield tokens (withdraw from privacy pool).
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/unshield",
-     *     operationId="unshieldTokens",
-     *     tags={"Privacy"},
-     *     summary="Unshield tokens from the privacy pool",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"amount", "token", "network", "recipient"},
-     *             @OA\Property(property="amount", type="string", example="50.00"),
-     *             @OA\Property(property="token", type="string", example="USDC"),
-     *             @OA\Property(property="network", type="string", example="polygon"),
-     *             @OA\Property(property="recipient", type="string", example="0x1234..."),
-     *             @OA\Property(property="encrypted_inputs", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Unshield operation initiated"),
-     *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/unshield',
+        operationId: 'unshieldTokens',
+        tags: ['Privacy'],
+        summary: 'Unshield tokens from the privacy pool',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['amount', 'token', 'network', 'recipient'], properties: [
+        new OA\Property(property: 'amount', type: 'string', example: '50.00'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'recipient', type: 'string', example: '0x1234...'),
+        new OA\Property(property: 'encrypted_inputs', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Unshield operation initiated'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function unshield(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -800,6 +854,15 @@ class PrivacyController extends Controller
                 $validated['network'],
             );
 
+            PrivacyOperationCompleted::dispatch(
+                userId: $user->id,
+                operation: 'unshield',
+                token: $validated['token'],
+                amount: $validated['amount'],
+                network: $validated['network'],
+                status: 'completed',
+            );
+
             return response()->json([
                 'success' => true,
                 'data'    => $result,
@@ -819,6 +882,15 @@ class PrivacyController extends Controller
             $validated['encrypted_inputs'] ?? '',
         );
 
+        PrivacyOperationCompleted::dispatch(
+            userId: $user->id,
+            operation: 'unshield',
+            token: $validated['token'],
+            amount: $validated['amount'],
+            network: $validated['network'],
+            status: 'pending',
+        );
+
         return response()->json([
             'success' => true,
             'data'    => $job->toApiResponse(),
@@ -827,29 +899,33 @@ class PrivacyController extends Controller
 
     /**
      * Private transfer within the privacy pool.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/transfer",
-     *     operationId="privateTransfer",
-     *     tags={"Privacy"},
-     *     summary="Transfer tokens privately within the pool",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"amount", "token", "network"},
-     *             @OA\Property(property="amount", type="string", example="25.00"),
-     *             @OA\Property(property="token", type="string", example="USDC"),
-     *             @OA\Property(property="network", type="string", example="polygon"),
-     *             @OA\Property(property="recipient_commitment", type="string"),
-     *             @OA\Property(property="encrypted_inputs", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Private transfer initiated"),
-     *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/transfer',
+        operationId: 'privateTransfer',
+        tags: ['Privacy'],
+        summary: 'Transfer tokens privately within the pool',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['amount', 'token', 'network'], properties: [
+        new OA\Property(property: 'amount', type: 'string', example: '25.00'),
+        new OA\Property(property: 'token', type: 'string', example: 'USDC'),
+        new OA\Property(property: 'network', type: 'string', example: 'polygon'),
+        new OA\Property(property: 'recipient_commitment', type: 'string'),
+        new OA\Property(property: 'encrypted_inputs', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Private transfer initiated'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function privateTransfer(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -872,6 +948,15 @@ class PrivacyController extends Controller
                 $validated['network'],
             );
 
+            PrivacyOperationCompleted::dispatch(
+                userId: $user->id,
+                operation: 'transfer',
+                token: $validated['token'],
+                amount: $validated['amount'],
+                network: $validated['network'],
+                status: 'completed',
+            );
+
             return response()->json([
                 'success' => true,
                 'data'    => $result,
@@ -891,6 +976,15 @@ class PrivacyController extends Controller
             $validated['encrypted_inputs'] ?? '',
         );
 
+        PrivacyOperationCompleted::dispatch(
+            userId: $user->id,
+            operation: 'transfer',
+            token: $validated['token'],
+            amount: $validated['amount'],
+            network: $validated['network'],
+            status: 'pending',
+        );
+
         return response()->json([
             'success' => true,
             'data'    => $job->toApiResponse(),
@@ -899,27 +993,29 @@ class PrivacyController extends Controller
 
     /**
      * Get the viewing key for the authenticated user.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/viewing-key",
-     *     operationId="getViewingKey",
-     *     tags={"Privacy"},
-     *     summary="Get the user's viewing key for decrypting shielded notes",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Viewing key",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="viewing_key", type="string"),
-     *                 @OA\Property(property="created_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/viewing-key',
+        operationId: 'getViewingKey',
+        tags: ['Privacy'],
+        summary: 'Get the user\'s viewing key for decrypting shielded notes',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Viewing key',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'viewing_key', type: 'string'),
+        new OA\Property(property: 'created_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getViewingKey(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -940,24 +1036,26 @@ class PrivacyController extends Controller
 
     /**
      * Generate a proof of innocence.
-     *
-     * @OA\Post(
-     *     path="/api/v1/privacy/proof-of-innocence",
-     *     operationId="generateProofOfInnocence",
-     *     tags={"Privacy"},
-     *     summary="Generate a proof that funds are not from sanctioned sources",
-     *     security={{"sanctum":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="transaction_hashes", type="array", @OA\Items(type="string")),
-     *             @OA\Property(property="sanctions_list_root", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Proof generated"),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/privacy/proof-of-innocence',
+        operationId: 'generateProofOfInnocence',
+        tags: ['Privacy'],
+        summary: 'Generate a proof that funds are not from sanctioned sources',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'transaction_hashes', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'sanctions_list_root', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Proof generated'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function generateProofOfInnocence(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -990,29 +1088,33 @@ class PrivacyController extends Controller
 
     /**
      * Verify a proof of innocence.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/proof-of-innocence/{proofId}/verify",
-     *     operationId="verifyProofOfInnocence",
-     *     tags={"Privacy"},
-     *     summary="Verify a proof of innocence",
-     *     security={{"sanctum":{}}},
-     *     @OA\Parameter(name="proofId", in="path", required=true, @OA\Schema(type="string")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Verification result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="proof_id", type="string"),
-     *                 @OA\Property(property="valid", type="boolean"),
-     *                 @OA\Property(property="reason", type="string", nullable=true)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/proof-of-innocence/{proofId}/verify',
+        operationId: 'verifyProofOfInnocence',
+        tags: ['Privacy'],
+        summary: 'Verify a proof of innocence',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'proofId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Verification result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'proof_id', type: 'string'),
+        new OA\Property(property: 'valid', type: 'boolean'),
+        new OA\Property(property: 'reason', type: 'string', nullable: true),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function verifyProofOfInnocence(Request $request, string $proofId): JsonResponse
     {
         // Demo implementation — in production would look up proof from store
@@ -1029,27 +1131,28 @@ class PrivacyController extends Controller
 
     /**
      * Get the SRS download URL for a specific chain.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/srs-url",
-     *     operationId="getSrsUrl",
-     *     tags={"Privacy"},
-     *     summary="Get the SRS download URL for a chain",
-     *     @OA\Parameter(name="chain_id", in="query", @OA\Schema(type="string")),
-     *     @OA\Response(
-     *         response=200,
-     *         description="SRS URL",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="url", type="string"),
-     *                 @OA\Property(property="version", type="string"),
-     *                 @OA\Property(property="circuits", type="array", @OA\Items(type="object"))
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/srs-url',
+        operationId: 'getSrsUrl',
+        tags: ['Privacy'],
+        summary: 'Get the SRS download URL for a chain',
+        parameters: [
+        new OA\Parameter(name: 'chain_id', in: 'query', schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'SRS URL',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'url', type: 'string'),
+        new OA\Property(property: 'version', type: 'string'),
+        new OA\Property(property: 'circuits', type: 'array', items: new OA\Items(type: 'object')),
+        ]),
+        ])
+    )]
     public function getSrsUrl(Request $request): JsonResponse
     {
         $chainId = $request->query('chain_id');
@@ -1076,28 +1179,30 @@ class PrivacyController extends Controller
 
     /**
      * Get the SRS download status for the authenticated user.
-     *
-     * @OA\Get(
-     *     path="/api/v1/privacy/srs-status",
-     *     operationId="getSrsStatus",
-     *     tags={"Privacy"},
-     *     summary="Get SRS download status for the current user",
-     *     security={{"sanctum":{}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="SRS status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="has_required", type="boolean"),
-     *                 @OA\Property(property="version", type="string"),
-     *                 @OA\Property(property="required_circuits", type="array", @OA\Items(type="string"))
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthenticated")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/privacy/srs-status',
+        operationId: 'getSrsStatus',
+        tags: ['Privacy'],
+        summary: 'Get SRS download status for the current user',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'SRS status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'has_required', type: 'boolean'),
+        new OA\Property(property: 'version', type: 'string'),
+        new OA\Property(property: 'required_circuits', type: 'array', items: new OA\Items(type: 'string')),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
     public function getSrsStatus(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -1115,6 +1220,141 @@ class PrivacyController extends Controller
                 'version'           => $this->srsManifestService->getVersion(),
                 'required_circuits' => $requiredCircuits,
             ],
+        ]);
+    }
+
+    /**
+     * Get transaction calldata for a privacy transaction.
+     */
+    #[OA\Get(
+        path: '/api/v1/privacy/transaction-calldata/{txHash}',
+        operationId: 'getTransactionCalldata',
+        tags: ['Privacy'],
+        summary: 'Get persisted calldata for a privacy transaction',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'txHash', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction calldata retrieved'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Transaction not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    public function getTransactionCalldata(Request $request, string $txHash): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($this->isRailgunMode()) {
+            $tx = $this->railgun()->getTransactionCalldata($user, $txHash);
+
+            if ($tx === null) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'Transaction not found.',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data'    => $tx->toApiResponse(),
+            ]);
+        }
+
+        // Demo mode: return a synthetic response
+        return response()->json([
+            'success' => true,
+            'data'    => [
+                'id'           => $txHash,
+                'tx_hash'      => $txHash,
+                'operation'    => 'shield',
+                'token'        => 'USDC',
+                'amount'       => '100.00',
+                'network'      => 'polygon',
+                'to_address'   => '0x' . str_repeat('ab', 20),
+                'calldata'     => '0x' . bin2hex(random_bytes(64)),
+                'value'        => '0',
+                'gas_estimate' => '150000',
+                'status'       => 'pending',
+                'recipient'    => null,
+                'created_at'   => now()->toIso8601String(),
+            ],
+        ]);
+    }
+
+    /**
+     * Update the on-chain tx hash for a privacy transaction.
+     */
+    #[OA\Put(
+        path: '/api/v1/privacy/transactions/{transactionId}/tx-hash',
+        operationId: 'updateTransactionHash',
+        tags: ['Privacy'],
+        summary: 'Record the on-chain tx hash after mobile submits the transaction',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'transactionId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['tx_hash'], properties: [
+        new OA\Property(property: 'tx_hash', type: 'string', example: '0x1234...'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction hash updated'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Transaction not found'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    public function updateTransactionHash(Request $request, string $transactionId): JsonResponse
+    {
+        $validated = $request->validate([
+            'tx_hash' => 'required|string|max:66',
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if ($this->isRailgunMode()) {
+            $updated = $this->railgun()->updateTransactionHash(
+                $user,
+                $transactionId,
+                $validated['tx_hash'],
+            );
+
+            if (! $updated) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'Transaction not found.',
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transaction hash updated.',
+            ]);
+        }
+
+        // Demo mode: always succeed
+        return response()->json([
+            'success' => true,
+            'message' => 'Transaction hash updated.',
         ]);
     }
 }

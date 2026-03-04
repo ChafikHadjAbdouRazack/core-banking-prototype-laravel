@@ -7,10 +7,10 @@ use App\Models\User;
 use App\Traits\HasApiScopes;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use OpenApi\Attributes as OA;
 
 class SocialAuthController extends Controller
 {
@@ -18,39 +18,28 @@ class SocialAuthController extends Controller
 
     /**
      * Get the OAuth redirect URL for a provider.
-     *
-     * @OA\Get(
-     *     path="/api/auth/social/{provider}",
-     *     operationId="socialRedirect",
-     *     tags={"Authentication"},
-     *     summary="Get OAuth redirect URL",
-     *     description="Get the OAuth redirect URL for social login",
-     *
-     * @OA\Parameter(
-     *         name="provider",
-     *         in="path",
-     *         required=true,
-     *         description="OAuth provider (google, facebook, github)",
-     *
-     * @OA\Schema(type="string",    enum={"google", "facebook", "github"})
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="OAuth redirect URL",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="url", type="string", example="https://accounts.google.com/o/oauth2/auth?...")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid provider"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/auth/social/{provider}',
+        operationId: 'socialRedirect',
+        tags: ['Authentication'],
+        summary: 'Get OAuth redirect URL',
+        description: 'Get the OAuth redirect URL for social login',
+        parameters: [
+        new OA\Parameter(name: 'provider', in: 'path', required: true, description: 'OAuth provider (google, facebook, github)', schema: new OA\Schema(type: 'string', enum: ['google', 'facebook', 'github'])),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'OAuth redirect URL',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'url', type: 'string', example: 'https://accounts.google.com/o/oauth2/auth?...'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid provider'
+    )]
     public function redirect($provider)
     {
         $validProviders = ['google', 'facebook', 'github'];
@@ -70,55 +59,37 @@ class SocialAuthController extends Controller
 
     /**
      * Handle OAuth callback and authenticate user.
-     *
-     * @OA\Post(
-     *     path="/api/auth/social/{provider}/callback",
-     *     operationId="socialCallback",
-     *     tags={"Authentication"},
-     *     summary="Handle OAuth callback",
-     *     description="Process OAuth callback and authenticate user",
-     *
-     * @OA\Parameter(
-     *         name="provider",
-     *         in="path",
-     *         required=true,
-     *         description="OAuth provider",
-     *
-     * @OA\Schema(type="string",        enum={"google", "facebook", "github"})
-     *     ),
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"code"},
-     *
-     * @OA\Property(property="code",    type="string", description="OAuth authorization code")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User authenticated successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="user",    type="object",
-     *     @OA\Property(property="id", type="integer", example=1),
-     *     @OA\Property(property="name", type="string", example="John Doe"),
-     *     @OA\Property(property="email", type="string", example="john@example.com")
-     * ),
-     * @OA\Property(property="token",   type="string", example="1|laravel_sanctum_token..."),
-     * @OA\Property(property="message", type="string", example="Authenticated successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid provider or authentication failed"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/auth/social/{provider}/callback',
+        operationId: 'socialCallback',
+        tags: ['Authentication'],
+        summary: 'Handle OAuth callback',
+        description: 'Process OAuth callback and authenticate user',
+        parameters: [
+        new OA\Parameter(name: 'provider', in: 'path', required: true, description: 'OAuth provider', schema: new OA\Schema(type: 'string', enum: ['google', 'facebook', 'github'])),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['code'], properties: [
+        new OA\Property(property: 'code', type: 'string', description: 'OAuth authorization code'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'User authenticated successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'user', type: 'object', properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+        new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
+        ]),
+        new OA\Property(property: 'token', type: 'string', example: '1|laravel_sanctum_token...'),
+        new OA\Property(property: 'message', type: 'string', example: 'Authenticated successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid provider or authentication failed'
+    )]
     public function callback(Request $request, $provider)
     {
         $validProviders = ['google', 'facebook', 'github'];

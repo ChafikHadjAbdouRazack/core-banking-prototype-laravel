@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\File;
+use OpenApi\Attributes as OA;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -19,35 +20,30 @@ class AgentsDiscoveryController extends Controller
 {
     /**
      * List all available AGENTS.md files in the project.
-     *
-     * @OA\Get(
-     *     path="/api/agents/discovery",
-     *     operationId="discoverAgentsDocumentation",
-     *     tags={"AI Agents"},
-     *     summary="Discover all AGENTS.md files",
-     *     description="Returns a list of all AGENTS.md files in the project with their locations and metadata",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful discovery",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="count", type="integer", example=15),
-     *             @OA\Property(
-     *                 property="agents",
-     *                 type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="path", type="string", example="app/Domain/Exchange/AGENTS.md"),
-     *                     @OA\Property(property="domain", type="string", example="Exchange"),
-     *                     @OA\Property(property="type", type="string", example="domain"),
-     *                     @OA\Property(property="size", type="integer", example=4567),
-     *                     @OA\Property(property="last_modified", type="string", format="date-time"),
-     *                     @OA\Property(property="url", type="string", example="/api/agents/content/app/Domain/Exchange")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/agents/discovery',
+        operationId: 'discoverAgentsDocumentation',
+        tags: ['AI Agents'],
+        summary: 'Discover all AGENTS.md files',
+        description: 'Returns a list of all AGENTS.md files in the project with their locations and metadata'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful discovery',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'count', type: 'integer', example: 15),
+        new OA\Property(property: 'agents', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'path', type: 'string', example: 'app/Domain/Exchange/AGENTS.md'),
+        new OA\Property(property: 'domain', type: 'string', example: 'Exchange'),
+        new OA\Property(property: 'type', type: 'string', example: 'domain'),
+        new OA\Property(property: 'size', type: 'integer', example: 4567),
+        new OA\Property(property: 'last_modified', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'url', type: 'string', example: '/api/agents/content/app/Domain/Exchange'),
+        ])),
+        ])
+    )]
     public function discover(): JsonResponse
     {
         $agentsFiles = [];
@@ -108,36 +104,31 @@ class AgentsDiscoveryController extends Controller
 
     /**
      * Get the content of a specific AGENTS.md file.
-     *
-     * @OA\Get(
-     *     path="/api/agents/content/{path}",
-     *     operationId="getAgentContent",
-     *     tags={"AI Agents"},
-     *     summary="Get AGENTS.md content",
-     *     description="Returns the content of a specific AGENTS.md file",
-     *     @OA\Parameter(
-     *         name="path",
-     *         in="path",
-     *         required=true,
-     *         description="Base64 encoded path to the AGENTS.md file",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful retrieval",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="path", type="string"),
-     *             @OA\Property(property="content", type="string"),
-     *             @OA\Property(property="metadata", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="File not found"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/agents/content/{path}',
+        operationId: 'getAgentContent',
+        tags: ['AI Agents'],
+        summary: 'Get AGENTS.md content',
+        description: 'Returns the content of a specific AGENTS.md file',
+        parameters: [
+        new OA\Parameter(name: 'path', in: 'path', required: true, description: 'Base64 encoded path to the AGENTS.md file', schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful retrieval',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'path', type: 'string'),
+        new OA\Property(property: 'content', type: 'string'),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'File not found'
+    )]
     public function getContent(string $path): JsonResponse
     {
         $decodedPath = base64_decode($path);
@@ -180,25 +171,24 @@ class AgentsDiscoveryController extends Controller
 
     /**
      * Get a summary of all domains with AGENTS.md files.
-     *
-     * @OA\Get(
-     *     path="/api/agents/summary",
-     *     operationId="getAgentsSummary",
-     *     tags={"AI Agents"},
-     *     summary="Get AGENTS.md summary",
-     *     description="Returns a summary of all domains with AGENTS.md coverage",
-     *     @OA\Response(
-     *         response=200,
-     *         description="Successful summary",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="total_files", type="integer"),
-     *             @OA\Property(property="domains", type="array", @OA\Items(type="string")),
-     *             @OA\Property(property="coverage", type="object")
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/agents/summary',
+        operationId: 'getAgentsSummary',
+        tags: ['AI Agents'],
+        summary: 'Get AGENTS.md summary',
+        description: 'Returns a summary of all domains with AGENTS.md coverage'
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful summary',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'total_files', type: 'integer'),
+        new OA\Property(property: 'domains', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'coverage', type: 'object'),
+        ])
+    )]
     public function summary(): JsonResponse
     {
         $domains = [];

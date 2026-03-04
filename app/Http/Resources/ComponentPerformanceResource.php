@@ -4,29 +4,29 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Schema(
- *     schema="ComponentPerformance",
- *     type="object",
- *
- * @OA\Property(property="id",                      type="integer"),
- * @OA\Property(property="basket_performance_id",   type="integer"),
- * @OA\Property(property="asset_code",              type="string"),
- * @OA\Property(property="asset_name",              type="string"),
- * @OA\Property(property="start_weight",            type="number"),
- * @OA\Property(property="end_weight",              type="number"),
- * @OA\Property(property="average_weight",          type="number"),
- * @OA\Property(property="weight_change",           type="number"),
- * @OA\Property(property="contribution_value",      type="number"),
- * @OA\Property(property="contribution_percentage", type="number"),
- * @OA\Property(property="formatted_contribution",  type="string"),
- * @OA\Property(property="return_value",            type="number"),
- * @OA\Property(property="return_percentage",       type="number"),
- * @OA\Property(property="formatted_return",        type="string"),
- * @OA\Property(property="is_positive_contributor", type="boolean")
- * )
- */
+#[OA\Schema(
+    schema: 'ComponentPerformance',
+    type: 'object',
+    properties: [
+    new OA\Property(property: 'id', type: 'integer'),
+    new OA\Property(property: 'basket_performance_id', type: 'integer'),
+    new OA\Property(property: 'asset_code', type: 'string'),
+    new OA\Property(property: 'asset_name', type: 'string'),
+    new OA\Property(property: 'start_weight', type: 'number'),
+    new OA\Property(property: 'end_weight', type: 'number'),
+    new OA\Property(property: 'average_weight', type: 'number'),
+    new OA\Property(property: 'weight_change', type: 'number'),
+    new OA\Property(property: 'contribution_value', type: 'number'),
+    new OA\Property(property: 'contribution_percentage', type: 'number'),
+    new OA\Property(property: 'formatted_contribution', type: 'string'),
+    new OA\Property(property: 'return_value', type: 'number'),
+    new OA\Property(property: 'return_percentage', type: 'number'),
+    new OA\Property(property: 'formatted_return', type: 'string'),
+    new OA\Property(property: 'is_positive_contributor', type: 'boolean'),
+    ]
+)]
 class ComponentPerformanceResource extends JsonResource
 {
     /**

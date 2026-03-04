@@ -14,29 +14,31 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 use Workflow\WorkflowStub;
 
-/**
- * @OA\Tag(
- *     name="Stablecoin Operations",
- *     description="Stablecoin minting, burning, and operations management"
- * )
- */
+#[OA\Tag(
+    name: 'Stablecoin Operations',
+    description: 'Stablecoin minting, burning, and operations management'
+)]
 class StablecoinOperationsController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/stablecoins",
-     *     operationId="stablecoinOperationsIndex",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Stablecoin operations dashboard",
-     *     description="Returns the stablecoin operations dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/stablecoins',
+            operationId: 'stablecoinOperationsIndex',
+            tags: ['Stablecoin Operations'],
+            summary: 'Stablecoin operations dashboard',
+            description: 'Returns the stablecoin operations dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -74,19 +76,22 @@ class StablecoinOperationsController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/stablecoins/mint",
-     *     operationId="stablecoinOperationsMint",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Show mint form",
-     *     description="Shows the stablecoin minting form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/stablecoins/mint',
+            operationId: 'stablecoinOperationsMint',
+            tags: ['Stablecoin Operations'],
+            summary: 'Show mint form',
+            description: 'Shows the stablecoin minting form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function mint(Request $request)
     {
         $user = Auth::user();
@@ -115,19 +120,22 @@ class StablecoinOperationsController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/stablecoins/mint",
-     *     operationId="stablecoinOperationsProcessMint",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Process mint operation",
-     *     description="Processes a stablecoin minting operation",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/stablecoins/mint',
+            operationId: 'stablecoinOperationsProcessMint',
+            tags: ['Stablecoin Operations'],
+            summary: 'Process mint operation',
+            description: 'Processes a stablecoin minting operation',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function processMint(Request $request)
     {
         $validated = $request->validate(
@@ -225,19 +233,22 @@ class StablecoinOperationsController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/stablecoins/burn",
-     *     operationId="stablecoinOperationsBurn",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Show burn form",
-     *     description="Shows the stablecoin burning form",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/stablecoins/burn',
+            operationId: 'stablecoinOperationsBurn',
+            tags: ['Stablecoin Operations'],
+            summary: 'Show burn form',
+            description: 'Shows the stablecoin burning form',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function burn(Request $request)
     {
         $user = Auth::user();
@@ -262,19 +273,22 @@ class StablecoinOperationsController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/stablecoins/burn",
-     *     operationId="stablecoinOperationsProcessBurn",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Process burn operation",
-     *     description="Processes a stablecoin burning operation",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/stablecoins/burn',
+            operationId: 'stablecoinOperationsProcessBurn',
+            tags: ['Stablecoin Operations'],
+            summary: 'Process burn operation',
+            description: 'Processes a stablecoin burning operation',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function processBurn(Request $request)
     {
         $validated = $request->validate(
@@ -375,19 +389,22 @@ class StablecoinOperationsController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/stablecoins/history",
-     *     operationId="stablecoinOperationsHistory",
-     *     tags={"Stablecoin Operations"},
-     *     summary="Operation history",
-     *     description="Returns stablecoin operation history",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/stablecoins/history',
+            operationId: 'stablecoinOperationsHistory',
+            tags: ['Stablecoin Operations'],
+            summary: 'Operation history',
+            description: 'Returns stablecoin operation history',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function history(Request $request)
     {
         $user = Auth::user();

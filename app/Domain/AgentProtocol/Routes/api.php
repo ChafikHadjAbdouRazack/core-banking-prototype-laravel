@@ -54,7 +54,7 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
     });
 
     // User-authenticated endpoints (users manage their agents via sanctum)
-    Route::middleware(['auth:sanctum', 'check.token.expiration', 'api.rate_limit:private'])->group(function () {
+    Route::middleware(['auth:sanctum', 'api.rate_limit:private'])->group(function () {
         // Agent registration (users create/own agents)
         Route::post('/agents/register', [AgentIdentityController::class, 'register'])->name('agents.register');
 

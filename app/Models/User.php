@@ -77,6 +77,11 @@ class User extends Authenticatable implements FilamentUser
         'onboarding_completed_at',
         'country_code', // Added for testing KYC/AML
         'mobile_preferences',
+        'free_tx_until',
+        'sponsored_tx_used',
+        'sponsored_tx_limit',
+        'referral_code',
+        'referred_by',
     ];
 
     /**
@@ -122,6 +127,9 @@ class User extends Authenticatable implements FilamentUser
             'has_completed_onboarding'   => 'boolean',
             'onboarding_completed_at'    => 'datetime',
             'mobile_preferences'         => 'array',
+            'free_tx_until'              => 'datetime',
+            'sponsored_tx_used'          => 'integer',
+            'sponsored_tx_limit'         => 'integer',
         ];
     }
 
@@ -283,5 +291,25 @@ class User extends Authenticatable implements FilamentUser
             'uuid', // Local key on users table
             'uuid' // Local key on accounts table
         );
+    }
+
+    /**
+     * Get the user who referred this user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, $this>
+     */
+    public function referrer(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(self::class, 'referred_by');
+    }
+
+    /**
+     * Get users referred by this user.
+     *
+     * @return HasMany<Referral, $this>
+     */
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(Referral::class, 'referrer_id');
     }
 }

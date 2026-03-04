@@ -32,7 +32,7 @@ Route::middleware('api.rate_limit:public')->group(function () {
         Route::get('/orderbook/{baseCurrency}/{quoteCurrency}', [App\Http\Controllers\Api\ExchangeController::class, 'getOrderBook'])->name('orderbook');
         Route::get('/markets', [App\Http\Controllers\Api\ExchangeController::class, 'getMarkets'])->name('markets');
 
-        Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+        Route::middleware('auth:sanctum')->group(function () {
             Route::post('/orders', [App\Http\Controllers\Api\ExchangeController::class, 'placeOrder'])
                 ->middleware(['transaction.rate_limit:exchange_order', 'idempotency'])
                 ->name('orders.place');
@@ -48,7 +48,7 @@ Route::middleware('api.rate_limit:public')->group(function () {
         Route::get('/ticker/{base}/{quote}', [App\Http\Controllers\Api\ExternalExchangeController::class, 'ticker'])->name('ticker');
         Route::get('/orderbook/{base}/{quote}', [App\Http\Controllers\Api\ExternalExchangeController::class, 'orderBook'])->name('orderbook');
 
-        Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+        Route::middleware('auth:sanctum')->group(function () {
             Route::get('/arbitrage/{base}/{quote}', [App\Http\Controllers\Api\ExternalExchangeController::class, 'arbitrage'])->name('arbitrage');
         });
     });
@@ -58,7 +58,7 @@ Route::middleware('api.rate_limit:public')->group(function () {
         Route::get('/pools', [App\Http\Controllers\Api\LiquidityPoolController::class, 'index'])->name('pools.index');
         Route::get('/pools/{poolId}', [App\Http\Controllers\Api\LiquidityPoolController::class, 'show'])->name('pools.show');
 
-        Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+        Route::middleware('auth:sanctum')->group(function () {
             Route::post('/pools', [App\Http\Controllers\Api\LiquidityPoolController::class, 'create'])->middleware('idempotency')->name('pools.create');
             Route::post('/add', [App\Http\Controllers\Api\LiquidityPoolController::class, 'addLiquidity'])->middleware('idempotency')->name('add');
             Route::post('/remove', [App\Http\Controllers\Api\LiquidityPoolController::class, 'removeLiquidity'])->middleware('idempotency')->name('remove');
@@ -81,7 +81,7 @@ Route::middleware('api.rate_limit:public')->group(function () {
 // V1 Asset and exchange rate endpoints
 Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
     // Versioned accounts endpoint (requires authentication)
-    Route::middleware('auth:sanctum', 'check.token.expiration')->get('/accounts', [App\Http\Controllers\Api\AccountController::class, 'index']);
+    Route::middleware('auth:sanctum')->get('/accounts', [App\Http\Controllers\Api\AccountController::class, 'index']);
 
     // Asset management endpoints
     Route::get('/assets', [AssetController::class, 'index']);
@@ -98,7 +98,7 @@ Route::prefix('v1')->middleware('api.rate_limit:public')->group(function () {
         Route::get('/{provider}/rate', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'getRate']);
         Route::get('/compare', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'compareRates']);
         Route::get('/aggregated', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'getAggregatedRate']);
-        Route::post('/refresh', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'refresh'])->middleware('auth:sanctum', 'check.token.expiration');
+        Route::post('/refresh', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'refresh'])->middleware('auth:sanctum');
         Route::get('/historical', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'historical']);
         Route::post('/validate', [App\Http\Controllers\Api\ExchangeRateProviderController::class, 'validateRate']);
     });

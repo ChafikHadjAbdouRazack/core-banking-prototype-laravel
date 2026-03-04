@@ -11,13 +11,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="External Exchange Management",
- *     description="External exchange connections, arbitrage, and price alignment"
- * )
- */
+#[OA\Tag(
+    name: 'External Exchange Management',
+    description: 'External exchange connections, arbitrage, and price alignment'
+)]
 class ExternalExchangeController extends Controller
 {
     public function __construct(
@@ -28,19 +27,22 @@ class ExternalExchangeController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/external-exchanges",
-     *     operationId="externalExchangeManagementIndex",
-     *     tags={"External Exchange Management"},
-     *     summary="External exchanges dashboard",
-     *     description="Returns the external exchanges management dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/external-exchanges',
+            operationId: 'externalExchangeManagementIndex',
+            tags: ['External Exchange Management'],
+            summary: 'External exchanges dashboard',
+            description: 'Returns the external exchanges management dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         // Get connected exchanges
@@ -70,19 +72,22 @@ class ExternalExchangeController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/external-exchanges/arbitrage",
-     *     operationId="externalExchangeManagementArbitrage",
-     *     tags={"External Exchange Management"},
-     *     summary="Arbitrage dashboard",
-     *     description="Returns the arbitrage opportunities dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/external-exchanges/arbitrage',
+            operationId: 'externalExchangeManagementArbitrage',
+            tags: ['External Exchange Management'],
+            summary: 'Arbitrage dashboard',
+            description: 'Returns the arbitrage opportunities dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function arbitrage()
     {
         // Get current arbitrage opportunities
@@ -108,19 +113,22 @@ class ExternalExchangeController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/external-exchanges/arbitrage/execute",
-     *     operationId="externalExchangeManagementExecuteArbitrage",
-     *     tags={"External Exchange Management"},
-     *     summary="Execute arbitrage",
-     *     description="Executes an arbitrage trade",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/external-exchanges/arbitrage/execute',
+            operationId: 'externalExchangeManagementExecuteArbitrage',
+            tags: ['External Exchange Management'],
+            summary: 'Execute arbitrage',
+            description: 'Executes an arbitrage trade',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function executeArbitrage(Request $request)
     {
         $validated = $request->validate(
@@ -153,19 +161,22 @@ class ExternalExchangeController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/external-exchanges/price-alignment",
-     *     operationId="externalExchangeManagementPriceAlignment",
-     *     tags={"External Exchange Management"},
-     *     summary="Price alignment dashboard",
-     *     description="Returns the price alignment management page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/external-exchanges/price-alignment',
+            operationId: 'externalExchangeManagementPriceAlignment',
+            tags: ['External Exchange Management'],
+            summary: 'Price alignment dashboard',
+            description: 'Returns the price alignment management page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function priceAlignment()
     {
         // Get price discrepancies across exchanges
@@ -227,19 +238,22 @@ class ExternalExchangeController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/external-exchanges/connect",
-     *     operationId="externalExchangeManagementConnect",
-     *     tags={"External Exchange Management"},
-     *     summary="Connect external exchange",
-     *     description="Connects to an external exchange",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/external-exchanges/connect',
+            operationId: 'externalExchangeManagementConnect',
+            tags: ['External Exchange Management'],
+            summary: 'Connect external exchange',
+            description: 'Connects to an external exchange',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function connect(Request $request)
     {
         $validated = $request->validate(
@@ -273,21 +287,25 @@ class ExternalExchangeController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/external-exchanges/{id}/disconnect",
-     *     operationId="externalExchangeManagementDisconnect",
-     *     tags={"External Exchange Management"},
-     *     summary="Disconnect external exchange",
-     *     description="Disconnects from an external exchange",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/external-exchanges/{id}/disconnect',
+            operationId: 'externalExchangeManagementDisconnect',
+            tags: ['External Exchange Management'],
+            summary: 'Disconnect external exchange',
+            description: 'Disconnects from an external exchange',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function disconnect($exchange)
     {
         try {

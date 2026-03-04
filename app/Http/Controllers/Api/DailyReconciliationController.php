@@ -11,13 +11,12 @@ use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Daily Reconciliation",
- *     description="Bank account reconciliation and reporting system (Admin only)"
- * )
- */
+#[OA\Tag(
+    name: 'Daily Reconciliation',
+    description: 'Bank account reconciliation and reporting system (Admin only)'
+)]
 class DailyReconciliationController extends Controller
 {
     public function __construct(
@@ -29,54 +28,44 @@ class DailyReconciliationController extends Controller
 
     /**
      * Trigger daily reconciliation process.
-     *
-     * @OA\Post(
-     *     path="/api/reconciliation/trigger",
-     *     operationId="triggerReconciliation",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Trigger manual reconciliation process",
-     *     description="Manually triggers the daily bank account reconciliation process (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Reconciliation completed successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="reconciliation_triggered", type="boolean", example=true),
-     * @OA\Property(property="triggered_at",             type="string", format="date-time", example="2024-01-15T10:30:00Z"),
-     * @OA\Property(property="report",                   type="object", description="Reconciliation report details")
-     *             ),
-     * @OA\Property(property="message",                  type="string", example="Daily reconciliation completed successfully")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Reconciliation failed",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",                    type="string", example="Reconciliation failed"),
-     * @OA\Property(property="message",                  type="string", example="Connection to custodian failed"),
-     * @OA\Property(property="triggered_at",             type="string", format="date-time")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Post(
+        path: '/api/reconciliation/trigger',
+        operationId: 'triggerReconciliation',
+        tags: ['Daily Reconciliation'],
+        summary: 'Trigger manual reconciliation process',
+        description: 'Manually triggers the daily bank account reconciliation process (Admin only)',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Reconciliation completed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'reconciliation_triggered', type: 'boolean', example: true),
+        new OA\Property(property: 'triggered_at', type: 'string', format: 'date-time', example: '2024-01-15T10:30:00Z'),
+        new OA\Property(property: 'report', type: 'object', description: 'Reconciliation report details'),
+        ]),
+        new OA\Property(property: 'message', type: 'string', example: 'Daily reconciliation completed successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Reconciliation failed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string', example: 'Reconciliation failed'),
+        new OA\Property(property: 'message', type: 'string', example: 'Connection to custodian failed'),
+        new OA\Property(property: 'triggered_at', type: 'string', format: 'date-time'),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function triggerReconciliation(): JsonResponse
     {
         try {
@@ -116,62 +105,49 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get latest reconciliation report.
-     *
-     * @OA\Get(
-     *     path="/api/reconciliation/latest",
-     *     operationId="getLatestReconciliationReport",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Get the latest reconciliation report",
-     *     description="Retrieves the most recent reconciliation report (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Latest report retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="report",       type="object", description="Full reconciliation report details"),
-     * @OA\Property(property="retrieved_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="No reconciliation reports found",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",         type="null"),
-     * @OA\Property(property="message",      type="string", example="No reconciliation reports found")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to retrieve report",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",        type="string"),
-     * @OA\Property(property="message",      type="string")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/reconciliation/latest',
+        operationId: 'getLatestReconciliationReport',
+        tags: ['Daily Reconciliation'],
+        summary: 'Get the latest reconciliation report',
+        description: 'Retrieves the most recent reconciliation report (Admin only)',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Latest report retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'report', type: 'object', description: 'Full reconciliation report details'),
+        new OA\Property(property: 'retrieved_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'No reconciliation reports found',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'null'),
+        new OA\Property(property: 'message', type: 'string', example: 'No reconciliation reports found'),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to retrieve report',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string'),
+        new OA\Property(property: 'message', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function getLatestReport(): JsonResponse
     {
         try {
@@ -208,78 +184,51 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation history.
-     *
-     * @OA\Get(
-     *     path="/api/reconciliation/history",
-     *     operationId="getReconciliationHistory",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Get reconciliation history",
-     *     description="Retrieves historical reconciliation reports with filtering options (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="days",
-     *         in="query",
-     *         required=false,
-     *         description="Number of days to look back (1-90, default: 30)",
-     *
-     * @OA\Schema(type="integer",                     minimum=1, maximum=90, default=30)
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         required=false,
-     *         description="Maximum number of reports to return (1-50, default: 20)",
-     *
-     * @OA\Schema(type="integer",                     minimum=1, maximum=50, default=20)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="History retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="reports",
-     *                     type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="date",                  type="string", format="date", example="2024-01-15"),
-     * @OA\Property(property="summary",               type="object"),
-     * @OA\Property(property="discrepancy_count",     type="integer", example=2),
-     * @OA\Property(property="recommendations_count", type="integer", example=3),
-     * @OA\Property(property="file_path",             type="string", example="reconciliation-2024-01-15.json"),
-     * @OA\Property(property="file_size",             type="integer", example=15248),
-     * @OA\Property(property="generated_at",          type="string", format="date-time")
-     *                     )
-     *                 ),
-     * @OA\Property(property="total",                 type="integer", example=15),
-     * @OA\Property(property="period_days",           type="integer", example=30),
-     * @OA\Property(property="retrieved_at",          type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to retrieve history"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/reconciliation/history',
+        operationId: 'getReconciliationHistory',
+        tags: ['Daily Reconciliation'],
+        summary: 'Get reconciliation history',
+        description: 'Retrieves historical reconciliation reports with filtering options (Admin only)',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'days', in: 'query', required: false, description: 'Number of days to look back (1-90, default: 30)', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 90, default: 30)),
+        new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Maximum number of reports to return (1-50, default: 20)', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 50, default: 20)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'History retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'reports', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'date', type: 'string', format: 'date', example: '2024-01-15'),
+        new OA\Property(property: 'summary', type: 'object'),
+        new OA\Property(property: 'discrepancy_count', type: 'integer', example: 2),
+        new OA\Property(property: 'recommendations_count', type: 'integer', example: 3),
+        new OA\Property(property: 'file_path', type: 'string', example: 'reconciliation-2024-01-15.json'),
+        new OA\Property(property: 'file_size', type: 'integer', example: 15248),
+        new OA\Property(property: 'generated_at', type: 'string', format: 'date-time'),
+        ])),
+        new OA\Property(property: 'total', type: 'integer', example: 15),
+        new OA\Property(property: 'period_days', type: 'integer', example: 30),
+        new OA\Property(property: 'retrieved_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to retrieve history'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function getHistory(Request $request): JsonResponse
     {
         $request->validate(
@@ -361,81 +310,60 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get specific reconciliation report by date.
-     *
-     * @OA\Get(
-     *     path="/api/reconciliation/report/{date}",
-     *     operationId="getReconciliationReportByDate",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Get reconciliation report for specific date",
-     *     description="Retrieves the reconciliation report for a specific date (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="date",
-     *         in="path",
-     *         required=true,
-     *         description="Date in YYYY-MM-DD format",
-     *
-     * @OA\Schema(type="string",             format="date", example="2024-01-15")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Report retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="date",         type="string", format="date"),
-     * @OA\Property(property="report",       type="object", description="Full reconciliation report"),
-     * @OA\Property(
-     *                     property="file_info",
-     *                     type="object",
-     * @OA\Property(property="size",         type="integer"),
-     * @OA\Property(property="modified_at",  type="string", format="date-time")
-     *                 ),
-     * @OA\Property(property="retrieved_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=400,
-     *         description="Invalid date format",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",        type="string", example="Invalid date format. Use YYYY-MM-DD format.")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Report not found",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="error",        type="string"),
-     * @OA\Property(property="date",         type="string")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to retrieve report"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/reconciliation/report/{date}',
+        operationId: 'getReconciliationReportByDate',
+        tags: ['Daily Reconciliation'],
+        summary: 'Get reconciliation report for specific date',
+        description: 'Retrieves the reconciliation report for a specific date (Admin only)',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'date', in: 'path', required: true, description: 'Date in YYYY-MM-DD format', schema: new OA\Schema(type: 'string', format: 'date', example: '2024-01-15')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Report retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'date', type: 'string', format: 'date'),
+        new OA\Property(property: 'report', type: 'object', description: 'Full reconciliation report'),
+        new OA\Property(property: 'file_info', type: 'object', properties: [
+        new OA\Property(property: 'size', type: 'integer'),
+        new OA\Property(property: 'modified_at', type: 'string', format: 'date-time'),
+        ]),
+        new OA\Property(property: 'retrieved_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid date format',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string', example: 'Invalid date format. Use YYYY-MM-DD format.'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Report not found',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'error', type: 'string'),
+        new OA\Property(property: 'date', type: 'string'),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to retrieve report'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function getReportByDate(string $date): JsonResponse
     {
         try {
@@ -501,86 +429,61 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation metrics summary.
-     *
-     * @OA\Get(
-     *     path="/api/reconciliation/metrics",
-     *     operationId="getReconciliationMetrics",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Get reconciliation metrics and analytics",
-     *     description="Retrieves summary metrics and analytics for reconciliation processes (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Parameter(
-     *         name="days",
-     *         in="query",
-     *         required=false,
-     *         description="Number of days to analyze (1-90, default: 30)",
-     *
-     * @OA\Schema(type="integer",                             minimum=1, maximum=90, default=30)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Metrics retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(
-     *                     property="metrics",
-     *                     type="object",
-     * @OA\Property(property="total_reconciliations",         type="integer"),
-     * @OA\Property(property="successful_reconciliations",    type="integer"),
-     * @OA\Property(property="failed_reconciliations",        type="integer"),
-     * @OA\Property(property="total_discrepancies",           type="integer"),
-     * @OA\Property(property="total_discrepancy_amount",      type="number"),
-     * @OA\Property(property="average_duration_minutes",      type="number"),
-     * @OA\Property(property="accounts_checked_total",        type="integer"),
-     * @OA\Property(property="average_discrepancies_per_run", type="number"),
-     * @OA\Property(property="success_rate",                  type="number"),
-     * @OA\Property(
-     *                         property="discrepancy_types",
-     *                         type="object",
-     *                         additionalProperties={"type": "integer"}
-     *                     ),
-     * @OA\Property(
-     *                         property="daily_trends",
-     *                         type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="date",                          type="string", format="date"),
-     * @OA\Property(property="discrepancies",                 type="integer"),
-     * @OA\Property(property="accounts_checked",              type="integer"),
-     * @OA\Property(property="duration_minutes",              type="number"),
-     * @OA\Property(property="status",                        type="string")
-     *                         )
-     *                     )
-     *                 ),
-     * @OA\Property(property="period_days",                   type="integer"),
-     * @OA\Property(property="period_start",                  type="string", format="date"),
-     * @OA\Property(property="period_end",                    type="string", format="date"),
-     * @OA\Property(property="calculated_at",                 type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to calculate metrics"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/reconciliation/metrics',
+        operationId: 'getReconciliationMetrics',
+        tags: ['Daily Reconciliation'],
+        summary: 'Get reconciliation metrics and analytics',
+        description: 'Retrieves summary metrics and analytics for reconciliation processes (Admin only)',
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'days', in: 'query', required: false, description: 'Number of days to analyze (1-90, default: 30)', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 90, default: 30)),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Metrics retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'metrics', type: 'object', properties: [
+        new OA\Property(property: 'total_reconciliations', type: 'integer'),
+        new OA\Property(property: 'successful_reconciliations', type: 'integer'),
+        new OA\Property(property: 'failed_reconciliations', type: 'integer'),
+        new OA\Property(property: 'total_discrepancies', type: 'integer'),
+        new OA\Property(property: 'total_discrepancy_amount', type: 'number'),
+        new OA\Property(property: 'average_duration_minutes', type: 'number'),
+        new OA\Property(property: 'accounts_checked_total', type: 'integer'),
+        new OA\Property(property: 'average_discrepancies_per_run', type: 'number'),
+        new OA\Property(property: 'success_rate', type: 'number'),
+        new OA\Property(property: 'discrepancy_types', type: 'object', additionalProperties: new OA\AdditionalProperties(type: 'integer')),
+        new OA\Property(property: 'daily_trends', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'date', type: 'string', format: 'date'),
+        new OA\Property(property: 'discrepancies', type: 'integer'),
+        new OA\Property(property: 'accounts_checked', type: 'integer'),
+        new OA\Property(property: 'duration_minutes', type: 'number'),
+        new OA\Property(property: 'status', type: 'string'),
+        ])),
+        ]),
+        new OA\Property(property: 'period_days', type: 'integer'),
+        new OA\Property(property: 'period_start', type: 'string', format: 'date'),
+        new OA\Property(property: 'period_end', type: 'string', format: 'date'),
+        new OA\Property(property: 'calculated_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to calculate metrics'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function getMetrics(Request $request): JsonResponse
     {
         $request->validate(
@@ -718,57 +621,47 @@ class DailyReconciliationController extends Controller
 
     /**
      * Get reconciliation status (whether process is currently running).
-     *
-     * @OA\Get(
-     *     path="/api/reconciliation/status",
-     *     operationId="getReconciliationStatus",
-     *     tags={"Daily Reconciliation"},
-     *     summary="Get current reconciliation process status",
-     *     description="Checks if reconciliation process is currently running and provides status information (Admin only)",
-     *     security={{"sanctum": {}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Status retrieved successfully",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     * @OA\Property(property="is_running",               type="boolean", example=false),
-     * @OA\Property(property="last_run_date",            type="string", format="date", nullable=true),
-     * @OA\Property(property="next_scheduled_run",       type="string", format="date-time"),
-     * @OA\Property(property="status_checked_at",        type="string", format="date-time"),
-     * @OA\Property(property="started_at",               type="string", format="date-time", nullable=true),
-     * @OA\Property(property="running_duration_minutes", type="number", nullable=true),
-     * @OA\Property(
-     *                     property="last_run_summary",
-     *                     type="object",
-     *                     nullable=true,
-     * @OA\Property(property="status",                   type="string"),
-     * @OA\Property(property="accounts_checked",         type="integer"),
-     * @OA\Property(property="discrepancies_found",      type="integer"),
-     * @OA\Property(property="duration_minutes",         type="number")
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=500,
-     *         description="Failed to get status"
-     *     ),
-     * @OA\Response(
-     *         response=401,
-     *         description="Unauthenticated"
-     *     ),
-     * @OA\Response(
-     *         response=403,
-     *         description="Forbidden - Admin access required"
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/reconciliation/status',
+        operationId: 'getReconciliationStatus',
+        tags: ['Daily Reconciliation'],
+        summary: 'Get current reconciliation process status',
+        description: 'Checks if reconciliation process is currently running and provides status information (Admin only)',
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Status retrieved successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'is_running', type: 'boolean', example: false),
+        new OA\Property(property: 'last_run_date', type: 'string', format: 'date', nullable: true),
+        new OA\Property(property: 'next_scheduled_run', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'status_checked_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'started_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'running_duration_minutes', type: 'number', nullable: true),
+        new OA\Property(property: 'last_run_summary', type: 'object', nullable: true, properties: [
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'accounts_checked', type: 'integer'),
+        new OA\Property(property: 'discrepancies_found', type: 'integer'),
+        new OA\Property(property: 'duration_minutes', type: 'number'),
+        ]),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Failed to get status'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated'
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Forbidden - Admin access required'
+    )]
     public function getStatus(): JsonResponse
     {
         try {

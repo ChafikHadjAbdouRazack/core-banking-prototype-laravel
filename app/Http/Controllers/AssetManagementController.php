@@ -9,28 +9,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Asset Management",
- *     description="Portfolio and asset management dashboard"
- * )
- */
+#[OA\Tag(
+    name: 'Asset Management',
+    description: 'Portfolio and asset management dashboard'
+)]
 class AssetManagementController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/assets",
-     *     operationId="assetManagementIndex",
-     *     tags={"Asset Management"},
-     *     summary="Asset management dashboard",
-     *     description="Returns the asset management overview page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/assets',
+            operationId: 'assetManagementIndex',
+            tags: ['Asset Management'],
+            summary: 'Asset management dashboard',
+            description: 'Returns the asset management overview page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -67,21 +69,25 @@ class AssetManagementController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/assets/{symbol}",
-     *     operationId="assetManagementShow",
-     *     tags={"Asset Management"},
-     *     summary="Show asset details",
-     *     description="Returns detailed view for a specific asset",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="symbol", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/assets/{symbol}',
+            operationId: 'assetManagementShow',
+            tags: ['Asset Management'],
+            summary: 'Show asset details',
+            description: 'Returns detailed view for a specific asset',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'symbol', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(Asset $asset)
     {
         $user = Auth::user();
@@ -111,19 +117,22 @@ class AssetManagementController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/assets/analytics",
-     *     operationId="assetManagementAnalytics",
-     *     tags={"Asset Management"},
-     *     summary="Asset analytics",
-     *     description="Returns the asset analytics page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/assets/analytics',
+            operationId: 'assetManagementAnalytics',
+            tags: ['Asset Management'],
+            summary: 'Asset analytics',
+            description: 'Returns the asset analytics page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function analytics(Request $request)
     {
         $user = Auth::user();
@@ -154,19 +163,22 @@ class AssetManagementController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/assets/export",
-     *     operationId="assetManagementExport",
-     *     tags={"Asset Management"},
-     *     summary="Export portfolio data",
-     *     description="Exports portfolio data in CSV or PDF format",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/assets/export',
+            operationId: 'assetManagementExport',
+            tags: ['Asset Management'],
+            summary: 'Export portfolio data',
+            description: 'Exports portfolio data in CSV or PDF format',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function export(Request $request)
     {
         $user = Auth::user();

@@ -14,7 +14,7 @@ Route::prefix('v1/x402')->name('api.x402.')->group(function () {
     Route::get('/supported', [X402StatusController::class, 'supported'])->name('supported');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum'])->group(function () {
         // Monetized endpoint management
         Route::get('/endpoints', [X402EndpointController::class, 'index'])->name('endpoints.index');
         Route::post('/endpoints', [X402EndpointController::class, 'store'])

@@ -11,13 +11,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Batch Processing",
- *     description="Batch transaction processing and management"
- * )
- */
+#[OA\Tag(
+    name: 'Batch Processing',
+    description: 'Batch transaction processing and management'
+)]
 class BatchProcessingController extends Controller
 {
     protected BatchProcessingService $batchService;
@@ -27,19 +26,22 @@ class BatchProcessingController extends Controller
         $this->batchService = $batchService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/batches",
-     *     operationId="batchProcessingIndex",
-     *     tags={"Batch Processing"},
-     *     summary="List batch jobs",
-     *     description="Returns the batch processing management page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/batches',
+            operationId: 'batchProcessingIndex',
+            tags: ['Batch Processing'],
+            summary: 'List batch jobs',
+            description: 'Returns the batch processing management page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -73,19 +75,22 @@ class BatchProcessingController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/batches/create",
-     *     operationId="batchProcessingCreate",
-     *     tags={"Batch Processing"},
-     *     summary="Show create batch form",
-     *     description="Shows the form to create a new batch job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/batches/create',
+            operationId: 'batchProcessingCreate',
+            tags: ['Batch Processing'],
+            summary: 'Show create batch form',
+            description: 'Shows the form to create a new batch job',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function create(Request $request)
     {
         $user = Auth::user();
@@ -100,19 +105,22 @@ class BatchProcessingController extends Controller
         return view('batch-processing.create', compact('accounts', 'template'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/batches",
-     *     operationId="batchProcessingStore",
-     *     tags={"Batch Processing"},
-     *     summary="Create a batch job",
-     *     description="Creates and queues a new batch processing job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/batches',
+            operationId: 'batchProcessingStore',
+            tags: ['Batch Processing'],
+            summary: 'Create a batch job',
+            description: 'Creates and queues a new batch processing job',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function store(Request $request)
     {
         $validated = $request->validate(
@@ -178,21 +186,25 @@ class BatchProcessingController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/batches/{id}",
-     *     operationId="batchProcessingShow",
-     *     tags={"Batch Processing"},
-     *     summary="Show batch job details",
-     *     description="Returns details of a specific batch job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/batches/{id}',
+            operationId: 'batchProcessingShow',
+            tags: ['Batch Processing'],
+            summary: 'Show batch job details',
+            description: 'Returns details of a specific batch job',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(BatchJob $batchJob)
     {
         // Ensure user owns this batch job
@@ -216,21 +228,25 @@ class BatchProcessingController extends Controller
         return view('batch-processing.show', compact('batchJob', 'stats'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/batches/{id}/cancel",
-     *     operationId="batchProcessingCancel",
-     *     tags={"Batch Processing"},
-     *     summary="Cancel a batch job",
-     *     description="Cancels a running or pending batch job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/batches/{id}/cancel',
+            operationId: 'batchProcessingCancel',
+            tags: ['Batch Processing'],
+            summary: 'Cancel a batch job',
+            description: 'Cancels a running or pending batch job',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function cancel(BatchJob $batchJob)
     {
         // Ensure user owns this batch job
@@ -252,21 +268,25 @@ class BatchProcessingController extends Controller
         return back()->with('success', 'Batch job cancelled');
     }
 
-    /**
-     * @OA\Post(
-     *     path="/batches/{id}/retry",
-     *     operationId="batchProcessingRetry",
-     *     tags={"Batch Processing"},
-     *     summary="Retry a failed batch job",
-     *     description="Retries a failed batch processing job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/batches/{id}/retry',
+            operationId: 'batchProcessingRetry',
+            tags: ['Batch Processing'],
+            summary: 'Retry a failed batch job',
+            description: 'Retries a failed batch processing job',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function retry(BatchJob $batchJob)
     {
         // Ensure user owns this batch job
@@ -305,21 +325,25 @@ class BatchProcessingController extends Controller
         return back()->with('success', "Retrying {$failedItems} failed items");
     }
 
-    /**
-     * @OA\Get(
-     *     path="/batches/{id}/download",
-     *     operationId="batchProcessingDownload",
-     *     tags={"Batch Processing"},
-     *     summary="Download batch results",
-     *     description="Downloads the results of a completed batch job",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/batches/{id}/download',
+            operationId: 'batchProcessingDownload',
+            tags: ['Batch Processing'],
+            summary: 'Download batch results',
+            description: 'Downloads the results of a completed batch job',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function download(BatchJob $batchJob)
     {
         // Ensure user owns this batch job

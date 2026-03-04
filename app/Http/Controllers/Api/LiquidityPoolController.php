@@ -9,14 +9,12 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Liquidity Pool",
- *     description="Liquidity pool management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Liquidity Pool',
+    description: 'Liquidity pool management endpoints'
+)]
 class LiquidityPoolController extends Controller
 {
     public function __construct(
@@ -24,33 +22,24 @@ class LiquidityPoolController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/pools",
-     *     tags={"Liquidity Pool"},
-     *     summary="Get all active liquidity pools",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of active pools",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="pools",          type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="pool_id",        type="string"),
-     * @OA\Property(property="base_currency",  type="string"),
-     * @OA\Property(property="quote_currency", type="string"),
-     * @OA\Property(property="tvl",            type="string"),
-     * @OA\Property(property="apy",            type="string")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/pools',
+            tags: ['Liquidity Pool'],
+            summary: 'Get all active liquidity pools'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of active pools',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'pools', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'pool_id', type: 'string'),
+        new OA\Property(property: 'base_currency', type: 'string'),
+        new OA\Property(property: 'quote_currency', type: 'string'),
+        new OA\Property(property: 'tvl', type: 'string'),
+        new OA\Property(property: 'apy', type: 'string'),
+        ])),
+        ])
+    )]
     public function index(): JsonResponse
     {
         // Use optimized batch method to avoid N+1 queries
@@ -63,26 +52,18 @@ class LiquidityPoolController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/pools/{poolId}",
-     *     tags={"Liquidity Pool"},
-     *     summary="Get pool details",
-     *
-     * @OA\Parameter(
-     *         name="poolId",
-     *         in="path",
-     *         required=true,
-     *
-     * @OA\Schema(type="string", format="uuid")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Pool details with metrics"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/pools/{poolId}',
+            tags: ['Liquidity Pool'],
+            summary: 'Get pool details',
+            parameters: [
+        new OA\Parameter(name: 'poolId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Pool details with metrics'
+    )]
     public function show(string $poolId): JsonResponse
     {
         $pool = $this->liquidityService->getPool($poolId);
@@ -100,36 +81,24 @@ class LiquidityPoolController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/pools",
-     *     tags={"Liquidity Pool"},
-     *     summary="Create a new liquidity pool",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"base_currency", "quote_currency"},
-     *
-     * @OA\Property(property="base_currency",  type="string", example="BTC"),
-     * @OA\Property(property="quote_currency", type="string", example="EUR"),
-     * @OA\Property(property="fee_rate",       type="string", example="0.003")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Pool created",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="pool_id",        type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/pools',
+            tags: ['Liquidity Pool'],
+            summary: 'Create a new liquidity pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['base_currency', 'quote_currency'], properties: [
+        new OA\Property(property: 'base_currency', type: 'string', example: 'BTC'),
+        new OA\Property(property: 'quote_currency', type: 'string', example: 'EUR'),
+        new OA\Property(property: 'fee_rate', type: 'string', example: '0.003'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Pool created',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'pool_id', type: 'string'),
+        ])
+    )]
     public function create(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -161,32 +130,22 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/add",
-     *     tags={"Liquidity Pool"},
-     *     summary="Add liquidity to a pool",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"pool_id", "base_amount", "quote_amount"},
-     *
-     * @OA\Property(property="pool_id",      type="string", format="uuid"),
-     * @OA\Property(property="base_amount",  type="string", example="0.1"),
-     * @OA\Property(property="quote_amount", type="string", example="4800"),
-     * @OA\Property(property="min_shares",   type="string", example="0")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Liquidity added"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/add',
+            tags: ['Liquidity Pool'],
+            summary: 'Add liquidity to a pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id', 'base_amount', 'quote_amount'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'base_amount', type: 'string', example: '0.1'),
+        new OA\Property(property: 'quote_amount', type: 'string', example: '4800'),
+        new OA\Property(property: 'min_shares', type: 'string', example: '0'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Liquidity added'
+    )]
     public function addLiquidity(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -224,32 +183,22 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/remove",
-     *     tags={"Liquidity Pool"},
-     *     summary="Remove liquidity from a pool",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"pool_id", "shares"},
-     *
-     * @OA\Property(property="pool_id",          type="string", format="uuid"),
-     * @OA\Property(property="shares",           type="string", example="100"),
-     * @OA\Property(property="min_base_amount",  type="string", example="0"),
-     * @OA\Property(property="min_quote_amount", type="string", example="0")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Liquidity removed"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/remove',
+            tags: ['Liquidity Pool'],
+            summary: 'Remove liquidity from a pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id', 'shares'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'shares', type: 'string', example: '100'),
+        new OA\Property(property: 'min_base_amount', type: 'string', example: '0'),
+        new OA\Property(property: 'min_quote_amount', type: 'string', example: '0'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Liquidity removed'
+    )]
     public function removeLiquidity(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -280,32 +229,22 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/swap",
-     *     tags={"Liquidity Pool"},
-     *     summary="Execute a swap through liquidity pool",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"pool_id", "input_currency", "input_amount"},
-     *
-     * @OA\Property(property="pool_id",           type="string", format="uuid"),
-     * @OA\Property(property="input_currency",    type="string", example="BTC"),
-     * @OA\Property(property="input_amount",      type="string", example="0.1"),
-     * @OA\Property(property="min_output_amount", type="string", example="4700")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Swap executed"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/swap',
+            tags: ['Liquidity Pool'],
+            summary: 'Execute a swap through liquidity pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id', 'input_currency', 'input_amount'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'input_currency', type: 'string', example: 'BTC'),
+        new OA\Property(property: 'input_amount', type: 'string', example: '0.1'),
+        new OA\Property(property: 'min_output_amount', type: 'string', example: '4700'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Swap executed'
+    )]
     public function swap(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -334,19 +273,16 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/positions",
-     *     tags={"Liquidity Pool"},
-     *     summary="Get user's liquidity positions",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="User's positions"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/positions',
+            tags: ['Liquidity Pool'],
+            summary: 'Get user\'s liquidity positions',
+            security: [['bearerAuth' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'User\'s positions'
+    )]
     public function positions(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -375,29 +311,19 @@ class LiquidityPoolController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/claim-rewards",
-     *     tags={"Liquidity Pool"},
-     *     summary="Claim pending rewards",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"pool_id"},
-     *
-     * @OA\Property(property="pool_id", type="string", format="uuid")
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Rewards claimed"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/claim-rewards',
+            tags: ['Liquidity Pool'],
+            summary: 'Claim pending rewards',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rewards claimed'
+    )]
     public function claimRewards(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -425,32 +351,27 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/il-protection/{positionId}",
-     *     tags={"Liquidity Pool"},
-     *     summary="Calculate impermanent loss for a position",
-     *     security={{"bearerAuth":{}}},
-     * @OA\Parameter(
-     *         name="positionId",
-     *         in="path",
-     *         required=true,
-     * @OA\Schema(type="integer")
-     *     ),
-     * @OA\Response(
-     *         response=200,
-     *         description="IL calculation details",
-     * @OA\JsonContent(
-     * @OA\Property(property="position_id",        type="integer"),
-     * @OA\Property(property="entry_price",        type="string"),
-     * @OA\Property(property="current_price",      type="string"),
-     * @OA\Property(property="impermanent_loss",   type="string"),
-     * @OA\Property(property="impermanent_loss_percent", type="string"),
-     * @OA\Property(property="is_protected",       type="boolean")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/il-protection/{positionId}',
+            tags: ['Liquidity Pool'],
+            summary: 'Calculate impermanent loss for a position',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'positionId', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'IL calculation details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'position_id', type: 'integer'),
+        new OA\Property(property: 'entry_price', type: 'string'),
+        new OA\Property(property: 'current_price', type: 'string'),
+        new OA\Property(property: 'impermanent_loss', type: 'string'),
+        new OA\Property(property: 'impermanent_loss_percent', type: 'string'),
+        new OA\Property(property: 'is_protected', type: 'boolean'),
+        ])
+    )]
     public function calculateImpermanentLoss(string $positionId, Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -464,29 +385,23 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/il-protection/enable",
-     *     tags={"Liquidity Pool"},
-     *     summary="Enable IL protection for a pool",
-     *     security={{"bearerAuth":{}}},
-     * @OA\RequestBody(
-     *         required=true,
-     * @OA\JsonContent(
-     *             required={"pool_id"},
-     * @OA\Property(property="pool_id",               type="string", format="uuid"),
-     * @OA\Property(property="protection_threshold",  type="string", example="0.02"),
-     * @OA\Property(property="max_coverage",          type="string", example="0.80"),
-     * @OA\Property(property="min_holding_hours",     type="integer", example=168),
-     * @OA\Property(property="fund_size",             type="string", example="100000")
-     *         )
-     *     ),
-     * @OA\Response(
-     *         response=200,
-     *         description="IL protection enabled"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/il-protection/enable',
+            tags: ['Liquidity Pool'],
+            summary: 'Enable IL protection for a pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'protection_threshold', type: 'string', example: '0.02'),
+        new OA\Property(property: 'max_coverage', type: 'string', example: '0.80'),
+        new OA\Property(property: 'min_holding_hours', type: 'integer', example: 168),
+        new OA\Property(property: 'fund_size', type: 'string', example: '100000'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'IL protection enabled'
+    )]
     public function enableImpermanentLossProtection(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -517,35 +432,27 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/liquidity/il-protection/process-claims",
-     *     tags={"Liquidity Pool"},
-     *     summary="Process IL protection claims for a pool",
-     *     security={{"bearerAuth":{}}},
-     * @OA\RequestBody(
-     *         required=true,
-     * @OA\JsonContent(
-     *             required={"pool_id"},
-     * @OA\Property(property="pool_id", type="string", format="uuid")
-     *         )
-     *     ),
-     * @OA\Response(
-     *         response=200,
-     *         description="Claims processed",
-     * @OA\JsonContent(
-     * @OA\Property(property="success", type="boolean"),
-     * @OA\Property(property="claims",  type="array",
-     * @OA\Items(
-     * @OA\Property(property="provider_id",    type="string"),
-     * @OA\Property(property="compensation",   type="string"),
-     * @OA\Property(property="compensation_currency", type="string")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/liquidity/il-protection/process-claims',
+            tags: ['Liquidity Pool'],
+            summary: 'Process IL protection claims for a pool',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['pool_id'], properties: [
+        new OA\Property(property: 'pool_id', type: 'string', format: 'uuid'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Claims processed',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean'),
+        new OA\Property(property: 'claims', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'provider_id', type: 'string'),
+        new OA\Property(property: 'compensation', type: 'string'),
+        new OA\Property(property: 'compensation_currency', type: 'string'),
+        ])),
+        ])
+    )]
     public function processImpermanentLossProtectionClaims(Request $request): JsonResponse
     {
         $this->middleware('auth:sanctum');
@@ -567,31 +474,26 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/il-protection/fund-requirements/{poolId}",
-     *     tags={"Liquidity Pool"},
-     *     summary="Get IL protection fund requirements",
-     *     security={{"bearerAuth":{}}},
-     * @OA\Parameter(
-     *         name="poolId",
-     *         in="path",
-     *         required=true,
-     * @OA\Schema(type="string", format="uuid")
-     *     ),
-     * @OA\Response(
-     *         response=200,
-     *         description="Fund requirements",
-     * @OA\JsonContent(
-     * @OA\Property(property="pool_id",                  type="string"),
-     * @OA\Property(property="total_liquidity_value",    type="string"),
-     * @OA\Property(property="protected_value",          type="string"),
-     * @OA\Property(property="max_potential_compensation", type="string"),
-     * @OA\Property(property="recommended_fund_size",    type="string")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/il-protection/fund-requirements/{poolId}',
+            tags: ['Liquidity Pool'],
+            summary: 'Get IL protection fund requirements',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'poolId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Fund requirements',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'pool_id', type: 'string'),
+        new OA\Property(property: 'total_liquidity_value', type: 'string'),
+        new OA\Property(property: 'protected_value', type: 'string'),
+        new OA\Property(property: 'max_potential_compensation', type: 'string'),
+        new OA\Property(property: 'recommended_fund_size', type: 'string'),
+        ])
+    )]
     public function getImpermanentLossProtectionFundRequirements(string $poolId): JsonResponse
     {
         try {
@@ -603,37 +505,30 @@ class LiquidityPoolController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/liquidity/analytics/{poolId}",
-     *     tags={"Liquidity Pool"},
-     *     summary="Get pool analytics and performance metrics",
-     * @OA\Parameter(
-     *         name="poolId",
-     *         in="path",
-     *         required=true,
-     * @OA\Schema(type="string", format="uuid")
-     *     ),
-     * @OA\Response(
-     *         response=200,
-     *         description="Pool analytics",
-     * @OA\JsonContent(
-     * @OA\Property(property="pool_id",        type="string"),
-     * @OA\Property(property="tvl",            type="string"),
-     * @OA\Property(property="volume_24h",     type="string"),
-     * @OA\Property(property="fees_24h",       type="string"),
-     * @OA\Property(property="apy",            type="string"),
-     * @OA\Property(property="provider_count", type="integer"),
-     * @OA\Property(property="price_history",  type="array",
-     * @OA\Items(
-     * @OA\Property(property="timestamp", type="string"),
-     * @OA\Property(property="price",     type="string")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/liquidity/analytics/{poolId}',
+            tags: ['Liquidity Pool'],
+            summary: 'Get pool analytics and performance metrics',
+            parameters: [
+        new OA\Parameter(name: 'poolId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Pool analytics',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'pool_id', type: 'string'),
+        new OA\Property(property: 'tvl', type: 'string'),
+        new OA\Property(property: 'volume_24h', type: 'string'),
+        new OA\Property(property: 'fees_24h', type: 'string'),
+        new OA\Property(property: 'apy', type: 'string'),
+        new OA\Property(property: 'provider_count', type: 'integer'),
+        new OA\Property(property: 'price_history', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'timestamp', type: 'string'),
+        new OA\Property(property: 'price', type: 'string'),
+        ])),
+        ])
+    )]
     public function getPoolAnalytics(string $poolId): JsonResponse
     {
         try {

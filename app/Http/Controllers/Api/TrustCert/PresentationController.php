@@ -9,14 +9,13 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Throwable;
 
-/**
- * @OA\Tag(
- *     name="TrustCert Presentation",
- *     description="Generate and verify TrustCert credential presentations"
- * )
- */
+#[OA\Tag(
+    name: 'TrustCert Presentation',
+    description: 'Generate and verify TrustCert credential presentations'
+)]
 class PresentationController extends Controller
 {
     public function __construct(
@@ -29,48 +28,43 @@ class PresentationController extends Controller
      *
      * Creates a time-limited token that can be shared via QR code or deep link
      * to prove certificate ownership without revealing PII.
-     *
-     * @OA\Post(
-     *     path="/api/v1/trustcert/{certificateId}/present",
-     *     summary="Generate verifiable presentation",
-     *     tags={"TrustCert Presentation"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="certificateId",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             @OA\Property(
-     *                 property="requested_claims",
-     *                 type="array",
-     *                 @OA\Items(type="string"),
-     *                 example={"certificate_type", "valid_until"}
-     *             ),
-     *             @OA\Property(property="validity_minutes", type="integer", example=15)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Presentation generated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="presentation_token", type="string"),
-     *                 @OA\Property(property="qr_code_data", type="string"),
-     *                 @OA\Property(property="deep_link", type="string"),
-     *                 @OA\Property(property="verification_url", type="string"),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time"),
-     *                 @OA\Property(property="claims", type="object")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid certificate"),
-     *     @OA\Response(response=404, description="Certificate not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/trustcert/{certificateId}/present',
+        summary: 'Generate verifiable presentation',
+        tags: ['TrustCert Presentation'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'certificateId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'requested_claims', type: 'array', example: ['certificate_type', 'valid_until'], items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'validity_minutes', type: 'integer', example: 15),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Presentation generated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'presentation_token', type: 'string'),
+        new OA\Property(property: 'qr_code_data', type: 'string'),
+        new OA\Property(property: 'deep_link', type: 'string'),
+        new OA\Property(property: 'verification_url', type: 'string'),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'claims', type: 'object'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid certificate'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Certificate not found'
+    )]
     public function present(Request $request, string $certificateId): JsonResponse
     {
         $validated = $request->validate([
@@ -111,35 +105,31 @@ class PresentationController extends Controller
      *
      * This endpoint can be called without authentication to verify a presentation
      * shared via QR code or deep link.
-     *
-     * @OA\Get(
-     *     path="/api/v1/trustcert/verify/{token}",
-     *     summary="Verify presentation token",
-     *     tags={"TrustCert Presentation"},
-     *     @OA\Parameter(
-     *         name="token",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Verification result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean"),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="valid", type="boolean"),
-     *                 @OA\Property(property="certificate_type", type="string", nullable=true),
-     *                 @OA\Property(property="trust_level", type="string", nullable=true),
-     *                 @OA\Property(property="claims", type="object"),
-     *                 @OA\Property(property="issuer", type="string", nullable=true),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time", nullable=true),
-     *                 @OA\Property(property="error", type="string", nullable=true)
-     *             )
-     *         )
-     *     )
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/trustcert/verify/{token}',
+        summary: 'Verify presentation token',
+        tags: ['TrustCert Presentation'],
+        parameters: [
+        new OA\Parameter(name: 'token', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Verification result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean'),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'valid', type: 'boolean'),
+        new OA\Property(property: 'certificate_type', type: 'string', nullable: true),
+        new OA\Property(property: 'trust_level', type: 'string', nullable: true),
+        new OA\Property(property: 'claims', type: 'object'),
+        new OA\Property(property: 'issuer', type: 'string', nullable: true),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', nullable: true),
+        new OA\Property(property: 'error', type: 'string', nullable: true),
+        ]),
+        ])
+    )]
     public function verify(string $token): JsonResponse
     {
         try {

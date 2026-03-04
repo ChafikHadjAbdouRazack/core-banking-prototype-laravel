@@ -6,13 +6,12 @@ use App\Domain\Cgo\Services\CoinbaseCommerceService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Webhooks",
- *     description="Payment processor webhook endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Webhooks',
+    description: 'Payment processor webhook endpoints'
+)]
 class CoinbaseWebhookController extends Controller
 {
     protected CoinbaseCommerceService $coinbaseService;
@@ -22,18 +21,21 @@ class CoinbaseWebhookController extends Controller
         $this->coinbaseService = $coinbaseService;
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/webhooks/coinbase-commerce",
-     *     operationId="webhooksHandleWebhook",
-     *     tags={"Webhooks"},
-     *     summary="Handle Coinbase Commerce webhook",
-     *     description="Processes incoming Coinbase Commerce payment webhooks",
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/webhooks/coinbase-commerce',
+            operationId: 'webhooksHandleWebhook',
+            tags: ['Webhooks'],
+            summary: 'Handle Coinbase Commerce webhook',
+            description: 'Processes incoming Coinbase Commerce payment webhooks'
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function handleWebhook(Request $request)
     {
         // Signature validation is now handled by middleware

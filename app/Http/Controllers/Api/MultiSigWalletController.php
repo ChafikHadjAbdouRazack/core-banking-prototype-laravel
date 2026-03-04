@@ -19,13 +19,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Multi-Sig Wallets",
- *     description="Multi-signature wallet management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Multi-Sig Wallets',
+    description: 'Multi-signature wallet management endpoints'
+)]
 class MultiSigWalletController extends Controller
 {
     public function __construct(
@@ -36,25 +35,26 @@ class MultiSigWalletController extends Controller
 
     /**
      * Create a new multi-signature wallet.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/wallets",
-     *     summary="Create a multi-signature wallet",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "chain", "required_signatures", "total_signers"},
-     *             @OA\Property(property="name", type="string", example="Corporate Treasury"),
-     *             @OA\Property(property="chain", type="string", example="ethereum"),
-     *             @OA\Property(property="required_signatures", type="integer", example=2),
-     *             @OA\Property(property="total_signers", type="integer", example=3)
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Wallet created successfully"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/wallets',
+        summary: 'Create a multi-signature wallet',
+        tags: ['Multi-Sig Wallets'],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'chain', 'required_signatures', 'total_signers'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Corporate Treasury'),
+        new OA\Property(property: 'chain', type: 'string', example: 'ethereum'),
+        new OA\Property(property: 'required_signatures', type: 'integer', example: 2),
+        new OA\Property(property: 'total_signers', type: 'integer', example: 3),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Wallet created successfully'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function createWallet(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -99,15 +99,19 @@ class MultiSigWalletController extends Controller
 
     /**
      * List user's multi-signature wallets.
-     *
-     * @OA\Get(
-     *     path="/api/multi-sig/wallets",
-     *     summary="List multi-signature wallets",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="chain", in="query", required=false, @OA\Schema(type="string")),
-     *     @OA\Response(response=200, description="List of wallets")
-     * )
      */
+    #[OA\Get(
+        path: '/api/multi-sig/wallets',
+        summary: 'List multi-signature wallets',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'chain', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of wallets'
+    )]
     public function listWallets(Request $request): JsonResponse
     {
         /** @var User $user */
@@ -125,16 +129,23 @@ class MultiSigWalletController extends Controller
 
     /**
      * Get multi-signature wallet details.
-     *
-     * @OA\Get(
-     *     path="/api/multi-sig/wallets/{id}",
-     *     summary="Get wallet details",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Wallet details"),
-     *     @OA\Response(response=404, description="Wallet not found")
-     * )
      */
+    #[OA\Get(
+        path: '/api/multi-sig/wallets/{id}',
+        summary: 'Get wallet details',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Wallet details'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Wallet not found'
+    )]
     public function getWallet(Request $request, string $id): JsonResponse
     {
         $wallet = $this->walletService->getWalletWithDetails($id);
@@ -158,27 +169,30 @@ class MultiSigWalletController extends Controller
 
     /**
      * Add a signer to a multi-signature wallet.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/wallets/{id}/signers",
-     *     summary="Add a signer to wallet",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"signer_type", "public_key"},
-     *             @OA\Property(property="signer_type", type="string", example="hardware_ledger"),
-     *             @OA\Property(property="public_key", type="string"),
-     *             @OA\Property(property="address", type="string"),
-     *             @OA\Property(property="hardware_wallet_association_id", type="string", format="uuid"),
-     *             @OA\Property(property="label", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Signer added successfully"),
-     *     @OA\Response(response=404, description="Wallet not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/wallets/{id}/signers',
+        summary: 'Add a signer to wallet',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['signer_type', 'public_key'], properties: [
+        new OA\Property(property: 'signer_type', type: 'string', example: 'hardware_ledger'),
+        new OA\Property(property: 'public_key', type: 'string'),
+        new OA\Property(property: 'address', type: 'string'),
+        new OA\Property(property: 'hardware_wallet_association_id', type: 'string', format: 'uuid'),
+        new OA\Property(property: 'label', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Signer added successfully'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Wallet not found'
+    )]
     public function addSigner(Request $request, string $id): JsonResponse
     {
         $wallet = MultiSigWallet::find($id);
@@ -243,24 +257,27 @@ class MultiSigWalletController extends Controller
 
     /**
      * Create an approval request.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/wallets/{id}/approval-requests",
-     *     summary="Create an approval request",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"transaction_data"},
-     *             @OA\Property(property="transaction_data", type="object"),
-     *             @OA\Property(property="request_type", type="string", example="transaction")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Approval request created"),
-     *     @OA\Response(response=404, description="Wallet not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/wallets/{id}/approval-requests',
+        summary: 'Create an approval request',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['transaction_data'], properties: [
+        new OA\Property(property: 'transaction_data', type: 'object'),
+        new OA\Property(property: 'request_type', type: 'string', example: 'transaction'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 201,
+        description: 'Approval request created'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Wallet not found'
+    )]
     public function createApprovalRequest(Request $request, string $id): JsonResponse
     {
         $wallet = MultiSigWallet::find($id);
@@ -313,24 +330,27 @@ class MultiSigWalletController extends Controller
 
     /**
      * Submit a signature for an approval request.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/approval-requests/{id}/approve",
-     *     summary="Submit signature for approval",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"signature", "public_key"},
-     *             @OA\Property(property="signature", type="string"),
-     *             @OA\Property(property="public_key", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Signature submitted"),
-     *     @OA\Response(response=404, description="Request not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/approval-requests/{id}/approve',
+        summary: 'Submit signature for approval',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['signature', 'public_key'], properties: [
+        new OA\Property(property: 'signature', type: 'string'),
+        new OA\Property(property: 'public_key', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Signature submitted'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Request not found'
+    )]
     public function submitApproval(Request $request, string $id): JsonResponse
     {
         $approvalRequest = MultiSigApprovalRequest::with('wallet')->find($id);
@@ -380,21 +400,26 @@ class MultiSigWalletController extends Controller
 
     /**
      * Reject an approval request.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/approval-requests/{id}/reject",
-     *     summary="Reject an approval request",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             @OA\Property(property="reason", type="string")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Request rejected"),
-     *     @OA\Response(response=404, description="Request not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/approval-requests/{id}/reject',
+        summary: 'Reject an approval request',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'reason', type: 'string'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Request rejected'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Request not found'
+    )]
     public function rejectApproval(Request $request, string $id): JsonResponse
     {
         $approvalRequest = MultiSigApprovalRequest::with('wallet')->find($id);
@@ -424,16 +449,23 @@ class MultiSigWalletController extends Controller
 
     /**
      * Broadcast a fully-signed transaction.
-     *
-     * @OA\Post(
-     *     path="/api/multi-sig/approval-requests/{id}/broadcast",
-     *     summary="Broadcast the signed transaction",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string", format="uuid")),
-     *     @OA\Response(response=200, description="Transaction broadcast"),
-     *     @OA\Response(response=404, description="Request not found")
-     * )
      */
+    #[OA\Post(
+        path: '/api/multi-sig/approval-requests/{id}/broadcast',
+        summary: 'Broadcast the signed transaction',
+        tags: ['Multi-Sig Wallets'],
+        parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction broadcast'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Request not found'
+    )]
     public function broadcastTransaction(Request $request, string $id): JsonResponse
     {
         $approvalRequest = MultiSigApprovalRequest::with('wallet')->find($id);
@@ -469,14 +501,16 @@ class MultiSigWalletController extends Controller
 
     /**
      * Get supported configuration.
-     *
-     * @OA\Get(
-     *     path="/api/multi-sig/supported",
-     *     summary="Get supported multi-sig configuration",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Response(response=200, description="Supported configuration")
-     * )
      */
+    #[OA\Get(
+        path: '/api/multi-sig/supported',
+        summary: 'Get supported multi-sig configuration',
+        tags: ['Multi-Sig Wallets']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Supported configuration'
+    )]
     public function getSupported(): JsonResponse
     {
         return response()->json([
@@ -491,14 +525,16 @@ class MultiSigWalletController extends Controller
 
     /**
      * Get pending approval requests for current user.
-     *
-     * @OA\Get(
-     *     path="/api/multi-sig/pending-approvals",
-     *     summary="Get pending approval requests",
-     *     tags={"Multi-Sig Wallets"},
-     *     @OA\Response(response=200, description="List of pending approvals")
-     * )
      */
+    #[OA\Get(
+        path: '/api/multi-sig/pending-approvals',
+        summary: 'Get pending approval requests',
+        tags: ['Multi-Sig Wallets']
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of pending approvals'
+    )]
     public function getPendingApprovals(Request $request): JsonResponse
     {
         /** @var User $user */

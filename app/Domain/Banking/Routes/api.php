@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\WorkflowMonitoringController;
 use Illuminate\Support\Facades\Route;
 
 // Banking operations endpoints
-Route::middleware('auth:sanctum', 'check.token.expiration')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     // Batch Processing endpoints
     Route::prefix('batch-operations')->group(function () {
         Route::post('/execute', [BatchProcessingController::class, 'executeBatch']);

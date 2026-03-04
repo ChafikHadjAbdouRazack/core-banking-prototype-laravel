@@ -10,13 +10,12 @@ use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Baskets",
- *     description="Basket asset management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Baskets',
+    description: 'Basket asset management endpoints'
+)]
 class BasketController extends Controller
 {
     public function __construct(
@@ -25,43 +24,21 @@ class BasketController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/baskets",
-     *     operationId="listBaskets",
-     *     tags={"Baskets"},
-     *     summary="List all basket assets",
-     *
-     * @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Filter by basket type",
-     *         required=false,
-     *
-     * @OA\Schema(type="string",                         enum={"fixed", "dynamic"})
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="active",
-     *         in="query",
-     *         description="Filter by active status",
-     *         required=false,
-     *
-     * @OA\Schema(type="boolean")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="List of basket assets",
-     *
-     * @OA\JsonContent(
-     *             type="array",
-     *
-     * @OA\Items(ref="#/components/schemas/BasketAsset")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/baskets',
+            operationId: 'listBaskets',
+            tags: ['Baskets'],
+            summary: 'List all basket assets',
+            parameters: [
+        new OA\Parameter(name: 'type', in: 'query', description: 'Filter by basket type', required: false, schema: new OA\Schema(type: 'string', enum: ['fixed', 'dynamic'])),
+        new OA\Parameter(name: 'active', in: 'query', description: 'Filter by active status', required: false, schema: new OA\Schema(type: 'boolean')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of basket assets',
+        content: new OA\JsonContent(type: 'array', items: new OA\Items(ref: '#/components/schemas/BasketAsset'))
+    )]
     public function index(Request $request): JsonResponse
     {
         $query = BasketAsset::with([
@@ -110,35 +87,24 @@ class BasketController extends Controller
         return response()->json($baskets);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/baskets/{code}",
-     *     operationId="getBasket",
-     *     tags={"Baskets"},
-     *     summary="Get basket details",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         description="Basket code",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Basket details",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/BasketAsset")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=404,
-     *         description="Basket not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/baskets/{code}',
+            operationId: 'getBasket',
+            tags: ['Baskets'],
+            summary: 'Get basket details',
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', description: 'Basket code', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Basket details',
+        content: new OA\JsonContent(ref: '#/components/schemas/BasketAsset')
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Basket not found'
+    )]
     public function show(string $code): JsonResponse
     {
         $basket = BasketAsset::with(
@@ -181,55 +147,35 @@ class BasketController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/baskets",
-     *     operationId="createBasket",
-     *     tags={"Baskets"},
-     *     summary="Create a new basket",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\RequestBody(
-     *         required=true,
-     *
-     * @OA\JsonContent(
-     *             required={"code", "name", "components"},
-     *
-     * @OA\Property(property="code",                           type="string", example="STABLE_BASKET"),
-     * @OA\Property(property="name",                           type="string", example="Stable Currency Basket"),
-     * @OA\Property(property="description",                    type="string"),
-     * @OA\Property(property="type",                           type="string", enum={"fixed", "dynamic"}, default="fixed"),
-     * @OA\Property(property="rebalance_frequency",            type="string", enum={"daily", "weekly", "monthly", "quarterly", "never"}, default="never"),
-     * @OA\Property(
-     *                 property="components",
-     *                 type="array",
-     *
-     * @OA\Items(
-     *                     type="object",
-     *                     required={"asset_code", "weight"},
-     *
-     * @OA\Property(property="asset_code",                     type="string", example="USD"),
-     * @OA\Property(property="weight",                         type="number", format="float", example=40.0),
-     * @OA\Property(property="min_weight",                     type="number", format="float", example=35.0),
-     * @OA\Property(property="max_weight",                     type="number", format="float", example=45.0)
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *
-     * @OA\Response(
-     *         response=201,
-     *         description="Basket created successfully",
-     *
-     * @OA\JsonContent(ref="#/components/schemas/BasketAsset")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=422,
-     *         description="Validation error"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/baskets',
+            operationId: 'createBasket',
+            tags: ['Baskets'],
+            summary: 'Create a new basket',
+            security: [['bearerAuth' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['code', 'name', 'components'], properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'STABLE_BASKET'),
+        new OA\Property(property: 'name', type: 'string', example: 'Stable Currency Basket'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'type', type: 'string', enum: ['fixed', 'dynamic'], default: 'fixed'),
+        new OA\Property(property: 'rebalance_frequency', type: 'string', enum: ['daily', 'weekly', 'monthly', 'quarterly', 'never'], default: 'never'),
+        new OA\Property(property: 'components', type: 'array', items: new OA\Items(type: 'object', required: ['asset_code', 'weight'], properties: [
+        new OA\Property(property: 'asset_code', type: 'string', example: 'USD'),
+        new OA\Property(property: 'weight', type: 'number', format: 'float', example: 40.0),
+        new OA\Property(property: 'min_weight', type: 'number', format: 'float', example: 35.0),
+        new OA\Property(property: 'max_weight', type: 'number', format: 'float', example: 45.0),
+        ])),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Basket created successfully',
+        content: new OA\JsonContent(ref: '#/components/schemas/BasketAsset')
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate(
@@ -313,36 +259,25 @@ class BasketController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/baskets/{code}/value",
-     *     operationId="getBasketValue",
-     *     tags={"Baskets"},
-     *     summary="Get current basket value",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         description="Basket code",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Current basket value",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="basket_code",      type="string"),
-     * @OA\Property(property="value",            type="number"),
-     * @OA\Property(property="calculated_at",    type="string", format="date-time"),
-     * @OA\Property(property="component_values", type="object")
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/baskets/{code}/value',
+            operationId: 'getBasketValue',
+            tags: ['Baskets'],
+            summary: 'Get current basket value',
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', description: 'Basket code', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Current basket value',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'basket_code', type: 'string'),
+        new OA\Property(property: 'value', type: 'number'),
+        new OA\Property(property: 'calculated_at', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'component_values', type: 'object'),
+        ])
+    )]
     public function getValue(string $code): JsonResponse
     {
         $basket = BasketAsset::where('code', $code)->firstOrFail();
@@ -358,45 +293,26 @@ class BasketController extends Controller
         );
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/v2/baskets/{code}/rebalance",
-     *     operationId="rebalanceBasket",
-     *     tags={"Baskets"},
-     *     summary="Trigger basket rebalancing",
-     *     security={{"bearerAuth":{}}},
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         description="Basket code",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="simulate",
-     *         in="query",
-     *         description="Simulate rebalancing without executing",
-     *         required=false,
-     *
-     * @OA\Schema(type="boolean",           default=false)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Rebalancing result",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="status",      type="string"),
-     * @OA\Property(property="basket",      type="string"),
-     * @OA\Property(property="adjustments", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/v2/baskets/{code}/rebalance',
+            operationId: 'rebalanceBasket',
+            tags: ['Baskets'],
+            summary: 'Trigger basket rebalancing',
+            security: [['bearerAuth' => []]],
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', description: 'Basket code', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'simulate', in: 'query', description: 'Simulate rebalancing without executing', required: false, schema: new OA\Schema(type: 'boolean', default: false)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Rebalancing result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'basket', type: 'string'),
+        new OA\Property(property: 'adjustments', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function rebalance(Request $request, string $code): JsonResponse
     {
         $basket = BasketAsset::where('code', $code)->firstOrFail();
@@ -421,37 +337,20 @@ class BasketController extends Controller
         return response()->json($result);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/baskets/{code}/history",
-     *     operationId="getBasketHistory",
-     *     tags={"Baskets"},
-     *     summary="Get basket value history",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         description="Basket code",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="days",
-     *         in="query",
-     *         description="Number of days of history",
-     *         required=false,
-     *
-     * @OA\Schema(type="integer", default=30)
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Basket value history"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/baskets/{code}/history',
+            operationId: 'getBasketHistory',
+            tags: ['Baskets'],
+            summary: 'Get basket value history',
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', description: 'Basket code', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'days', in: 'query', description: 'Number of days of history', required: false, schema: new OA\Schema(type: 'integer', default: 30)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Basket value history'
+    )]
     public function getHistory(Request $request, string $code): JsonResponse
     {
         $basket = BasketAsset::where('code', $code)->firstOrFail();
@@ -475,37 +374,20 @@ class BasketController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/v2/baskets/{code}/performance",
-     *     operationId="getBasketPerformanceMetrics",
-     *     tags={"Baskets"},
-     *     summary="Get basket performance metrics",
-     *
-     * @OA\Parameter(
-     *         name="code",
-     *         in="path",
-     *         description="Basket code",
-     *         required=true,
-     *
-     * @OA\Schema(type="string")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         description="Performance period",
-     *         required=false,
-     *
-     * @OA\Schema(type="string", enum={"1d", "7d", "30d", "90d", "1y"}, default="30d")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Basket performance metrics"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/v2/baskets/{code}/performance',
+            operationId: 'getBasketPerformanceMetrics',
+            tags: ['Baskets'],
+            summary: 'Get basket performance metrics',
+            parameters: [
+        new OA\Parameter(name: 'code', in: 'path', description: 'Basket code', required: true, schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'period', in: 'query', description: 'Performance period', required: false, schema: new OA\Schema(type: 'string', enum: ['1d', '7d', '30d', '90d', '1y'], default: '30d')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Basket performance metrics'
+    )]
     public function getPerformance(Request $request, string $code): JsonResponse
     {
         $basket = BasketAsset::where('code', $code)->firstOrFail();

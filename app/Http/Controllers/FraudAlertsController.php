@@ -6,28 +6,30 @@ use App\Domain\Fraud\Models\FraudCase;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Fraud Alerts",
- *     description="Fraud alert monitoring and management"
- * )
- */
+#[OA\Tag(
+    name: 'Fraud Alerts',
+    description: 'Fraud alert monitoring and management'
+)]
 class FraudAlertsController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/fraud-alerts",
-     *     operationId="fraudAlertsIndex",
-     *     tags={"Fraud Alerts"},
-     *     summary="List fraud alerts",
-     *     description="Returns the fraud alerts dashboard",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fraud-alerts',
+            operationId: 'fraudAlertsIndex',
+            tags: ['Fraud Alerts'],
+            summary: 'List fraud alerts',
+            description: 'Returns the fraud alerts dashboard',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -131,21 +133,25 @@ class FraudAlertsController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/fraud-alerts/{id}",
-     *     operationId="fraudAlertsShow",
-     *     tags={"Fraud Alerts"},
-     *     summary="Show fraud alert details",
-     *     description="Returns details of a specific fraud alert",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fraud-alerts/{id}',
+            operationId: 'fraudAlertsShow',
+            tags: ['Fraud Alerts'],
+            summary: 'Show fraud alert details',
+            description: 'Returns details of a specific fraud alert',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function show(FraudCase $fraudCase)
     {
         $user = Auth::user();
@@ -164,21 +170,25 @@ class FraudAlertsController extends Controller
         return view('fraud.alerts.show', compact('fraudCase'));
     }
 
-    /**
-     * @OA\Post(
-     *     path="/fraud-alerts/{id}/status",
-     *     operationId="fraudAlertsUpdateStatus",
-     *     tags={"Fraud Alerts"},
-     *     summary="Update fraud alert status",
-     *     description="Updates the status of a fraud alert",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/fraud-alerts/{id}/status',
+            operationId: 'fraudAlertsUpdateStatus',
+            tags: ['Fraud Alerts'],
+            summary: 'Update fraud alert status',
+            description: 'Updates the status of a fraud alert',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function updateStatus(Request $request, FraudCase $fraudCase)
     {
         $this->authorize('manage_fraud_cases');
@@ -203,19 +213,22 @@ class FraudAlertsController extends Controller
             ->with('success', 'Fraud case status updated successfully.');
     }
 
-    /**
-     * @OA\Get(
-     *     path="/fraud-alerts/export",
-     *     operationId="fraudAlertsExport",
-     *     tags={"Fraud Alerts"},
-     *     summary="Export fraud alerts",
-     *     description="Exports fraud alerts data",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/fraud-alerts/export',
+            operationId: 'fraudAlertsExport',
+            tags: ['Fraud Alerts'],
+            summary: 'Export fraud alerts',
+            description: 'Exports fraud alerts data',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function export(Request $request)
     {
         $this->authorize('export_fraud_data');

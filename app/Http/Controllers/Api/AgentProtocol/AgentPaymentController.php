@@ -14,14 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use OpenApi\Annotations as OA;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="Agent Protocol - Payments",
- *     description="Agent payment initiation and management endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'Agent Protocol - Payments',
+    description: 'Agent payment initiation and management endpoints'
+)]
 class AgentPaymentController extends Controller
 {
     public function __construct(
@@ -30,50 +28,49 @@ class AgentPaymentController extends Controller
     ) {
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/payments",
-     *     operationId="initiateAgentPayment",
-     *     tags={"Agent Protocol - Payments"},
-     *     summary="Initiate a payment from an agent",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Sender agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"to_agent_did", "amount", "currency"},
-     *             @OA\Property(property="to_agent_did", type="string", example="did:finaegis:agent:abc123"),
-     *             @OA\Property(property="amount", type="number", format="float", example=100.50),
-     *             @OA\Property(property="currency", type="string", example="USD"),
-     *             @OA\Property(property="description", type="string", example="Payment for service"),
-     *             @OA\Property(property="escrow_required", type="boolean", example=false),
-     *             @OA\Property(property="metadata", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Payment initiated",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="transaction_id", type="string"),
-     *                 @OA\Property(property="status", type="string"),
-     *                 @OA\Property(property="amount", type="number"),
-     *                 @OA\Property(property="currency", type="string")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=400, description="Invalid request"),
-     *     @OA\Response(response=404, description="Agent not found"),
-     *     @OA\Response(response=422, description="Insufficient balance")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/payments',
+            operationId: 'initiateAgentPayment',
+            tags: ['Agent Protocol - Payments'],
+            summary: 'Initiate a payment from an agent',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Sender agent DID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['to_agent_did', 'amount', 'currency'], properties: [
+        new OA\Property(property: 'to_agent_did', type: 'string', example: 'did:finaegis:agent:abc123'),
+        new OA\Property(property: 'amount', type: 'number', format: 'float', example: 100.50),
+        new OA\Property(property: 'currency', type: 'string', example: 'USD'),
+        new OA\Property(property: 'description', type: 'string', example: 'Payment for service'),
+        new OA\Property(property: 'escrow_required', type: 'boolean', example: false),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Payment initiated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'transaction_id', type: 'string'),
+        new OA\Property(property: 'status', type: 'string'),
+        new OA\Property(property: 'amount', type: 'number'),
+        new OA\Property(property: 'currency', type: 'string'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid request'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Agent not found'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Insufficient balance'
+    )]
     public function initiatePayment(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([
@@ -190,38 +187,29 @@ class AgentPaymentController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/payments/{transactionId}",
-     *     operationId="getAgentPaymentStatus",
-     *     tags={"Agent Protocol - Payments"},
-     *     summary="Get payment status",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="transactionId",
-     *         in="path",
-     *         required=true,
-     *         description="Transaction ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Payment status",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(response=404, description="Payment not found")
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/payments/{transactionId}',
+            operationId: 'getAgentPaymentStatus',
+            tags: ['Agent Protocol - Payments'],
+            summary: 'Get payment status',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'transactionId', in: 'path', required: true, description: 'Transaction ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Payment status',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Payment not found'
+    )]
     public function getPaymentStatus(string $did, string $transactionId): JsonResponse
     {
         try {
@@ -286,32 +274,29 @@ class AgentPaymentController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/payments/{transactionId}/confirm",
-     *     operationId="confirmAgentPayment",
-     *     tags={"Agent Protocol - Payments"},
-     *     summary="Confirm a pending payment",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="transactionId",
-     *         in="path",
-     *         required=true,
-     *         description="Transaction ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Response(response=200, description="Payment confirmed"),
-     *     @OA\Response(response=400, description="Cannot confirm payment"),
-     *     @OA\Response(response=404, description="Payment not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/payments/{transactionId}/confirm',
+            operationId: 'confirmAgentPayment',
+            tags: ['Agent Protocol - Payments'],
+            summary: 'Confirm a pending payment',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'transactionId', in: 'path', required: true, description: 'Transaction ID', schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Payment confirmed'
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Cannot confirm payment'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Payment not found'
+    )]
     public function confirmPayment(Request $request, string $did, string $transactionId): JsonResponse
     {
         try {
@@ -386,37 +371,32 @@ class AgentPaymentController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/agent-protocol/agents/{did}/payments/{transactionId}/cancel",
-     *     operationId="cancelAgentPayment",
-     *     tags={"Agent Protocol - Payments"},
-     *     summary="Cancel a pending payment",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="transactionId",
-     *         in="path",
-     *         required=true,
-     *         description="Transaction ID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             @OA\Property(property="reason", type="string", example="User requested cancellation")
-     *         )
-     *     ),
-     *     @OA\Response(response=200, description="Payment cancelled"),
-     *     @OA\Response(response=400, description="Cannot cancel payment"),
-     *     @OA\Response(response=404, description="Payment not found")
-     * )
-     */
+        #[OA\Post(
+            path: '/api/agent-protocol/agents/{did}/payments/{transactionId}/cancel',
+            operationId: 'cancelAgentPayment',
+            tags: ['Agent Protocol - Payments'],
+            summary: 'Cancel a pending payment',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'transactionId', in: 'path', required: true, description: 'Transaction ID', schema: new OA\Schema(type: 'string')),
+        ],
+            requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'reason', type: 'string', example: 'User requested cancellation'),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Payment cancelled'
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Cannot cancel payment'
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Payment not found'
+    )]
     public function cancelPayment(Request $request, string $did, string $transactionId): JsonResponse
     {
         $validated = $request->validate([
@@ -500,48 +480,27 @@ class AgentPaymentController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/agent-protocol/agents/{did}/payments",
-     *     operationId="listAgentPayments",
-     *     tags={"Agent Protocol - Payments"},
-     *     summary="List payments for an agent",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="did",
-     *         in="path",
-     *         required=true,
-     *         description="Agent DID",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="status",
-     *         in="query",
-     *         description="Filter by status",
-     *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="type",
-     *         in="query",
-     *         description="Filter by type (sent/received)",
-     *         @OA\Schema(type="string", enum={"sent", "received", "all"})
-     *     ),
-     *     @OA\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="Number of results",
-     *         @OA\Schema(type="integer", default=20)
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of payments",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array", @OA\Items(type="object"))
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/agent-protocol/agents/{did}/payments',
+            operationId: 'listAgentPayments',
+            tags: ['Agent Protocol - Payments'],
+            summary: 'List payments for an agent',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'did', in: 'path', required: true, description: 'Agent DID', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'status', in: 'query', description: 'Filter by status', schema: new OA\Schema(type: 'string')),
+        new OA\Parameter(name: 'type', in: 'query', description: 'Filter by type (sent/received)', schema: new OA\Schema(type: 'string', enum: ['sent', 'received', 'all'])),
+        new OA\Parameter(name: 'limit', in: 'query', description: 'Number of results', schema: new OA\Schema(type: 'integer', default: 20)),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of payments',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+        ])
+    )]
     public function listPayments(Request $request, string $did): JsonResponse
     {
         $validated = $request->validate([

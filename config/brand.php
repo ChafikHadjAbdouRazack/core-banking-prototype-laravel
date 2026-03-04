@@ -43,8 +43,8 @@ return [
     |
     */
 
-    'show_promo_pages' => env('APP_ENV') !== 'production',
+    'show_promo_pages' => env('SHOW_PROMO_PAGES', true),
 
-    'show_api_docs_publicly' => env('APP_ENV') !== 'production',
+    'show_api_docs_publicly' => env('SHOW_API_DOCS_PUBLICLY', true),
 
 ];

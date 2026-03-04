@@ -12,59 +12,49 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="GCU",
- *     description="Global Currency Unit specific endpoints"
- * )
- */
+#[OA\Tag(
+    name: 'GCU',
+    description: 'Global Currency Unit specific endpoints'
+)]
 class GCUController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/gcu",
-     *     operationId="getGCUInfo",
-     *     tags={"GCU"},
-     *     summary="Get GCU information",
-     *     description="Get current information about the Global Currency Unit including composition and value",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="GCU information",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",               type="object",
-     * @OA\Property(property="code",               type="string", example="GCU"),
-     * @OA\Property(property="name",               type="string", example="Global Currency Unit"),
-     * @OA\Property(property="symbol",             type="string", example="Ǥ"),
-     * @OA\Property(property="current_value",      type="number", format="float", example=1.0975),
-     * @OA\Property(property="value_currency",     type="string", example="USD"),
-     * @OA\Property(property="last_rebalanced",    type="string", format="date-time"),
-     * @OA\Property(property="next_rebalance",     type="string", format="date-time"),
-     * @OA\Property(property="composition",        type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="asset_code",         type="string"),
-     * @OA\Property(property="asset_name",         type="string"),
-     * @OA\Property(property="weight",             type="number", format="float"),
-     * @OA\Property(property="value_contribution", type="number", format="float")
-     *                     )
-     *                 ),
-     * @OA\Property(property="statistics",         type="object",
-     * @OA\Property(property="total_supply",       type="integer"),
-     * @OA\Property(property="holders_count",      type="integer"),
-     * @OA\Property(property="24h_change",         type="number", format="float"),
-     * @OA\Property(property="7d_change",          type="number", format="float"),
-     * @OA\Property(property="30d_change",         type="number", format="float")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu',
+            operationId: 'getGCUInfo',
+            tags: ['GCU'],
+            summary: 'Get GCU information',
+            description: 'Get current information about the Global Currency Unit including composition and value'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'GCU information',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'GCU'),
+        new OA\Property(property: 'name', type: 'string', example: 'Global Currency Unit'),
+        new OA\Property(property: 'symbol', type: 'string', example: 'Ǥ'),
+        new OA\Property(property: 'current_value', type: 'number', format: 'float', example: 1.0975),
+        new OA\Property(property: 'value_currency', type: 'string', example: 'USD'),
+        new OA\Property(property: 'last_rebalanced', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'next_rebalance', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'composition', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'asset_code', type: 'string'),
+        new OA\Property(property: 'asset_name', type: 'string'),
+        new OA\Property(property: 'weight', type: 'number', format: 'float'),
+        new OA\Property(property: 'value_contribution', type: 'number', format: 'float'),
+        ])),
+        new OA\Property(property: 'statistics', type: 'object', properties: [
+        new OA\Property(property: 'total_supply', type: 'integer'),
+        new OA\Property(property: 'holders_count', type: 'integer'),
+        new OA\Property(property: '24h_change', type: 'number', format: 'float'),
+        new OA\Property(property: '7d_change', type: 'number', format: 'float'),
+        new OA\Property(property: '30d_change', type: 'number', format: 'float'),
+        ]),
+        ]),
+        ])
+    )]
     public function index(): JsonResponse
     {
         $gcu = BasketAsset::where('code', 'GCU')->with('components.asset')->firstOrFail();
@@ -109,59 +99,36 @@ class GCUController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/gcu/value-history",
-     *     operationId="getGCUValueHistory",
-     *     tags={"GCU"},
-     *     summary="Get GCU value history",
-     *     description="Get historical value data for the Global Currency Unit",
-     *
-     * @OA\Parameter(
-     *         name="period",
-     *         in="query",
-     *         required=false,
-     *         description="Time period for history",
-     *
-     * @OA\Schema(type="string",                     enum={"24h", "7d", "30d", "90d", "1y", "all"}, default="30d")
-     *     ),
-     *
-     * @OA\Parameter(
-     *         name="interval",
-     *         in="query",
-     *         required=false,
-     *         description="Data interval",
-     *
-     * @OA\Schema(type="string",                     enum={"hourly", "daily", "weekly", "monthly"}, default="daily")
-     *     ),
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="GCU value history",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                 type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="timestamp",            type="string", format="date-time"),
-     * @OA\Property(property="value",                type="number", format="float"),
-     * @OA\Property(property="change",               type="number", format="float")
-     *                 )
-     *             ),
-     * @OA\Property(property="meta",                 type="object",
-     * @OA\Property(property="period",               type="string"),
-     * @OA\Property(property="interval",             type="string"),
-     * @OA\Property(property="start_value",          type="number", format="float"),
-     * @OA\Property(property="end_value",            type="number", format="float"),
-     * @OA\Property(property="total_change",         type="number", format="float"),
-     * @OA\Property(property="total_change_percent", type="number", format="float")
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu/value-history',
+            operationId: 'getGCUValueHistory',
+            tags: ['GCU'],
+            summary: 'Get GCU value history',
+            description: 'Get historical value data for the Global Currency Unit',
+            parameters: [
+        new OA\Parameter(name: 'period', in: 'query', required: false, description: 'Time period for history', schema: new OA\Schema(type: 'string', enum: ['24h', '7d', '30d', '90d', '1y', 'all'], default: '30d')),
+        new OA\Parameter(name: 'interval', in: 'query', required: false, description: 'Data interval', schema: new OA\Schema(type: 'string', enum: ['hourly', 'daily', 'weekly', 'monthly'], default: 'daily')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'GCU value history',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'value', type: 'number', format: 'float'),
+        new OA\Property(property: 'change', type: 'number', format: 'float'),
+        ])),
+        new OA\Property(property: 'meta', type: 'object', properties: [
+        new OA\Property(property: 'period', type: 'string'),
+        new OA\Property(property: 'interval', type: 'string'),
+        new OA\Property(property: 'start_value', type: 'number', format: 'float'),
+        new OA\Property(property: 'end_value', type: 'number', format: 'float'),
+        new OA\Property(property: 'total_change', type: 'number', format: 'float'),
+        new OA\Property(property: 'total_change_percent', type: 'number', format: 'float'),
+        ]),
+        ])
+    )]
     public function valueHistory(Request $request): JsonResponse
     {
         $period = $request->input('period', '30d');
@@ -213,43 +180,34 @@ class GCUController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/gcu/governance/active-polls",
-     *     operationId="getGCUActivePolls",
-     *     tags={"GCU"},
-     *     summary="Get active GCU governance polls",
-     *     description="Get currently active polls related to GCU governance",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Active GCU polls",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",               type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="id",                 type="integer"),
-     * @OA\Property(property="title",              type="string"),
-     * @OA\Property(property="description",        type="string"),
-     * @OA\Property(property="type",               type="string"),
-     * @OA\Property(property="start_date",         type="string", format="date-time"),
-     * @OA\Property(property="end_date",           type="string", format="date-time"),
-     * @OA\Property(property="participation_rate", type="number", format="float"),
-     * @OA\Property(property="current_results",    type="object"),
-     * @OA\Property(property="time_remaining",     type="object",
-     * @OA\Property(property="days",               type="integer"),
-     * @OA\Property(property="hours",              type="integer"),
-     * @OA\Property(property="human_readable",     type="string")
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu/governance/active-polls',
+            operationId: 'getGCUActivePolls',
+            tags: ['GCU'],
+            summary: 'Get active GCU governance polls',
+            description: 'Get currently active polls related to GCU governance'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Active GCU polls',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'id', type: 'integer'),
+        new OA\Property(property: 'title', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'type', type: 'string'),
+        new OA\Property(property: 'start_date', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'end_date', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'participation_rate', type: 'number', format: 'float'),
+        new OA\Property(property: 'current_results', type: 'object'),
+        new OA\Property(property: 'time_remaining', type: 'object', properties: [
+        new OA\Property(property: 'days', type: 'integer'),
+        new OA\Property(property: 'hours', type: 'integer'),
+        new OA\Property(property: 'human_readable', type: 'string'),
+        ]),
+        ])),
+        ])
+    )]
     public function activePolls(): JsonResponse
     {
         $polls = Poll::active()
@@ -285,58 +243,49 @@ class GCUController extends Controller
         return response()->json(['data' => $data]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/gcu/composition",
-     *     operationId="getGCUComposition",
-     *     tags={"GCU"},
-     *     summary="Get real-time GCU composition data",
-     *     description="Get detailed real-time composition data for the Global Currency Unit including current weights, values, and recent changes",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="GCU composition data",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                   type="object",
-     * @OA\Property(property="basket_code",            type="string", example="GCU"),
-     * @OA\Property(property="last_updated",           type="string", format="date-time"),
-     * @OA\Property(property="total_value_usd",        type="number", format="float"),
-     * @OA\Property(property="composition",            type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="asset_code",             type="string"),
-     * @OA\Property(property="asset_name",             type="string"),
-     * @OA\Property(property="asset_type",             type="string", enum={"fiat", "crypto", "commodity"}),
-     * @OA\Property(property="weight",                 type="number", format="float"),
-     * @OA\Property(property="current_price_usd",      type="number", format="float"),
-     * @OA\Property(property="value_contribution_usd", type="number", format="float"),
-     * @OA\Property(property="percentage_of_basket",   type="number", format="float"),
-     * @OA\Property(property="24h_change",             type="number", format="float"),
-     * @OA\Property(property="7d_change",              type="number", format="float")
-     *                     )
-     *                 ),
-     * @OA\Property(property="rebalancing",            type="object",
-     * @OA\Property(property="frequency",              type="string"),
-     * @OA\Property(property="last_rebalanced",        type="string", format="date-time"),
-     * @OA\Property(property="next_rebalance",         type="string", format="date-time"),
-     * @OA\Property(property="automatic",              type="boolean")
-     *                 ),
-     * @OA\Property(property="performance",            type="object",
-     * @OA\Property(property="24h_change_usd",         type="number", format="float"),
-     * @OA\Property(property="24h_change_percent",     type="number", format="float"),
-     * @OA\Property(property="7d_change_usd",          type="number", format="float"),
-     * @OA\Property(property="7d_change_percent",      type="number", format="float"),
-     * @OA\Property(property="30d_change_usd",         type="number", format="float"),
-     * @OA\Property(property="30d_change_percent",     type="number", format="float")
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu/composition',
+            operationId: 'getGCUComposition',
+            tags: ['GCU'],
+            summary: 'Get real-time GCU composition data',
+            description: 'Get detailed real-time composition data for the Global Currency Unit including current weights, values, and recent changes'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'GCU composition data',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'basket_code', type: 'string', example: 'GCU'),
+        new OA\Property(property: 'last_updated', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'total_value_usd', type: 'number', format: 'float'),
+        new OA\Property(property: 'composition', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'asset_code', type: 'string'),
+        new OA\Property(property: 'asset_name', type: 'string'),
+        new OA\Property(property: 'asset_type', type: 'string', enum: ['fiat', 'crypto', 'commodity']),
+        new OA\Property(property: 'weight', type: 'number', format: 'float'),
+        new OA\Property(property: 'current_price_usd', type: 'number', format: 'float'),
+        new OA\Property(property: 'value_contribution_usd', type: 'number', format: 'float'),
+        new OA\Property(property: 'percentage_of_basket', type: 'number', format: 'float'),
+        new OA\Property(property: '24h_change', type: 'number', format: 'float'),
+        new OA\Property(property: '7d_change', type: 'number', format: 'float'),
+        ])),
+        new OA\Property(property: 'rebalancing', type: 'object', properties: [
+        new OA\Property(property: 'frequency', type: 'string'),
+        new OA\Property(property: 'last_rebalanced', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'next_rebalance', type: 'string', format: 'date-time'),
+        new OA\Property(property: 'automatic', type: 'boolean'),
+        ]),
+        new OA\Property(property: 'performance', type: 'object', properties: [
+        new OA\Property(property: '24h_change_usd', type: 'number', format: 'float'),
+        new OA\Property(property: '24h_change_percent', type: 'number', format: 'float'),
+        new OA\Property(property: '7d_change_usd', type: 'number', format: 'float'),
+        new OA\Property(property: '7d_change_percent', type: 'number', format: 'float'),
+        new OA\Property(property: '30d_change_usd', type: 'number', format: 'float'),
+        new OA\Property(property: '30d_change_percent', type: 'number', format: 'float'),
+        ]),
+        ]),
+        ])
+    )]
     public function composition(): JsonResponse
     {
         $gcu = BasketAsset::where('code', 'GCU')->with('components.asset')->firstOrFail();
@@ -407,38 +356,29 @@ class GCUController extends Controller
         );
     }
 
-    /**
-     * @OA\Get(
-     *     path="/gcu/supported-banks",
-     *     operationId="getGCUSupportedBanks",
-     *     tags={"GCU"},
-     *     summary="Get supported banks for GCU",
-     *     description="Get list of banks that support GCU deposits and their coverage",
-     *
-     * @OA\Response(
-     *         response=200,
-     *         description="Supported banks",
-     *
-     * @OA\JsonContent(
-     *
-     * @OA\Property(property="data",                      type="array",
-     *
-     * @OA\Items(
-     *
-     * @OA\Property(property="code",                      type="string"),
-     * @OA\Property(property="name",                      type="string"),
-     * @OA\Property(property="country",                   type="string"),
-     * @OA\Property(property="deposit_protection",        type="string"),
-     * @OA\Property(property="deposit_protection_amount", type="integer"),
-     * @OA\Property(property="supported_currencies",      type="array", @OA\Items(type="string")),
-     * @OA\Property(property="features",                  type="array", @OA\Items(type="string")),
-     * @OA\Property(property="status",                    type="string", enum={"operational", "degraded", "maintenance"})
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/gcu/supported-banks',
+            operationId: 'getGCUSupportedBanks',
+            tags: ['GCU'],
+            summary: 'Get supported banks for GCU',
+            description: 'Get list of banks that support GCU deposits and their coverage'
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Supported banks',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'code', type: 'string'),
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'country', type: 'string'),
+        new OA\Property(property: 'deposit_protection', type: 'string'),
+        new OA\Property(property: 'deposit_protection_amount', type: 'integer'),
+        new OA\Property(property: 'supported_currencies', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'features', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'status', type: 'string', enum: ['operational', 'degraded', 'maintenance']),
+        ])),
+        ])
+    )]
     public function supportedBanks(): JsonResponse
     {
         $banks = [

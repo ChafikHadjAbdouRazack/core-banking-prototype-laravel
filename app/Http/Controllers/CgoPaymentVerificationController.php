@@ -8,13 +8,12 @@ use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Mail;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="CGO Payment Verification",
- *     description="CGO payment verification and tracking"
- * )
- */
+#[OA\Tag(
+    name: 'CGO Payment Verification',
+    description: 'CGO payment verification and tracking'
+)]
 class CgoPaymentVerificationController extends Controller
 {
     protected PaymentVerificationService $verificationService;
@@ -24,19 +23,22 @@ class CgoPaymentVerificationController extends Controller
         $this->verificationService = $verificationService;
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/payments",
-     *     operationId="cGOPaymentVerificationIndex",
-     *     tags={"CGO Payment Verification"},
-     *     summary="List payment verifications",
-     *     description="Returns payment verification status page",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/payments',
+            operationId: 'cGOPaymentVerificationIndex',
+            tags: ['CGO Payment Verification'],
+            summary: 'List payment verifications',
+            description: 'Returns payment verification status page',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function index()
     {
         $investments = CgoInvestment::where('user_id', Auth::id())
@@ -47,21 +49,25 @@ class CgoPaymentVerificationController extends Controller
         return view('cgo.payment-verification', compact('investments'));
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/payments/{id}/status",
-     *     operationId="cGOPaymentVerificationCheckStatus",
-     *     tags={"CGO Payment Verification"},
-     *     summary="Check payment status",
-     *     description="Checks the verification status of a payment",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/payments/{id}/status',
+            operationId: 'cGOPaymentVerificationCheckStatus',
+            tags: ['CGO Payment Verification'],
+            summary: 'Check payment status',
+            description: 'Checks the verification status of a payment',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function checkStatus(CgoInvestment $investment)
     {
         // Ensure user owns this investment
@@ -118,21 +124,25 @@ class CgoPaymentVerificationController extends Controller
         }
     }
 
-    /**
-     * @OA\Post(
-     *     path="/cgo/payments/{id}/resend",
-     *     operationId="cGOPaymentVerificationResendInstructions",
-     *     tags={"CGO Payment Verification"},
-     *     summary="Resend payment instructions",
-     *     description="Resends payment instructions to the user",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=201, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Post(
+            path: '/cgo/payments/{id}/resend',
+            operationId: 'cGOPaymentVerificationResendInstructions',
+            tags: ['CGO Payment Verification'],
+            summary: 'Resend payment instructions',
+            description: 'Resends payment instructions to the user',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function resendInstructions(CgoInvestment $investment)
     {
         // Ensure user owns this investment
@@ -183,21 +193,25 @@ class CgoPaymentVerificationController extends Controller
         }
     }
 
-    /**
-     * @OA\Get(
-     *     path="/cgo/payments/{id}/timeline",
-     *     operationId="cGOPaymentVerificationTimeline",
-     *     tags={"CGO Payment Verification"},
-     *     summary="Get payment timeline",
-     *     description="Returns the payment verification timeline",
-     *     security={{"sanctum":{}}},
-     *
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="string")),
-     *
-     *     @OA\Response(response=200, description="Successful operation"),
-     *     @OA\Response(response=500, description="Server error")
-     * )
-     */
+        #[OA\Get(
+            path: '/cgo/payments/{id}/timeline',
+            operationId: 'cGOPaymentVerificationTimeline',
+            tags: ['CGO Payment Verification'],
+            summary: 'Get payment timeline',
+            description: 'Returns the payment verification timeline',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Successful operation'
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Server error'
+    )]
     public function timeline(CgoInvestment $investment)
     {
         // Ensure user owns this investment

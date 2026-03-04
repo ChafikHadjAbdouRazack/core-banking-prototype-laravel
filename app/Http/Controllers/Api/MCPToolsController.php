@@ -8,41 +8,36 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Tag(
- *     name="MCP Tools",
- *     description="Model Context Protocol (MCP) tools management for AI agents"
- * )
- */
+#[OA\Tag(
+    name: 'MCP Tools',
+    description: 'Model Context Protocol (MCP) tools management for AI agents'
+)]
 class MCPToolsController extends Controller
 {
-    /**
-     * @OA\Get(
-     *     path="/api/ai/mcp/tools",
-     *     operationId="listMcpTools",
-     *     tags={"MCP Tools"},
-     *     summary="List available MCP tools",
-     *     description="Get a list of all available MCP tools that can be used by AI agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="List of available MCP tools",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(
-     *                     @OA\Property(property="name", type="string", example="get_account_balance"),
-     *                     @OA\Property(property="description", type="string", example="Retrieve the current balance for a customer account"),
-     *                     @OA\Property(property="category", type="string", example="account_management"),
-     *                     @OA\Property(property="parameters", type="object"),
-     *                     @OA\Property(property="requires_auth", type="boolean", example=true),
-     *                     @OA\Property(property="rate_limit", type="integer", example=100)
-     *                 )
-     *             )
-     *         )
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/ai/mcp/tools',
+            operationId: 'listMcpTools',
+            tags: ['MCP Tools'],
+            summary: 'List available MCP tools',
+            description: 'Get a list of all available MCP tools that can be used by AI agents',
+            security: [['sanctum' => []]]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'List of available MCP tools',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'get_account_balance'),
+        new OA\Property(property: 'description', type: 'string', example: 'Retrieve the current balance for a customer account'),
+        new OA\Property(property: 'category', type: 'string', example: 'account_management'),
+        new OA\Property(property: 'parameters', type: 'object'),
+        new OA\Property(property: 'requires_auth', type: 'boolean', example: true),
+        new OA\Property(property: 'rate_limit', type: 'integer', example: 100),
+        ])),
+        ])
+    )]
     public function listTools(): JsonResponse
     {
         $tools = [
@@ -131,48 +126,39 @@ class MCPToolsController extends Controller
         return response()->json(['data' => $tools]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/ai/mcp/tools/{tool}/execute",
-     *     operationId="executeMcpTool",
-     *     tags={"MCP Tools"},
-     *     summary="Execute an MCP tool",
-     *     description="Execute a specific MCP tool with the provided parameters",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="tool",
-     *         in="path",
-     *         required=true,
-     *         description="The name of the tool to execute",
-     *         @OA\Schema(type="string", example="get_account_balance")
-     *     ),
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             @OA\Property(property="parameters", type="object", example={"account_id": "acct_123", "include_pending": true})
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Tool execution result",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="tool", type="string", example="get_account_balance"),
-     *             @OA\Property(property="result", type="object"),
-     *             @OA\Property(property="execution_time_ms", type="integer", example=145),
-     *             @OA\Property(property="metadata", type="object")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid parameters or tool not found"
-     *     ),
-     *     @OA\Response(
-     *         response=429,
-     *         description="Rate limit exceeded"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/ai/mcp/tools/{tool}/execute',
+            operationId: 'executeMcpTool',
+            tags: ['MCP Tools'],
+            summary: 'Execute an MCP tool',
+            description: 'Execute a specific MCP tool with the provided parameters',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'tool', in: 'path', required: true, description: 'The name of the tool to execute', schema: new OA\Schema(type: 'string', example: 'get_account_balance')),
+        ],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'parameters', type: 'object', example: ['account_id' => 'acct_123', 'include_pending' => true]),
+        ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Tool execution result',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'tool', type: 'string', example: 'get_account_balance'),
+        new OA\Property(property: 'result', type: 'object'),
+        new OA\Property(property: 'execution_time_ms', type: 'integer', example: 145),
+        new OA\Property(property: 'metadata', type: 'object'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid parameters or tool not found'
+    )]
+    #[OA\Response(
+        response: 429,
+        description: 'Rate limit exceeded'
+    )]
     public function executeTool(Request $request, string $tool): JsonResponse
     {
         $validated = $request->validate([
@@ -214,40 +200,34 @@ class MCPToolsController extends Controller
         ]);
     }
 
-    /**
-     * @OA\Get(
-     *     path="/api/ai/mcp/tools/{tool}",
-     *     operationId="getMcpToolDetails",
-     *     tags={"MCP Tools"},
-     *     summary="Get MCP tool details",
-     *     description="Get detailed information about a specific MCP tool",
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="tool",
-     *         in="path",
-     *         required=true,
-     *         description="The name of the tool",
-     *         @OA\Schema(type="string", example="get_account_balance")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Tool details",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string"),
-     *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="category", type="string"),
-     *             @OA\Property(property="parameters", type="object"),
-     *             @OA\Property(property="examples", type="array", @OA\Items(type="object")),
-     *             @OA\Property(property="rate_limit", type="integer"),
-     *             @OA\Property(property="requires_auth", type="boolean")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Tool not found"
-     *     )
-     * )
-     */
+        #[OA\Get(
+            path: '/api/ai/mcp/tools/{tool}',
+            operationId: 'getMcpToolDetails',
+            tags: ['MCP Tools'],
+            summary: 'Get MCP tool details',
+            description: 'Get detailed information about a specific MCP tool',
+            security: [['sanctum' => []]],
+            parameters: [
+        new OA\Parameter(name: 'tool', in: 'path', required: true, description: 'The name of the tool', schema: new OA\Schema(type: 'string', example: 'get_account_balance')),
+        ]
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Tool details',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'description', type: 'string'),
+        new OA\Property(property: 'category', type: 'string'),
+        new OA\Property(property: 'parameters', type: 'object'),
+        new OA\Property(property: 'examples', type: 'array', items: new OA\Items(type: 'object')),
+        new OA\Property(property: 'rate_limit', type: 'integer'),
+        new OA\Property(property: 'requires_auth', type: 'boolean'),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Tool not found'
+    )]
     public function getToolDetails(string $tool): JsonResponse
     {
         $tools = [
@@ -297,42 +277,36 @@ class MCPToolsController extends Controller
         return response()->json($tools[$tool]);
     }
 
-    /**
-     * @OA\Post(
-     *     path="/api/ai/mcp/register",
-     *     operationId="registerMcpTool",
-     *     tags={"MCP Tools"},
-     *     summary="Register a new MCP tool",
-     *     description="Register a custom MCP tool for use by AI agents",
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "description", "endpoint", "parameters"},
-     *             @OA\Property(property="name", type="string", example="custom_tool"),
-     *             @OA\Property(property="description", type="string", example="A custom tool for specific operations"),
-     *             @OA\Property(property="endpoint", type="string", format="url", example="https://api.example.com/tool"),
-     *             @OA\Property(property="parameters", type="object"),
-     *             @OA\Property(property="category", type="string", example="custom"),
-     *             @OA\Property(property="requires_auth", type="boolean", example=true),
-     *             @OA\Property(property="rate_limit", type="integer", example=50)
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Tool registered successfully",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="tool_id", type="string", example="tool_abc123"),
-     *             @OA\Property(property="message", type="string", example="Tool registered successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Invalid tool configuration"
-     *     )
-     * )
-     */
+        #[OA\Post(
+            path: '/api/ai/mcp/register',
+            operationId: 'registerMcpTool',
+            tags: ['MCP Tools'],
+            summary: 'Register a new MCP tool',
+            description: 'Register a custom MCP tool for use by AI agents',
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'description', 'endpoint', 'parameters'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'custom_tool'),
+        new OA\Property(property: 'description', type: 'string', example: 'A custom tool for specific operations'),
+        new OA\Property(property: 'endpoint', type: 'string', format: 'url', example: 'https://api.example.com/tool'),
+        new OA\Property(property: 'parameters', type: 'object'),
+        new OA\Property(property: 'category', type: 'string', example: 'custom'),
+        new OA\Property(property: 'requires_auth', type: 'boolean', example: true),
+        new OA\Property(property: 'rate_limit', type: 'integer', example: 50),
+        ]))
+        )]
+    #[OA\Response(
+        response: 201,
+        description: 'Tool registered successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'tool_id', type: 'string', example: 'tool_abc123'),
+        new OA\Property(property: 'message', type: 'string', example: 'Tool registered successfully'),
+        ])
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid tool configuration'
+    )]
     public function registerTool(Request $request): JsonResponse
     {
         $validated = $request->validate([

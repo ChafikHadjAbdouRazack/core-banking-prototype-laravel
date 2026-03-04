@@ -9,6 +9,7 @@ use App\Domain\TrustCert\Services\CertificateAuthorityService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class MobileTrustCertController extends Controller
 {
@@ -19,32 +20,34 @@ class MobileTrustCertController extends Controller
 
     /**
      * Get user's current trust certificate and trust level.
-     *
-     * @OA\Get(
-     *     path="/api/v1/trustcert/current",
-     *     operationId="trustCertCurrent",
-     *     summary="Get current trust certificate",
-     *     description="Returns the authenticated user's current trust certificate status and trust level information.",
-     *     tags={"TrustCert"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="trust_level", type="string", example="verified"),
-     *                 @OA\Property(property="label", type="string", example="Verified"),
-     *                 @OA\Property(property="numeric_value", type="integer", example=2),
-     *                 @OA\Property(property="certificate", type="object", nullable=true),
-     *                 @OA\Property(property="is_valid", type="boolean", example=true),
-     *                 @OA\Property(property="expires_at", type="string", format="date-time")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/trustcert/current',
+        operationId: 'trustCertCurrent',
+        summary: 'Get current trust certificate',
+        description: 'Returns the authenticated user\'s current trust certificate status and trust level information.',
+        tags: ['TrustCert'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'trust_level', type: 'string', example: 'verified'),
+        new OA\Property(property: 'label', type: 'string', example: 'Verified'),
+        new OA\Property(property: 'numeric_value', type: 'integer', example: 2),
+        new OA\Property(property: 'certificate', type: 'object', nullable: true),
+        new OA\Property(property: 'is_valid', type: 'boolean', example: true),
+        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function current(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -81,37 +84,37 @@ class MobileTrustCertController extends Controller
 
     /**
      * Get all trust levels and their requirements.
-     *
-     * @OA\Get(
-     *     path="/api/v1/trustcert/requirements",
-     *     operationId="trustCertRequirements",
-     *     summary="Get all trust level requirements",
-     *     description="Returns all trust levels with their requirements and associated transaction limits.",
-     *     tags={"TrustCert"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(type="object",
-     *                     @OA\Property(property="level", type="string", example="verified"),
-     *                     @OA\Property(property="label", type="string", example="Verified"),
-     *                     @OA\Property(property="numeric_value", type="integer", example=2),
-     *                     @OA\Property(property="requirements", type="array", @OA\Items(type="string")),
-     *                     @OA\Property(property="limits", type="object",
-     *                         @OA\Property(property="daily", type="number", example=5000),
-     *                         @OA\Property(property="monthly", type="number", example=50000),
-     *                         @OA\Property(property="single", type="number", example=2000)
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/trustcert/requirements',
+        operationId: 'trustCertRequirements',
+        summary: 'Get all trust level requirements',
+        description: 'Returns all trust levels with their requirements and associated transaction limits.',
+        tags: ['TrustCert'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'level', type: 'string', example: 'verified'),
+        new OA\Property(property: 'label', type: 'string', example: 'Verified'),
+        new OA\Property(property: 'numeric_value', type: 'integer', example: 2),
+        new OA\Property(property: 'requirements', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'limits', type: 'object', properties: [
+        new OA\Property(property: 'daily', type: 'number', example: 5000),
+        new OA\Property(property: 'monthly', type: 'number', example: 50000),
+        new OA\Property(property: 'single', type: 'number', example: 2000),
+        ]),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function requirements(): JsonResponse
     {
         $levels = [];
@@ -133,53 +136,51 @@ class MobileTrustCertController extends Controller
 
     /**
      * Get requirements for a specific trust level.
-     *
-     * @OA\Get(
-     *     path="/api/v1/trustcert/requirements/{level}",
-     *     operationId="trustCertRequirementsByLevel",
-     *     summary="Get requirements for a specific trust level",
-     *     description="Returns the requirements and transaction limits for a specific trust level. Accepts both string names (basic, verified, high, ultimate) and numeric values (0-4).",
-     *     tags={"TrustCert"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Parameter(
-     *         name="level",
-     *         in="path",
-     *         required=true,
-     *         description="The trust level (string name or numeric value 0-4)",
-     *         @OA\Schema(type="string", enum={"unknown", "basic", "verified", "high", "ultimate", "0", "1", "2", "3", "4"}, example="verified")
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="level", type="string", example="verified"),
-     *                 @OA\Property(property="label", type="string", example="Verified"),
-     *                 @OA\Property(property="numeric_value", type="integer", example=2),
-     *                 @OA\Property(property="requirements", type="array", @OA\Items(type="string")),
-     *                 @OA\Property(property="limits", type="object",
-     *                     @OA\Property(property="daily", type="number", example=5000),
-     *                     @OA\Property(property="monthly", type="number", example=50000),
-     *                     @OA\Property(property="single", type="number", example=2000)
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=404,
-     *         description="Invalid trust level",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=false),
-     *             @OA\Property(property="error", type="object",
-     *                 @OA\Property(property="code", type="string", example="INVALID_TRUST_LEVEL"),
-     *                 @OA\Property(property="message", type="string", example="Trust level not found.")
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/trustcert/requirements/{level}',
+        operationId: 'trustCertRequirementsByLevel',
+        summary: 'Get requirements for a specific trust level',
+        description: 'Returns the requirements and transaction limits for a specific trust level. Accepts both string names (basic, verified, high, ultimate) and numeric values (0-4).',
+        tags: ['TrustCert'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'level', in: 'path', required: true, description: 'The trust level (string name or numeric value 0-4)', schema: new OA\Schema(type: 'string', enum: ['unknown', 'basic', 'verified', 'high', 'ultimate', '0', '1', '2', '3', '4'], example: 'verified')),
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'level', type: 'string', example: 'verified'),
+        new OA\Property(property: 'label', type: 'string', example: 'Verified'),
+        new OA\Property(property: 'numeric_value', type: 'integer', example: 2),
+        new OA\Property(property: 'requirements', type: 'array', items: new OA\Items(type: 'string')),
+        new OA\Property(property: 'limits', type: 'object', properties: [
+        new OA\Property(property: 'daily', type: 'number', example: 5000),
+        new OA\Property(property: 'monthly', type: 'number', example: 50000),
+        new OA\Property(property: 'single', type: 'number', example: 2000),
+        ]),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Invalid trust level',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: false),
+        new OA\Property(property: 'error', type: 'object', properties: [
+        new OA\Property(property: 'code', type: 'string', example: 'INVALID_TRUST_LEVEL'),
+        new OA\Property(property: 'message', type: 'string', example: 'Trust level not found.'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function requirementsByLevel(string $level): JsonResponse
     {
         $trustLevel = TrustLevel::tryFrom($level);
@@ -219,35 +220,35 @@ class MobileTrustCertController extends Controller
 
     /**
      * Get transaction limits for all trust levels.
-     *
-     * @OA\Get(
-     *     path="/api/v1/trustcert/limits",
-     *     operationId="trustCertLimits",
-     *     summary="Get transaction limits for all trust levels",
-     *     description="Returns the transaction limits (daily, monthly, single) for each trust level.",
-     *     tags={"TrustCert"},
-     *     security={{"sanctum": {}}},
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="array",
-     *                 @OA\Items(type="object",
-     *                     @OA\Property(property="level", type="string", example="verified"),
-     *                     @OA\Property(property="label", type="string", example="Verified"),
-     *                     @OA\Property(property="limits", type="object",
-     *                         @OA\Property(property="daily", type="number", example=5000),
-     *                         @OA\Property(property="monthly", type="number", example=50000),
-     *                         @OA\Property(property="single", type="number", example=2000)
-     *                     )
-     *                 )
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized")
-     * )
      */
+    #[OA\Get(
+        path: '/api/v1/trustcert/limits',
+        operationId: 'trustCertLimits',
+        summary: 'Get transaction limits for all trust levels',
+        description: 'Returns the transaction limits (daily, monthly, single) for each trust level.',
+        tags: ['TrustCert'],
+        security: [['sanctum' => []]]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
+        new OA\Property(property: 'level', type: 'string', example: 'verified'),
+        new OA\Property(property: 'label', type: 'string', example: 'Verified'),
+        new OA\Property(property: 'limits', type: 'object', properties: [
+        new OA\Property(property: 'daily', type: 'number', example: 5000),
+        new OA\Property(property: 'monthly', type: 'number', example: 50000),
+        new OA\Property(property: 'single', type: 'number', example: 2000),
+        ]),
+        ])),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
     public function limits(): JsonResponse
     {
         $limits = [];
@@ -267,41 +268,43 @@ class MobileTrustCertController extends Controller
 
     /**
      * Check if a transaction amount is within the user's trust level limits.
-     *
-     * @OA\Post(
-     *     path="/api/v1/trustcert/check-limit",
-     *     operationId="trustCertCheckLimit",
-     *     summary="Check transaction limit against trust level",
-     *     description="Checks whether a given transaction amount is within the authenticated user's trust level limits.",
-     *     tags={"TrustCert"},
-     *     security={{"sanctum": {}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"amount", "transaction_type"},
-     *             @OA\Property(property="amount", type="number", example=1500.00, description="The transaction amount to check"),
-     *             @OA\Property(property="transaction_type", type="string", enum={"daily", "monthly", "single"}, example="single", description="The type of transaction limit to check against")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Success",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="data", type="object",
-     *                 @OA\Property(property="allowed", type="boolean", example=true),
-     *                 @OA\Property(property="trust_level", type="string", example="verified"),
-     *                 @OA\Property(property="limit", type="number", example=2000),
-     *                 @OA\Property(property="amount", type="number", example=1500),
-     *                 @OA\Property(property="type", type="string", example="single"),
-     *                 @OA\Property(property="remaining", type="number", example=500)
-     *             )
-     *         )
-     *     ),
-     *     @OA\Response(response=401, description="Unauthorized"),
-     *     @OA\Response(response=422, description="Validation error")
-     * )
      */
+    #[OA\Post(
+        path: '/api/v1/trustcert/check-limit',
+        operationId: 'trustCertCheckLimit',
+        summary: 'Check transaction limit against trust level',
+        description: 'Checks whether a given transaction amount is within the authenticated user\'s trust level limits.',
+        tags: ['TrustCert'],
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['amount', 'transaction_type'], properties: [
+        new OA\Property(property: 'amount', type: 'number', example: 1500.00, description: 'The transaction amount to check'),
+        new OA\Property(property: 'transaction_type', type: 'string', enum: ['daily', 'monthly', 'single'], example: 'single', description: 'The type of transaction limit to check against'),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Success',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'allowed', type: 'boolean', example: true),
+        new OA\Property(property: 'trust_level', type: 'string', example: 'verified'),
+        new OA\Property(property: 'limit', type: 'number', example: 2000),
+        new OA\Property(property: 'amount', type: 'number', example: 1500),
+        new OA\Property(property: 'type', type: 'string', example: 'single'),
+        new OA\Property(property: 'remaining', type: 'number', example: 500),
+        new OA\Property(property: 'upgrade_required', type: 'string', nullable: true, example: 'high', description: 'Next trust level needed to increase limits, null if already at max'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthorized'
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
     public function checkLimit(Request $request): JsonResponse
     {
         $request->validate([
@@ -325,15 +328,22 @@ class MobileTrustCertController extends Controller
         $amount = (float) $request->input('amount');
         $limit = $limits[$type] ?? 0;
 
+        $levelOrder = [TrustLevel::UNKNOWN, TrustLevel::BASIC, TrustLevel::VERIFIED, TrustLevel::HIGH, TrustLevel::ULTIMATE];
+        $currentIndex = array_search($trustLevel, $levelOrder, true);
+        $upgradeRequired = ($currentIndex !== false && $currentIndex < count($levelOrder) - 1)
+            ? $levelOrder[$currentIndex + 1]->value
+            : null;
+
         return response()->json([
             'success' => true,
             'data'    => [
-                'allowed'     => $amount <= $limit,
-                'trust_level' => $trustLevel->value,
-                'limit'       => $limit,
-                'amount'      => $amount,
-                'type'        => $type,
-                'remaining'   => max(0, $limit - $amount),
+                'allowed'          => $amount <= $limit,
+                'trust_level'      => $trustLevel->value,
+                'limit'            => $limit,
+                'amount'           => $amount,
+                'type'             => $type,
+                'remaining'        => max(0, $limit - $amount),
+                'upgrade_required' => $upgradeRequired,
             ],
         ]);
     }
