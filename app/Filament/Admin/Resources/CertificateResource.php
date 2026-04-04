@@ -17,6 +17,8 @@ use Illuminate\Support\Carbon;
 
 class CertificateResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = Certificate::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shield-check';

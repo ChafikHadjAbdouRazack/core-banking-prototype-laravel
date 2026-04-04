@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\CrossChain\Enums\CrossChainNetwork;
 use App\Domain\CrossChain\Services\Adapters\DemoBridgeAdapter;
 use App\Domain\CrossChain\Services\BridgeOrchestratorService;
@@ -12,22 +13,37 @@ use App\Domain\DeFi\Services\Connectors\DemoSwapConnector;
 use App\Domain\DeFi\Services\Connectors\UniswapV3Connector;
 use App\Domain\DeFi\Services\SwapAggregatorService;
 use App\Domain\DeFi\Services\SwapRouterService;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
+    $this->userUuid = 'test-swap-service-user-uuid';
+
     $bridgeOrchestrator = new BridgeOrchestratorService();
     $bridgeOrchestrator->registerAdapter(new DemoBridgeAdapter());
 
     $aggregator = new SwapAggregatorService();
     $aggregator->registerConnector(new DemoSwapConnector());
-    $aggregator->registerConnector(new UniswapV3Connector());
+    $aggregator->registerConnector(new UniswapV3Connector(new AbiEncoder(), new EthRpcClient()));
     $swapRouter = new SwapRouterService($aggregator);
 
     $tracker = new BridgeTransactionTracker();
     $saga = new CrossChainSwapSaga($bridgeOrchestrator, $swapRouter, $tracker);
 
     $this->service = new CrossChainSwapService($bridgeOrchestrator, $swapRouter, $saga);
+
+    // Register wallet addresses used in tests for the user (Finding #10)
+    foreach (['0xWallet123', '0xWallet456'] as $addr) {
+        BlockchainAddress::create([
+            'user_uuid'  => $this->userUuid,
+            'chain'      => 'ethereum',
+            'address'    => $addr,
+            'public_key' => '0xpubkey',
+            'is_active'  => true,
+        ]);
+    }
 });
 
 describe('CrossChainSwapService', function () {
@@ -99,7 +115,7 @@ describe('CrossChainSwapService', function () {
             '1000.00',
         );
 
-        $result = $this->service->executeSwap($quote, '0xWallet123');
+        $result = $this->service->executeSwap($quote, '0xWallet123', $this->userUuid);
 
         expect($result['bridge_tx'])->not->toBeEmpty();
         expect($result['swap_tx'])->not->toBeNull();
@@ -116,7 +132,7 @@ describe('CrossChainSwapService', function () {
             '2000.00',
         );
 
-        $result = $this->service->executeSwap($quote, '0xWallet456');
+        $result = $this->service->executeSwap($quote, '0xWallet456', $this->userUuid);
 
         expect($result['bridge_tx'])->not->toBeEmpty();
         expect($result['swap_tx'])->toBeNull();

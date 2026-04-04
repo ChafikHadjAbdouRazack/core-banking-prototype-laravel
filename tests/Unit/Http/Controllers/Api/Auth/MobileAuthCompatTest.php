@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Domain\Mobile\Services\MobileDeviceService;
 use App\Domain\Mobile\Services\PasskeyAuthenticationService;
 use App\Http\Controllers\Api\Auth\AccountDeletionController;
@@ -16,8 +17,11 @@ uses(UnitTestCase::class);
 
 describe('LoginController response envelope', function (): void {
     it('wraps user/me response in { success, data } envelope', function (): void {
+        /** @var IpBlockingService&Mockery\MockInterface $ipBlockingService */
         $ipBlockingService = Mockery::mock(IpBlockingService::class);
-        $controller = new LoginController($ipBlockingService);
+        /** @var BiometricJWTService&Mockery\MockInterface $biometricJWTService */
+        $biometricJWTService = Mockery::mock(BiometricJWTService::class);
+        $controller = new LoginController($ipBlockingService, $biometricJWTService);
 
         $user = Mockery::mock(User::class)->makePartial();
         $user->id = 1;
@@ -86,7 +90,9 @@ describe('AccountDeletionController', function (): void {
 
 describe('PasskeyController register', function (): void {
     it('registers a passkey for the authenticated user device', function (): void {
+        /** @var PasskeyAuthenticationService&Mockery\MockInterface $passkeyService */
         $passkeyService = Mockery::mock(PasskeyAuthenticationService::class);
+        /** @var MobileDeviceService&Mockery\MockInterface $deviceService */
         $deviceService = Mockery::mock(MobileDeviceService::class);
 
         $device = Mockery::mock(App\Domain\Mobile\Models\MobileDevice::class)->makePartial();
@@ -103,7 +109,9 @@ describe('PasskeyController register', function (): void {
                 'registered_at' => now()->toIso8601String(),
             ]);
 
-        $controller = new PasskeyController($passkeyService, $deviceService);
+        /** @var BiometricJWTService&Mockery\MockInterface $biometricJWTService */
+        $biometricJWTService = Mockery::mock(BiometricJWTService::class);
+        $controller = new PasskeyController($passkeyService, $deviceService, $biometricJWTService);
 
         $user = Mockery::mock(User::class)->makePartial();
         $user->id = 1;
@@ -124,7 +132,9 @@ describe('PasskeyController register', function (): void {
     });
 
     it('rejects register for device not belonging to user', function (): void {
+        /** @var PasskeyAuthenticationService&Mockery\MockInterface $passkeyService */
         $passkeyService = Mockery::mock(PasskeyAuthenticationService::class);
+        /** @var MobileDeviceService&Mockery\MockInterface $deviceService */
         $deviceService = Mockery::mock(MobileDeviceService::class);
 
         $device = Mockery::mock(App\Domain\Mobile\Models\MobileDevice::class)->makePartial();
@@ -134,7 +144,9 @@ describe('PasskeyController register', function (): void {
             ->with('device-123')
             ->andReturn($device);
 
-        $controller = new PasskeyController($passkeyService, $deviceService);
+        /** @var BiometricJWTService&Mockery\MockInterface $biometricJWTService */
+        $biometricJWTService = Mockery::mock(BiometricJWTService::class);
+        $controller = new PasskeyController($passkeyService, $deviceService, $biometricJWTService);
 
         $user = Mockery::mock(User::class)->makePartial();
         $user->id = 1;
@@ -152,14 +164,18 @@ describe('PasskeyController register', function (): void {
     });
 
     it('returns 404 for non-existent device', function (): void {
+        /** @var PasskeyAuthenticationService&Mockery\MockInterface $passkeyService */
         $passkeyService = Mockery::mock(PasskeyAuthenticationService::class);
+        /** @var MobileDeviceService&Mockery\MockInterface $deviceService */
         $deviceService = Mockery::mock(MobileDeviceService::class);
 
         $deviceService->shouldReceive('findByDeviceId')
             ->with('nonexistent')
             ->andReturn(null);
 
-        $controller = new PasskeyController($passkeyService, $deviceService);
+        /** @var BiometricJWTService&Mockery\MockInterface $biometricJWTService */
+        $biometricJWTService = Mockery::mock(BiometricJWTService::class);
+        $controller = new PasskeyController($passkeyService, $deviceService, $biometricJWTService);
 
         $user = Mockery::mock(User::class)->makePartial();
         $user->id = 1;

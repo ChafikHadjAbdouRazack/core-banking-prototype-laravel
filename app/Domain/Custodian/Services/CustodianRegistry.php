@@ -27,7 +27,7 @@ class CustodianRegistry
             $this->defaultCustodian = $name;
         }
 
-        Log::info("Registered custodian: {$name}");
+        Log::debug("Registered custodian: {$name}");
     }
 
     /**

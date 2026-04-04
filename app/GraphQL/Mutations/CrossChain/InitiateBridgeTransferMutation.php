@@ -41,9 +41,10 @@ class InitiateBridgeTransferMutation
             );
 
             $result = $this->bridgeService->initiateBridge(
-                quote: $quote,
+                quoteId: $quote->quoteId,
                 senderAddress: $args['sender_address'] ?? '',
                 recipientAddress: $args['recipient_address'],
+                userUuid: $user->uuid,
             );
 
             return BridgeTransaction::create([

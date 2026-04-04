@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'API Documentation - FinAegis')
+@section('title', 'API Documentation - ' . config('brand.name', 'Zelta'))
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'API Documentation - FinAegis',
-        'description' => 'Complete reference documentation for the FinAegis REST API with interactive examples and code samples.',
-        'keywords' => 'FinAegis API, REST API, API documentation, developer reference',
+        'title' => 'API Documentation - ' . config('brand.name', 'Zelta'),
+        'description' => 'Complete reference documentation for the ' . config('brand.name', 'Zelta') . ' REST API with interactive examples and code samples.',
+        'keywords' => config('brand.name', 'Zelta') . ' API, REST API, API documentation, developer reference',
     ])
 @endsection
 
@@ -20,7 +20,7 @@
                         API Documentation
                     </h1>
                     <p class="mt-6 text-xl text-gray-300 max-w-3xl mx-auto">
-                        Complete reference documentation for the FinAegis REST API with interactive examples and code samples.
+                        Complete reference documentation for the {{ config('brand.name', 'Zelta') }} REST API with interactive examples and code samples.
                     </p>
                 </div>
             </div>
@@ -46,9 +46,30 @@
                     <a href="#graphql" class="text-sky-600 hover:text-sky-800">GraphQL</a>
                     <a href="#event-streaming" class="text-lime-600 hover:text-lime-800">Event Streaming</a>
                     <a href="#x402" class="text-emerald-600 hover:text-emerald-800">x402 Protocol</a>
+                    <a href="#iso20022" class="text-blue-600 hover:text-blue-800">ISO 20022</a>
+                    <a href="#open-banking" class="text-teal-600 hover:text-teal-800">Open Banking</a>
+                    <a href="#payment-rails" class="text-orange-600 hover:text-orange-800">Payment Rails</a>
+                    <a href="#interledger" class="text-purple-600 hover:text-purple-800">Interledger</a>
+                    <a href="#ledger" class="text-slate-600 hover:text-slate-900">Ledger</a>
+                    <a href="#microfinance" class="text-green-600 hover:text-green-800">Microfinance</a>
                     <a href="#webhooks" class="text-gray-600 hover:text-gray-900">Webhooks</a>
+                    <a href="#rate-limits" class="text-gray-600 hover:text-gray-900">Rate Limits</a>
                     <a href="#errors" class="text-gray-600 hover:text-gray-900">Errors</a>
                 </nav>
+            </div>
+        </div>
+
+        <!-- OpenAPI Spec Banner -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div class="flex items-center gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg mb-8">
+                <svg class="w-6 h-6 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                <div>
+                    <p class="font-semibold text-blue-900">OpenAPI 3.0 Specification</p>
+                    <p class="text-sm text-blue-700">Import into Postman, Insomnia, or any OpenAPI-compatible tool.</p>
+                </div>
+                <a href="/api/documentation" target="_blank" class="ml-auto px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition">
+                    View Swagger UI &rarr;
+                </a>
             </div>
         </div>
 
@@ -61,11 +82,11 @@
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">Getting Started</h2>
                         
                         <div class="prose prose-lg max-w-none">
-                            <p>The FinAegis API provides programmatic access to our multi-asset banking platform spanning 43 DDD domains with over 1,250 routes. Our API is organized around REST principles with predictable, resource-oriented URLs. Domains include core banking, CrossChain bridging, DeFi protocols, RegTech compliance, Mobile Payment, Partner BaaS, and AI-powered queries.</p>
+                            <p>The {{ config('brand.name', 'Zelta') }} API provides programmatic access to our multi-asset banking platform spanning 56 DDD domains with over 1,400 routes. Our API is organized around REST principles with predictable, resource-oriented URLs. Domains include core banking, CrossChain bridging, DeFi protocols, RegTech compliance, Mobile Payment, Partner BaaS, ISO 20022, Open Banking, US Payment Rails, and AI-powered queries.</p>
                             
                             <h3>Base URL</h3>
                             <x-code-block language="plaintext">
-https://api.finaegis.org/v2
+{{ config('app.url') }}/api/v2
                             </x-code-block>
                             
                             <h3>Response Format</h3>
@@ -86,11 +107,11 @@ https://api.finaegis.org/v2
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">Authentication</h2>
                         
                         <div class="prose prose-lg max-w-none">
-                            <p>The FinAegis API uses API keys to authenticate requests. You can generate and manage your API keys in your dashboard.</p>
+                            <p>The {{ config('brand.name', 'Zelta') }} API uses API keys to authenticate requests. You can generate and manage your API keys in your dashboard.</p>
                             
                             <h3>Creating API Keys</h3>
                             <ol>
-                                <li>Log in to your FinAegis account</li>
+                                <li>Log in to your {{ config('brand.name', 'Zelta') }} account</li>
                                 <li>Navigate to <a href="{{ route('api-keys.index') }}" class="text-blue-600 hover:text-blue-800">API Keys</a> in your dashboard</li>
                                 <li>Click "Create New Key" and configure permissions</li>
                                 <li>Copy the generated key immediately (it won't be shown again)</li>
@@ -102,7 +123,7 @@ https://api.finaegis.org/v2
                             <x-code-block language="bash">
 curl -H "Authorization: Bearer fak_your_api_key_here" \
      -H "Content-Type: application/json" \
-     https://api.finaegis.org/v2/accounts
+     {{ config('app.url') }}/api/v2/accounts
                             </x-code-block>
                             
                             <h3>API Key Security</h3>
@@ -115,11 +136,11 @@ curl -H "Authorization: Bearer fak_your_api_key_here" \
                             </ul>
                             
                             <h3>Sandbox vs Production</h3>
-                            <p>Use these base URLs for testing and production:</p>
-                            <ul>
-                                <li><strong>Sandbox:</strong> https://api-sandbox.finaegis.org/v2</li>
-                                <li><strong>Production:</strong> https://api.finaegis.org/v2</li>
-                            </ul>
+                            <div class="mb-2">
+                                <span class="font-semibold text-slate-700">Base URL:</span>
+                                <code class="bg-slate-100 px-2 py-1 rounded text-sm">{{ config('app.url') }}/api/v2</code>
+                            </div>
+                            <p class="text-sm text-slate-500">Sandbox and production use the same base URL. Your API key determines the environment. Sandbox keys start with <code>sk_sandbox_</code>, production keys start with <code>sk_live_</code>.</p>
                         </div>
                     </section>
 
@@ -140,7 +161,7 @@ curl -H "Authorization: Bearer fak_your_api_key_here" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/accounts
+     {{ config('app.url') }}/api/v2/accounts
                                 </x-code-block>
                             </div>
 
@@ -157,7 +178,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/accounts/acct_1234567890
+     {{ config('app.url') }}/api/v2/accounts/acct_1234567890
                                 </x-code-block>
                             </div>
 
@@ -226,7 +247,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/transactions?page=1&per_page=20"
+     "{{ config('app.url') }}/api/v2/transactions?page=1&per_page=20"
                                 </x-code-block>
                             </div>
                             
@@ -250,7 +271,7 @@ curl -X POST \
     "asset_code": "USD",
     "reference": "Initial deposit"
   }' \
-  https://api.finaegis.org/v2/accounts/acct_1234567890/deposit
+  {{ config('app.url') }}/api/v2/accounts/acct_1234567890/deposit
                                 </x-code-block>
                             </div>
                             
@@ -274,7 +295,7 @@ curl -X POST \
     "asset_code": "USD",
     "reference": "ATM withdrawal"
   }' \
-  https://api.finaegis.org/v2/accounts/acct_1234567890/withdraw
+  {{ config('app.url') }}/api/v2/accounts/acct_1234567890/withdraw
                                 </x-code-block>
                             </div>
                         </div>
@@ -307,7 +328,7 @@ curl -X POST \
     "reference": "Payment for services",
     "workflow_enabled": true
   }' \
-  https://api.finaegis.org/v2/transfers
+  {{ config('app.url') }}/api/v2/transfers
                                 </x-code-block>
                             </div>
                             
@@ -324,7 +345,7 @@ curl -X POST \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/accounts/acct_1234567890/transfers
+     {{ config('app.url') }}/api/v2/accounts/acct_1234567890/transfers
                                 </x-code-block>
                             </div>
                         </div>
@@ -343,7 +364,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu</span>
                                     </div>
                                 </div>
                                 
@@ -351,7 +372,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu
+     {{ config('app.url') }}/api/v2/gcu
                                 </x-code-block>
                             </div>
 
@@ -360,7 +381,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/composition</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/composition</span>
                                     </div>
                                 </div>
                                 
@@ -368,7 +389,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/composition
+     {{ config('app.url') }}/api/v2/gcu/composition
                                 </x-code-block>
                                 
                                 <h4 class="font-semibold mb-2">Response Example:</h4>
@@ -426,7 +447,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/value-history</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/value-history</span>
                                     </div>
                                 </div>
                                 
@@ -440,7 +461,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/gcu/value-history?period=7d&interval=hourly"
+     "{{ config('app.url') }}/api/v2/gcu/value-history?period=7d&interval=hourly"
                                 </x-code-block>
                             </div>
 
@@ -455,7 +476,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/voting/proposals</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/voting/proposals</span>
                                     </div>
                                 </div>
                                 
@@ -468,7 +489,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/gcu/voting/proposals?status=active"
+     "{{ config('app.url') }}/api/v2/gcu/voting/proposals?status=active"
                                 </x-code-block>
                             </div>
 
@@ -477,7 +498,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/voting/proposals/{id}</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/voting/proposals/{id}</span>
                                     </div>
                                 </div>
                                 
@@ -485,7 +506,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/voting/proposals/123
+     {{ config('app.url') }}/api/v2/gcu/voting/proposals/123
                                 </x-code-block>
                             </div>
 
@@ -494,7 +515,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/voting/proposals/{id}/vote</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/voting/proposals/{id}/vote</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">Requires Authentication</span>
@@ -515,7 +536,7 @@ curl -X POST \
      -H "Authorization: Bearer your_api_key" \
      -H "Content-Type: application/json" \
      -d '{"vote": "for"}' \
-     https://api.finaegis.org/v2/gcu/voting/proposals/123/vote
+     {{ config('app.url') }}/api/v2/gcu/voting/proposals/123/vote
                                 </x-code-block>
                             </div>
 
@@ -524,7 +545,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/gcu/voting/my-votes</span>
+                                        <span class="ml-2 font-mono text-sm">/gcu/voting/my-votes</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">Requires Authentication</span>
@@ -535,7 +556,7 @@ curl -X POST \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/gcu/voting/my-votes
+     {{ config('app.url') }}/api/v2/gcu/voting/my-votes
                                 </x-code-block>
                             </div>
                         </div>
@@ -562,7 +583,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/baskets
+     {{ config('app.url') }}/api/v2/baskets
                                 </x-code-block>
                             </div>
                             
@@ -579,7 +600,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/baskets/GCU
+     {{ config('app.url') }}/api/v2/baskets/GCU
                                 </x-code-block>
                             </div>
                             
@@ -602,7 +623,7 @@ curl -X POST \
     "basket_code": "GCU",
     "amount": "100.00"
   }' \
-  https://api.finaegis.org/v2/accounts/acct_123/baskets/compose
+  {{ config('app.url') }}/api/v2/accounts/acct_123/baskets/compose
                                 </x-code-block>
                             </div>
                             
@@ -625,7 +646,7 @@ curl -X POST \
     "basket_code": "GCU",
     "amount": "50.00"
   }' \
-  https://api.finaegis.org/v2/accounts/acct_123/baskets/decompose
+  {{ config('app.url') }}/api/v2/accounts/acct_123/baskets/decompose
                                 </x-code-block>
                             </div>
                         </div>
@@ -635,7 +656,7 @@ curl -X POST \
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">Webhooks</h2>
                         
                         <div class="prose prose-lg max-w-none mb-8">
-                            <p>Webhooks allow you to receive real-time notifications when events occur in your FinAegis account.</p>
+                            <p>Webhooks allow you to receive real-time notifications when events occur in your {{ config('brand.name', 'Zelta') }} account.</p>
                         </div>
                         
                         <div class="space-y-8">
@@ -652,7 +673,7 @@ curl -X POST \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/webhooks/events
+     {{ config('app.url') }}/api/v2/webhooks/events
                                 </x-code-block>
                             </div>
                             
@@ -676,7 +697,7 @@ curl -X POST \
     "events": ["transaction.created", "transfer.completed"],
     "description": "Main webhook endpoint"
   }' \
-  https://api.finaegis.org/v2/webhooks
+  {{ config('app.url') }}/api/v2/webhooks
                                 </x-code-block>
                             </div>
                             
@@ -693,7 +714,7 @@ curl -X POST \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/webhooks
+     {{ config('app.url') }}/api/v2/webhooks
                                 </x-code-block>
                             </div>
                             
@@ -710,7 +731,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/webhooks/webhook_123/deliveries
+     {{ config('app.url') }}/api/v2/webhooks/webhook_123/deliveries
                                 </x-code-block>
                             </div>
                         </div>
@@ -731,7 +752,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/crosschain/bridge</span>
+                                        <span class="ml-2 font-mono text-sm">/crosschain/bridge</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Initiate a cross-chain bridge transfer through Wormhole, LayerZero, or Axelar.</p>
@@ -746,7 +767,7 @@ curl -X POST \
     "amount": "1000.00",
     "protocol": "wormhole"
   }' \
-  https://api.finaegis.org/v2/crosschain/bridge
+  {{ config('app.url') }}/api/v2/crosschain/bridge
                                 </x-code-block>
                             </div>
 
@@ -755,13 +776,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/crosschain/bridge/fees</span>
+                                        <span class="ml-2 font-mono text-sm">/crosschain/bridge/fees</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Compare fees and estimated times across all supported bridge protocols for a given route.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/crosschain/bridge/fees?from=ethereum&to=arbitrum&token=USDC&amount=5000"
+     "{{ config('app.url') }}/api/v2/crosschain/bridge/fees?from=ethereum&to=arbitrum&token=USDC&amount=5000"
                                 </x-code-block>
                             </div>
 
@@ -770,7 +791,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/crosschain/swap</span>
+                                        <span class="ml-2 font-mono text-sm">/crosschain/swap</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Execute a token swap that bridges and swaps in a single atomic operation.</p>
@@ -786,7 +807,7 @@ curl -X POST \
     "amount": "1.5",
     "slippage_bps": 50
   }' \
-  https://api.finaegis.org/v2/crosschain/swap
+  {{ config('app.url') }}/api/v2/crosschain/swap
                                 </x-code-block>
                             </div>
 
@@ -795,13 +816,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/crosschain/portfolio</span>
+                                        <span class="ml-2 font-mono text-sm">/crosschain/portfolio</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Retrieve an aggregated portfolio view across all supported chains.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/crosschain/portfolio
+     {{ config('app.url') }}/api/v2/crosschain/portfolio
                                 </x-code-block>
                             </div>
                         </div>
@@ -822,13 +843,13 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/defi/swap/quote</span>
+                                        <span class="ml-2 font-mono text-sm">/defi/swap/quote</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Get the best swap quote aggregated across Uniswap, Curve, and other supported DEXes.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/defi/swap/quote?from=ETH&to=USDC&amount=2.0&chain=ethereum"
+     "{{ config('app.url') }}/api/v2/defi/swap/quote?from=ETH&to=USDC&amount=2.0&chain=ethereum"
                                 </x-code-block>
                             </div>
 
@@ -837,7 +858,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/defi/swap/execute</span>
+                                        <span class="ml-2 font-mono text-sm">/defi/swap/execute</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Execute a token swap through the optimal DEX route.</p>
@@ -852,7 +873,7 @@ curl -X POST \
     "slippage_bps": 50,
     "chain": "ethereum"
   }' \
-  https://api.finaegis.org/v2/defi/swap/execute
+  {{ config('app.url') }}/api/v2/defi/swap/execute
                                 </x-code-block>
                             </div>
 
@@ -861,13 +882,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/defi/portfolio</span>
+                                        <span class="ml-2 font-mono text-sm">/defi/portfolio</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Retrieve all DeFi positions including lending deposits, staking, liquidity pools, and yield farming.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/defi/portfolio
+     {{ config('app.url') }}/api/v2/defi/portfolio
                                 </x-code-block>
                             </div>
 
@@ -876,7 +897,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/defi/flash-loan</span>
+                                        <span class="ml-2 font-mono text-sm">/defi/flash-loan</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Execute a flash loan with a sequence of operations that must complete atomically.</p>
@@ -892,7 +913,7 @@ curl -X POST \
       {"type": "swap", "from": "ETH", "to": "USDC", "dex": "curve"}
     ]
   }' \
-  https://api.finaegis.org/v2/defi/flash-loan
+  {{ config('app.url') }}/api/v2/defi/flash-loan
                                 </x-code-block>
                             </div>
                         </div>
@@ -913,7 +934,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/regtech/mifid/reports</span>
+                                        <span class="ml-2 font-mono text-sm">/regtech/mifid/reports</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Submit a MiFID II transaction report to the configured National Competent Authority.</p>
@@ -926,7 +947,7 @@ curl -X POST \
     "report_type": "transaction",
     "jurisdiction": "EU"
   }' \
-  https://api.finaegis.org/v2/regtech/mifid/reports
+  {{ config('app.url') }}/api/v2/regtech/mifid/reports
                                 </x-code-block>
                             </div>
 
@@ -935,7 +956,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/regtech/mica/check</span>
+                                        <span class="ml-2 font-mono text-sm">/regtech/mica/check</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Run a MiCA compliance validation against a crypto-asset or token issuance.</p>
@@ -948,7 +969,7 @@ curl -X POST \
     "issuer_id": "issuer_xyz",
     "whitepaper_hash": "sha256:abc..."
   }' \
-  https://api.finaegis.org/v2/regtech/mica/check
+  {{ config('app.url') }}/api/v2/regtech/mica/check
                                 </x-code-block>
                             </div>
 
@@ -957,7 +978,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/regtech/travel-rule/transfers</span>
+                                        <span class="ml-2 font-mono text-sm">/regtech/travel-rule/transfers</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Submit originator and beneficiary information for FATF Travel Rule compliance on cross-border transfers.</p>
@@ -972,7 +993,7 @@ curl -X POST \
     "amount": "15000.00",
     "currency": "USDC"
   }' \
-  https://api.finaegis.org/v2/regtech/travel-rule/transfers
+  {{ config('app.url') }}/api/v2/regtech/travel-rule/transfers
                                 </x-code-block>
                             </div>
 
@@ -981,13 +1002,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/regtech/status</span>
+                                        <span class="ml-2 font-mono text-sm">/regtech/status</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Get overall compliance status across all active regulatory frameworks.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/regtech/status
+     {{ config('app.url') }}/api/v2/regtech/status
                                 </x-code-block>
                             </div>
                         </div>
@@ -998,7 +1019,7 @@ curl -H "Authorization: Bearer your_api_key" \
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">Mobile Payment API</h2>
 
                         <div class="prose prose-lg max-w-none mb-8">
-                            <p>The Mobile Payment API powers the FinAegis mobile wallet experience with payment intents, digital receipts, activity feeds, receive addresses, P2P transfers, passkey authentication, and biometric JWT sessions.</p>
+                            <p>The Mobile Payment API powers the {{ config('brand.name', 'Zelta') }} mobile wallet experience with payment intents, digital receipts, activity feeds, receive addresses, P2P transfers, passkey authentication, and biometric JWT sessions.</p>
                             <p class="text-sm text-gray-500">25+ routes &middot; <a href="/api/documentation#/MobilePayment" target="_blank" class="text-violet-600 hover:text-violet-800">View in Swagger UI</a></p>
                         </div>
 
@@ -1008,7 +1029,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/mobile/payments/intents</span>
+                                        <span class="ml-2 font-mono text-sm">/mobile/payments/intents</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Create a new payment intent for mobile wallet transactions.</p>
@@ -1022,7 +1043,7 @@ curl -X POST \
     "recipient": "user_456",
     "description": "Coffee payment"
   }' \
-  https://api.finaegis.org/v2/mobile/payments/intents
+  {{ config('app.url') }}/api/v2/mobile/payments/intents
                                 </x-code-block>
                             </div>
 
@@ -1031,13 +1052,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/mobile/activity</span>
+                                        <span class="ml-2 font-mono text-sm">/mobile/activity</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Retrieve the mobile wallet activity feed with payments, transfers, and notifications.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/mobile/activity?page=1&per_page=20"
+     "{{ config('app.url') }}/api/v2/mobile/activity?page=1&per_page=20"
                                 </x-code-block>
                             </div>
 
@@ -1046,7 +1067,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/mobile/transfers/p2p</span>
+                                        <span class="ml-2 font-mono text-sm">/mobile/transfers/p2p</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Send a peer-to-peer transfer to another mobile wallet user.</p>
@@ -1060,7 +1081,7 @@ curl -X POST \
     "currency": "USD",
     "note": "Dinner split"
   }' \
-  https://api.finaegis.org/v2/mobile/transfers/p2p
+  {{ config('app.url') }}/api/v2/mobile/transfers/p2p
                                 </x-code-block>
                             </div>
 
@@ -1069,7 +1090,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/mobile/auth/passkey/verify</span>
+                                        <span class="ml-2 font-mono text-sm">/mobile/auth/passkey/verify</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Verify a FIDO2/WebAuthn passkey for passwordless mobile authentication.</p>
@@ -1082,7 +1103,7 @@ curl -X POST \
     "client_data_json": "base64...",
     "signature": "base64..."
   }' \
-  https://api.finaegis.org/v2/mobile/auth/passkey/verify
+  {{ config('app.url') }}/api/v2/mobile/auth/passkey/verify
                                 </x-code-block>
                             </div>
                         </div>
@@ -1103,7 +1124,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/partner/tenants</span>
+                                        <span class="ml-2 font-mono text-sm">/partner/tenants</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-0.5 rounded">Partner Key Required</span>
@@ -1120,7 +1141,7 @@ curl -X POST \
     "plan": "enterprise",
     "domain": "acme.finaegis.io"
   }' \
-  https://api.finaegis.org/v2/partner/tenants
+  {{ config('app.url') }}/api/v2/partner/tenants
                                 </x-code-block>
                             </div>
 
@@ -1129,7 +1150,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/partner/sdk/generate</span>
+                                        <span class="ml-2 font-mono text-sm">/partner/sdk/generate</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-0.5 rounded">Partner Key Required</span>
@@ -1146,7 +1167,7 @@ curl -X POST \
     "branding": {"name": "AcmeSDK", "color": "#3B82F6"},
     "modules": ["accounts", "transfers", "payments"]
   }' \
-  https://api.finaegis.org/v2/partner/sdk/generate
+  {{ config('app.url') }}/api/v2/partner/sdk/generate
                                 </x-code-block>
                             </div>
 
@@ -1155,7 +1176,7 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">PUT</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/partner/config/whitelabel</span>
+                                        <span class="ml-2 font-mono text-sm">/partner/config/whitelabel</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-0.5 rounded">Partner Key Required</span>
@@ -1172,7 +1193,7 @@ curl -X PUT \
     "primary_color": "#3B82F6",
     "features": {"defi": true, "crosschain": true, "lending": false}
   }' \
-  https://api.finaegis.org/v2/partner/config/whitelabel
+  {{ config('app.url') }}/api/v2/partner/config/whitelabel
                                 </x-code-block>
                             </div>
 
@@ -1181,7 +1202,7 @@ curl -X PUT \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/partner/tenants</span>
+                                        <span class="ml-2 font-mono text-sm">/partner/tenants</span>
                                     </div>
                                     <div class="text-right">
                                         <span class="inline-block bg-rose-100 text-rose-800 text-xs font-medium px-2.5 py-0.5 rounded">Partner Key Required</span>
@@ -1191,7 +1212,7 @@ curl -X PUT \
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
      -H "X-Partner-Key: fpk_your_partner_key" \
-     https://api.finaegis.org/v2/partner/tenants
+     {{ config('app.url') }}/api/v2/partner/tenants
                                 </x-code-block>
                             </div>
                         </div>
@@ -1212,7 +1233,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/ai/query</span>
+                                        <span class="ml-2 font-mono text-sm">/ai/query</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Submit a natural language question about your transactions, balances, or financial activity.</p>
@@ -1224,7 +1245,7 @@ curl -X POST \
     "query": "What were my largest transactions last month?",
     "context": {"account_id": "acc_123"}
   }' \
-  https://api.finaegis.org/v2/ai/query
+  {{ config('app.url') }}/api/v2/ai/query
                                 </x-code-block>
                             </div>
 
@@ -1233,13 +1254,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/ai/queries</span>
+                                        <span class="ml-2 font-mono text-sm">/ai/queries</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Retrieve your past AI query history with cached results.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/ai/queries
+     {{ config('app.url') }}/api/v2/ai/queries
                                 </x-code-block>
                             </div>
                         </div>
@@ -1250,8 +1271,8 @@ curl -H "Authorization: Bearer your_api_key" \
                         <h2 class="text-3xl font-bold text-gray-900 mb-8">GraphQL API</h2>
 
                         <div class="prose prose-lg max-w-none mb-8">
-                            <p>Schema-first GraphQL API powered by Lighthouse PHP. Provides queries, mutations, and subscriptions across 35 domain schemas with DataLoader-optimized resolvers and WebSocket-based real-time subscriptions.</p>
-                            <p class="text-sm text-gray-500">35 domain schemas &middot; Queries, Mutations, Subscriptions</p>
+                            <p>Schema-first GraphQL API powered by Lighthouse PHP. Provides queries, mutations, and subscriptions across 45 domain schemas with DataLoader-optimized resolvers and WebSocket-based real-time subscriptions.</p>
+                            <p class="text-sm text-gray-500">45 domain schemas &middot; Queries, Mutations, Subscriptions</p>
                         </div>
 
                         <div class="space-y-8">
@@ -1263,7 +1284,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                         <span class="ml-2 font-mono text-sm">/graphql</span>
                                     </div>
                                 </div>
-                                <p class="text-gray-600 mb-4">Execute a GraphQL query or mutation against the unified schema. Supports all 35 domain schemas including Account, AgentProtocol, Basket, Batch, CardIssuance, Cgo, Compliance, CrossChain, DeFi, Exchange, FinancialInstitution, Product, Regulatory, User, Wallet, and more.</p>
+                                <p class="text-gray-600 mb-4">Execute a GraphQL query or mutation against the unified schema. Supports all 45 domain schemas including Account, AgentProtocol, Basket, Batch, CardIssuance, Cgo, Compliance, CrossChain, DeFi, Exchange, FinancialInstitution, ISO20022, OpenBanking, PaymentRails, Microfinance, Interledger, Ledger, Regulatory, User, Wallet, and more.</p>
                                 <x-code-block language="bash">
 curl -X POST \
   -H "Authorization: Bearer your_api_key" \
@@ -1271,7 +1292,7 @@ curl -X POST \
   -d '{
     "query": "{ accounts(first: 10) { data { id name currency balance { available total } } } }"
   }' \
-  https://api.finaegis.org/graphql
+  {{ config('app.url') }}/api/graphql
                                 </x-code-block>
 
                                 <h4 class="font-semibold mb-2 mt-6">Example Query:</h4>
@@ -1308,7 +1329,7 @@ query {
                                 <p class="text-gray-600 mb-4">Interactive GraphQL explorer with schema introspection, auto-complete, and query history. Use this to explore available types, queries, mutations, and subscriptions.</p>
                                 <x-code-block language="bash">
 # Open in your browser
-https://api.finaegis.org/graphql-playground
+{{ config('app.url') }}/api/graphql-playground
                                 </x-code-block>
                             </div>
 
@@ -1346,7 +1367,7 @@ https://api.finaegis.org/graphql-playground
                                 <p class="text-gray-600 mb-4">Retrieve aggregated system metrics including event counts, processing rates, error rates, and uptime statistics.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/live-dashboard/metrics
+     {{ config('app.url') }}/api/v1/live-dashboard/metrics
                                 </x-code-block>
                             </div>
 
@@ -1361,7 +1382,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <p class="text-gray-600 mb-4">Get health status for each event-sourced domain including event store connectivity, projector status, and recent error counts.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/live-dashboard/domain-health
+     {{ config('app.url') }}/api/v1/live-dashboard/domain-health
                                 </x-code-block>
                             </div>
 
@@ -1376,7 +1397,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <p class="text-gray-600 mb-4">Monitor real-time event throughput rates per domain and aggregate, including events per second and processing latency.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/live-dashboard/event-throughput
+     {{ config('app.url') }}/api/v1/live-dashboard/event-throughput
                                 </x-code-block>
                             </div>
 
@@ -1391,7 +1412,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <p class="text-gray-600 mb-4">Check Redis Streams connectivity, consumer group status, pending message counts, and stream memory usage.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/live-dashboard/stream-status
+     {{ config('app.url') }}/api/v1/live-dashboard/stream-status
                                 </x-code-block>
                             </div>
 
@@ -1406,8 +1427,250 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <p class="text-gray-600 mb-4">Monitor projector lag across all event-sourced domains showing how far behind each read model projector is from the latest events.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v1/live-dashboard/projector-lag
+     {{ config('app.url') }}/api/v1/live-dashboard/projector-lag
                                 </x-code-block>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ISO 20022 API -->
+                    <section id="iso20022" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">ISO 20022 API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Parse, generate, and validate ISO 20022 financial messages. Supports 8 message types (pacs.008, pacs.002, pain.001, pain.002, camt.053, camt.054, camt.056, admi.002) with full REST and GraphQL coverage. XML is validated against official XSD schemas.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Parse Message</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/iso20022/parse</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Parse an ISO 20022 XML message and return a structured JSON representation.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/xml" \
+  --data-binary @payment.xml \
+  {{ config('app.url') }}/api/v1/iso20022/parse
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Generate Message</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/iso20022/generate</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Generate a standards-compliant ISO 20022 XML message from a JSON payload.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"type":"pacs.008","amount":"1000.00","currency":"EUR","debtor":"...","creditor":"..."}' \
+  {{ config('app.url') }}/api/v1/iso20022/generate
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Validate Message</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/iso20022/validate</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Validate an ISO 20022 XML message against the official XSD schema and business rules.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Open Banking API -->
+                    <section id="open-banking" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Open Banking API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Full PSD2 consent lifecycle with AISP (Account Information Service Provider) and PISP (Payment Initiation Service Provider) services. Supports Berlin Group NextGenPSD2 and UK Open Banking adapters. TPP registration with eIDAS certificate validation.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Create Consent</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/open-banking/consents</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Initiate a PSD2 consent request for account access or payment initiation.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"access":{"accounts":"all","balances":"all","transactions":"all"},"recurringIndicator":false,"validUntil":"2026-12-31","frequencyPerDay":4}' \
+  {{ config('app.url') }}/api/v1/open-banking/consents
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Get Account Information (AISP)</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                    <span class="font-mono text-sm">/api/v1/open-banking/accounts</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Retrieve account list under an active AISP consent.</p>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Initiate Payment (PISP)</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/open-banking/payments</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Initiate a payment under an active PISP consent.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Payment Rails API -->
+                    <section id="payment-rails" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Payment Rails API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Multi-rail payment processing with ACH (NACHA file generation), Fedwire, RTP, FedNow (ISO 20022 native), SEPA Direct Debit, and SCT Inst. Intelligent routing automatically selects the optimal rail based on amount, currency, and counterparty.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Initiate Payment</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/payment-rails/payments</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Initiate a payment via the specified rail, or let intelligent routing select the optimal rail automatically.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":"500.00","currency":"USD","rail":"auto","creditor_account":"...","memo":"Invoice #1234"}' \
+  {{ config('app.url') }}/api/v1/payment-rails/payments
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">List Supported Rails</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                    <span class="font-mono text-sm">/api/v1/payment-rails/rails</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">List all available payment rails with current availability and cut-off times.</p>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Generate ACH File</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/payment-rails/ach/files</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Generate a NACHA-compliant ACH batch file from a list of payment entries.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Interledger API -->
+                    <section id="interledger" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Interledger API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Cross-network value transfer with ILP connector, Open Payments (GNAP authorization), and cross-currency quotes. Bridge fiat and crypto payment networks seamlessly.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Get Quote</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/interledger/quotes</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Get a cross-currency quote for an Interledger payment including fees and FX rate.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"send_amount":"100.00","send_currency":"USD","receive_currency":"EUR","receiver":"$wallet.example.com/alice"}' \
+  {{ config('app.url') }}/api/v1/interledger/quotes
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Send Payment</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/interledger/payments</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Execute an Interledger payment using a previously obtained quote.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Ledger API -->
+                    <section id="ledger" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Ledger API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Production-grade double-entry accounting engine. Manage chart of accounts, post journal entries, run trial balances, and configure GL auto-posting rules. Supports an optional TigerBeetle driver for extreme throughput workloads.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Chart of Accounts</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                    <span class="font-mono text-sm">/api/v1/ledger/accounts</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Retrieve the full chart of accounts with balances.</p>
+                                <x-code-block language="bash">
+curl -H "Authorization: Bearer your_api_key" \
+     {{ config('app.url') }}/api/v1/ledger/accounts
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Post Journal Entry</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/ledger/entries</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Post a balanced double-entry journal entry. Debits must equal credits.</p>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Trial Balance</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                    <span class="font-mono text-sm">/api/v1/ledger/trial-balance</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Generate a trial balance report for a given date range.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Microfinance API -->
+                    <section id="microfinance" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Microfinance API</h2>
+                        <div class="prose prose-lg max-w-none mb-8">
+                            <p>Complete inclusion banking infrastructure: group lending with joint liability, IFRS 9 loan provisioning, cooperative share accounts, teller cash operations, field officer tools, and savings products with dormancy tracking.</p>
+                        </div>
+                        <div class="space-y-8">
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Create Loan Group</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/microfinance/groups</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Create a group lending entity with joint liability configuration.</p>
+                                <x-code-block language="bash">
+curl -X POST \
+  -H "Authorization: Bearer your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Village Savings Group A","members":["user_1","user_2","user_3"],"liability_type":"joint"}' \
+  {{ config('app.url') }}/api/v1/microfinance/groups
+                                </x-code-block>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">IFRS Loan Provisioning</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
+                                    <span class="font-mono text-sm">/api/v1/microfinance/loans/{id}/provision</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Calculate IFRS 9 expected credit loss (ECL) provision for a loan.</p>
+                            </div>
+                            <div class="border rounded-lg p-6">
+                                <h3 class="text-xl font-semibold mb-4">Teller Operations</h3>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
+                                    <span class="font-mono text-sm">/api/v1/microfinance/teller/transactions</span>
+                                </div>
+                                <p class="text-gray-600 mb-4">Post a teller cash transaction (deposit, withdrawal, or currency exchange).</p>
                             </div>
                         </div>
                     </section>
@@ -1427,13 +1690,13 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/x402/status</span>
+                                        <span class="ml-2 font-mono text-sm">/x402/status</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Get the current x402 protocol status including supported networks, assets, and facilitator connectivity.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/x402/status
+     {{ config('app.url') }}/api/v2/x402/status
                                 </x-code-block>
                             </div>
 
@@ -1442,13 +1705,13 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/x402/supported</span>
+                                        <span class="ml-2 font-mono text-sm">/x402/supported</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">List all supported blockchain networks and payment assets for x402 settlement.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/x402/supported
+     {{ config('app.url') }}/api/v2/x402/supported
                                 </x-code-block>
                             </div>
 
@@ -1457,7 +1720,7 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-orange-100 text-orange-800 text-xs font-medium px-2.5 py-0.5 rounded">POST</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/x402/endpoints</span>
+                                        <span class="ml-2 font-mono text-sm">/x402/endpoints</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Register an API endpoint for x402 monetization with pricing configuration.</p>
@@ -1472,7 +1735,7 @@ curl -X POST \
     "asset": "USDC",
     "description": "Premium market data"
   }' \
-  https://api.finaegis.org/v2/x402/endpoints
+  {{ config('app.url') }}/api/v2/x402/endpoints
                                 </x-code-block>
                             </div>
 
@@ -1481,13 +1744,13 @@ curl -X POST \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/x402/payments</span>
+                                        <span class="ml-2 font-mono text-sm">/x402/payments</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">Retrieve payment history and settlement status for x402 transactions.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     "https://api.finaegis.org/v2/x402/payments?page=1&per_page=20"
+     "{{ config('app.url') }}/api/v2/x402/payments?page=1&per_page=20"
                                 </x-code-block>
                             </div>
 
@@ -1496,13 +1759,13 @@ curl -H "Authorization: Bearer your_api_key" \
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div>
                                         <span class="inline-block bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">GET</span>
-                                        <span class="ml-2 font-mono text-sm">/v2/x402/spending-limits</span>
+                                        <span class="ml-2 font-mono text-sm">/x402/spending-limits</span>
                                     </div>
                                 </div>
                                 <p class="text-gray-600 mb-4">View and manage spending limits for automated x402 payments including AI agent budgets.</p>
                                 <x-code-block language="bash">
 curl -H "Authorization: Bearer your_api_key" \
-     https://api.finaegis.org/v2/x402/spending-limits
+     {{ config('app.url') }}/api/v2/x402/spending-limits
                                 </x-code-block>
                             </div>
 
@@ -1521,7 +1784,7 @@ X-Payment-Facilitator: https://x402.org/facilitator
 
                                 <h4 class="font-semibold mb-2 mt-6">JavaScript Client Example:</h4>
                                 <x-code-block language="javascript">
-const response = await fetch('https://api.finaegis.org/v2/premium/data', {
+const response = await fetch('{{ config('app.url') }}/api/v2/premium/data', {
   headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
 });
 
@@ -1535,7 +1798,7 @@ if (response.status === 402) {
 
   // Sign and submit payment, then retry with proof
   const proof = await signPayment(paymentInfo);
-  const paid = await fetch('https://api.finaegis.org/v2/premium/data', {
+  const paid = await fetch('{{ config('app.url') }}/api/v2/premium/data', {
     headers: {
       'Authorization': 'Bearer YOUR_API_KEY',
       'X-Payment-Signature': proof.signature,
@@ -1545,6 +1808,38 @@ if (response.status === 402) {
   const data = await paid.json(); // 200 + data
 }
                                 </x-code-block>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="rate-limits" class="mb-16">
+                        <h2 class="text-3xl font-bold text-gray-900 mb-8">Rate Limits</h2>
+                        <div class="prose prose-lg max-w-none mb-6">
+                            <p>All API requests are rate limited. Limits apply per API key and are enforced on a sliding window.</p>
+                        </div>
+                        <div class="border rounded-lg overflow-hidden mb-6">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Endpoint Type</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Limit</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    <tr><td class="px-4 py-3 text-gray-700">REST API</td><td class="px-4 py-3"><code class="bg-gray-100 px-2 py-0.5 rounded">1,000 requests/hour per API key</code></td></tr>
+                                    <tr><td class="px-4 py-3 text-gray-700">GraphQL (authenticated)</td><td class="px-4 py-3"><code class="bg-gray-100 px-2 py-0.5 rounded">120 queries/minute</code></td></tr>
+                                    <tr><td class="px-4 py-3 text-gray-700">GraphQL (guest)</td><td class="px-4 py-3"><code class="bg-gray-100 px-2 py-0.5 rounded">30 queries/minute</code></td></tr>
+                                    <tr><td class="px-4 py-3 text-gray-700">Webhooks</td><td class="px-4 py-3"><code class="bg-gray-100 px-2 py-0.5 rounded">100 deliveries/minute per endpoint</code></td></tr>
+                                    <tr><td class="px-4 py-3 text-gray-700">Burst (sliding window)</td><td class="px-4 py-3"><code class="bg-gray-100 px-2 py-0.5 rounded">100 requests/minute</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <p class="text-sm font-semibold text-gray-700 mb-2">Rate limit headers included in every response:</p>
+                            <div class="space-y-1 font-mono text-sm text-gray-600">
+                                <div><code>X-RateLimit-Limit</code> — Maximum requests allowed in the window</div>
+                                <div><code>X-RateLimit-Remaining</code> — Requests remaining in the current window</div>
+                                <div><code>X-RateLimit-Reset</code> — Unix timestamp when the window resets</div>
                             </div>
                         </div>
                     </section>
@@ -1572,9 +1867,15 @@ if (response.status === 402) {
                                 <li><a href="#mobile-payment" class="text-violet-600 hover:text-violet-800 flex justify-between"><span>Mobile Payment</span><span class="text-gray-400">25+ routes</span></a></li>
                                 <li><a href="#partner-baas" class="text-rose-600 hover:text-rose-800 flex justify-between"><span>Partner BaaS</span><span class="text-gray-400">24 routes</span></a></li>
                                 <li><a href="#ai" class="text-gray-600 hover:text-gray-800 flex justify-between"><span>AI Query</span><span class="text-gray-400">2 routes</span></a></li>
-                                <li><a href="#graphql" class="text-sky-600 hover:text-sky-800 flex justify-between"><span>GraphQL</span><span class="text-gray-400">35 domains</span></a></li>
+                                <li><a href="#graphql" class="text-sky-600 hover:text-sky-800 flex justify-between"><span>GraphQL</span><span class="text-gray-400">45 domains</span></a></li>
                                 <li><a href="#event-streaming" class="text-lime-600 hover:text-lime-800 flex justify-between"><span>Event Streaming</span><span class="text-gray-400">5 endpoints</span></a></li>
                                 <li><a href="#x402" class="text-emerald-600 hover:text-emerald-800 flex justify-between"><span>x402 Protocol</span><span class="text-gray-400">15+ endpoints</span></a></li>
+                                <li><a href="#iso20022" class="text-blue-600 hover:text-blue-800 flex justify-between"><span>ISO 20022</span><span class="text-gray-400">8 msg types</span></a></li>
+                                <li><a href="#open-banking" class="text-teal-600 hover:text-teal-800 flex justify-between"><span>Open Banking</span><span class="text-gray-400">AISP + PISP</span></a></li>
+                                <li><a href="#payment-rails" class="text-orange-600 hover:text-orange-800 flex justify-between"><span>Payment Rails</span><span class="text-gray-400">ACH/Fedwire/SEPA</span></a></li>
+                                <li><a href="#interledger" class="text-purple-600 hover:text-purple-800 flex justify-between"><span>Interledger</span><span class="text-gray-400">ILP + GNAP</span></a></li>
+                                <li><a href="#ledger" class="text-slate-600 hover:text-slate-800 flex justify-between"><span>Ledger</span><span class="text-gray-400">Double-entry</span></a></li>
+                                <li><a href="#microfinance" class="text-green-600 hover:text-green-800 flex justify-between"><span>Microfinance</span><span class="text-gray-400">Group lending</span></a></li>
                             </ul>
                         </div>
 
@@ -1582,7 +1883,7 @@ if (response.status === 402) {
                             <h3 class="text-lg font-semibold text-blue-900 mb-4">OpenAPI Specification</h3>
                             <p class="text-blue-800 mb-4">Download the OpenAPI specification file or view it in your preferred API client.</p>
                             <div class="flex gap-3">
-                                <a href="/docs/api-docs.json" download="finaegis-api-v2.json" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200">
+                                <a href="/docs/api-docs.json" download="zelta-api-v2.json" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-200">
                                     Download OpenAPI JSON
                                 </a>
                                 <a href="/api/documentation" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-200">

@@ -32,6 +32,23 @@ type AggregatedBalance {
     account_count: Int!
 }
 
+type BankTransferModel {
+    id: String!
+    from_account_id: String!
+    to_account_id: String!
+    amount: String!
+    currency: String!
+    status: String!
+    reference: String
+    created_at: String
+}
+
+type BankTransferResult {
+    transfer_id: String!
+    status: String!
+    message: String
+}
+
 extend type Query {
     bankAccount(id: ID! @eq): BankAccountModel
         @find
@@ -67,6 +84,10 @@ extend type Query {
     availableBanks: [String!]!
         @guard(with: ["sanctum"])
         @field(resolver: "App\\GraphQL\\Queries\\Banking\\AvailableBanksQuery")
+
+    bankTransfers(page: Int, first: Int): [BankTransferModel!]!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Queries\\Banking\\BankTransfersQuery")
 }
 
 input ConnectBankInput {
@@ -98,4 +119,8 @@ extend type Mutation {
     syncBankAccounts(connection_id: ID!): [BankAccountModel!]!
         @guard(with: ["sanctum"])
         @field(resolver: "App\\GraphQL\\Mutations\\Banking\\SyncBankAccountsMutation")
+
+    cancelTransfer(transfer_id: String!): BankTransferResult!
+        @guard(with: ["sanctum"])
+        @field(resolver: "App\\GraphQL\\Mutations\\Banking\\CancelTransferMutation")
 }

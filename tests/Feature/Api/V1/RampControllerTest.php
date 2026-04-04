@@ -14,62 +14,74 @@ class RampControllerTest extends TestCase
 {
     use LazilyRefreshDatabase;
 
+    protected User $user;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->user = User::factory()->create();
     }
 
-    public function test_quote_requires_auth(): void
+    public function test_quotes_requires_auth(): void
     {
-        $this->getJson('/api/v1/ramp/quote?type=on&fiat=USD&amount=100&crypto=USDC')
+        $this->getJson('/api/v1/ramp/quotes?type=on&fiat=USD&amount=100&crypto=USDC')
             ->assertStatus(401);
     }
 
-    public function test_get_quote_returns_pricing(): void
+    public function test_get_quotes_returns_multiple_providers(): void
     {
         Sanctum::actingAs($this->user, ['read']);
 
-        $this->getJson('/api/v1/ramp/quote?type=on&fiat=USD&amount=100&crypto=USDC')
+        $this->getJson('/api/v1/ramp/quotes?type=on&fiat=USD&amount=100&crypto=USDC')
             ->assertOk()
             ->assertJsonStructure([
-                'data' => ['fiat_amount', 'crypto_amount', 'exchange_rate', 'fee', 'fee_currency', 'provider'],
+                'data' => [
+                    'quotes' => [
+                        '*' => ['provider_name', 'quote_id', 'fiat_amount', 'crypto_amount', 'exchange_rate', 'fee', 'network_fee', 'fee_currency', 'payment_methods'],
+                    ],
+                    'provider',
+                    'valid_until',
+                ],
             ])
-            ->assertJsonPath('data.fiat_amount', 100)
-            ->assertJsonPath('data.provider', 'mock');
+            ->assertJsonPath('data.provider', 'mock')
+            ->assertJsonCount(2, 'data.quotes');
     }
 
-    public function test_get_quote_validates_currency(): void
+    public function test_get_quotes_validates_currency(): void
     {
         Sanctum::actingAs($this->user, ['read']);
 
-        $this->getJson('/api/v1/ramp/quote?type=on&fiat=XXX&amount=100&crypto=USDC')
+        $this->getJson('/api/v1/ramp/quotes?type=on&fiat=XXX&amount=100&crypto=USDC')
             ->assertStatus(422);
     }
 
     public function test_create_session(): void
     {
-        Sanctum::actingAs($this->user, ['read', 'write']);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
+
+        $wallet = '0x1234567890abcdef1234567890abcdef12345678';
 
         $response = $this->postJson('/api/v1/ramp/session', [
             'type'            => 'on',
             'fiat_currency'   => 'USD',
             'fiat_amount'     => 100,
             'crypto_currency' => 'USDC',
-            'wallet_address'  => '0x1234567890abcdef1234567890abcdef12345678',
+            'wallet_address'  => $wallet,
         ])
             ->assertStatus(201)
             ->assertJsonStructure([
-                'data' => ['id', 'provider', 'type', 'fiat_currency', 'fiat_amount', 'crypto_currency', 'status'],
+                'data' => ['id', 'provider', 'type', 'fiat_currency', 'fiat_amount', 'crypto_currency', 'status', 'checkout_url', 'wallet_address'],
             ]);
 
         $this->assertEquals('pending', $response->json('data.status'));
         $this->assertEquals('mock', $response->json('data.provider'));
+        $this->assertEquals($wallet, $response->json('data.wallet_address'));
 
         $this->assertDatabaseHas('ramp_sessions', [
-            'user_id'  => $this->user->id,
-            'provider' => 'mock',
-            'type'     => 'on',
+            'user_id'        => $this->user->id,
+            'provider'       => 'mock',
+            'type'           => 'on',
+            'wallet_address' => $wallet,
         ]);
     }
 
@@ -159,9 +171,94 @@ class RampControllerTest extends TestCase
         $this->assertEquals('completed', $session->status);
     }
 
+    public function test_webhook_skips_terminal_session(): void
+    {
+        $session = RampSession::create([
+            'user_id'             => $this->user->id,
+            'provider'            => 'mock',
+            'type'                => 'on',
+            'fiat_currency'       => 'USD',
+            'fiat_amount'         => 100,
+            'crypto_currency'     => 'USDC',
+            'status'              => 'completed',
+            'provider_session_id' => 'mock_terminal_test',
+            'metadata'            => [],
+        ]);
+
+        $this->postJson('/api/v1/ramp/webhook/mock', [
+            'session_id'    => 'mock_terminal_test',
+            'status'        => 'failed',
+            'crypto_amount' => 0,
+        ], ['X-Webhook-Signature' => 'valid'])
+            ->assertOk();
+
+        $session->refresh();
+        $this->assertEquals('completed', $session->status);
+    }
+
+    public function test_webhook_rejects_provider_mismatch(): void
+    {
+        $session = RampSession::create([
+            'user_id'             => $this->user->id,
+            'provider'            => 'onramper',
+            'type'                => 'on',
+            'fiat_currency'       => 'USD',
+            'fiat_amount'         => 100,
+            'crypto_currency'     => 'USDC',
+            'status'              => 'pending',
+            'provider_session_id' => 'mismatch_test',
+            'metadata'            => [],
+        ]);
+
+        $this->postJson('/api/v1/ramp/webhook/mock', [
+            'session_id' => 'mismatch_test',
+            'status'     => 'completed',
+        ], ['X-Webhook-Signature' => 'valid'])
+            ->assertOk();
+
+        $session->refresh();
+        $this->assertEquals('pending', $session->status);
+    }
+
+    public function test_webhook_normalizes_status(): void
+    {
+        $session = RampSession::create([
+            'user_id'             => $this->user->id,
+            'provider'            => 'mock',
+            'type'                => 'on',
+            'fiat_currency'       => 'USD',
+            'fiat_amount'         => 100,
+            'crypto_currency'     => 'USDC',
+            'status'              => 'pending',
+            'provider_session_id' => 'normalize_test',
+            'metadata'            => [],
+        ]);
+
+        $this->postJson('/api/v1/ramp/webhook/mock', [
+            'session_id' => 'normalize_test',
+            'status'     => 'success',
+        ], ['X-Webhook-Signature' => 'valid'])
+            ->assertOk();
+
+        $session->refresh();
+        $this->assertEquals('completed', $session->status);
+    }
+
+    public function test_supported_returns_modes_with_types(): void
+    {
+        Sanctum::actingAs($this->user, ['read']);
+
+        $this->getJson('/api/v1/ramp/supported')
+            ->assertOk()
+            ->assertJsonPath('data.modes.0.type', 'on')
+            ->assertJsonPath('data.modes.0.label', 'Buy Crypto')
+            ->assertJsonPath('data.modes.1.type', 'off')
+            ->assertJsonPath('data.modes.1.label', 'Sell Crypto');
+    }
+
     public function test_create_session_validates_amount_limits(): void
     {
-        Sanctum::actingAs($this->user, ['read', 'write']);
+        Sanctum::actingAs($this->user, ['read', 'write', 'delete']);
 
         $this->postJson('/api/v1/ramp/session', [
             'type'            => 'on',
@@ -171,5 +268,16 @@ class RampControllerTest extends TestCase
             'wallet_address'  => '0x1234',
         ])
             ->assertStatus(422);
+    }
+
+    public function test_supported_returns_provider_info(): void
+    {
+        Sanctum::actingAs($this->user, ['read']);
+
+        $this->getJson('/api/v1/ramp/supported')
+            ->assertOk()
+            ->assertJsonStructure([
+                'data' => ['provider', 'fiat_currencies', 'crypto_currencies', 'modes', 'limits'],
+            ]);
     }
 }

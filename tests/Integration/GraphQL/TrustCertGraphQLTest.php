@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 
+uses(Tests\TestCase::class);
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 describe('GraphQL TrustCert API', function () {

@@ -78,10 +78,11 @@ describe('SnarkjsProverService', function (): void {
         })->throws(CircuitNotFoundException::class);
 
         it('throws SnarkjsException when snarkjs process fails', function (): void {
-            // Create fake zkey file so validation passes
+            // Create fake zkey and wasm files so validation passes
             $dir = sys_get_temp_dir() . '/test_circuits';
             @mkdir($dir, 0755, true);
             file_put_contents($dir . '/age_check.zkey', 'fake_zkey');
+            file_put_contents($dir . '/age_check.wasm', 'fake_wasm');
 
             config(['privacy.zk.snarkjs_binary' => '/nonexistent/binary']);
             $service = new SnarkjsProverService();
@@ -97,6 +98,7 @@ describe('SnarkjsProverService', function (): void {
                 expect($e->getMessage())->toContain('age_check');
             } finally {
                 @unlink($dir . '/age_check.zkey');
+                @unlink($dir . '/age_check.wasm');
             }
         });
     });

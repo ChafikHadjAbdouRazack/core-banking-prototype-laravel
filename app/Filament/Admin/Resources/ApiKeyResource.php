@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ApiKeyResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = ApiKey::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-key';

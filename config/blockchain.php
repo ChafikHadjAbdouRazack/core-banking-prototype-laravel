@@ -23,6 +23,18 @@ return [
         'network'  => env('POLYGON_NETWORK', 'mainnet'),
     ],
 
+    'base' => [
+        'rpc_url'  => env('BASE_RPC_URL', 'https://mainnet.base.org'),
+        'chain_id' => env('BASE_CHAIN_ID', '8453'),
+        'network'  => env('BASE_NETWORK', 'mainnet'),
+    ],
+
+    'arbitrum' => [
+        'rpc_url'  => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
+        'chain_id' => env('ARBITRUM_CHAIN_ID', '42161'),
+        'network'  => env('ARBITRUM_NETWORK', 'mainnet'),
+    ],
+
     'bsc' => [
         'rpc_url'  => env('BSC_RPC_URL', 'https://bsc-dataseed.binance.org'),
         'chain_id' => env('BSC_CHAIN_ID', '56'),

@@ -56,6 +56,10 @@ Route::prefix('monitoring')->group(function () {
     Route::get('/alive', [App\Http\Controllers\Api\MonitoringController::class, 'alive'])->name('monitoring.alive');
 });
 
+// Domain metrics endpoints (public - for Prometheus scraping)
+Route::get('/metrics/prometheus', [App\Http\Controllers\Api\MetricsController::class, 'prometheus'])->name('metrics.prometheus');
+Route::get('/health', [App\Http\Controllers\Api\MetricsController::class, 'health'])->name('health.quick');
+
 // WebSocket configuration endpoints (public - for client initialization)
 Route::prefix('websocket')->name('api.websocket.')->group(function () {
     Route::get('/config', [App\Http\Controllers\Api\WebSocketController::class, 'config'])->name('config');
@@ -68,6 +72,8 @@ Route::prefix('websocket')->name('api.websocket.')
     ->middleware(['auth:sanctum'])
     ->group(function () {
         Route::get('/channels', [App\Http\Controllers\Api\WebSocketController::class, 'channels'])->name('channels');
+        Route::get('/subscriptions', [App\Http\Controllers\Api\WebSocket\PaidChannelController::class, 'index'])->name('subscriptions.index');
+        Route::delete('/subscriptions/{id}', [App\Http\Controllers\Api\WebSocket\PaidChannelController::class, 'destroy'])->name('subscriptions.destroy');
     });
 
 // Authentication endpoints (public)
@@ -95,7 +101,7 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
     Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/logout', [LoginController::class, 'logout']);
         Route::post('/logout-all', [LoginController::class, 'logoutAll']);
-        Route::get('/user', [LoginController::class, 'user']);
+        Route::get('/user', [LoginController::class, 'user'])->withoutMiddleware('api.rate_limit:auth')->middleware('api.rate_limit:query');
         Route::get('/me', [LoginController::class, 'user'])->name('api.auth.me');
         Route::post('/delete-account', AccountDeletionController::class)->name('api.auth.delete-account');
 
@@ -130,6 +136,12 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
         Route::post('/verify', [PasskeyController::class, 'authenticate'])->name('api.auth.passkey.verify');
         Route::post('/authenticate', [PasskeyController::class, 'authenticate']);
     });
+});
+
+// User profile (avatar upload/delete)
+Route::prefix('v1/users')->middleware(['auth:sanctum'])->group(function () {
+    Route::post('/avatar', [App\Http\Controllers\Api\UserProfileController::class, 'uploadAvatar'])->middleware('throttle:10,1')->name('api.users.avatar.upload');
+    Route::delete('/avatar', [App\Http\Controllers\Api\UserProfileController::class, 'deleteAvatar'])->middleware('api.rate_limit:query')->name('api.users.avatar.delete');
 });
 
 // Legacy profile route for backward compatibility
@@ -211,6 +223,14 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'require.2fa.admin'])->group
     });
 });
 
+// UserOperation signing alias — mobile app expects /api/v1/auth/sign-userop (v7.1.0)
+Route::prefix('v1/auth')
+    ->middleware(['auth:sanctum', 'throttle:10,1'])
+    ->group(function () {
+        Route::post('/sign-userop', [App\Http\Controllers\Api\Auth\UserOpSigningController::class, 'sign'])
+            ->name('api.v1.auth.sign-userop');
+    });
+
 // Passkey/WebAuthn Authentication (v2.7.0) - public assertion flow
 Route::prefix('v1/auth/passkey')
     ->middleware('throttle:5,1')
@@ -241,7 +261,8 @@ Route::prefix('v1/banners')->name('api.v1.banners.')
 Route::prefix('v1/ramp')->name('api.v1.ramp.')
     ->middleware(['auth:sanctum'])
     ->group(function () {
-        Route::get('/quote', [App\Http\Controllers\Api\V1\RampController::class, 'quote'])->name('quote');
+        Route::get('/supported', [App\Http\Controllers\Api\V1\RampController::class, 'supported'])->middleware('api.rate_limit:query')->name('supported');
+        Route::get('/quotes', [App\Http\Controllers\Api\V1\RampController::class, 'quotes'])->middleware('api.rate_limit:query')->name('quotes');
         Route::post('/session', [App\Http\Controllers\Api\V1\RampController::class, 'createSession'])->name('session.create');
         Route::get('/session/{id}', [App\Http\Controllers\Api\V1\RampController::class, 'getSession'])->name('session.show');
         Route::get('/sessions', [App\Http\Controllers\Api\V1\RampController::class, 'listSessions'])->name('sessions');
@@ -251,6 +272,26 @@ Route::prefix('v1/ramp')->name('api.v1.ramp.')
 Route::post('v1/ramp/webhook/{provider}', [App\Http\Controllers\Api\V1\RampWebhookController::class, 'handle'])
     ->middleware('api.rate_limit:webhook')
     ->name('api.v1.ramp.webhook');
+
+// v5.14.0 — Alchemy Address Activity Webhook (no auth, HMAC verified)
+Route::post('webhooks/alchemy/address-activity', [App\Http\Controllers\Api\Webhook\AlchemyWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.alchemy.address-activity');
+
+// Helius Solana webhook (secret verified via Authorization header)
+Route::post('webhooks/helius/solana', [App\Http\Controllers\Api\Webhook\HeliusWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.helius.solana');
+
+// HyperSwitch payment lifecycle webhook (HMAC-SHA512 verified)
+Route::post('webhooks/hyperswitch', [App\Http\Controllers\Api\Webhook\HyperSwitchWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.hyperswitch');
+
+// Visa CLI payment status webhook (no auth, HMAC verified)
+Route::post('webhooks/visa-cli/payment', [App\Http\Controllers\Api\Webhook\VisaCliWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.visacli.payment');
 
 // v5.13.0 — Referral System
 Route::prefix('v1/referrals')->name('api.v1.referrals.')

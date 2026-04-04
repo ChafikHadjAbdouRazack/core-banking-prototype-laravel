@@ -9,6 +9,7 @@ use App\Domain\Mobile\Models\MobileDeviceSession;
 use App\Domain\Mobile\Models\MobileNotificationPreference;
 use App\Domain\Mobile\Models\MobilePushNotification;
 use App\Domain\Mobile\Services\BiometricAuthenticationService;
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Domain\Mobile\Services\MobileDeviceService;
 use App\Domain\Mobile\Services\MobileSessionService;
 use App\Domain\Mobile\Services\NotificationPreferenceService;
@@ -41,6 +42,7 @@ class MobileController extends Controller
     public function __construct(
         private readonly MobileDeviceService $deviceService,
         private readonly BiometricAuthenticationService $biometricService,
+        private readonly BiometricJWTService $biometricJWTService,
         private readonly PushNotificationService $pushService,
         private readonly MobileSessionService $sessionService,
         private readonly NotificationPreferenceService $preferenceService,
@@ -485,6 +487,22 @@ class MobileController extends Controller
             ], 401);
         }
 
+        // Verify device attestation if provided and enabled
+        if ($request->filled('device_attestation') && config('mobile.attestation.enabled')) {
+            $verified = $this->biometricJWTService->verifyDeviceAttestation(
+                $request->input('device_attestation'),
+                $request->input('device_type', 'android')
+            );
+            if (! $verified) {
+                return response()->json([
+                    'error' => [
+                        'code'    => 'ATTESTATION_FAILED',
+                        'message' => 'Device attestation failed.',
+                    ],
+                ], 403);
+            }
+        }
+
         return response()->json([
             'data' => [
                 'access_token' => $result['token'],
@@ -615,24 +633,9 @@ class MobileController extends Controller
 
     /**
      * Get unread notification count.
+     *
+     * @see V1\NotificationController::unreadCount() for OpenAPI docs
      */
-    #[OA\Get(
-        path: '/api/v1/notifications/unread-count',
-        operationId: 'getNotificationUnreadCount',
-        tags: ['Mobile'],
-        summary: 'Get unread notification count',
-        security: [['sanctum' => []]]
-    )]
-    #[OA\Response(
-        response: 200,
-        description: 'Unread count',
-        content: new OA\JsonContent(properties: [
-        new OA\Property(property: 'success', type: 'boolean', example: true),
-        new OA\Property(property: 'data', type: 'object', properties: [
-        new OA\Property(property: 'unread_count', type: 'integer', example: 5),
-        ]),
-        ])
-    )]
     public function getUnreadNotificationCount(Request $request): JsonResponse
     {
         $user = $this->getAuthenticatedUser($request);

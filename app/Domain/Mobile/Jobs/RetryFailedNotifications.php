@@ -58,7 +58,9 @@ class RetryFailedNotifications implements ShouldQueue
      */
     public function handle(PushNotificationService $service): void
     {
-        $this->verifyTenantContext();
+        if ($this->requiresTenantContext()) {
+            $this->verifyTenantContext();
+        }
 
         $count = $service->retryFailedNotifications($this->batchSize);
 

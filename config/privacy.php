@@ -39,8 +39,10 @@ return [
 
         // snarkjs CLI settings (for production ZK proving)
         'snarkjs_binary'          => env('SNARKJS_BINARY', 'snarkjs'),
+        'circom_binary'           => env('CIRCOM_BINARY', 'circom'),
         'circuit_directory'       => env('SNARKJS_CIRCUIT_DIR', storage_path('app/circuits')),
         'snarkjs_timeout_seconds' => (int) env('SNARKJS_TIMEOUT', 120),
+        'max_concurrent_proofs'   => (int) env('ZK_MAX_CONCURRENT_PROOFS', 3),
 
         // ProofType → circuit name mapping
         'circuit_mapping' => [
@@ -50,6 +52,36 @@ return [
             'accredited_investor' => env('ZK_CIRCUIT_ACCREDITED', 'accredited_check'),
             'sanctions_clear'     => env('ZK_CIRCUIT_SANCTIONS', 'sanctions_check'),
             'income_range'        => env('ZK_CIRCUIT_INCOME', 'income_range_check'),
+        ],
+
+        // On-chain verifier contract addresses per circuit per network
+        'verifier_contracts' => [
+            'age_check' => [
+                'ethereum' => env('ZK_VERIFIER_AGE_CHECK_ETH'),
+                'polygon'  => env('ZK_VERIFIER_AGE_CHECK_POLYGON'),
+            ],
+            'residency_check' => [
+                'ethereum' => env('ZK_VERIFIER_RESIDENCY_CHECK_ETH'),
+                'polygon'  => env('ZK_VERIFIER_RESIDENCY_CHECK_POLYGON'),
+            ],
+            'kyc_tier_check' => [
+                'ethereum' => env('ZK_VERIFIER_KYC_TIER_CHECK_ETH'),
+                'polygon'  => env('ZK_VERIFIER_KYC_TIER_CHECK_POLYGON'),
+            ],
+            'sanctions_check' => [
+                'ethereum' => env('ZK_VERIFIER_SANCTIONS_CHECK_ETH'),
+                'polygon'  => env('ZK_VERIFIER_SANCTIONS_CHECK_POLYGON'),
+            ],
+            'income_range_check' => [
+                'ethereum' => env('ZK_VERIFIER_INCOME_RANGE_CHECK_ETH'),
+                'polygon'  => env('ZK_VERIFIER_INCOME_RANGE_CHECK_POLYGON'),
+            ],
+        ],
+
+        // Trusted setup ceremony configuration
+        'ceremony' => [
+            'ptau_power' => env('ZK_PTAU_POWER', 14),
+            'ptau_url'   => env('ZK_PTAU_URL', 'https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau'),
         ],
     ],
 

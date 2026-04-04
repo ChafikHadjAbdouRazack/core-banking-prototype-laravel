@@ -27,6 +27,7 @@ class ToolRegistryTest extends TestCase
 
         // Mock the Log facade to prevent actual logging
         Log::shouldReceive('info')->andReturnNull();
+        Log::shouldReceive('debug')->andReturnNull();
     }
 
     protected function tearDown(): void

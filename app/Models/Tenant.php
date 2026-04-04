@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
@@ -22,11 +23,14 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
  * @property string|null $plan Subscription plan
  * @property \Carbon\Carbon|null $trial_ends_at Trial expiration
  * @property array<string, mixed> $data Additional tenant data (JSON)
+ * @property \Carbon\Carbon|null $deleted_at Soft-delete timestamp
+ * @property \Carbon\Carbon|null $deletion_scheduled_at Scheduled deletion date (14-day grace)
  */
 class Tenant extends BaseTenant implements TenantWithDatabase
 {
     use HasDatabase;
     use HasDomains;
+    use SoftDeletes;
 
     /**
      * Get the custom columns for the tenant model.
@@ -41,6 +45,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'name',
             'plan',
             'trial_ends_at',
+            'deleted_at',
+            'deletion_scheduled_at',
         ];
     }
 

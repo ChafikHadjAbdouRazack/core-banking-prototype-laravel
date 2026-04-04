@@ -41,5 +41,10 @@ class WalletServiceProvider extends ServiceProvider
                 BlockchainWalletProjector::class,
             ]
         );
+
+        // Auto-sync Solana addresses to Helius webhook monitoring
+        \App\Domain\Account\Models\BlockchainAddress::observe(
+            \App\Domain\Wallet\Observers\BlockchainAddressObserver::class,
+        );
     }
 }

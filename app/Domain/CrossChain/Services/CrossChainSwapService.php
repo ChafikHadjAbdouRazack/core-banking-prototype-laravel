@@ -100,6 +100,7 @@ class CrossChainSwapService
     public function executeSwap(
         CrossChainSwapQuote $quote,
         string $walletAddress,
+        string $userUuid = '',
     ): array {
         CrossChainSwapInitiated::dispatch(
             $quote->sourceChain,
@@ -119,7 +120,7 @@ class CrossChainSwapService
         ]);
 
         // Step 1: Bridge
-        $bridgeResult = $this->saga->executeBridge($quote, $walletAddress);
+        $bridgeResult = $this->saga->executeBridge($quote, $walletAddress, $userUuid);
 
         // Step 2: Swap on destination (if needed)
         $swapTxHash = null;

@@ -81,16 +81,46 @@ class SitemapController extends Controller
     {
         $baseUrl = config('app.url');
         $now = Carbon::now()->toW3cString();
+        $showPromo = (bool) config('brand.show_promo_pages', true);
 
         $routes = [
-            // Homepage - highest priority
+            // Homepage - always included
             [
                 'url'        => $baseUrl,
                 'lastmod'    => $now,
                 'changefreq' => 'daily',
                 'priority'   => '1.0',
             ],
+        ];
 
+        // Legal pages — always included regardless of promo mode
+        $legalRoutes = [
+            [
+                'url'        => $baseUrl . '/legal/terms',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.5',
+            ],
+            [
+                'url'        => $baseUrl . '/legal/privacy',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.5',
+            ],
+            [
+                'url'        => $baseUrl . '/legal/cookies',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.5',
+            ],
+        ];
+
+        // Promo/marketing pages — only when SHOW_PROMO_PAGES=true (e.g. finaegis.org)
+        if (! $showPromo) {
+            return array_merge($routes, $legalRoutes);
+        }
+
+        $promoRoutes = [
             // Main pages - high priority
             [
                 'url'        => $baseUrl . '/about',
@@ -125,10 +155,190 @@ class SitemapController extends Controller
                 'priority'   => '0.8',
             ],
             [
-                'url'        => $baseUrl . '/features/gcu',
+                'url'        => $baseUrl . '/changelog',
                 'lastmod'    => $now,
                 'changefreq' => 'weekly',
                 'priority'   => '0.8',
+            ],
+            [
+                'url'        => $baseUrl . '/features/multi-asset',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/settlements',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/governance',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/bank-integration',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/api',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.8',
+            ],
+            [
+                'url'        => $baseUrl . '/features/crosschain-defi',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/privacy-identity',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/mobile-payments',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/regtech-compliance',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/baas-platform',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/ai-framework',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/ai-framework',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.8',
+            ],
+            [
+                'url'        => $baseUrl . '/ai-framework/demo',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/ai-framework/docs',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/multi-tenancy',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/features/x402-protocol',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.8',
+            ],
+            [
+                'url'        => $baseUrl . '/features/visa-cli',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/virtuals-protocol',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/plugin-marketplace',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/marketplace',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/machine-payments',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/agent-protocol',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/zelta-cli',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/iso20022',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/open-banking',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/payment-rails',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/interledger',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/ledger',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/microfinance',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/developer-experience',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
             ],
             [
                 'url'        => $baseUrl . '/security',
@@ -182,6 +392,66 @@ class SitemapController extends Controller
                 'changefreq' => 'weekly',
                 'priority'   => '0.7',
             ],
+            [
+                'url'        => $baseUrl . '/developers/sdks',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/api-docs',
+                'lastmod'    => $now,
+                'changefreq' => 'weekly',
+                'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/graphql',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/webhooks',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/event-streaming',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/mcp-tools',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/postman',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/sandbox',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/examples',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
+            [
+                'url'        => $baseUrl . '/developers/plugins',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.6',
+            ],
 
             // Support pages
             [
@@ -229,25 +499,6 @@ class SitemapController extends Controller
                 'priority'   => '0.7',
             ],
 
-            // Legal pages - lower priority
-            [
-                'url'        => $baseUrl . '/legal/terms',
-                'lastmod'    => $now,
-                'changefreq' => 'monthly',
-                'priority'   => '0.5',
-            ],
-            [
-                'url'        => $baseUrl . '/legal/privacy',
-                'lastmod'    => $now,
-                'changefreq' => 'monthly',
-                'priority'   => '0.5',
-            ],
-            [
-                'url'        => $baseUrl . '/legal/cookies',
-                'lastmod'    => $now,
-                'changefreq' => 'monthly',
-                'priority'   => '0.5',
-            ],
             [
                 'url'        => $baseUrl . '/cgo/terms',
                 'lastmod'    => $now,
@@ -272,22 +523,10 @@ class SitemapController extends Controller
             ],
         ];
 
-        // Add authentication pages
-        $routes[] = [
-            'url'        => $baseUrl . '/login',
-            'lastmod'    => $now,
-            'changefreq' => 'monthly',
-            'priority'   => '0.7',
-        ];
+        // Auth pages excluded from sitemap — they provide no SEO value
+        // and are blocked by robots.txt anyway
 
-        $routes[] = [
-            'url'        => $baseUrl . '/register',
-            'lastmod'    => $now,
-            'changefreq' => 'monthly',
-            'priority'   => '0.7',
-        ];
-
-        return $routes;
+        return array_merge($routes, $promoRoutes, $legalRoutes);
     }
 
         #[OA\Get(
@@ -325,6 +564,11 @@ class SitemapController extends Controller
         $content .= "Disallow: /profile/\n";
         $content .= "Disallow: /teams/\n";
         $content .= "Disallow: /subscriber/unsubscribe/\n";
+        $content .= "Disallow: /login\n";
+        $content .= "Disallow: /register\n";
+        $content .= "Disallow: /forgot-password\n";
+        $content .= "Disallow: /reset-password\n";
+        $content .= "Disallow: /email/verify\n";
 
         // In production, also disallow API documentation paths
         if (app()->environment('production')) {

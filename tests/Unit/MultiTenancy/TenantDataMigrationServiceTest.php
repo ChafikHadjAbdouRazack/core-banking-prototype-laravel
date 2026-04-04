@@ -264,6 +264,9 @@ class TenantDataMigrationServiceTest extends TestCase
     public function register_table_returns_self_for_chaining(): void
     {
         $service = new TenantDataMigrationService();
+        $service->addAllowedTable('test_table');
+        $service->addAllowedTable('test_source');
+        $service->addAllowedTable('test_target');
         $result = $service->registerTable('test_table', [
             'source'      => 'test_source',
             'target'      => 'test_target',
@@ -287,6 +290,9 @@ class TenantDataMigrationServiceTest extends TestCase
     public function registered_table_appears_in_migratable_tables(): void
     {
         $service = new TenantDataMigrationService();
+        $service->addAllowedTable('custom_table');
+        $service->addAllowedTable('custom_source');
+        $service->addAllowedTable('custom_target');
         $service->registerTable('custom_table', [
             'source'      => 'custom_source',
             'target'      => 'custom_target',

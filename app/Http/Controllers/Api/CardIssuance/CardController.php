@@ -267,6 +267,52 @@ class CardController extends Controller
     }
 
     /**
+     * Update card settings.
+     */
+    #[OA\Patch(
+        path: '/api/v1/cards/{cardId}',
+        summary: 'Update card settings (nickname, network preference, notifications)',
+        tags: ['Card Issuance'],
+        security: [['sanctum' => []]],
+        parameters: [
+        new OA\Parameter(name: 'cardId', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+        ],
+        requestBody: new OA\RequestBody(content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'network_preference', type: 'string', enum: ['visa', 'mastercard']),
+        new OA\Property(property: 'nickname', type: 'string', maxLength: 50, example: 'Travel Card'),
+        new OA\Property(property: 'notifications_enabled', type: 'boolean', example: true),
+        ]))
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Card settings updated',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object'),
+        new OA\Property(property: 'message', type: 'string', example: 'Card settings updated'),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error'
+    )]
+    public function update(Request $request, string $cardId): JsonResponse
+    {
+        $validated = $request->validate([
+            'network_preference'    => ['sometimes', 'string', 'in:visa,mastercard'],
+            'nickname'              => ['sometimes', 'string', 'max:50'],
+            'notifications_enabled' => ['sometimes', 'boolean'],
+        ]);
+
+        // In production, update via card issuer API
+        return response()->json([
+            'success' => true,
+            'data'    => array_merge(['id' => $cardId], $validated),
+            'message' => 'Card settings updated',
+        ]);
+    }
+
+    /**
      * Get a specific card.
      */
     #[OA\Get(

@@ -147,6 +147,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Bridge Value & Frequency Limits
+    |--------------------------------------------------------------------------
+    |
+    | Controls to prevent abnormally large or frequent bridge transfers.
+    | Daily volume and count are tracked atomically per-user in cache.
+    |
+    */
+
+    'bridge_limits' => [
+        'max_per_transaction' => (float) env('BRIDGE_MAX_PER_TX', 100000.00),
+        'max_daily_volume'    => (float) env('BRIDGE_MAX_DAILY', 500000.00),
+        'max_daily_count'     => (int) env('BRIDGE_MAX_DAILY_COUNT', 50),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Demo Configuration
     |--------------------------------------------------------------------------
     */

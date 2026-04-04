@@ -56,7 +56,10 @@ describe('ReceiveAddressService QR Value', function (): void {
 });
 
 describe('ReceiveAddressService Demo Address Generation', function (): void {
-    it('generates base58-like addresses for Solana via reflection', function (): void {
+    it('generates default hex address for Solana in demo mode (real address via derivePublicKey)', function (): void {
+        // Note: generateDemoAddress is never called for Solana in production —
+        // derivePublicKey() returns early via SolanaAddressHelper::deriveForUser().
+        // This tests the fallback default branch if it were reached.
         $service = new ReceiveAddressService();
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('generateDemoAddress');
@@ -64,8 +67,8 @@ describe('ReceiveAddressService Demo Address Generation', function (): void {
 
         $address = $method->invoke($service, 1, PaymentNetwork::SOLANA);
 
-        expect($address)->toBeString();
-        expect(strlen($address))->toBe(44);
+        expect($address)->toBeString()->toStartWith('0x');
+        expect(strlen($address))->toBe(42);
     });
 
     it('generates T-prefixed addresses for Tron via reflection', function (): void {

@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'FinAegis Platform - Open Banking for Developers')
+@section('title', config('brand.name', 'Zelta') . ' Platform - Open Banking for Developers')
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'FinAegis Platform - Open Banking for Developers',
-        'description' => 'FinAegis Platform - Open-source core banking infrastructure with 43 DDD domains, event sourcing, REST + GraphQL APIs, and cross-chain DeFi. MIT licensed.',
-        'keywords' => 'FinAegis platform, banking infrastructure, open source banking, developer API, MIT license, core banking API, fintech development, DDD, event sourcing',
+        'title' => config('brand.name', 'Zelta') . ' Platform - Open Banking for Developers',
+        'description' => 'Zelta Platform: open-source core banking with 56 DDD domains, ISO 20022, PSD2, multi-rail payments, and cross-chain DeFi. MIT licensed, built for developers.',
+        'keywords' => config('brand.name', 'Zelta') . ' platform, banking infrastructure, open source banking, developer API, ISO 20022, PSD2, payment rails, Interledger, microfinance, ledger, MIT license, core banking API, fintech development, DDD, event sourcing',
     ])
 
     {{-- Schema.org Markup --}}
@@ -20,9 +20,6 @@
 @push('styles')
 <link href="https://fonts.bunny.net/css?family=fira-code:400,500&display=swap" rel="stylesheet" />
 <style>
-    .gradient-bg {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
     .terminal-gradient {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
     }
@@ -82,16 +79,16 @@
             <!-- Floating code snippets -->
             <div class="absolute inset-0 overflow-hidden pointer-events-none">
                 <div class="code-font text-green-400 text-sm opacity-20 absolute top-20 left-10 transform rotate-12 hidden lg:block">
-                    const bank = new FinAegis();
+                    const bank = new {{ config('brand.name', 'Zelta') }}();
                 </div>
                 <div class="code-font text-blue-400 text-sm opacity-20 absolute top-40 right-20 transform -rotate-12 hidden lg:block">
-                    $ npm install @finaegis/sdk
+                    $ npm install @zelta/sdk
                 </div>
                 <div class="code-font text-purple-400 text-sm opacity-20 absolute bottom-40 left-1/4 hidden lg:block">
-                    pip install finaegis==latest
+                    pip install zelta==latest
                 </div>
                 <div class="code-font text-yellow-400 text-sm opacity-20 absolute bottom-20 right-1/3 transform rotate-6 hidden lg:block">
-                    composer require finaegis/sdk
+                    composer require zelta/sdk
                 </div>
             </div>
             
@@ -107,13 +104,13 @@
                                     <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
                                     <div class="w-3 h-3 bg-green-500 rounded-full"></div>
                                 </div>
-                                <div class="ml-4 text-gray-400 text-sm code-font">finaegis@terminal</div>
+                                <div class="ml-4 text-gray-400 text-sm code-font">zelta@terminal</div>
                             </div>
                             <div class="p-6 code-font text-sm">
                                 <div class="text-gray-400 mb-2">$ whoami</div>
-                                <div class="text-green-400 mb-4">developer@finaegis</div>
+                                <div class="text-green-400 mb-4">developer@zelta</div>
                                 
-                                <div class="text-gray-400 mb-2">$ git clone https://github.com/FinAegis/core-banking-prototype-laravel</div>
+                                <div class="text-gray-400 mb-2">$ git clone {{ config('brand.github_url') }}</div>
                                 <div class="text-white mb-2">Cloning into 'core-banking-prototype-laravel'...</div>
                                 <div class="text-green-400 mb-4">✓ Ready to build</div>
                                 
@@ -155,11 +152,11 @@
                         
                         <p class="text-xl text-gray-400 mb-8">
                             Open-source banking infrastructure with everything you need. 
-                            No vendor lock-in. No licensing fees. Just pure developer freedom.
+                            No vendor lock-in. No licensing fees. Fork it, self-host it, and own your stack.
                         </p>
                         
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="group inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-green-500 text-green-400 rounded-lg font-semibold hover:bg-green-500 hover:text-black transition-all">
+                            <a href="{{ config('brand.github_url') }}" target="_blank" class="group inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-green-500 text-green-400 rounded-lg font-semibold hover:bg-green-500 hover:text-black transition-all">
                                 <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                                 </svg>
@@ -180,12 +177,12 @@
                                 <div class="text-sm text-gray-500">License</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-blue-400 code-font">43</div>
+                                <div class="text-2xl font-bold text-blue-400 code-font">56</div>
                                 <div class="text-sm text-gray-500">Domains</div>
                             </div>
                             <div>
-                                <div class="text-2xl font-bold text-purple-400 code-font">∞</div>
-                                <div class="text-sm text-gray-500">Scale</div>
+                                <div class="text-2xl font-bold text-purple-400 code-font">1,400+</div>
+                                <div class="text-sm text-gray-500">API Routes</div>
                             </div>
                         </div>
                     </div>
@@ -200,8 +197,8 @@
         <section class="py-16 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Get Started in 3 Commands</h2>
-                    <p class="text-xl text-gray-600">From zero to running banking API in under 5 minutes</p>
+                    <h2 class="font-display text-3xl font-bold text-slate-900 mb-4">Get Started in 3 Commands</h2>
+                    <p class="text-xl text-slate-500">From zero to running banking API in under 5 minutes</p>
                 </div>
                 
                 <div class="grid md:grid-cols-3 gap-8">
@@ -211,7 +208,7 @@
                         <div class="pl-12">
                             <h3 class="text-lg font-semibold mb-2">Clone the Repository</h3>
                             <div class="bg-gray-900 rounded-lg p-4 code-font text-sm">
-                                <span class="text-gray-400">$</span> <span class="text-green-400">git clone</span> <span class="text-blue-400">https://github.com/FinAegis/core-banking-prototype-laravel</span>
+                                <span class="text-gray-400">$</span> <span class="text-green-400">git clone</span> <span class="text-blue-400">{{ config('brand.github_url') }}</span>
                             </div>
                         </div>
                     </div>
@@ -245,8 +242,8 @@
         <section class="py-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">Built for Developers, By Developers</h2>
-                    <p class="text-xl text-gray-600">Every feature designed with DX in mind</p>
+                    <h2 class="font-display text-3xl font-bold text-slate-900 mb-4">Built for Developers, By Developers</h2>
+                    <p class="text-xl text-slate-500">Every feature designed with DX in mind</p>
                 </div>
                 
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -258,7 +255,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">RESTful APIs</h3>
-                        <p class="text-gray-600 mb-4">Clean, intuitive API design following REST principles</p>
+                        <p class="text-slate-500 mb-4">Clean, intuitive API design following REST principles</p>
                         <div class="code-font text-sm bg-gray-100 rounded p-3">
                             <span class="text-blue-600">GET</span> /api/v1/accounts<br>
                             <span class="text-green-600">POST</span> /api/v1/transfers<br>
@@ -274,7 +271,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">SDK Everything</h3>
-                        <p class="text-gray-600 mb-4">Official SDKs for your favorite language</p>
+                        <p class="text-slate-500 mb-4">Official SDKs for your favorite language</p>
                         <div class="flex flex-wrap gap-2">
                             <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">JavaScript</span>
                             <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">Python</span>
@@ -293,7 +290,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">Container First</h3>
-                        <p class="text-gray-600 mb-4">Docker & Kubernetes ready out of the box</p>
+                        <p class="text-slate-500 mb-4">Docker & Kubernetes ready out of the box</p>
                         <div class="code-font text-sm bg-gray-100 rounded p-3">
                             <span class="text-gray-500">$</span> docker-compose up -d
                         </div>
@@ -307,17 +304,17 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">Real-time Events</h3>
-                        <p class="text-gray-600 mb-4">Webhooks for every important event</p>
+                        <p class="text-slate-500 mb-4">Webhooks for every important event</p>
                         <div class="space-y-1 text-sm">
-                            <div class="flex items-center text-gray-700">
+                            <div class="flex items-center text-slate-600">
                                 <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                                 transaction.completed
                             </div>
-                            <div class="flex items-center text-gray-700">
+                            <div class="flex items-center text-slate-600">
                                 <div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
                                 account.created
                             </div>
-                            <div class="flex items-center text-gray-700">
+                            <div class="flex items-center text-slate-600">
                                 <div class="w-2 h-2 bg-purple-500 rounded-full mr-2"></div>
                                 kyc.verified
                             </div>
@@ -332,7 +329,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">Test Everything</h3>
-                        <p class="text-gray-600 mb-4">Comprehensive test suite included</p>
+                        <p class="text-slate-500 mb-4">Comprehensive test suite included</p>
                         <div class="code-font text-sm bg-gray-100 rounded p-3">
                             <span class="text-gray-500">$</span> <span class="text-green-400">./vendor/bin/pest</span><br>
                             <span class="text-green-500">✓</span> All tests passed
@@ -347,7 +344,7 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-semibold mb-2">Developer-First Docs</h3>
-                        <p class="text-gray-600 mb-4">OpenAPI specs, GraphQL playground, and example-driven guides</p>
+                        <p class="text-slate-500 mb-4">OpenAPI specs, GraphQL playground, and example-driven guides</p>
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-500">API Reference</span>
                             <span class="text-indigo-600 font-semibold">View →</span>
@@ -361,8 +358,8 @@
         <section id="architecture" class="py-20 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-16">
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Modular Architecture</h2>
-                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <h2 class="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-4">Modular Architecture</h2>
+                    <p class="text-xl text-slate-500 max-w-3xl mx-auto">
                         Pick what you need, leave what you don't. Every module works independently.
                     </p>
                 </div>
@@ -392,126 +389,16 @@
                 </div>
 
                 <!-- Available Modules -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- GCU (Active) -->
-                    <div class="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">Ǥ</div>
-                        <h3 class="text-xl font-bold mb-2">Global Currency Unit</h3>
-                        <p class="text-indigo-100 text-sm mb-4">Democratic stablecoin backed by 6 currencies</p>
-                        <a href="{{ route('gcu') }}" class="text-white font-semibold hover:underline">Learn more →</a>
-                    </div>
-                    
-                    <!-- Exchange -->
-                    <div class="bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Exchange</h3>
-                        <p class="text-blue-100 text-sm mb-4">Multi-asset trading with BTC, ETH, and fiat pairs</p>
-                        <a href="{{ route('exchange.index') }}" class="text-white font-semibold hover:underline">Start Trading →</a>
-                    </div>
-                    
-                    <!-- Lending -->
-                    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Lending</h3>
-                        <p class="text-green-100 text-sm mb-4">P2P lending marketplace with loan origination and repayment workflows</p>
-                        <a href="{{ route('features.show', 'multi-asset') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
-                    </div>
-
-                    <!-- Treasury -->
-                    <div class="bg-gradient-to-br from-red-500 to-rose-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Treasury</h3>
-                        <p class="text-red-100 text-sm mb-4">Multi-bank cash management and yield optimization</p>
-                        <a href="{{ route('features.show', 'multi-asset') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
-                    </div>
+                <div class="text-center py-12">
+                    <h2 class="text-3xl font-bold text-slate-900 mb-4">56 Domain Modules</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl mx-auto">
+                        From ISO 20022 messaging to microfinance lending — every banking capability in one codebase.
+                    </p>
+                    <a href="{{ route('features') }}" class="inline-flex items-center px-6 py-3 bg-fa-navy text-white rounded-lg hover:bg-opacity-90 transition font-semibold">
+                        Explore All Features &rarr;
+                    </a>
                 </div>
 
-                <!-- Additional Capabilities -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-                    <!-- Cross-Chain & DeFi -->
-                    <div class="bg-gradient-to-br from-orange-500 to-amber-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Cross-Chain & DeFi</h3>
-                        <p class="text-orange-100 text-sm mb-4">Bridge protocols, DEX aggregation, staking, and yield optimization</p>
-                        <a href="{{ route('features.show', 'crosschain-defi') }}" class="text-white font-semibold hover:underline">Explore &rarr;</a>
-                    </div>
-
-                    <!-- GraphQL API -->
-                    <div class="bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">GraphQL API</h3>
-                        <p class="text-pink-100 text-sm mb-4">35 domains, subscriptions, DataLoaders, and real-time queries</p>
-                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
-                    </div>
-
-                    <!-- Event Streaming -->
-                    <div class="bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Event Streaming</h3>
-                        <p class="text-teal-100 text-sm mb-4">Redis Streams, live dashboard, and real-time event processing</p>
-                        <a href="{{ route('features') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
-                    </div>
-
-                    <!-- Plugin Marketplace -->
-                    <div class="bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl p-6 text-white relative overflow-hidden">
-                        <div class="absolute top-2 right-2">
-                            <span class="px-2 py-1 bg-green-400 text-green-900 rounded-full text-xs font-bold">LIVE</span>
-                        </div>
-                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mb-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold mb-2">Plugin Marketplace</h3>
-                        <p class="text-violet-100 text-sm mb-4">Sandbox execution, security scanner, and extensible hook system</p>
-                        <a href="{{ route('features.show', 'plugin-marketplace') }}" class="text-white font-semibold hover:underline">Learn more &rarr;</a>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -519,24 +406,24 @@
         <section class="py-20 bg-gray-900 text-white">
             <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
                 <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-8">
-                    <svg class="w-12 h-12 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-12 h-12 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
                     </svg>
                 </div>
                 
-                <h2 class="text-4xl font-bold mb-6">Start Building Today</h2>
+                <h2 class="font-display text-4xl font-bold mb-6">Start Building Today</h2>
                 <p class="text-xl text-gray-300 mb-8">
                     Fork the repo, explore the architecture, and ship your fintech product on production-grade infrastructure
                 </p>
                 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="https://github.com/FinAegis/core-banking-prototype-laravel" target="_blank" class="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 rounded-lg text-lg font-semibold hover:bg-gray-100 transition">
+                    <a href="{{ config('brand.github_url') }}" target="_blank" class="inline-flex items-center justify-center px-8 py-4 bg-white text-slate-900 rounded-lg text-lg font-semibold hover:bg-gray-100 transition">
                         <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
                         </svg>
                         Fork on GitHub
                     </a>
-                    <a href="{{ route('developers') }}" class="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-900 transition">
+                    <a href="{{ route('developers') }}" class="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg text-lg font-semibold hover:bg-white hover:text-slate-900 transition">
                         Read the Docs
                     </a>
                 </div>

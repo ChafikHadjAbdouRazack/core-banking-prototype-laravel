@@ -4,7 +4,7 @@ This guide covers the modular domain system introduced in v1.3.0, allowing you t
 
 ## Overview
 
-FinAegis uses Domain-Driven Design (DDD) with 41 bounded contexts. The platform supports modular installation where you can choose which domains to enable based on your requirements.
+FinAegis uses Domain-Driven Design (DDD) with 56 bounded contexts. The platform supports modular installation where you can choose which domains to enable based on your requirements.
 
 ## Domain Types
 
@@ -93,7 +93,7 @@ app/Domain/MyDomain/
 
 ## Domain Registry
 
-All 41 domains and their dependencies:
+All 56 domains and their dependencies:
 
 ### Core Domains (Always Installed)
 

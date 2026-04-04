@@ -39,7 +39,7 @@ class ExchangeRateProviderRegistry
             $this->defaultProvider = $name;
         }
 
-        Log::info("Registered exchange rate provider: {$name}");
+        Log::debug("Registered exchange rate provider: {$name}");
     }
 
     /**

@@ -42,6 +42,7 @@ return [
             'application_token'  => env('MARQETA_APPLICATION_TOKEN'),
             'admin_access_token' => env('MARQETA_ADMIN_ACCESS_TOKEN'),
             'webhook_secret'     => env('MARQETA_WEBHOOK_SECRET'),
+            'hmac_secret'        => env('MARQETA_HMAC_SECRET'),
             'webhook_username'   => env('MARQETA_WEBHOOK_USERNAME'),
             'webhook_password'   => env('MARQETA_WEBHOOK_PASSWORD'),
         ],
@@ -81,6 +82,10 @@ return [
 
         // Whether to allow partial approvals
         'allow_partial_approval' => env('CARD_ALLOW_PARTIAL', false),
+
+        // Per-card rate limit: maximum JIT authorization attempts per 60-second window.
+        // Prevents a compromised card token from flooding the authorization pipeline.
+        'max_auth_per_minute' => (int) env('CARD_JIT_MAX_AUTH_PER_MINUTE', 10),
     ],
 
     /*

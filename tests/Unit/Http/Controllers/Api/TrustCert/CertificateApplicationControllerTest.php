@@ -51,7 +51,7 @@ describe('CertificateApplicationController create', function (): void {
         expect($response->getStatusCode())->toBe(201)
             ->and($data['success'])->toBeTrue()
             ->and($data['data']['target_level'])->toBe('verified')
-            ->and($data['data']['status'])->toBe('draft')
+            ->and($data['data']['status'])->toBe('pending')
             ->and($data['data']['id'])->toStartWith('app_');
     });
 
@@ -146,7 +146,7 @@ describe('CertificateApplicationController submit', function (): void {
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
-            ->and($data['data']['status'])->toBe('submitted')
+            ->and($data['data']['status'])->toBe('in_review')
             ->and($data['data']['submitted_at'])->not->toBeNull();
     });
 
@@ -200,13 +200,13 @@ describe('CertificateApplicationController uploadDocuments', function (): void {
         $response = $controller->uploadDocuments($appId, certAppUserRequest(
             "/api/v1/trustcert/applications/{$appId}/documents",
             'POST',
-            ['document_type' => 'identity', 'file_name' => 'passport.pdf'],
+            ['document_type' => 'id_front', 'file_name' => 'passport.pdf'],
         ));
         $data = $response->getData(true);
 
         expect($response->getStatusCode())->toBe(201)
             ->and($data['success'])->toBeTrue()
-            ->and($data['data']['document_type'])->toBe('identity')
+            ->and($data['data']['document_type'])->toBe('id_front')
             ->and($data['data']['id'])->toStartWith('doc_');
     });
 });

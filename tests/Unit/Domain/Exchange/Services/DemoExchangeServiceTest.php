@@ -22,6 +22,7 @@ class DemoExchangeServiceTest extends TestCase
     {
         parent::setUp();
 
+        config(['cache.default' => 'array']);
         Config::set('demo.mode', true);
         Config::set('demo.features.auto_approve', true);
         Config::set('demo.domains.exchange.spread_percentage', 0.1);
@@ -272,6 +273,8 @@ class DemoExchangeServiceTest extends TestCase
     #[Test]
     public function it_handles_unknown_currency_pairs_gracefully()
     {
+        Event::fake();
+
         $orderData = [
             'user_id'        => 1,
             'account_id'     => 1,

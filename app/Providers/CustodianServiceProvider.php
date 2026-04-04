@@ -74,7 +74,7 @@ class CustodianServiceProvider extends ServiceProvider
                     $registry->setDefault($name);
                 }
 
-                Log::info("Registered custodian connector: {$name}");
+                Log::debug("Registered custodian connector: {$name}");
             } catch (Exception $e) {
                 Log::error("Failed to register custodian {$name}: " . $e->getMessage());
             }

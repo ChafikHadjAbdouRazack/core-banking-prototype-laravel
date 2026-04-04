@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Privacy;
 
 use App\Domain\Privacy\Contracts\MerkleTreeServiceInterface;
+use App\Domain\Privacy\Events\Broadcast\PrivacyBalanceUpdated;
 use App\Domain\Privacy\Events\Broadcast\PrivacyOperationCompleted;
 use App\Domain\Privacy\Exceptions\CommitmentNotFoundException;
 use App\Domain\Privacy\Models\DelegatedProofJob;
@@ -89,13 +90,14 @@ class PrivacyController extends Controller
     )]
     public function getMerkleRoot(Request $request): JsonResponse
     {
-        $network = $request->query('network');
+        // Accept both ?network= and ?chain_id= for mobile compatibility
+        $network = $request->query('network') ?? $request->query('chain_id');
 
         if (empty($network) || ! is_string($network)) {
             return response()->json([
                 'error' => [
                     'code'    => 'ERR_PRIVACY_306',
-                    'message' => 'Network parameter is required',
+                    'message' => 'Network parameter is required (use ?network= or ?chain_id=)',
                 ],
             ], 400);
         }
@@ -772,6 +774,7 @@ class PrivacyController extends Controller
                 network: $validated['network'],
                 status: 'completed',
             );
+            PrivacyBalanceUpdated::dispatch($user->id, $validated['network']);
 
             return response()->json([
                 'success' => true,
@@ -862,6 +865,7 @@ class PrivacyController extends Controller
                 network: $validated['network'],
                 status: 'completed',
             );
+            PrivacyBalanceUpdated::dispatch($user->id, $validated['network']);
 
             return response()->json([
                 'success' => true,
@@ -956,6 +960,7 @@ class PrivacyController extends Controller
                 network: $validated['network'],
                 status: 'completed',
             );
+            PrivacyBalanceUpdated::dispatch($user->id, $validated['network']);
 
             return response()->json([
                 'success' => true,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\CrossChain\Services;
 
+use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\CrossChain\Contracts\BridgeAdapterInterface;
 use App\Domain\CrossChain\Enums\BridgeProvider;
 use App\Domain\CrossChain\Enums\BridgeStatus;
@@ -14,6 +15,9 @@ use App\Domain\CrossChain\Events\BridgeTransactionInitiated;
 use App\Domain\CrossChain\Exceptions\BridgeTransactionFailedException;
 use App\Domain\CrossChain\Exceptions\UnsupportedBridgeRouteException;
 use App\Domain\CrossChain\ValueObjects\BridgeQuote;
+use App\Domain\CrossChain\ValueObjects\BridgeRoute;
+use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
@@ -44,6 +48,9 @@ class BridgeOrchestratorService
     /**
      * Get bridge quotes from all adapters that support the route.
      *
+     * Quotes are stored server-side in cache (keyed by quote ID) so that
+     * clients cannot tamper with quote data before calling initiateBridge().
+     *
      * @return array<BridgeQuote>
      * @throws UnsupportedBridgeRouteException
      */
@@ -61,7 +68,10 @@ class BridgeOrchestratorService
             }
 
             try {
-                $quotes[] = $adapter->getQuote($sourceChain, $destChain, $token, $amount);
+                $quote = $adapter->getQuote($sourceChain, $destChain, $token, $amount);
+                // Store quote server-side to prevent client tampering (Finding #3)
+                Cache::put("bridge_quote:{$quote->quoteId}", $quote->toArray(), 60);
+                $quotes[] = $quote;
             } catch (Throwable $e) {
                 Log::warning('Bridge adapter quote failed', [
                     'provider' => $adapter->getProvider()->value,
@@ -117,24 +127,70 @@ class BridgeOrchestratorService
     }
 
     /**
-     * Initiate a bridge transfer using a specific quote.
+     * Initiate a bridge transfer by referencing a server-side cached quote.
+     *
+     * Security controls applied (Findings #3, #10, #14):
+     *   - Quote is fetched from server-side cache to prevent client tampering.
+     *   - Sender address is verified against the user's registered wallets.
+     *   - Amount is validated against per-transaction and daily limits.
      *
      * @return array{transaction_id: string, status: BridgeStatus}
      * @throws BridgeTransactionFailedException
+     * @throws RuntimeException
      */
     public function initiateBridge(
-        BridgeQuote $quote,
+        string $quoteId,
         string $senderAddress,
         string $recipientAddress,
+        string $userUuid,
     ): array {
+        // Finding #3: fetch quote from server-side cache; reject if missing/expired
+        /** @var array<string, mixed>|null $quoteData */
+        $quoteData = Cache::get("bridge_quote:{$quoteId}");
+
+        if ($quoteData === null) {
+            throw new RuntimeException('Quote expired or invalid');
+        }
+
+        $quote = $this->hydrateQuote($quoteData);
+
         if ($quote->isExpired()) {
+            Cache::forget("bridge_quote:{$quoteId}");
             throw BridgeTransactionFailedException::quoteExpired($quote->quoteId);
+        }
+
+        // Finding #14: enforce per-transaction and daily bridge limits (cache-only, cheap)
+        $this->enforceValueLimits($quote->inputAmount, $userUuid);
+
+        // Finding #10: verify sender address belongs to the authenticated user
+        $ownsAddress = BlockchainAddress::where('address', $senderAddress)
+            ->where('user_uuid', $userUuid)
+            ->where('is_active', true)
+            ->exists();
+
+        if (! $ownsAddress) {
+            throw new RuntimeException('Sender address is not registered to this user');
         }
 
         $adapter = $this->getAdapterForProvider($quote->getProvider());
 
         try {
             $result = $adapter->initiateBridge($quote, $senderAddress, $recipientAddress);
+
+            // Consume the quote so it cannot be replayed
+            Cache::forget("bridge_quote:{$quoteId}");
+
+            // Record daily volume/count atomically (Finding #14)
+            $date = date('Y-m-d');
+            $dailyVolumeKey = "bridge_daily_volume:{$userUuid}:{$date}";
+            $dailyCountKey = "bridge_daily_count:{$userUuid}:{$date}";
+            $ttl = 86400;
+
+            Cache::add($dailyVolumeKey, 0, $ttl);
+            Cache::increment($dailyVolumeKey, (int) round((float) $quote->inputAmount * 100));
+
+            Cache::add($dailyCountKey, 0, $ttl);
+            Cache::increment($dailyCountKey);
 
             BridgeTransactionInitiated::dispatch(
                 $result['transaction_id'],
@@ -162,6 +218,8 @@ class BridgeOrchestratorService
             ];
         } catch (BridgeTransactionFailedException $e) {
             throw $e;
+        } catch (RuntimeException $e) {
+            throw $e;
         } catch (Throwable $e) {
             throw BridgeTransactionFailedException::executionFailed(
                 'unknown',
@@ -169,6 +227,83 @@ class BridgeOrchestratorService
                 $e,
             );
         }
+    }
+
+    /**
+     * Enforce per-transaction and daily volume/count limits (Finding #14).
+     *
+     * @throws RuntimeException
+     */
+    private function enforceValueLimits(string $inputAmount, string $userUuid): void
+    {
+        $limits = config('crosschain.bridge_limits');
+        $amount = (float) $inputAmount;
+        $date = date('Y-m-d');
+
+        /** @var float $maxPerTx */
+        $maxPerTx = $limits['max_per_transaction'] ?? 100000.00;
+
+        if ($amount > $maxPerTx) {
+            throw new RuntimeException(
+                "Bridge amount exceeds per-transaction limit of {$maxPerTx}"
+            );
+        }
+
+        /** @var float $maxDailyVolume */
+        $maxDailyVolume = $limits['max_daily_volume'] ?? 500000.00;
+
+        /** @var int $currentVolumeRaw */
+        $currentVolumeRaw = (int) Cache::get("bridge_daily_volume:{$userUuid}:{$date}", 0);
+        $currentVolume = $currentVolumeRaw / 100;
+
+        if (($currentVolume + $amount) > $maxDailyVolume) {
+            throw new RuntimeException(
+                "Bridge amount would exceed daily volume limit of {$maxDailyVolume}"
+            );
+        }
+
+        /** @var int $maxDailyCount */
+        $maxDailyCount = $limits['max_daily_count'] ?? 50;
+
+        /** @var int $currentCount */
+        $currentCount = (int) Cache::get("bridge_daily_count:{$userUuid}:{$date}", 0);
+
+        if (($currentCount + 1) > $maxDailyCount) {
+            throw new RuntimeException(
+                "Bridge transaction count would exceed daily limit of {$maxDailyCount}"
+            );
+        }
+    }
+
+    /**
+     * Reconstruct a BridgeQuote value object from its cached array representation.
+     *
+     * @param array<string, mixed> $data
+     */
+    private function hydrateQuote(array $data): BridgeQuote
+    {
+        /** @var array<string, mixed> $routeData */
+        $routeData = $data['route'];
+
+        $route = new BridgeRoute(
+            sourceChain: CrossChainNetwork::from((string) $routeData['source_chain']),
+            destChain: CrossChainNetwork::from((string) $routeData['dest_chain']),
+            token: (string) $routeData['token'],
+            provider: BridgeProvider::from((string) $routeData['provider']),
+            estimatedTimeSeconds: (int) $routeData['estimated_time_seconds'],
+            baseFee: (string) $routeData['base_fee'],
+        );
+
+        return new BridgeQuote(
+            quoteId: (string) $data['quote_id'],
+            route: $route,
+            inputAmount: (string) $data['input_amount'],
+            outputAmount: (string) $data['output_amount'],
+            fee: (string) $data['fee'],
+            feeCurrency: (string) $data['fee_currency'],
+            estimatedTimeSeconds: (int) $data['estimated_time_seconds'],
+            expiresAt: CarbonImmutable::parse((string) $data['expires_at']),
+        );
     }
 
     /**
@@ -218,7 +353,7 @@ class BridgeOrchestratorService
     /**
      * Get all supported routes across all adapters.
      *
-     * @return array<\App\Domain\CrossChain\ValueObjects\BridgeRoute>
+     * @return array<BridgeRoute>
      */
     public function getAllSupportedRoutes(): array
     {

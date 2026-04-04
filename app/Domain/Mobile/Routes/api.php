@@ -88,8 +88,32 @@ Route::prefix('v1/notifications')->name('api.v1.notifications.')
             ->name('show');
         Route::post('/read-all', [App\Http\Controllers\Api\V1\NotificationController::class, 'markAllRead'])
             ->name('read-all');
+        // Alias: mobile app sends POST /api/v1/notifications/mark-all-read
+        Route::post('/mark-all-read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markAllRead'])
+            ->name('mark-all-read');
         Route::post('/{id}/read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markRead'])
             ->name('read');
+        // Alias: mobile app sends PATCH /api/v1/notifications/{id}/read
+        Route::patch('/{id}/read', [App\Http\Controllers\Api\V1\NotificationController::class, 'markRead'])
+            ->name('read.patch');
+    });
+
+// Device management aliases — mobile app expects /api/v1/devices/* (v7.1.0)
+Route::prefix('v1/devices')->name('api.v1.devices.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::get('/', [MobileController::class, 'listDevices'])->name('index');
+        Route::post('/', [MobileController::class, 'registerDevice'])->name('register');
+        Route::delete('/{id}', [MobileController::class, 'unregisterDevice'])->name('destroy');
+        Route::post('/bulk-remove', [MobileController::class, 'bulkRemoveDevices'])->name('bulk-remove');
+    });
+
+// Push notification device registration — mobile app expects /api/v1/notifications/* (v7.9.0)
+Route::prefix('v1/notifications')->name('api.v1.notifications.device.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::post('/register-device', [MobileController::class, 'registerDevice'])->name('register');
+        Route::delete('/unregister-device', [MobileController::class, 'unregisterDevice'])->name('unregister');
     });
 
 // User preferences (v3.3.4) + data export alias (v5.6.0)

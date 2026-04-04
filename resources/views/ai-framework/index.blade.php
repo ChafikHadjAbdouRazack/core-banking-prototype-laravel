@@ -1,11 +1,11 @@
 @extends('layouts.public')
 
-@section('title', 'AI Agent Framework - Intelligent Financial Automation | FinAegis')
+@section('title', 'AI Agent Framework - Intelligent Financial Automation | ' . config('brand.name', 'Zelta'))
 
 @section('seo')
     @include('partials.seo', [
         'title' => 'AI Agent Framework - Intelligent Financial Automation',
-        'description' => 'Experience the next generation of banking with AI-powered agents. Automate workflows, enhance decision-making, and deliver personalized financial services with FinAegis AI Framework.',
+        'description' => 'Experience the next generation of banking with AI-powered agents. Automate workflows, enhance decision-making, and deliver personalized financial services with ' . config('brand.name', 'Zelta') . ' AI Framework.',
         'keywords' => 'AI agents, financial automation, machine learning, LLM integration, intelligent banking, workflow automation, AI-powered finance, conversational banking',
     ])
 
@@ -13,7 +13,7 @@
     {
         "@@context": "https://schema.org",
         "@@type": "SoftwareApplication",
-        "name": "FinAegis AI Agent Framework",
+        "name": "{{ config('brand.name', 'Zelta') }} AI Agent Framework",
         "applicationCategory": "FinancialApplication",
         "operatingSystem": "Web",
         "description": "Enterprise AI framework for intelligent financial automation and decision support",
@@ -901,7 +901,7 @@
                 <a href="{{ route('register') }}" class="bg-white text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition shadow-lg hover:shadow-xl">
                     Start Free Trial
                 </a>
-                <a href="mailto:info@finaegis.org" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-purple-600 transition">
+                <a href="mailto:{{ config('brand.support_email', 'info@zelta.app') }}" class="border-2 border-white text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-white hover:text-purple-600 transition">
                     Schedule Demo
                 </a>
             </div>

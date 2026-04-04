@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Wallet;
 
 use App\Domain\KeyManagement\Models\RecoveryShardCloudBackup;
+use App\Domain\KeyManagement\Services\KeyReconstructionService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use OpenApi\Attributes as OA;
+use RuntimeException;
 
 #[OA\Tag(
     name: 'Recovery Shard Backup',
@@ -16,6 +18,11 @@ use OpenApi\Attributes as OA;
 )]
 class RecoveryShardController extends Controller
 {
+    public function __construct(
+        private readonly KeyReconstructionService $keyReconstructionService,
+    ) {
+    }
+
         #[OA\Post(
             path: '/api/v1/wallet/recovery-shard-backup',
             operationId: 'storeRecoveryShardBackup',
@@ -23,12 +30,12 @@ class RecoveryShardController extends Controller
             tags: ['Recovery Shard Backup'],
             security: [['sanctum' => []]],
             requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'backup_provider', 'encrypted_shard_hash', 'shard_version'], properties: [
-        new OA\Property(property: 'device_id', type: 'string', example: 'device_abc123'),
-        new OA\Property(property: 'backup_provider', type: 'string', enum: ['icloud', 'google_drive', 'manual'], example: 'icloud'),
-        new OA\Property(property: 'encrypted_shard_hash', type: 'string', example: 'sha256hash...'),
-        new OA\Property(property: 'shard_version', type: 'string', example: 'v1'),
-        new OA\Property(property: 'metadata', type: 'object', nullable: true),
-        ]))
+            new OA\Property(property: 'device_id', type: 'string', example: 'device_abc123'),
+            new OA\Property(property: 'backup_provider', type: 'string', enum: ['icloud', 'google_drive', 'manual'], example: 'icloud'),
+            new OA\Property(property: 'encrypted_shard_hash', type: 'string', example: 'sha256hash...'),
+            new OA\Property(property: 'shard_version', type: 'string', example: 'v1'),
+            new OA\Property(property: 'metadata', type: 'object', nullable: true),
+            ]))
         )]
     #[OA\Response(
         response: 201,
@@ -55,6 +62,17 @@ class RecoveryShardController extends Controller
             'encrypted_shard'      => ['nullable', 'string', 'max:65535'],
             'metadata'             => ['nullable', 'array'],
         ]);
+
+        // Verify hash matches the encrypted shard when both are provided
+        if (! empty($validated['encrypted_shard'])) {
+            $computedHash = '0x' . hash('sha256', $validated['encrypted_shard']);
+            if ($computedHash !== $validated['encrypted_shard_hash']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Shard hash mismatch — encrypted_shard_hash does not match encrypted_shard content',
+                ], 422);
+            }
+        }
 
         $updateData = [
             'encrypted_shard_hash' => $validated['encrypted_shard_hash'],
@@ -97,9 +115,9 @@ class RecoveryShardController extends Controller
             tags: ['Recovery Shard Backup'],
             security: [['sanctum' => []]],
             parameters: [
-        new OA\Parameter(name: 'device_id', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
-        new OA\Parameter(name: 'backup_provider', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['icloud', 'google_drive', 'manual'])),
-        ]
+            new OA\Parameter(name: 'device_id', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'backup_provider', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['icloud', 'google_drive', 'manual'])),
+            ]
         )]
     #[OA\Response(
         response: 200,
@@ -148,9 +166,9 @@ class RecoveryShardController extends Controller
             tags: ['Recovery Shard Backup'],
             security: [['sanctum' => []]],
             requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_id', 'backup_provider'], properties: [
-        new OA\Property(property: 'device_id', type: 'string', example: 'device_abc123'),
-        new OA\Property(property: 'backup_provider', type: 'string', enum: ['icloud', 'google_drive', 'manual'], example: 'icloud'),
-        ]))
+            new OA\Property(property: 'device_id', type: 'string', example: 'device_abc123'),
+            new OA\Property(property: 'backup_provider', type: 'string', enum: ['icloud', 'google_drive', 'manual'], example: 'icloud'),
+            ]))
         )]
     #[OA\Response(
         response: 200,
@@ -202,9 +220,9 @@ class RecoveryShardController extends Controller
             tags: ['Recovery Shard Backup'],
             security: [['sanctum' => []]],
             parameters: [
-        new OA\Parameter(name: 'device_id', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
-        new OA\Parameter(name: 'backup_provider', in: 'query', required: true, schema: new OA\Schema(type: 'string', enum: ['icloud', 'google_drive', 'manual'])),
-        ]
+            new OA\Parameter(name: 'device_id', in: 'query', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'backup_provider', in: 'query', required: true, schema: new OA\Schema(type: 'string', enum: ['icloud', 'google_drive', 'manual'])),
+            ]
         )]
     #[OA\Response(
         response: 200,
@@ -259,5 +277,65 @@ class RecoveryShardController extends Controller
                 'encrypted_shard_hash' => $backup->encrypted_shard_hash,
             ],
         ]);
+    }
+
+        /**
+         * Reconstruct a key using device shard + recovery shard.
+         *
+         * POST /v1/wallet/recovery/reconstruct
+         */
+        #[OA\Post(
+            path: '/api/v1/wallet/recovery/reconstruct',
+            operationId: 'reconstructRecoveryKey',
+            summary: 'Reconstruct key from device and recovery shards',
+            description: 'Uses KeyReconstructionService to combine device shard + recovery shard into an ephemeral key for client-side signing.',
+            tags: ['Recovery Shard Backup'],
+            security: [['sanctum' => []]],
+            requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['device_shard', 'recovery_shard'], properties: [
+            new OA\Property(property: 'device_shard', type: 'string', description: 'Base64-encoded device shard'),
+            new OA\Property(property: 'recovery_shard', type: 'string', description: 'Base64-encoded recovery shard'),
+            ]))
+        )]
+    #[OA\Response(
+        response: 200,
+        description: 'Key reconstructed successfully',
+        content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'success', type: 'boolean', example: true),
+        new OA\Property(property: 'data', type: 'object', properties: [
+        new OA\Property(property: 'reconstructed_key', type: 'string', description: 'Ephemeral key — use immediately and discard'),
+        ]),
+        ])
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Recovery failed — invalid shards'
+    )]
+    public function reconstruct(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'device_shard'   => ['required', 'string'],
+            'recovery_shard' => ['required', 'string'],
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        try {
+            $result = $this->keyReconstructionService->reconstructWithRecovery(
+                (string) $user->uuid,
+                $validated['device_shard'],
+                $validated['recovery_shard']
+            );
+
+            return response()->json([
+                'success' => true,
+                'data'    => ['reconstructed_key' => $result->privateKey],
+            ]);
+        } catch (RuntimeException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Recovery failed — invalid shards',
+            ], 422);
+        }
     }
 }

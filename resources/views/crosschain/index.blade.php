@@ -244,6 +244,13 @@
                                     </div>
                                     <span class="text-xs text-gray-500 dark:text-gray-400">BNB Chain</span>
                                 </li>
+                                <li class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span class="w-3 h-3 rounded-full bg-green-500 mr-3"></span>
+                                        <span class="text-sm font-medium text-gray-900 dark:text-white">Solana</span>
+                                    </div>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">Mainnet</span>
+                                </li>
                             </ul>
                         </div>
                     </div>

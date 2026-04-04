@@ -53,7 +53,7 @@ class InitializeTenancyByTeamMiddlewareTest extends TestCase
     protected function tearDown(): void
     {
         InitializeTenancyByTeam::$onFail = null;
-        InitializeTenancyByTeam::$allowWithoutTenant = false;
+        InitializeTenancyByTeam::setAllowWithoutTenant(false);
         InitializeTenancyByTeam::$rateLimitAttempts = 60;
 
         // End tenancy if still active
@@ -342,7 +342,7 @@ class InitializeTenancyByTeamMiddlewareTest extends TestCase
 
     public function test_middleware_returns_403_when_tenant_not_found_and_not_allowed(): void
     {
-        InitializeTenancyByTeam::$allowWithoutTenant = false;
+        InitializeTenancyByTeam::setAllowWithoutTenant(false);
 
         $user = User::factory()->create();
         $team = Team::factory()->create(['user_id' => $user->id]);
@@ -365,7 +365,7 @@ class InitializeTenancyByTeamMiddlewareTest extends TestCase
 
     public function test_middleware_allows_request_when_tenant_not_found_and_allowed(): void
     {
-        InitializeTenancyByTeam::$allowWithoutTenant = true;
+        InitializeTenancyByTeam::setAllowWithoutTenant(true);
 
         $user = User::factory()->create();
         $team = Team::factory()->create(['user_id' => $user->id]);

@@ -21,6 +21,10 @@ return [
 
     'default_network' => env('RELAYER_DEFAULT_NETWORK', 'polygon'),
 
+    // Cache TTL for read-only RPC calls (blockNumber, gasPrice) in seconds.
+    // Reduces Alchemy/Infura usage by serving cached results for repeated queries.
+    'rpc_cache_ttl_seconds' => (int) env('RPC_CACHE_TTL', 15),
+
     /*
     |--------------------------------------------------------------------------
     | Fee Configuration
@@ -182,8 +186,8 @@ return [
         // Provider: 'demo', 'alchemy', 'infura', 'custom'
         'provider' => env('BALANCE_PROVIDER', 'demo'),
 
-        // Cache TTL in seconds
-        'cache_ttl_seconds' => (int) env('BALANCE_CACHE_TTL', 30),
+        // Cache TTL in seconds (balances don't change fast — 120s is safe)
+        'cache_ttl_seconds' => (int) env('BALANCE_CACHE_TTL', 120),
 
         // Alchemy configuration
         'alchemy_api_key' => env('ALCHEMY_API_KEY'),
@@ -221,6 +225,25 @@ return [
             // Example: '0x123...' => ['USDC' => '1000.000000', 'USDT' => '500.000000']
         ],
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Alchemy Webhook Configuration (v5.14.0)
+    |--------------------------------------------------------------------------
+    |
+    | Signing keys for verifying Alchemy Address Activity Webhooks.
+    | Each chain webhook gets its own signing key from Alchemy Dashboard.
+    | The controller tries all configured keys (one must match).
+    |
+    */
+
+    'alchemy_webhook_signing_keys' => array_filter([
+        env('ALCHEMY_WEBHOOK_SIGNING_KEY_POLYGON'),
+        env('ALCHEMY_WEBHOOK_SIGNING_KEY_ARBITRUM'),
+        env('ALCHEMY_WEBHOOK_SIGNING_KEY_ETHEREUM'),
+        env('ALCHEMY_WEBHOOK_SIGNING_KEY_SOLANA'),
+        env('ALCHEMY_WEBHOOK_SIGNING_KEY'),  // Legacy single-key fallback
+    ]),
 
     /*
     |--------------------------------------------------------------------------

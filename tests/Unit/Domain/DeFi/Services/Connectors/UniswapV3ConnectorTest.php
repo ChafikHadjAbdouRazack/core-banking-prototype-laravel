@@ -5,11 +5,13 @@ declare(strict_types=1);
 use App\Domain\CrossChain\Enums\CrossChainNetwork;
 use App\Domain\DeFi\Enums\DeFiProtocol;
 use App\Domain\DeFi\Services\Connectors\UniswapV3Connector;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
-    $this->connector = new UniswapV3Connector();
+    $this->connector = new UniswapV3Connector(new AbiEncoder(), new EthRpcClient());
 });
 
 describe('UniswapV3Connector', function () {

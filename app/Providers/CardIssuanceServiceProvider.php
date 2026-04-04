@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Domain\CardIssuance\Adapters\DemoCardIssuerAdapter;
 use App\Domain\CardIssuance\Adapters\MarqetaCardIssuerAdapter;
 use App\Domain\CardIssuance\Contracts\CardIssuerInterface;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -39,6 +40,15 @@ class CardIssuanceServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Finding #15: Warn in production when the Marqeta HMAC secret is absent.
+        // Without this secret, incoming webhook payloads cannot be signature-verified,
+        // leaving the authorization endpoint open to spoofed requests.
+        if (
+            $this->app->environment('production')
+            && config('cardissuance.default_issuer') === 'marqeta'
+            && empty(config('cardissuance.issuers.marqeta.hmac_secret'))
+        ) {
+            Log::debug('Marqeta HMAC secret not configured — sandbox mode, webhook signature validation relaxed');
+        }
     }
 }

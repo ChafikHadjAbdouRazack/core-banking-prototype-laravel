@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Contracts\BlockchainConnector;
+use App\Domain\Wallet\Helpers\SolanaAddressHelper;
 use App\Domain\Wallet\ValueObjects\AddressData;
 use App\Domain\Wallet\ValueObjects\BalanceData;
 use App\Domain\Wallet\ValueObjects\GasEstimate;
@@ -360,14 +361,7 @@ class DemoBlockchainService implements BlockchainConnector
         }
 
         if ($this->chain === 'solana') {
-            // Generate a base58-like Solana address (32-44 chars)
-            $alphabet = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-            $result = '';
-            for ($i = 0; $i < 44 && $i < strlen($hash); $i++) {
-                $result .= $alphabet[ord($hash[$i]) % strlen($alphabet)];
-            }
-
-            return $result;
+            return SolanaAddressHelper::deriveAddress($hash);
         }
 
         if ($this->chain === 'tron') {

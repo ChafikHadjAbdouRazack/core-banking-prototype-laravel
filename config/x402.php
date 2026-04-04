@@ -18,6 +18,9 @@ return [
 
     'version' => 2,
 
+    // Subdomain prefix for protocol-specific routing (e.g. x402.api.zelta.app)
+    'subdomain' => env('X402_SUBDOMAIN', 'x402'),
+
     /*
     |--------------------------------------------------------------------------
     | Resource Server Settings
@@ -80,6 +83,21 @@ return [
 
         // Maximum auto-pay amount per request in atomic USDC units ($0.10)
         'max_auto_pay_amount' => env('X402_CLIENT_MAX_AUTO_PAY', '100000'),
+
+        // Preferred network order for payment option selection
+        'preferred_networks' => array_filter(explode(',', (string) env(
+            'X402_PREFERRED_NETWORKS',
+            'eip155:8453,eip155:84532,solana:mainnet,eip155:1',
+        ))),
+
+        // Solana-specific signer address (base58 public key)
+        'solana_signer_address' => env('X402_CLIENT_SOLANA_SIGNER_ADDRESS', ''),
+
+        // Solana HSM provider (sodium for dev, aws/azure for production)
+        'solana_hsm_provider' => env('X402_SOLANA_HSM_PROVIDER', 'sodium'),
+
+        // Path to Solana keypair file (for sodium provider only)
+        'solana_key_path' => env('X402_SOLANA_KEY_PATH', ''),
     ],
 
     /*
@@ -110,6 +128,12 @@ return [
         'eip155:43113' => [
             'USDC' => '0x5425890298aed601595a70AB815c96711a31Bc65',
         ],
+        'solana:mainnet' => [
+            'USDC' => 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        ],
+        'solana:devnet' => [
+            'USDC' => '4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU',
+        ],
     ],
 
     /*
@@ -125,6 +149,20 @@ return [
         'permit2'             => '0x000000000022D473030F116dDEE9F6B43aC78BA3',
         'exact_permit2_proxy' => '0x4020615294c913F045dc10f0a5cdEbd86c280001',
         'upto_permit2_proxy'  => '0x4020633461b2895a48930Ff97eE8fCdE8E520002',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Solana Program Addresses
+    |--------------------------------------------------------------------------
+    |
+    | SPL Token program addresses used for Solana x402 transactions.
+    |
+    */
+
+    'solana_programs' => [
+        'token_program'            => 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+        'associated_token_program' => 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
     ],
 
     /*

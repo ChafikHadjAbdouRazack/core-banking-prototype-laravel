@@ -14,6 +14,8 @@ use App\Domain\DeFi\Services\DeFiPositionTrackerService;
 use App\Domain\DeFi\Services\SwapAggregatorService;
 use App\Domain\DeFi\Services\SwapRouterService;
 use App\Http\Controllers\Api\DeFi\DeFiController;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 use Illuminate\Http\Request;
 
 uses(Tests\TestCase::class);
@@ -29,9 +31,12 @@ function makeDefiPostRequest(string $uri, array $data): Request
 }
 
 beforeEach(function () {
+    $encoder = new AbiEncoder();
+    $rpcClient = new EthRpcClient();
+
     $aggregator = new SwapAggregatorService();
     $aggregator->registerConnector(new DemoSwapConnector());
-    $aggregator->registerConnector(new UniswapV3Connector());
+    $aggregator->registerConnector(new UniswapV3Connector($encoder, $rpcClient));
     $this->swapRouter = new SwapRouterService($aggregator);
 
     $this->positionTracker = new DeFiPositionTrackerService();
@@ -41,7 +46,7 @@ beforeEach(function () {
         $this->swapRouter,
         $this->portfolioService,
         $this->positionTracker,
-        new AaveV3Connector(),
+        new AaveV3Connector($encoder, $rpcClient),
         new LidoConnector(),
     );
 });

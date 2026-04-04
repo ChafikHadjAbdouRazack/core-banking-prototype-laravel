@@ -410,7 +410,7 @@ ActivityStub::make(ValidateLiquidityActivity::class)
 
 ## Architecture Overview
 
-### Domain-Driven Design Structure (41 domains)
+### Domain-Driven Design Structure (56 domains)
 - **Account Domain** (`app/Domain/Account/`): Core banking account management with multi-asset support
 - **Asset Domain** (`app/Domain/Asset/`): Multi-asset ledger, exchange rates, and asset management
 - **Basket Domain** (`app/Domain/Basket/`): Basket asset management with rebalancing services
@@ -444,7 +444,7 @@ ActivityStub::make(ValidateLiquidityActivity::class)
 
 ### GraphQL API (v4.0.0-v5.1.0)
 The platform provides a GraphQL API via Lighthouse PHP alongside the REST API:
-- **33 domain schemas**: Account, AgentProtocol, AI, Asset, Banking, Basket, Batch, CardIssuance, Cgo, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, FinancialInstitution, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, Product, RegTech, Regulatory, Relayer, Stablecoin, Treasury, TrustCert, User, Wallet
+- **45 domain schemas**: Account, AgentProtocol, AI, Asset, Banking, Basket, Batch, CardIssuance, Cgo, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, FinancialInstitution, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, Product, RegTech, Regulatory, Relayer, Stablecoin, Treasury, TrustCert, User, Wallet, and 12 additional domain schemas
 - **Schema files**: `graphql/*.graphql`
 - **Resolvers**: `app/GraphQL/Queries/`, `app/GraphQL/Mutations/`, `app/GraphQL/Subscriptions/`
 - **Access**: POST `/graphql`, GET `/graphql-playground`
@@ -2145,6 +2145,6 @@ $user->assignRole('customer_business');
 
 ---
 
-**Last Updated**: 2026-02-21
-**Version**: 5.1.5
+**Last Updated**: 2026-04-04
+**Version**: 7.9.0
 **Status**: Production Ready - v5.1.5 with Dependency Cleanup (l5-swagger 10, swagger-php 6), PSR-4 Plugin Fix, Production Env Template

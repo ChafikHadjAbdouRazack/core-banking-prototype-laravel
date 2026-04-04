@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\AgentProtocol\A2ATaskController;
 use App\Http\Controllers\Api\AgentProtocol\AgentAuthController;
 use App\Http\Controllers\Api\AgentProtocol\AgentEscrowController;
 use App\Http\Controllers\Api\AgentProtocol\AgentIdentityController;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 // AP2 well-known configuration (public)
 Route::get('/.well-known/ap2-configuration', [AgentIdentityController::class, 'wellKnownConfiguration'])
     ->name('ap2.configuration');
+
+// A2A Agent Card (public)
+Route::get('/.well-known/agent.json', App\Http\Controllers\Api\AgentProtocol\A2AAgentCardController::class)
+    ->name('api.a2a.agent-card');
 
 Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () {
     // Public endpoints
@@ -55,6 +60,14 @@ Route::prefix('agent-protocol')->name('api.agent-protocol.')->group(function () 
 
     // User-authenticated endpoints (users manage their agents via sanctum)
     Route::middleware(['auth:sanctum', 'api.rate_limit:private'])->group(function () {
+        // A2A Task lifecycle endpoints
+        Route::prefix('tasks')->name('tasks.')->group(function () {
+            Route::post('/send', [A2ATaskController::class, 'send'])->name('send');
+            Route::get('/', [A2ATaskController::class, 'list'])->name('list');
+            Route::get('/{taskId}', [A2ATaskController::class, 'get'])->name('get');
+            Route::post('/{taskId}/cancel', [A2ATaskController::class, 'cancel'])->name('cancel');
+        });
+
         // Agent registration (users create/own agents)
         Route::post('/agents/register', [AgentIdentityController::class, 'register'])->name('agents.register');
 

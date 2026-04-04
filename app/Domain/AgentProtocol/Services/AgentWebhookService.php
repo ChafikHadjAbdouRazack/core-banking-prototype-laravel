@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\AgentProtocol\Services;
 
+use App\Infrastructure\Security\UrlValidator;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -112,6 +113,9 @@ class AgentWebhookService
         array $events = [],
         ?string $secret = null
     ): bool {
+        // SSRF protection: validate endpoint URL does not resolve to private/internal IPs
+        UrlValidator::validateExternalUrl($endpoint);
+
         $cacheKey = "webhook:endpoints:{$agentId}";
         $endpoints = Cache::get($cacheKey, []);
 

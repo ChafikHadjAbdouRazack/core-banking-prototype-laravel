@@ -8,6 +8,7 @@ namespace App\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
 use App\Domain\Wallet\Exceptions\KeyManagementException;
+use App\Domain\Wallet\Helpers\SolanaAddressHelper;
 use Elliptic\EC;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Crypt;
@@ -29,6 +30,7 @@ class KeyManagementService implements KeyManagementServiceInterface
         'bitcoin'  => "m/44'/0'/0'/0",
         'polygon'  => "m/44'/966'/0'/0",
         'bsc'      => "m/44'/60'/0'/0", // Same as Ethereum
+        'solana'   => "m/44'/501'/0'/0",
     ];
 
     /**
@@ -167,6 +169,22 @@ class KeyManagementService implements KeyManagementServiceInterface
                 'private_key'     => $privateKey,
                 'public_key'      => $publicKey,
                 'address'         => $this->getEthereumAddress($publicKey),
+                'derivation_path' => $derivationPath,
+            ];
+        } elseif ($chain === 'solana') {
+            // ed25519 key derivation via sodium
+            $seed32 = hash('sha256', $seed . $derivationPath, binary: true);
+            $keypair = sodium_crypto_sign_seed_keypair($seed32);
+            $publicKey = sodium_crypto_sign_publickey($keypair);
+            $address = SolanaAddressHelper::base58Encode($publicKey);
+
+            sodium_memzero($keypair);
+            sodium_memzero($seed32);
+
+            return [
+                'private_key'     => $privateKey,
+                'public_key'      => bin2hex($publicKey),
+                'address'         => $address,
                 'derivation_path' => $derivationPath,
             ];
         } else {

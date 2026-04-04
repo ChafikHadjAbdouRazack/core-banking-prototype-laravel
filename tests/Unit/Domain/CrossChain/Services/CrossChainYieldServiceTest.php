@@ -10,6 +10,8 @@ use App\Domain\DeFi\Services\Connectors\AaveV3Connector;
 use App\Domain\DeFi\Services\Connectors\LidoConnector;
 use App\Domain\DeFi\Services\DeFiPortfolioService;
 use App\Domain\DeFi\Services\DeFiPositionTrackerService;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
@@ -20,10 +22,13 @@ beforeEach(function () {
     $bridgeOrchestrator = new BridgeOrchestratorService();
     $bridgeOrchestrator->registerAdapter(new DemoBridgeAdapter());
 
+    $encoder = new AbiEncoder();
+    $rpcClient = new EthRpcClient();
+
     $this->service = new CrossChainYieldService(
         $portfolioService,
         $bridgeOrchestrator,
-        new AaveV3Connector(),
+        new AaveV3Connector($encoder, $rpcClient),
         new LidoConnector(),
     );
 });

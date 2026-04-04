@@ -30,12 +30,13 @@ class HealthChecker
     public function check(): array
     {
         $checks = [
-            'database'   => $this->checkDatabase(),
-            'cache'      => $this->checkCache(),
-            'redis'      => $this->checkRedis(),
-            'queue'      => $this->checkQueue(),
-            'storage'    => $this->checkStorage(),
-            'migrations' => $this->checkMigrations(),
+            'database'     => $this->checkDatabase(),
+            'cache'        => $this->checkCache(),
+            'redis'        => $this->checkRedis(),
+            'queue'        => $this->checkQueue(),
+            'storage'      => $this->checkStorage(),
+            'migrations'   => $this->checkMigrations(),
+            'marqeta_hmac' => $this->checkMarqetaHmacSecret(),
         ];
 
         $healthy = collect($checks)->every(fn ($check) => $check['healthy']);
@@ -323,6 +324,43 @@ class HealthChecker
                 'error'   => $e->getMessage(),
             ];
         }
+    }
+
+    /**
+     * Check that the Marqeta HMAC secret is configured when Marqeta is the active issuer.
+     *
+     * An absent secret means incoming webhook payloads cannot be signature-verified,
+     * degrading security. This is advisory (healthy=true) in non-production environments.
+     *
+     * @return array<string, mixed>
+     */
+    protected function checkMarqetaHmacSecret(): array
+    {
+        $issuer = config('cardissuance.default_issuer', 'demo');
+
+        if ($issuer !== 'marqeta') {
+            return [
+                'name'    => 'marqeta_hmac',
+                'healthy' => true,
+                'message' => 'Marqeta not active — check skipped',
+            ];
+        }
+
+        $configured = ! empty(config('cardissuance.issuers.marqeta.hmac_secret'));
+
+        if (! $configured) {
+            return [
+                'name'    => 'marqeta_hmac',
+                'healthy' => true,
+                'message' => 'Marqeta HMAC secret not configured — sandbox mode',
+            ];
+        }
+
+        return [
+            'name'    => 'marqeta_hmac',
+            'healthy' => true,
+            'message' => 'Marqeta HMAC secret configured',
+        ];
     }
 
     /**

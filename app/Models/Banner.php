@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $image_url
  * @property string|null $action_url
  * @property string $action_type
+ * @property string|null $cta_label
  * @property int $position
  * @property bool $active
  * @property \Carbon\Carbon|null $starts_at
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Banner extends Model
 {
+    /** @use HasFactory<\Illuminate\Database\Eloquent\Factories\Factory<static>> */
     use HasFactory;
 
     protected $fillable = [
@@ -38,6 +40,7 @@ class Banner extends Model
         'image_url',
         'action_url',
         'action_type',
+        'cta_label',
         'position',
         'active',
         'starts_at',

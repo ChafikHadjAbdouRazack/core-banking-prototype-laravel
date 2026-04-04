@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Auth;
 
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\IpBlockingService;
@@ -19,7 +20,8 @@ class LoginController extends Controller
     use HasApiScopes;
 
     public function __construct(
-        private readonly IpBlockingService $ipBlockingService
+        private readonly IpBlockingService $ipBlockingService,
+        private readonly BiometricJWTService $biometricJWTService,
     ) {
     }
 
@@ -75,9 +77,11 @@ class LoginController extends Controller
     {
         $request->validate(
             [
-                'email'       => 'required|email',
-                'password'    => 'required',
-                'device_name' => 'string',
+                'email'              => 'required|email',
+                'password'           => 'required',
+                'device_name'        => 'string',
+                'device_attestation' => ['nullable', 'string', 'max:4096'],
+                'device_type'        => ['nullable', 'string', 'in:ios,android'],
             ]
         );
 
@@ -101,6 +105,17 @@ class LoginController extends Controller
                     'email' => ['The provided credentials are incorrect.'],
                 ]
             );
+        }
+
+        // Verify device attestation if provided and enabled
+        if ($request->filled('device_attestation') && config('mobile.attestation.enabled')) {
+            $verified = $this->biometricJWTService->verifyDeviceAttestation(
+                $request->input('device_attestation'),
+                $request->input('device_type', 'android')
+            );
+            if (! $verified) {
+                return response()->json(['success' => false, 'message' => 'Device attestation failed'], 403);
+            }
         }
 
         // Regenerate session to prevent session fixation attacks (only for web)

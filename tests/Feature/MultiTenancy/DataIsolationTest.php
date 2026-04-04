@@ -56,7 +56,7 @@ class DataIsolationTest extends BaseTestCase
     protected function tearDown(): void
     {
         InitializeTenancyByTeam::$onFail = null;
-        InitializeTenancyByTeam::$allowWithoutTenant = false;
+        InitializeTenancyByTeam::setAllowWithoutTenant(false);
         TeamTenantResolver::$autoCreateTenant = false;
         TeamTenantResolver::resetConfiguration();
 
@@ -401,7 +401,7 @@ class DataIsolationTest extends BaseTestCase
         };
 
         // Allow without tenant for this test
-        InitializeTenancyByTeam::$allowWithoutTenant = true;
+        InitializeTenancyByTeam::setAllowWithoutTenant(true);
 
         $this->assertNotNull(InitializeTenancyByTeam::$onFail);
 
@@ -445,7 +445,7 @@ class DataIsolationTest extends BaseTestCase
 
     public function test_default_behavior_returns_403_for_missing_tenant(): void
     {
-        InitializeTenancyByTeam::$allowWithoutTenant = false;
+        InitializeTenancyByTeam::setAllowWithoutTenant(false);
 
         $user = User::factory()->create();
         $team = Team::factory()->create(['user_id' => $user->id]);
@@ -462,7 +462,7 @@ class DataIsolationTest extends BaseTestCase
 
     public function test_allow_without_tenant_flag_works_via_http(): void
     {
-        InitializeTenancyByTeam::$allowWithoutTenant = true;
+        InitializeTenancyByTeam::setAllowWithoutTenant(true);
 
         $user = User::factory()->create();
         $team = Team::factory()->create(['user_id' => $user->id]);

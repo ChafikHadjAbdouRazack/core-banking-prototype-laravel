@@ -109,12 +109,6 @@ parameters:
 			path: app/Domain/Account/Repositories/TurnoverRepository.php
 
 		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Account/Routes/api.php
-
-		-
 			message: '#^PHPDoc tag @param for parameter \$account with type mixed is not subtype of native type App\\Domain\\Account\\DataObjects\\Account\|array\.$#'
 			identifier: parameter.phpDocType
 			count: 1
@@ -191,6 +185,30 @@ parameters:
 			identifier: argument.type
 			count: 6
 			path: app/Domain/Account/Workflows/SingleBatchOperationActivity.php
+
+		-
+			message: '#^Method App\\Domain\\Activity\\Services\\ActivityService\:\:getActivityForSubject\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Activity/Services/ActivityService.php
+
+		-
+			message: '#^Method App\\Domain\\Activity\\Services\\ActivityService\:\:getActivityForUser\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Activity/Services/ActivityService.php
+
+		-
+			message: '#^Method App\\Domain\\Activity\\Services\\ActivityService\:\:getRecentActivity\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Activity/Services/ActivityService.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Activity\\Models\\Activity\>\:\:pluck\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Activity\\Models\\Activity, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domain/Activity/Services/ActivityService.php
 
 		-
 			message: '#^Property App\\Domain\\Asset\\Aggregates\\BasketAggregate\:\:\$basketCode is never read, only written\.$#'
@@ -493,12 +511,6 @@ parameters:
 			path: app/Domain/Banking/Models/UserBankPreference.php
 
 		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Banking/Routes/api.php
-
-		-
 			message: '#^Access to an undefined property App\\Domain\\Banking\\Models\\BankBalance\|\(Illuminate\\Support\\Collection&iterable\<App\\Domain\\Banking\\Models\\BankBalance\>\)\:\:\$available\.$#'
 			identifier: property.notFound
 			count: 1
@@ -599,12 +611,6 @@ parameters:
 			identifier: property.phpDocType
 			count: 1
 			path: app/Domain/Basket/Models/ComponentPerformance.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 2
-			path: app/Domain/Basket/Routes/api.php
 
 		-
 			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
@@ -919,12 +925,6 @@ parameters:
 			path: app/Domain/Cgo/Services/CgoKycService.php
 
 		-
-			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domain/Cgo/Services/CoinbaseCommerceService.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>address" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -1109,12 +1109,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Compliance/Models/TransactionMonitoringRule.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Compliance/Routes/api.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$date_of_birth\.$#'
@@ -1397,6 +1391,42 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Contact/Mail/ContactFormSubmission.php
+
+		-
+			message: '#^Method App\\Domain\\Contact\\Services\\ContactTicketService\:\:assignTicket\(\) should return App\\Domain\\Contact\\Models\\ContactSubmission but returns App\\Domain\\Contact\\Models\\ContactSubmission\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
+
+		-
+			message: '#^Method App\\Domain\\Contact\\Services\\ContactTicketService\:\:close\(\) should return App\\Domain\\Contact\\Models\\ContactSubmission but returns App\\Domain\\Contact\\Models\\ContactSubmission\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
+
+		-
+			message: '#^Method App\\Domain\\Contact\\Services\\ContactTicketService\:\:list\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
+
+		-
+			message: '#^Method App\\Domain\\Contact\\Services\\ContactTicketService\:\:reopen\(\) should return App\\Domain\\Contact\\Models\\ContactSubmission but returns App\\Domain\\Contact\\Models\\ContactSubmission\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
+
+		-
+			message: '#^Method App\\Domain\\Contact\\Services\\ContactTicketService\:\:respond\(\) should return App\\Domain\\Contact\\Models\\ContactSubmission but returns App\\Domain\\Contact\\Models\\ContactSubmission\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Contact\\Models\\ContactSubmission\>\:\:where\(\) expects array\<int\|model property of App\\Domain\\Contact\\Models\\ContactSubmission, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Contact\\Models\\ContactSubmission\>\)\: Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Contact\\Models\\ContactSubmission\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Contact\\Models\\ContactSubmission\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Contact\\Models\\ContactSubmission, ''assigned_to'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domain/Contact/Services/ContactTicketService.php
 
 		-
 			message: '#^Parameter \#1 \$num1 of function bcadd expects numeric\-string, string given\.$#'
@@ -1791,13 +1821,13 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$num1 of function bcmul expects numeric\-string, string given\.$#'
 			identifier: argument.type
-			count: 2
+			count: 4
 			path: app/Domain/DeFi/Services/Connectors/UniswapV3Connector.php
 
 		-
 			message: '#^Parameter \#1 \$num1 of function bcsub expects numeric\-string, string given\.$#'
 			identifier: argument.type
-			count: 1
+			count: 2
 			path: app/Domain/DeFi/Services/Connectors/UniswapV3Connector.php
 
 		-
@@ -2297,12 +2327,6 @@ parameters:
 			identifier: nullCoalesce.expr
 			count: 2
 			path: app/Domain/Exchange/Providers/FixerIoProvider.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 4
-			path: app/Domain/Exchange/Routes/api.php
 
 		-
 			message: '#^Method App\\Domain\\Exchange\\Services\\EnhancedExchangeRateService\:\:getRateWithFallback\(\) should return float but returns App\\Domain\\Asset\\Models\\ExchangeRate\|null\.$#'
@@ -2851,12 +2875,6 @@ parameters:
 			path: app/Domain/Governance/Models/Poll.php
 
 		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''user_uuid'' given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Domain/Governance/Models/Poll.php
-
-		-
 			message: '#^Parameter \$option of anonymous function has invalid type App\\Domain\\Governance\\Models\\PollOption\.$#'
 			identifier: class.notFound
 			count: 1
@@ -2885,12 +2903,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Domain/Governance/Policies/GcuVotingProposalPolicy.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Governance/Routes/api.php
 
 		-
 			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\Cache\:\:getRedis\(\)\.$#'
@@ -3241,6 +3253,48 @@ parameters:
 			path: app/Domain/Newsletter/Console/Commands/SendNewsletter.php
 
 		-
+			message: '#^Class App\\Domain\\Newsletter\\Models\\Campaign uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Newsletter/Models/Campaign.php
+
+		-
+			message: '#^Parameter \#1 \$column of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\:\:where\(\) expects array\<int\|model property of App\\Domain\\Newsletter\\Models\\Subscriber, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\: Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Newsletter\\Models\\Subscriber, ''is_active'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domain/Newsletter/Models/Campaign.php
+
+		-
+			message: '#^Anonymous function should return App\\Domain\\Newsletter\\Models\\Campaign but returns App\\Domain\\Newsletter\\Models\\Campaign\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Newsletter/Services/CampaignService.php
+
+		-
+			message: '#^Method App\\Domain\\Newsletter\\Services\\CampaignService\:\:cancel\(\) should return App\\Domain\\Newsletter\\Models\\Campaign but returns App\\Domain\\Newsletter\\Models\\Campaign\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Newsletter/Services/CampaignService.php
+
+		-
+			message: '#^Method App\\Domain\\Newsletter\\Services\\CampaignService\:\:list\(\) return type with generic interface Illuminate\\Contracts\\Pagination\\LengthAwarePaginator does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Domain/Newsletter/Services/CampaignService.php
+
+		-
+			message: '#^Method App\\Domain\\Newsletter\\Services\\CampaignService\:\:schedule\(\) should return App\\Domain\\Newsletter\\Models\\Campaign but returns App\\Domain\\Newsletter\\Models\\Campaign\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domain/Newsletter/Services/CampaignService.php
+
+		-
+			message: '#^Parameter \#1 \$column of static method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\:\:where\(\) expects array\<int\|model property of App\\Domain\\Newsletter\\Models\\Subscriber, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\: Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Newsletter\\Models\\Subscriber\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Newsletter\\Models\\Subscriber, ''is_active'' given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domain/Newsletter/Services/CampaignService.php
+
+		-
 			message: '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
 			identifier: varTag.noVariable
 			count: 1
@@ -3367,6 +3421,18 @@ parameters:
 			path: app/Domain/Payment/Workflows/TransferActivity.php
 
 		-
+			message: '#^Cannot call method toIso8601String\(\) on Carbon\\Carbon\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domain/Performance/Services/PerformanceReportService.php
+
+		-
+			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<App\\Domain\\Performance\\Models\\PerformanceMetric\>\:\:pluck\(\) expects Illuminate\\Contracts\\Database\\Query\\Expression\|model property of App\\Domain\\Performance\\Models\\PerformanceMetric, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domain/Performance/Services/PerformanceReportService.php
+
+		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
 			identifier: larastan.noEnvCallsOutsideOfConfig
 			count: 3
@@ -3395,12 +3461,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Product/Services/SubProductService.php
-
-		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 3 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/RegTech/Routes/api.php
 
 		-
 			message: '#^Call to an undefined static method App\\Domain\\Regulatory\\Models\\RegulatoryFilingRecord\:\:requireingRetry\(\)\.$#'
@@ -3697,12 +3757,6 @@ parameters:
 			path: app/Domain/Security/Checks/RateLimitingCheck.php
 
 		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 2 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 2
-			path: app/Domain/Security/Routes/api.php
-
-		-
 			message: '#^Method App\\Domain\\Shared\\EventSourcing\\AbstractEventUpcaster\:\:eventClass\(\) should return class\-string but returns string\.$#'
 			identifier: return.type
 			count: 1
@@ -3997,12 +4051,6 @@ parameters:
 			path: app/Domain/Stablecoin/Workflows/ReserveManagementWorkflow.php
 
 		-
-			message: '#^Static method Illuminate\\Support\\Facades\\Route\:\:middleware\(\) invoked with 3 parameters, 1 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: app/Domain/Treasury/Routes/api.php
-
-		-
 			message: '#^Parameter \#1 \$num of function dechex expects int, string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4231,7 +4279,7 @@ parameters:
 			path: app/Domain/Webhook/Jobs/ProcessWebhookDelivery.php
 
 		-
-			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, array\|string\> given\.$#'
+			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Relations\\HasOneOrMany\<Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Model,Illuminate\\Database\\Eloquent\\Collection\<int, Illuminate\\Database\\Eloquent\\Model\>\>\:\:create\(\) expects array\<model property of Illuminate\\Database\\Eloquent\\Model, mixed\>, array\<string, array\<string, mixed\>\|string\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Domain/Webhook/Services/WebhookService.php
@@ -5329,12 +5377,6 @@ parameters:
 			path: app/Http/Controllers/Api/TrustCert/MobileTrustCertController.php
 
 		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''user_uuid'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/Api/UserVotingController.php
-
-		-
 			message: '#^Using nullsafe method call on non\-nullable type Carbon\\Carbon\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -5559,7 +5601,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
 			identifier: property.nonObject
-			count: 5
+			count: 6
 			path: app/Http/Controllers/Api/Wallet/MobileWalletController.php
 
 		-
@@ -5653,36 +5695,6 @@ parameters:
 			path: app/Http/Controllers/BatchProcessingController.php
 
 		-
-			message: '#^Call to static method create\(\) on an unknown class App\\Domain\\Account\\Models\\BlockchainAddress\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Call to static method create\(\) on an unknown class App\\Domain\\Account\\Models\\BlockchainTransaction\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Domain\\Account\\Models\\BlockchainAddress\.$#'
-			identifier: class.notFound
-			count: 5
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Call to static method where\(\) on an unknown class App\\Domain\\Account\\Models\\BlockchainTransaction\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
-			message: '#^Call to static method whereIn\(\) on an unknown class App\\Domain\\Account\\Models\\BlockchainTransaction\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Http/Controllers/BlockchainWalletController.php
-
-		-
 			message: '#^Parameter \#1 \$attributes of method Illuminate\\Database\\Eloquent\\Model\:\:update\(\) expects array\<model property of App\\Domain\\Cgo\\Models\\CgoInvestment, mixed\>, array\<string, Illuminate\\Support\\Carbon\|string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5722,12 +5734,6 @@ parameters:
 			message: '#^Call to protected method verifyStripePayment\(\) of class App\\Domain\\Cgo\\Services\\PaymentVerificationService\.$#'
 			identifier: method.protected
 			count: 1
-			path: app/Http/Controllers/CgoPaymentVerificationController.php
-
-		-
-			message: '#^Call to static method to\(\) on an unknown class Mail\.$#'
-			identifier: class.notFound
-			count: 2
 			path: app/Http/Controllers/CgoPaymentVerificationController.php
 
 		-
@@ -5851,12 +5857,6 @@ parameters:
 			path: app/Http/Controllers/FraudAlertsController.php
 
 		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''user_uuid'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/FraudAlertsController.php
-
-		-
 			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5873,12 +5873,6 @@ parameters:
 			identifier: class.notFound
 			count: 2
 			path: app/Http/Controllers/GcuTradingController.php
-
-		-
-			message: '#^Parameter \#1 \$column of method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:where\(\) expects array\<int\|model property of Illuminate\\Database\\Eloquent\\Model, mixed\>\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\|\(Closure\(Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\)\: void\)\|Illuminate\\Contracts\\Database\\Query\\Expression\|model property of Illuminate\\Database\\Eloquent\\Model, ''user_uuid'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/GcuVotingController.php
 
 		-
 			message: '#^Using nullsafe property access "\?\-\>balance" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
@@ -6667,12 +6661,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Call to static method forceScheme\(\) on an unknown class URL\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
 			message: '#^Class App\\Workflows\\BlockchainDepositActivities not found\.$#'
 			identifier: class.notFound
 			count: 1
@@ -6777,7 +6765,7 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 3
+			count: 2
 			path: tests/Domain/AI/Services/AIAgentServiceTest.php
 
 		-
@@ -7603,12 +7591,6 @@ parameters:
 			path: tests/Feature/Http/Controllers/Api/Auth/EmailVerificationControllerTest.php
 
 		-
-			message: '#^Call to static method check\(\) on an unknown class Hash\.$#'
-			identifier: class.notFound
-			count: 1
-			path: tests/Feature/Http/Controllers/Api/Auth/RegisterControllerTest.php
-
-		-
 			message: '#^Method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertStatus\(\) invoked with 2 parameters, 1 required\.$#'
 			identifier: arguments.count
 			count: 1
@@ -7903,12 +7885,6 @@ parameters:
 			path: tests/Security/Authentication/AuthenticationSecurityTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''API scope…'' will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Security/Authentication/AuthorizationSecurityTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -7999,30 +7975,6 @@ parameters:
 			path: tests/Unit/Domain/Account/Actions/UnfreezeAccountTest.php
 
 		-
-			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$balance\.$#'
-			identifier: property.notFound
-			count: 5
-			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
-
-		-
-			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 4
-			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:credit\(\)\.$#'
-			identifier: method.notFound
-			count: 14
-			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:debit\(\)\.$#'
-			identifier: method.notFound
-			count: 5
-			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
-
-		-
 			message: '#^Parameter \#1 \$value of function expect contains unresolvable type\.$#'
 			identifier: argument.unresolvableType
 			count: 2
@@ -8033,48 +7985,6 @@ parameters:
 			identifier: function.unresolvableReturnType
 			count: 2
 			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
-
-		-
-			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 3
-			path: tests/Unit/Domain/Account/Aggregates/TransferAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:transfer\(\)\.$#'
-			identifier: method.notFound
-			count: 10
-			path: tests/Unit/Domain/Account/Aggregates/TransferAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:completeScreening\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:recordResults\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:reviewScreening\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:startScreening\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
-
-		-
-			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:updateMatchStatus\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Unit/Domain/Compliance/Aggregates/AmlScreeningAggregateTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''Full KYC workflow…'' will always evaluate to true\.$#'
@@ -9023,3 +8933,63 @@ parameters:
 			identifier: property.onlyRead
 			count: 1
 			path: tests/Unit/Testing/Support/EventWithPrivateProperties.php
+
+		-
+			message: '#^Variable \$client in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/AI/MCP/Tools/VisaCli/VisaCliCardsToolTest.php
+
+		-
+			message: '#^Variable \$paymentService in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/AI/MCP/Tools/VisaCli/VisaCliPaymentToolTest.php
+
+		-
+			message: '#^Variable \$client in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/VisaCli/Services/VisaCliPaymentGatewayServiceTest.php
+
+		-
+			message: '#^Variable \$client in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/VisaCli/Services/VisaCliPaymentServiceTest.php
+
+		-
+			message: '#^Offset 1 might not exist on array\{\}\|array\{non\-falsy\-string, non\-empty\-string\}\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Feature/Api/AgentsDiscoveryControllerTest.php
+
+		-
+			message: '#^Cannot call method isCompleted\(\) on App\\Domain\\VisaCli\\Models\\VisaCliPayment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/VisaCli/VisaCliInvoicePaymentTest.php
+
+		-
+			message: '#^Cannot call method isCompleted\(\) on App\\Domain\\VisaCli\\Models\\VisaCliPayment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/VisaCli/VisaCliPaymentFlowTest.php
+
+		-
+			message: '#^Access to an undefined property Pest\\Mixins\\Expectation\<array\<int, string\>\|null\>\:\:\$not\.$#'
+			identifier: property.notFound
+			count: 1
+			path: tests/Unit/Domain/TrustCert/Enums/TrustLevelTest.php
+
+		-
+			message: '#^Variable \$paymentService in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/VirtualsAgent/Services/AcpServiceProviderBridgeTest.php
+
+		-
+			message: '#^Variable \$paymentService in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: tests/Unit/Domain/VirtualsAgent/Services/VirtualsAgentServiceTest.php

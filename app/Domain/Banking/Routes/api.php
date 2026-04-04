@@ -4,14 +4,41 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\BankAlertingController;
 use App\Http\Controllers\Api\BankAllocationController;
+use App\Http\Controllers\Api\Banking\AccountVerificationController;
+use App\Http\Controllers\Api\Banking\BankingController;
+use App\Http\Controllers\Api\Banking\BankWebhookController;
 use App\Http\Controllers\Api\BatchProcessingController;
 use App\Http\Controllers\Api\DailyReconciliationController;
 use App\Http\Controllers\Api\RegulatoryReportingController;
 use App\Http\Controllers\Api\WorkflowMonitoringController;
 use Illuminate\Support\Facades\Route;
 
+// Bank webhook endpoints (no auth — signature-verified)
+Route::prefix('webhooks/bank')->middleware('api.rate_limit:webhook')->group(function () {
+    Route::post('/{provider}/transfer-update', [BankWebhookController::class, 'transferUpdate']);
+    Route::post('/{provider}/account-update', [BankWebhookController::class, 'accountUpdate']);
+});
+
 // Banking operations endpoints
 Route::middleware('auth:sanctum')->group(function () {
+    // User-facing banking endpoints (v2)
+    Route::prefix('v2/banks')->group(function () {
+        Route::post('/connect', [BankingController::class, 'connect']);
+        Route::delete('/disconnect/{connectionId}', [BankingController::class, 'disconnect']);
+        Route::get('/connections', [BankingController::class, 'connections']);
+        Route::get('/accounts', [BankingController::class, 'accounts']);
+        Route::post('/accounts/sync/{connectionId}', [BankingController::class, 'syncAccounts']);
+        Route::post('/transfer', [BankingController::class, 'initiateTransfer']);
+        Route::get('/transfer/{id}/status', [BankingController::class, 'transferStatus']);
+        Route::get('/health/{bankCode}', [BankingController::class, 'bankHealth']);
+
+        // Account verification
+        Route::prefix('verify')->group(function () {
+            Route::post('/micro-deposit/initiate', [AccountVerificationController::class, 'initiateMicroDeposit']);
+            Route::post('/micro-deposit/confirm', [AccountVerificationController::class, 'confirmMicroDeposit']);
+            Route::post('/instant', [AccountVerificationController::class, 'instantVerify']);
+        });
+    });
     // Batch Processing endpoints
     Route::prefix('batch-operations')->group(function () {
         Route::post('/execute', [BatchProcessingController::class, 'executeBatch']);

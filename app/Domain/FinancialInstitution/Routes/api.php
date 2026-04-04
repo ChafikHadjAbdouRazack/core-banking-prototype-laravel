@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Partner\PartnerBillingController;
 use App\Http\Controllers\Api\Partner\PartnerDashboardController;
 use App\Http\Controllers\Api\Partner\PartnerMarketplaceController;
 use App\Http\Controllers\Api\Partner\PartnerSdkController;
+use App\Http\Controllers\Api\Partner\PartnerWebhookTestController;
 use App\Http\Controllers\Api\Partner\PartnerWidgetController;
 use Illuminate\Support\Facades\Route;
 
@@ -34,6 +35,7 @@ Route::prefix('partner/v1')->name('api.partner.')->middleware('partner.auth')->g
     // Billing
     Route::get('/billing/invoices', [PartnerBillingController::class, 'invoices'])->name('billing.invoices');
     Route::get('/billing/invoices/{id}', [PartnerBillingController::class, 'invoice'])->name('billing.invoice');
+    Route::post('/billing/invoices/{id}/pay', [PartnerBillingController::class, 'payInvoice'])->name('billing.invoice.pay');
     Route::get('/billing/outstanding', [PartnerBillingController::class, 'outstanding'])->name('billing.outstanding');
     Route::get('/billing/breakdown', [PartnerBillingController::class, 'breakdown'])->name('billing.breakdown');
 
@@ -44,4 +46,9 @@ Route::prefix('partner/v1')->name('api.partner.')->middleware('partner.auth')->g
     Route::delete('/marketplace/integrations/{id}', [PartnerMarketplaceController::class, 'disable'])->name('marketplace.integrations.disable');
     Route::post('/marketplace/integrations/{id}/test', [PartnerMarketplaceController::class, 'test'])->name('marketplace.integrations.test');
     Route::get('/marketplace/health', [PartnerMarketplaceController::class, 'health'])->name('marketplace.health');
+
+    // Webhook Testing (Developer Experience)
+    Route::get('/webhooks/events', [PartnerWebhookTestController::class, 'events'])->name('webhooks.events');
+    Route::post('/webhooks/test/{eventType}', [PartnerWebhookTestController::class, 'test'])->name('webhooks.test');
+    Route::post('/webhooks/replay/{deliveryId}', [PartnerWebhookTestController::class, 'replay'])->name('webhooks.replay');
 });

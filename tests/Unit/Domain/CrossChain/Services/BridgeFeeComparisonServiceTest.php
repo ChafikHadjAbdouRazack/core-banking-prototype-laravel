@@ -9,13 +9,18 @@ use App\Domain\CrossChain\Services\Adapters\LayerZeroBridgeAdapter;
 use App\Domain\CrossChain\Services\Adapters\WormholeBridgeAdapter;
 use App\Domain\CrossChain\Services\BridgeFeeComparisonService;
 use App\Domain\CrossChain\Services\BridgeOrchestratorService;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
+    $encoder = new AbiEncoder();
+    $rpcClient = new EthRpcClient();
+
     $this->orchestrator = new BridgeOrchestratorService();
     $this->orchestrator->registerAdapter(new DemoBridgeAdapter());
-    $this->orchestrator->registerAdapter(new WormholeBridgeAdapter());
+    $this->orchestrator->registerAdapter(new WormholeBridgeAdapter($encoder, $rpcClient));
     $this->orchestrator->registerAdapter(new LayerZeroBridgeAdapter());
     $this->orchestrator->registerAdapter(new AxelarBridgeAdapter());
     $this->service = new BridgeFeeComparisonService($this->orchestrator);

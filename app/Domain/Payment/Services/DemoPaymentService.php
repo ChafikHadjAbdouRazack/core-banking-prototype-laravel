@@ -8,6 +8,7 @@ use App\Domain\Account\Models\Account;
 use App\Domain\Account\Models\TransactionProjection;
 use App\Domain\Payment\Contracts\PaymentServiceInterface;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 /**
  * Demo Payment Service that simulates payment processing without external APIs.
@@ -15,6 +16,13 @@ use Illuminate\Support\Facades\Log;
  */
 class DemoPaymentService implements PaymentServiceInterface
 {
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            throw new RuntimeException(static::class . ' cannot be used in production');
+        }
+    }
+
     /**
      * Process a Stripe deposit in demo mode.
      * Simulates instant payment confirmation without calling Stripe APIs.

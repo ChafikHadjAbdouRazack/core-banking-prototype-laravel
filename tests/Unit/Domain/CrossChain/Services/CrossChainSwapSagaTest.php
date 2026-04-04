@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\CrossChain\Enums\BridgeStatus;
 use App\Domain\CrossChain\Enums\CrossChainNetwork;
 use App\Domain\CrossChain\Services\Adapters\DemoBridgeAdapter;
@@ -13,16 +14,20 @@ use App\Domain\DeFi\Services\Connectors\DemoSwapConnector;
 use App\Domain\DeFi\Services\Connectors\UniswapV3Connector;
 use App\Domain\DeFi\Services\SwapAggregatorService;
 use App\Domain\DeFi\Services\SwapRouterService;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
+    $this->userUuid = 'test-saga-user-uuid';
+
     $this->bridgeOrchestrator = new BridgeOrchestratorService();
     $this->bridgeOrchestrator->registerAdapter(new DemoBridgeAdapter());
 
     $aggregator = new SwapAggregatorService();
     $aggregator->registerConnector(new DemoSwapConnector());
-    $aggregator->registerConnector(new UniswapV3Connector());
+    $aggregator->registerConnector(new UniswapV3Connector(new AbiEncoder(), new EthRpcClient()));
     $this->swapRouter = new SwapRouterService($aggregator);
 
     $this->tracker = new BridgeTransactionTracker();
@@ -30,6 +35,17 @@ beforeEach(function () {
 
     $swapService = new CrossChainSwapService($this->bridgeOrchestrator, $this->swapRouter, $this->saga);
     $this->swapService = $swapService;
+
+    // Register wallet addresses used in tests for the user (Finding #10)
+    foreach (['0xSagaWallet', '0xStatusWallet', '0xE2EWallet'] as $addr) {
+        BlockchainAddress::create([
+            'user_uuid'  => $this->userUuid,
+            'chain'      => 'ethereum',
+            'address'    => $addr,
+            'public_key' => '0xpubkey',
+            'is_active'  => true,
+        ]);
+    }
 });
 
 describe('CrossChainSwapSaga', function () {
@@ -42,7 +58,7 @@ describe('CrossChainSwapSaga', function () {
             '1000.00',
         );
 
-        $result = $this->saga->executeBridge($quote, '0xSagaWallet');
+        $result = $this->saga->executeBridge($quote, '0xSagaWallet', $this->userUuid);
 
         expect($result)->toHaveKeys(['transaction_id', 'status']);
         expect($result['transaction_id'])->not->toBeEmpty();
@@ -57,7 +73,7 @@ describe('CrossChainSwapSaga', function () {
             '1000.00',
         );
 
-        $bridgeResult = $this->saga->executeBridge($quote, '0xSagaWallet');
+        $bridgeResult = $this->saga->executeBridge($quote, '0xSagaWallet', $this->userUuid);
         $swapResult = $this->saga->executeSwapAfterBridge($quote, '0xSagaWallet', $bridgeResult);
 
         expect($swapResult)->toHaveKeys(['tx_hash', 'output_amount']);
@@ -101,7 +117,7 @@ describe('CrossChainSwapSaga', function () {
             '500.00',
         );
 
-        $bridgeResult = $this->saga->executeBridge($quote, '0xStatusWallet');
+        $bridgeResult = $this->saga->executeBridge($quote, '0xStatusWallet', $this->userUuid);
         $status = $this->saga->checkSwapStatus($bridgeResult['transaction_id']);
 
         expect($status)->toHaveKeys(['status', 'bridge_status']);
@@ -123,7 +139,7 @@ describe('CrossChainSwapSaga', function () {
             '2000.00',
         );
 
-        $result = $this->swapService->executeSwap($quote, '0xE2EWallet');
+        $result = $this->swapService->executeSwap($quote, '0xE2EWallet', $this->userUuid);
 
         expect($result['status'])->toBe('completed');
         expect($result['bridge_tx'])->not->toBeEmpty();

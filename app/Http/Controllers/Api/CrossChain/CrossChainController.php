@@ -217,6 +217,15 @@ class CrossChainController extends Controller
     )]
     public function bridgeInitiate(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'error'   => ['code' => 'ERR_CROSSCHAIN_002', 'message' => 'Unauthenticated.'],
+            ], 401);
+        }
+
         $validated = $request->validate([
             'from_chain'        => ['required', 'string', Rule::in(array_column(CrossChainNetwork::cases(), 'value'))],
             'to_chain'          => ['required', 'string', Rule::in(array_column(CrossChainNetwork::cases(), 'value'))],
@@ -238,9 +247,10 @@ class CrossChainController extends Controller
             );
 
             $result = $this->bridgeOrchestrator->initiateBridge(
-                $quote,
+                $quote->quoteId,
                 $validated['sender_address'],
                 $validated['recipient_address'],
+                $user->uuid,
             );
 
             return response()->json([
@@ -486,6 +496,15 @@ class CrossChainController extends Controller
     )]
     public function swapExecute(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        if (! $user) {
+            return response()->json([
+                'success' => false,
+                'error'   => ['code' => 'ERR_CROSSCHAIN_005', 'message' => 'Unauthenticated.'],
+            ], 401);
+        }
+
         $validated = $request->validate([
             'from_chain'     => ['required', 'string', Rule::in(array_column(CrossChainNetwork::cases(), 'value'))],
             'to_chain'       => ['required', 'string', Rule::in(array_column(CrossChainNetwork::cases(), 'value'))],
@@ -507,7 +526,7 @@ class CrossChainController extends Controller
                 $validated['amount'],
             );
 
-            $result = $this->swapService->executeSwap($quote, $validated['wallet_address']);
+            $result = $this->swapService->executeSwap($quote, $validated['wallet_address'], $user->uuid);
 
             return response()->json([
                 'success' => true,

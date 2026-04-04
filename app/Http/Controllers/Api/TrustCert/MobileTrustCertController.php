@@ -50,19 +50,21 @@ class MobileTrustCertController extends Controller
     )]
     public function current(Request $request): JsonResponse
     {
+        /** @var \App\Models\User $user */
         $user = $request->user();
-        $subjectId = 'user:' . $user->id;
+
+        // Support agent-scoped certificate lookup: ?agent_id=virtuals_abc123
+        $agentId = $request->query('agent_id');
+        $subjectId = is_string($agentId) && $agentId !== ''
+            ? 'agent:' . $agentId . ':employer:' . $user->id
+            : 'user:' . $user->id;
 
         $certificate = $this->certificateAuthority->getCertificateBySubject($subjectId);
 
         if (! $certificate) {
             return response()->json([
                 'success' => true,
-                'data'    => [
-                    'trust_level' => TrustLevel::UNKNOWN->value,
-                    'label'       => TrustLevel::UNKNOWN->label(),
-                    'certificate' => null,
-                ],
+                'data'    => null,
             ]);
         }
 
@@ -99,15 +101,13 @@ class MobileTrustCertController extends Controller
         content: new OA\JsonContent(properties: [
         new OA\Property(property: 'success', type: 'boolean', example: true),
         new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object', properties: [
-        new OA\Property(property: 'level', type: 'string', example: 'verified'),
-        new OA\Property(property: 'label', type: 'string', example: 'Verified'),
-        new OA\Property(property: 'numeric_value', type: 'integer', example: 2),
+        new OA\Property(property: 'level', type: 'integer', example: 2),
+        new OA\Property(property: 'name', type: 'string', example: 'Verified'),
+        new OA\Property(property: 'description', type: 'string', example: 'Full identity and address verification'),
+        new OA\Property(property: 'dailyLimit', type: 'number', example: 10000),
+        new OA\Property(property: 'monthlyLimit', type: 'number', example: 50000),
         new OA\Property(property: 'requirements', type: 'array', items: new OA\Items(type: 'string')),
-        new OA\Property(property: 'limits', type: 'object', properties: [
-        new OA\Property(property: 'daily', type: 'number', example: 5000),
-        new OA\Property(property: 'monthly', type: 'number', example: 50000),
-        new OA\Property(property: 'single', type: 'number', example: 2000),
-        ]),
+        new OA\Property(property: 'documents', type: 'array', items: new OA\Items(type: 'string')),
         ])),
         ])
     )]
@@ -119,12 +119,15 @@ class MobileTrustCertController extends Controller
     {
         $levels = [];
         foreach (TrustLevel::cases() as $level) {
+            $limits = $this->getLimitsForLevel($level);
             $levels[] = [
-                'level'         => $level->value,
-                'label'         => $level->label(),
-                'numeric_value' => $level->numericValue(),
-                'requirements'  => $level->requirements(),
-                'limits'        => $this->getLimitsForLevel($level),
+                'level'        => $level->numericValue(),
+                'name'         => $level->label(),
+                'description'  => $level->description(),
+                'dailyLimit'   => $limits['daily'] ?? 0,
+                'monthlyLimit' => $limits['monthly'] ?? 0,
+                'requirements' => $level->requirements(),
+                'documents'    => $level->documents(),
             ];
         }
 
@@ -206,14 +209,18 @@ class MobileTrustCertController extends Controller
             ], 404);
         }
 
+        $limits = $this->getLimitsForLevel($trustLevel);
+
         return response()->json([
             'success' => true,
             'data'    => [
-                'level'         => $trustLevel->value,
-                'label'         => $trustLevel->label(),
-                'numeric_value' => $trustLevel->numericValue(),
-                'requirements'  => $trustLevel->requirements(),
-                'limits'        => $this->getLimitsForLevel($trustLevel),
+                'level'        => $trustLevel->numericValue(),
+                'name'         => $trustLevel->label(),
+                'description'  => $trustLevel->description(),
+                'dailyLimit'   => $limits['daily'] ?? 0,
+                'monthlyLimit' => $limits['monthly'] ?? 0,
+                'requirements' => $trustLevel->requirements(),
+                'documents'    => $trustLevel->documents(),
             ],
         ]);
     }
@@ -312,8 +319,13 @@ class MobileTrustCertController extends Controller
             'transaction_type' => ['required', 'string', 'in:daily,monthly,single'],
         ]);
 
+        /** @var \App\Models\User $user */
         $user = $request->user();
-        $subjectId = 'user:' . $user->id;
+
+        $agentId = $request->input('agent_id');
+        $subjectId = is_string($agentId) && $agentId !== ''
+            ? 'agent:' . $agentId . ':employer:' . $user->id
+            : 'user:' . $user->id;
 
         $certificate = $this->certificateAuthority->getCertificateBySubject($subjectId);
         $trustLevel = TrustLevel::UNKNOWN;

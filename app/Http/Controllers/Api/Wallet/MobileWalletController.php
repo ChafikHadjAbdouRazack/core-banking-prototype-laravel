@@ -10,19 +10,24 @@ use App\Domain\MobilePayment\Models\PaymentIntent;
 use App\Domain\MobilePayment\Services\ActivityFeedService;
 use App\Domain\MobilePayment\Services\PaymentIntentService;
 use App\Domain\MobilePayment\Services\TransactionDetailService;
+use App\Domain\Relayer\Contracts\WalletBalanceProviderInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
 use App\Domain\Relayer\Services\SmartAccountService;
-use App\Domain\Relayer\Services\WalletBalanceService;
+use App\Domain\Wallet\Constants\SolanaCacheKeys;
+use App\Domain\Wallet\Constants\SolanaTokens;
+use App\Domain\Wallet\Factories\BlockchainConnectorFactory;
+use App\Domain\Wallet\Helpers\SolanaAddressHelper;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use OpenApi\Attributes as OA;
 use Throwable;
 
 class MobileWalletController extends Controller
 {
     public function __construct(
-        private readonly WalletBalanceService $balanceService,
+        private readonly WalletBalanceProviderInterface $balanceService,
         private readonly SmartAccountService $smartAccountService,
         private readonly ActivityFeedService $activityFeedService,
         private readonly TransactionDetailService $transactionDetailService,
@@ -97,13 +102,13 @@ class MobileWalletController extends Controller
     }
 
     /**
-     * Get ERC-20 balances across user's smart accounts.
+     * Get token balances across user's smart accounts and Solana wallet.
      */
     #[OA\Get(
         path: '/api/v1/wallet/balances',
         operationId: 'walletBalances',
-        summary: 'Get ERC-20 balances',
-        description: 'Returns ERC-20 token balances across all of the authenticated user\'s smart accounts.',
+        summary: 'Get token balances (EVM + Solana)',
+        description: 'Returns token balances across all of the authenticated user\'s EVM smart accounts and Solana wallet (SPL tokens + native SOL).',
         tags: ['Mobile Wallet'],
         security: [['sanctum' => []]]
     )]
@@ -129,6 +134,9 @@ class MobileWalletController extends Controller
     public function balances(Request $request): JsonResponse
     {
         $user = $request->user();
+        if (! $user instanceof \App\Models\User) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $accounts = $this->smartAccountService->getUserAccounts($user);
 
         $balances = [];
@@ -155,22 +163,43 @@ class MobileWalletController extends Controller
                         ? (float) $balance
                         : 0.0;
                     $balances[] = [
-                        'token'     => $token,
-                        'network'   => $networkStr,
-                        'address'   => $account->account_address,
-                        'balance'   => $balance,
-                        'usd_value' => $usdValue,
+                        'token'             => $token,
+                        'network'           => $networkStr,
+                        'address'           => $account->account_address,
+                        'balance'           => $balance,
+                        'balance_formatted' => $this->formatBalance($balance, $token),
+                        'usd_value'         => $usdValue,
+                        'change_24h'        => 0.0,
                     ];
                 } catch (Throwable) {
                     $balances[] = [
-                        'token'     => $token,
-                        'network'   => $networkStr,
-                        'address'   => $account->account_address,
-                        'balance'   => '0',
-                        'usd_value' => 0.0,
-                        'error'     => 'Balance query failed',
+                        'token'             => $token,
+                        'network'           => $networkStr,
+                        'address'           => $account->account_address,
+                        'balance'           => '0',
+                        'balance_formatted' => '0.00',
+                        'usd_value'         => 0.0,
+                        'change_24h'        => 0.0,
+                        'error'             => 'Balance query failed',
                     ];
                 }
+            }
+        }
+
+        // Query Solana token balances
+        $solanaAddress = BlockchainAddress::where('user_uuid', $user->uuid)
+            ->where('chain', 'solana')
+            ->where('is_active', true)
+            ->first();
+
+        if ($solanaAddress) {
+            $solanaBalances = $this->fetchSolanaBalances($solanaAddress);
+            foreach ($solanaBalances as $bal) {
+                $balances[] = array_merge($bal, [
+                    'address'           => $solanaAddress->address,
+                    'balance_formatted' => $bal['balance'],
+                    'change_24h'        => 0.0,
+                ]);
             }
         }
 
@@ -223,6 +252,9 @@ class MobileWalletController extends Controller
     public function state(Request $request): JsonResponse
     {
         $user = $request->user();
+        if (! $user instanceof \App\Models\User) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $accounts = $this->smartAccountService->getUserAccounts($user);
 
         $addresses = [];
@@ -275,6 +307,21 @@ class MobileWalletController extends Controller
             }
         }
 
+        // Query Solana address and balances
+        $solanaAddress = BlockchainAddress::where('user_uuid', $user->uuid)
+            ->where('chain', 'solana')
+            ->where('is_active', true)
+            ->first();
+
+        if ($solanaAddress) {
+            $addresses[] = ['address' => $solanaAddress->address, 'network' => 'solana', 'deployed' => true];
+            $solanaBalances = $this->fetchSolanaBalances($solanaAddress);
+            foreach ($solanaBalances as $bal) {
+                $totalUsdValue += $bal['usd_value'];
+                $balances[] = $bal;
+            }
+        }
+
         return response()->json([
             'success' => true,
             'data'    => [
@@ -320,6 +367,9 @@ class MobileWalletController extends Controller
     public function addresses(Request $request): JsonResponse
     {
         $user = $request->user();
+        if (! $user instanceof \App\Models\User) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $accounts = $this->smartAccountService->getUserAccounts($user);
 
         $addresses = [];
@@ -349,6 +399,32 @@ class MobileWalletController extends Controller
                 ];
             }
         }
+
+        // Always append Solana address (non-EVM, separate from ERC-4337 smart accounts)
+        $solanaAddress = SolanaAddressHelper::deriveForUser($user->id, (string) config('app.key'));
+
+        // Auto-register so BlockchainAddressObserver fires Helius webhook sync
+        $record = BlockchainAddress::firstOrCreate(
+            ['address' => $solanaAddress, 'chain' => 'solana'],
+            [
+                'user_uuid'       => $user->uuid,
+                'public_key'      => $solanaAddress,
+                'is_active'       => true,
+                'label'           => 'Primary Solana',
+                'derivation_path' => "m/44'/501'/0'/0'",
+            ]
+        );
+
+        // Warm known-address cache so send-path lookups don't miss newly registered addresses
+        Cache::put(SolanaCacheKeys::knownAddr($solanaAddress), true, 300);
+
+        $addresses[] = [
+            'address'    => $solanaAddress,
+            'network'    => 'solana',
+            'type'       => 'keypair',
+            'deployed'   => true,
+            'created_at' => $record->created_at?->toIso8601String(),
+        ];
 
         return response()->json([
             'success' => true,
@@ -386,6 +462,9 @@ class MobileWalletController extends Controller
     public function transactions(Request $request): JsonResponse
     {
         $user = $request->user();
+        if (! $user instanceof \App\Models\User) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         $feed = $this->activityFeedService->getFeed(
             userId: $user->id,
@@ -439,6 +518,9 @@ class MobileWalletController extends Controller
     public function transactionDetail(string $id, Request $request): JsonResponse
     {
         $user = $request->user();
+        if (! $user instanceof \App\Models\User) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
         $detail = $this->transactionDetailService->getDetails($id, $user->id);
 
         if (! $detail) {
@@ -500,9 +582,9 @@ class MobileWalletController extends Controller
     public function send(Request $request): JsonResponse
     {
         $request->validate([
-            'to'      => ['required', 'string'],
+            'to'      => ['required', 'string', 'min:26', 'max:128'],
             'token'   => ['required', 'string', 'in:USDC,USDT,WETH,WBTC'],
-            'amount'  => ['required', 'string'],
+            'amount'  => ['required', 'numeric', 'gt:0', 'max:1000000'],
             'network' => ['required', 'string'],
         ]);
 
@@ -612,5 +694,87 @@ class MobileWalletController extends Controller
             'success' => true,
             'data'    => $recipients,
         ]);
+    }
+
+    /**
+     * Fetch Solana SPL token and native SOL balances for a blockchain address.
+     *
+     * @return array<int, array{token: string, network: string, balance: string, usd_value: float}>
+     */
+    private function fetchSolanaBalances(BlockchainAddress $solanaAddress): array
+    {
+        $balances = [];
+
+        try {
+            $cacheKey = SolanaCacheKeys::balances($solanaAddress->address);
+            $solanaTokens = Cache::remember($cacheKey, (int) config('relayer.balance_checking.cache_ttl_seconds', 120), function () use ($solanaAddress): array {
+                try {
+                    $connector = BlockchainConnectorFactory::create('solana');
+
+                    return $connector->getTokenBalances($solanaAddress->address);
+                } catch (Throwable) {
+                    return [];
+                }
+            });
+
+            $knownMints = SolanaTokens::KNOWN_MINTS;
+
+            foreach ($solanaTokens as $token) {
+                $mint = $token['contract'] ?? '';
+                $info = $knownMints[$mint] ?? null;
+                if ($info === null) {
+                    continue;
+                }
+
+                $rawBalance = $token['balance'] ?? '0';
+                $decimals = $info['decimals'];
+                $formatted = bcdiv(
+                    is_numeric($rawBalance) ? (string) $rawBalance : '0',
+                    bcpow('10', (string) $decimals),
+                    $decimals,
+                );
+
+                $balances[] = [
+                    'token'     => $info['symbol'],
+                    'network'   => 'solana',
+                    'balance'   => $formatted,
+                    'usd_value' => (float) $formatted, // Stablecoins pegged 1:1
+                ];
+            }
+
+            // Also get native SOL balance
+            $connector = BlockchainConnectorFactory::create('solana');
+            $solBalance = Cache::remember(SolanaCacheKeys::balance($solanaAddress->address), (int) config('relayer.balance_checking.cache_ttl_seconds', 120), function () use ($connector, $solanaAddress): string {
+                return $connector->getBalance($solanaAddress->address)->balance;
+            });
+
+            $solFormatted = bcdiv(
+                is_numeric($solBalance) ? (string) $solBalance : '0',
+                '1000000000',
+                9,
+            );
+            if (bccomp($solFormatted, '0', 9) > 0) {
+                $balances[] = [
+                    'token'     => 'SOL',
+                    'network'   => 'solana',
+                    'balance'   => $solFormatted,
+                    'usd_value' => 0.0, // SOL price not tracked
+                ];
+            }
+        } catch (Throwable) {
+            // Solana balances are best-effort
+        }
+
+        return $balances;
+    }
+
+    /**
+     * Format a raw balance string for display.
+     */
+    private function formatBalance(string $balance, string $token): string
+    {
+        $decimals = in_array($token, ['USDC', 'USDT'], true) ? 2 : 6;
+
+        return number_format((float) $balance, $decimals, '.', ',');
     }
 }

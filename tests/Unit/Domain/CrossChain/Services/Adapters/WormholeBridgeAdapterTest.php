@@ -6,11 +6,13 @@ use App\Domain\CrossChain\Enums\BridgeProvider;
 use App\Domain\CrossChain\Enums\BridgeStatus;
 use App\Domain\CrossChain\Enums\CrossChainNetwork;
 use App\Domain\CrossChain\Services\Adapters\WormholeBridgeAdapter;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
-    $this->adapter = new WormholeBridgeAdapter();
+    $this->adapter = new WormholeBridgeAdapter(new AbiEncoder(), new EthRpcClient());
 });
 
 describe('WormholeBridgeAdapter', function () {

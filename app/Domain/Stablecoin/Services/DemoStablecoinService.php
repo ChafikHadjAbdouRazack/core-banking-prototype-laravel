@@ -13,9 +13,17 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class DemoStablecoinService
 {
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            throw new RuntimeException(static::class . ' cannot be used in production');
+        }
+    }
+
     /**
      * Mint stablecoins with demo collateral.
      */

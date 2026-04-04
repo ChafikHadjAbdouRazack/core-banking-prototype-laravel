@@ -30,7 +30,7 @@ class DeFiServiceProvider extends ServiceProvider
             'defi',
         );
 
-        $this->app->singleton(SwapAggregatorService::class, function () {
+        $this->app->singleton(SwapAggregatorService::class, function ($app) {
             $aggregator = new SwapAggregatorService();
 
             // Always register demo connector
@@ -38,7 +38,7 @@ class DeFiServiceProvider extends ServiceProvider
 
             // Register production connectors when enabled
             if (config('defi.uniswap.enabled', false)) {
-                $aggregator->registerConnector(new UniswapV3Connector());
+                $aggregator->registerConnector($app->make(UniswapV3Connector::class));
             }
 
             if (config('defi.curve.enabled', false)) {

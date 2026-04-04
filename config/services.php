@@ -207,6 +207,24 @@ return [
     |
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | GoPlus Security API Configuration
+    |--------------------------------------------------------------------------
+    |
+    | GoPlus provides free blockchain address screening for sanctions, scams,
+    | phishing, and malicious contracts. Works without credentials (lower
+    | rate limits) or with app_key/app_secret for authenticated access.
+    |
+    | Get credentials at: https://console.gopluslabs.io
+    |
+    */
+
+    'goplus' => [
+        'app_key'    => env('GOPLUS_APP_KEY'),
+        'app_secret' => env('GOPLUS_APP_SECRET'),
+    ],
+
     'chainalysis' => [
         'api_key'        => env('CHAINALYSIS_API_KEY'),
         'base_url'       => env('CHAINALYSIS_BASE_URL', 'https://api.chainalysis.com/api/sanctions/v2'),
@@ -235,5 +253,19 @@ return [
         'kyc_api_url'     => env('ONDATO_KYC_API_URL', 'https://sandbox-kycapi.ondato.com'),
         'verifid_api_url' => env('ONDATO_VERIFID_API_URL', 'https://verifid.ondato.com'),
     ],
+
+    'helius' => [
+        'api_key'        => env('HELIUS_API_KEY'),
+        'webhook_id'     => env('HELIUS_WEBHOOK_ID'),
+        'webhook_secret' => env('HELIUS_WEBHOOK_SECRET'),
+        'rpc_url'        => env('SOLANA_RPC_URL', 'https://api.mainnet-beta.solana.com'),
+    ],
+
+    'alchemy' => [
+        'notify_token'      => env('ALCHEMY_NOTIFY_TOKEN'),
+        'solana_webhook_id' => env('ALCHEMY_SOLANA_WEBHOOK_ID'),
+    ],
+
+    'solana_webhook_provider' => env('SOLANA_WEBHOOK_PROVIDER', 'helius'),
 
 ];

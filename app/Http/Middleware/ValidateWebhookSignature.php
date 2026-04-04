@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,7 +40,43 @@ class ValidateWebhookSignature
             return response()->json(['error' => 'Invalid signature'], 403);
         }
 
+        // Replay protection for providers that don't embed timestamps in their signatures
+        if (in_array($provider, ['coinbase', 'paysera'], true)) {
+            $replayCheck = $this->checkReplayProtection($request);
+            if ($replayCheck !== null) {
+                return $replayCheck;
+            }
+        }
+
         return $next($request);
+    }
+
+    /**
+     * Check for duplicate webhook delivery (replay attack protection).
+     *
+     * Returns a 409 response if the delivery has already been seen, or null to proceed.
+     */
+    private function checkReplayProtection(Request $request): ?Response
+    {
+        $deliveryId = $request->header('X-Webhook-Delivery-Id')
+            ?? $request->header('X-Request-Id')
+            ?? hash('sha256', $request->getContent());
+
+        $cacheKey = "webhook_seen:{$deliveryId}";
+
+        if (Cache::has($cacheKey)) {
+            Log::warning('Duplicate webhook delivery rejected', [
+                'delivery_id' => $deliveryId,
+                'url'         => $request->url(),
+                'ip'          => $request->ip(),
+            ]);
+
+            return response()->json(['error' => 'Duplicate webhook delivery'], 409);
+        }
+
+        Cache::put($cacheKey, true, 86400); // 24-hour dedup window
+
+        return null;
     }
 
     /**
@@ -156,22 +193,22 @@ class ValidateWebhookSignature
 
     /**
      * Validate Open Banking webhook signature.
+     *
+     * Uses a Cache-based nonce rather than session state, so the state token
+     * survives across processes and cannot be fixed by a session-fixation attack.
      */
     private function validateOpenBankingSignature(Request $request): bool
     {
-        // For Open Banking callbacks, we might use OAuth state parameter validation
-        // or JWT token validation depending on the provider
-        $state = $request->query('state');
-        $expectedState = session('openbanking_state');
+        $state = (string) ($request->query('state') ?? '');
 
-        if (! $state || ! $expectedState) {
+        if ($state === '' || strlen($state) < 32) {
             return false;
         }
 
-        // Clear the state after validation to prevent replay
-        session()->forget('openbanking_state');
+        // Cache::pull atomically reads and deletes — single-use nonce
+        $stateData = Cache::pull("ob_state:{$state}");
 
-        return hash_equals($expectedState, $state);
+        return $stateData !== null;
     }
 
     /**

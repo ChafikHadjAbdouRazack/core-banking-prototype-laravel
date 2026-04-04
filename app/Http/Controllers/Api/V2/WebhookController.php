@@ -7,11 +7,13 @@ namespace App\Http\Controllers\Api\V2;
 use App\Domain\Webhook\Models\Webhook;
 use App\Domain\Webhook\Models\WebhookDelivery;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Security\UrlValidator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use OpenApi\Attributes as OA;
+use RuntimeException;
 
 #[OA\Tag(
     name: 'Webhooks',
@@ -75,11 +77,11 @@ class WebhookController extends Controller
             description: 'Create a new webhook endpoint',
             security: [['bearerAuth' => []]],
             requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['url', 'events'], properties: [
-        new OA\Property(property: 'url', type: 'string', format: 'url', example: 'https://example.com/webhook'),
-        new OA\Property(property: 'events', type: 'array', example: ['account.created', 'transaction.completed'], items: new OA\Items(type: 'string')),
-        new OA\Property(property: 'description', type: 'string', example: 'Production webhook for transaction notifications'),
-        new OA\Property(property: 'is_active', type: 'boolean', default: true),
-        ]))
+            new OA\Property(property: 'url', type: 'string', format: 'url', example: 'https://example.com/webhook'),
+            new OA\Property(property: 'events', type: 'array', example: ['account.created', 'transaction.completed'], items: new OA\Items(type: 'string')),
+            new OA\Property(property: 'description', type: 'string', example: 'Production webhook for transaction notifications'),
+            new OA\Property(property: 'is_active', type: 'boolean', default: true),
+            ]))
         )]
     #[OA\Response(
         response: 201,
@@ -106,6 +108,16 @@ class WebhookController extends Controller
                 'is_active'   => 'boolean',
             ]
         );
+
+        // SSRF protection: validate URL does not resolve to private/internal IPs
+        try {
+            UrlValidator::validateExternalUrl($validated['url']);
+        } catch (RuntimeException $e) {
+            return response()->json(
+                ['error' => 'Invalid webhook URL: ' . $e->getMessage()],
+                422
+            );
+        }
 
         $secret = 'whsec_' . Str::random(32);
 
@@ -144,8 +156,8 @@ class WebhookController extends Controller
             description: 'Get details of a specific webhook',
             security: [['bearerAuth' => []]],
             parameters: [
-        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
-        ]
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            ]
         )]
     #[OA\Response(
         response: 200,
@@ -201,14 +213,14 @@ class WebhookController extends Controller
             description: 'Update webhook configuration',
             security: [['bearerAuth' => []]],
             parameters: [
-        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
-        ],
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            ],
             requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
-        new OA\Property(property: 'url', type: 'string', format: 'url'),
-        new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
-        new OA\Property(property: 'description', type: 'string'),
-        new OA\Property(property: 'is_active', type: 'boolean'),
-        ]))
+            new OA\Property(property: 'url', type: 'string', format: 'url'),
+            new OA\Property(property: 'events', type: 'array', items: new OA\Items(type: 'string')),
+            new OA\Property(property: 'description', type: 'string'),
+            new OA\Property(property: 'is_active', type: 'boolean'),
+            ]))
         )]
     #[OA\Response(
         response: 200,
@@ -227,6 +239,18 @@ class WebhookController extends Controller
                 'is_active'   => 'boolean',
             ]
         );
+
+        // SSRF protection: validate URL if it's being changed
+        if (isset($validated['url'])) {
+            try {
+                UrlValidator::validateExternalUrl($validated['url']);
+            } catch (RuntimeException $e) {
+                return response()->json(
+                    ['error' => 'Invalid webhook URL: ' . $e->getMessage()],
+                    422
+                );
+            }
+        }
 
         $webhook->update($validated);
 
@@ -251,8 +275,8 @@ class WebhookController extends Controller
             description: 'Delete a webhook endpoint',
             security: [['bearerAuth' => []]],
             parameters: [
-        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
-        ]
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            ]
         )]
     #[OA\Response(
         response: 204,
@@ -275,9 +299,9 @@ class WebhookController extends Controller
             description: 'Get delivery history for a webhook',
             security: [['bearerAuth' => []]],
             parameters: [
-        new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
-        new OA\Parameter(name: 'status', in: 'query', required: false, description: 'Filter by status', schema: new OA\Schema(type: 'string', enum: ['pending', 'success', 'failed'])),
-        ]
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Webhook ID', schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'status', in: 'query', required: false, description: 'Filter by status', schema: new OA\Schema(type: 'string', enum: ['pending', 'success', 'failed'])),
+            ]
         )]
     #[OA\Response(
         response: 200,

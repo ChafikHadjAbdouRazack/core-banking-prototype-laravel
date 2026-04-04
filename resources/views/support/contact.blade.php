@@ -1,34 +1,28 @@
 @extends('layouts.public')
 
-@section('title', 'Contact Us - FinAegis Support')
+@section('title', 'Contact Us - ' . config('brand.name', 'Zelta') . ' Support')
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'Contact Us - FinAegis Support',
-        'description' => 'Contact the FinAegis team for technical support, partnership inquiries, or to report issues. Community support for our open-source core banking platform with 43 domain modules.',
+        'title' => 'Contact Us - ' . config('brand.name', 'Zelta') . ' Support',
+        'description' => 'Contact the ' . config('brand.name', 'Zelta') . ' team for technical support, partnership inquiries, or to report issues with our open-source banking platform.',
     ])
 @endsection
-
-@push('styles')
-<style>
-    .gradient-bg {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-</style>
-@endpush
 
 @section('content')
 
     <!-- Hero Section -->
-    <section class="pb-20 gradient-bg text-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section class="bg-fa-navy relative overflow-hidden">
+        <div class="absolute inset-0 bg-grid-pattern"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-24">
             <div class="text-center">
-                <h1 class="text-5xl font-bold mb-6">Contact Us</h1>
-                <p class="text-xl text-purple-100 max-w-3xl mx-auto">
-                    Share your feedback, report issues, or ask questions about FinAegis. Our community and team are here to help.
+                <h1 class="font-display text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">Contact Us</h1>
+                <p class="text-xl text-slate-400 max-w-3xl mx-auto">
+                    Share your feedback, report issues, or ask questions about {{ config('brand.name', 'Zelta') }}. Our community and team are here to help.
                 </p>
             </div>
         </div>
+        <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/20 to-transparent"></div>
     </section>
 
     <!-- Contact Options -->
@@ -43,8 +37,8 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Email Support</h3>
-                    <p class="text-gray-600 mb-2">General inquiries & support</p>
-                    <a href="mailto:info@finaegis.org" class="text-indigo-600 hover:text-indigo-700 font-medium">info@finaegis.org</a>
+                    <p class="text-slate-500 mb-2">General inquiries & support</p>
+                    <a href="mailto:{{ config('brand.support_email', 'info@zelta.app') }}" class="text-indigo-600 hover:text-indigo-700 font-medium">{{ config('brand.support_email', 'info@zelta.app') }}</a>
                 </div>
                 
                 <!-- GitHub Issues -->
@@ -55,8 +49,8 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">GitHub Issues</h3>
-                    <p class="text-gray-600 mb-2">Report bugs & features</p>
-                    <a href="https://github.com/FinAegis/core-banking-prototype-laravel/issues" class="text-purple-600 hover:text-purple-700 font-medium">Create Issue</a>
+                    <p class="text-slate-500 mb-2">Report bugs & features</p>
+                    <a href="{{ config('brand.github_url') }}/issues" class="text-purple-600 hover:text-purple-700 font-medium">Create Issue</a>
                 </div>
                 
                 <!-- Community Forum -->
@@ -67,8 +61,8 @@
                         </svg>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Community Forum</h3>
-                    <p class="text-gray-600 mb-2">Join discussions</p>
-                    <a href="https://github.com/FinAegis/core-banking-prototype-laravel/discussions" target="_blank" class="text-green-600 hover:text-green-700 font-medium">Visit Forum</a>
+                    <p class="text-slate-500 mb-2">Join discussions</p>
+                    <a href="{{ config('brand.github_url') }}/discussions" target="_blank" class="text-green-600 hover:text-green-700 font-medium">Visit Forum</a>
                 </div>
             </div>
 
@@ -85,8 +79,8 @@
                     </div>
                 @endif
 
-                <div class="bg-white rounded-2xl shadow-xl p-8">
-                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Send us a message</h2>
+                <div class="card-feature">
+                    <h2 class="font-display text-2xl font-bold text-slate-900 mb-6">Send us a message</h2>
                     
                     <form method="POST" action="{{ route('support.contact.submit') }}" class="space-y-6" enctype="multipart/form-data">
                         @csrf
@@ -94,7 +88,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Name -->
                             <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="name" class="block text-sm font-medium text-slate-600 mb-2">
                                     Your Name
                                 </label>
                                 <input type="text" name="name" id="name" required
@@ -103,7 +97,7 @@
                             
                             <!-- Email -->
                             <div>
-                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                <label for="email" class="block text-sm font-medium text-slate-600 mb-2">
                                     Email Address
                                 </label>
                                 <input type="email" name="email" id="email" required
@@ -113,7 +107,7 @@
                         
                         <!-- Subject -->
                         <div>
-                            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="subject" class="block text-sm font-medium text-slate-600 mb-2">
                                 Subject
                             </label>
                             <select name="subject" id="subject" required
@@ -131,7 +125,7 @@
                         
                         <!-- Message -->
                         <div>
-                            <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="message" class="block text-sm font-medium text-slate-600 mb-2">
                                 Message
                             </label>
                             <textarea name="message" id="message" rows="6" required
@@ -141,44 +135,44 @@
                         
                         <!-- Priority -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-medium text-slate-600 mb-2">
                                 Priority Level
                             </label>
                             <div class="flex space-x-4">
                                 <label class="flex items-center">
                                     <input type="radio" name="priority" value="low" class="mr-2" checked>
-                                    <span class="text-sm text-gray-600">Low</span>
+                                    <span class="text-sm text-slate-500">Low</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="radio" name="priority" value="medium" class="mr-2">
-                                    <span class="text-sm text-gray-600">Medium</span>
+                                    <span class="text-sm text-slate-500">Medium</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="radio" name="priority" value="high" class="mr-2">
-                                    <span class="text-sm text-gray-600">High</span>
+                                    <span class="text-sm text-slate-500">High</span>
                                 </label>
                                 <label class="flex items-center">
                                     <input type="radio" name="priority" value="urgent" class="mr-2">
-                                    <span class="text-sm text-gray-600">Urgent</span>
+                                    <span class="text-sm text-slate-500">Urgent</span>
                                 </label>
                             </div>
                         </div>
                         
                         <!-- Attachment -->
                         <div>
-                            <label for="attachment" class="block text-sm font-medium text-gray-700 mb-2">
+                            <label for="attachment" class="block text-sm font-medium text-slate-600 mb-2">
                                 Attachment (optional)
                             </label>
                             <input type="file" name="attachment" id="attachment"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                                 accept=".pdf,.png,.jpg,.jpeg,.doc,.docx">
-                            <p class="text-sm text-gray-500 mt-1">Max file size: 10MB. Accepted formats: PDF, PNG, JPG, DOC, DOCX</p>
+                            <p class="text-sm text-slate-400 mt-1">Max file size: 10MB. Accepted formats: PDF, PNG, JPG, DOC, DOCX</p>
                         </div>
                         
                         <!-- Submit Button -->
                         <div>
                             <button type="submit"
-                                class="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                                class="btn-primary w-full !py-3 !px-6">
                                 Send Message
                             </button>
                         </div>
@@ -199,38 +193,38 @@
     </section>
 
     <!-- Open Source Section -->
-    <section class="py-20 bg-gray-50">
+    <section class="py-20 bg-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-4">Open Source Project</h2>
-                <p class="text-xl text-gray-600">FinAegis is open source and community-driven</p>
+                <h2 class="font-display text-3xl font-bold text-slate-900 mb-4">Open Source Project</h2>
+                <p class="text-xl text-slate-500">{{ config('brand.name', 'Zelta') }} is open source and community-driven</p>
             </div>
             
-            <div class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+            <div class="max-w-3xl mx-auto card-feature">
                 <div class="grid md:grid-cols-2 gap-8">
                     <div>
                         <h3 class="text-xl font-semibold mb-4">Contribute Code</h3>
-                        <p class="text-gray-600 mb-4">
+                        <p class="text-slate-500 mb-4">
                             Help us build the future of democratic banking. Review our code, submit pull requests, and improve the platform.
                         </p>
-                        <a href="https://github.com/FinAegis/core-banking-prototype-laravel" class="text-indigo-600 font-medium hover:text-indigo-700">
+                        <a href="{{ config('brand.github_url') }}" class="text-indigo-600 font-medium hover:text-indigo-700">
                             View Repository →
                         </a>
                     </div>
                     
                     <div>
                         <h3 class="text-xl font-semibold mb-4">Report Issues</h3>
-                        <p class="text-gray-600 mb-4">
+                        <p class="text-slate-500 mb-4">
                             Found a bug or have a feature request? Let us know on GitHub so we can improve the platform.
                         </p>
-                        <a href="https://github.com/FinAegis/core-banking-prototype-laravel/issues/new" class="text-indigo-600 font-medium hover:text-indigo-700">
+                        <a href="{{ config('brand.github_url') }}/issues/new" class="text-indigo-600 font-medium hover:text-indigo-700">
                             Create Issue →
                         </a>
                     </div>
                 </div>
                 
                 <div class="mt-8 pt-8 border-t border-gray-200 text-center">
-                    <p class="text-gray-600">
+                    <p class="text-slate-500">
                         <span class="font-semibold">License:</span> MIT Open Source License
                     </p>
                 </div>
@@ -280,7 +274,7 @@
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-800 text-center">
-                <p>&copy; {{ date('Y') }} FinAegis. All rights reserved. Open Source Project.</p>
+                <p>&copy; {{ date('Y') }} {{ config('brand.name', 'Zelta') }}. All rights reserved. Open Source Project.</p>
             </div>
         </div>
     </footer>

@@ -9,6 +9,7 @@ use App\Domain\Payment\Services\PaymentGatewayService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use OpenApi\Attributes as OA;
 
@@ -70,17 +71,21 @@ class OpenBankingDepositController extends Controller
                 'bank'    => $request->bank,
             ]);
 
-            // Store the deposit details in session
-            session()->put('openbanking_deposit', [
+            // Generate a cryptographically secure state nonce for CSRF protection
+            $nonce = bin2hex(random_bytes(32));
+
+            // Store the deposit details in cache (10-minute TTL) keyed by nonce
+            Cache::put("ob_state:{$nonce}", [
                 'amount'       => $request->amount * 100, // Convert to cents
                 'currency'     => $request->currency,
                 'bank'         => $request->bank,
                 'account_uuid' => $account->uuid,
+                'user_id'      => $user->id,
                 'initiated_at' => now()->toIso8601String(),
-            ]);
+            ], 600);
 
-            // Simulate immediate callback (normally would redirect to bank)
-            return redirect()->route('wallet.deposit.openbanking.callback')
+            // Simulate immediate callback (normally would redirect to bank with state param)
+            return redirect()->route('wallet.deposit.openbanking.callback', ['state' => $nonce])
                 ->with('demo_mode', true);
         }
 
@@ -111,11 +116,19 @@ class OpenBankingDepositController extends Controller
     {
         // In demo environment or sandbox mode, process the simulated deposit
         if (app()->environment('demo') || config('demo.sandbox.enabled')) {
-            $depositData = session()->pull('openbanking_deposit');
+            $nonce = $request->query('state', '');
+
+            if (! $nonce || strlen($nonce) < 32) {
+                return redirect()->route('wallet.deposit')
+                    ->with('error', 'State expired or invalid.');
+            }
+
+            // Atomically fetch and delete the state (single-use nonce)
+            $depositData = Cache::pull("ob_state:{$nonce}");
 
             if (! $depositData) {
                 return redirect()->route('wallet.deposit')
-                    ->with('error', 'No pending OpenBanking deposit found.');
+                    ->with('error', 'State expired or invalid.');
             }
 
             try {

@@ -1,14 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Domain\Webhook\Services;
 
 use App\Domain\Webhook\Jobs\ProcessWebhookDelivery;
 use App\Domain\Webhook\Models\Webhook;
 use App\Domain\Webhook\Models\WebhookDelivery;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 
 class WebhookService
 {
+    public function __construct(
+        private readonly PayloadSanitizer $sanitizer = new PayloadSanitizer(),
+    ) {
+    }
+
+    /**
+     * Validate that a webhook URL is acceptable for delivery.
+     *
+     * In production, only HTTPS URLs are permitted to prevent credential leakage
+     * over unencrypted connections.
+     *
+     * @throws RuntimeException if the URL is not HTTPS in production.
+     */
+    public function validateWebhookUrl(string $url): void
+    {
+        if (app()->environment('production') && ! str_starts_with($url, 'https://')) {
+            throw new RuntimeException('Webhook URLs must use HTTPS in production');
+        }
+    }
+
     /**
      * Dispatch a webhook event to all subscribed webhooks.
      */
@@ -27,19 +50,25 @@ class WebhookService
 
         Log::info("Dispatching webhook event: {$eventType} to {$webhooks->count()} webhooks");
 
+        // Sanitize payload once before distributing to all subscribers
+        $sanitizedPayload = $this->sanitizer->sanitize(array_merge(
+            $payload,
+            [
+                'event'     => $eventType,
+                'timestamp' => now()->toIso8601String(),
+            ]
+        ));
+
         // Create delivery records and queue them for processing
         foreach ($webhooks as $webhook) {
+            // Enforce HTTPS on each webhook URL before queuing
+            $this->validateWebhookUrl($webhook->url);
+
             $delivery = $webhook->deliveries()->create(
                 [
                 'event_type' => $eventType,
-                'payload'    => array_merge(
-                    $payload,
-                    [
-                    'event'     => $eventType,
-                    'timestamp' => now()->toIso8601String(),
-                    ]
-                ),
-                'status' => WebhookDelivery::STATUS_PENDING,
+                'payload'    => $sanitizedPayload,
+                'status'     => WebhookDelivery::STATUS_PENDING,
                 ]
             );
 

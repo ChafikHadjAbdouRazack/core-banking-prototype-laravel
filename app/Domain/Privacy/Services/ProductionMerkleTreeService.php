@@ -281,9 +281,9 @@ class ProductionMerkleTreeService implements MerkleTreeServiceInterface
     private function getRpcUrl(string $network): string
     {
         $urls = [
-            'polygon'  => env('POLYGON_RPC_URL', 'https://polygon-rpc.com'),
-            'base'     => env('BASE_RPC_URL', 'https://mainnet.base.org'),
-            'arbitrum' => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
+            'polygon'  => (string) config('blockchain.polygon.rpc_url', 'https://polygon-rpc.com'),
+            'base'     => (string) config('blockchain.base.rpc_url', 'https://mainnet.base.org'),
+            'arbitrum' => (string) config('blockchain.arbitrum.rpc_url', 'https://arb1.arbitrum.io/rpc'),
         ];
 
         return $urls[$network] ?? throw new RuntimeException("No RPC URL for network: {$network}");

@@ -12,6 +12,10 @@
         {
             "type": "vcs",
             "url": "https://github.com/YOzaz/laravel-data-object-tools.git"
+        },
+        {
+            "type": "path",
+            "url": "packages/zelta-sdk"
         }
     ],
     "authors": [
@@ -49,6 +53,7 @@
         "laravel/socialite": "^5.24",
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.9",
+        "league/commonmark": "^2.8.1",
         "livewire/livewire": "^3.6.4",
         "meilisearch/meilisearch-php": "^1.9",
         "nesbot/carbon": "^3.11.1",
@@ -87,14 +92,16 @@
         "pestphp/pest-plugin-laravel": "^3.0",
         "pestphp/pest-plugin-livewire": "^3.0",
         "phpstan/phpstan": "^2.1",
-        "squizlabs/php_codesniffer": "^3.13"
+        "squizlabs/php_codesniffer": "^4.0"
     },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Plugins\\": "plugins/"
+            "Plugins\\": "plugins/",
+            "Plugins\\Zelta\\ComplianceNotifier\\": "plugins/zelta/compliance-notifier/src/",
+            "Plugins\\Zelta\\PaymentAnalytics\\": "plugins/zelta/payment-analytics/src/"
         },
         "files": [
             "app/Helpers/faker.php",
@@ -103,7 +110,10 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Zelta\\": "packages/zelta-sdk/src/",
+            "Zelta\\Tests\\": "packages/zelta-sdk/tests/",
+            "ZeltaCli\\": "packages/zelta-cli/app/"
         }
     },
     "scripts": {

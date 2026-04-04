@@ -12,6 +12,8 @@ use Filament\Tables\Table;
 
 class UserResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-users';

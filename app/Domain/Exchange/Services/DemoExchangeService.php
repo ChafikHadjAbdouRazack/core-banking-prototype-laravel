@@ -13,12 +13,15 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class DemoExchangeService
 {
     public function __construct()
     {
-        // Demo service doesn't need external dependencies
+        if (app()->environment('production')) {
+            throw new RuntimeException(static::class . ' cannot be used in production');
+        }
     }
 
     /**

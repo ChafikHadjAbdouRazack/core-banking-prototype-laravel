@@ -52,7 +52,9 @@ class CleanupExpiredChallenges implements ShouldQueue
      */
     public function handle(BiometricAuthenticationService $service): void
     {
-        $this->verifyTenantContext();
+        if ($this->requiresTenantContext()) {
+            $this->verifyTenantContext();
+        }
 
         $count = $service->cleanupExpiredChallenges();
 

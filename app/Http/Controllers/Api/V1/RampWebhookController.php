@@ -32,12 +32,16 @@ class RampWebhookController extends Controller
     #[OA\Response(response: 400, description: 'Invalid signature')]
     public function handle(Request $request, string $provider): JsonResponse
     {
-        $signature = $request->header('X-Webhook-Signature', '');
+        // Provider-specific signature header resolution
+        $signature = match ($provider) {
+            'onramper' => $request->header('X-Onramper-Webhook-Signature', ''),
+            default    => $request->header('X-Webhook-Signature', ''),
+        };
 
         try {
             $this->rampService->handleWebhook(
                 $provider,
-                $request->all(),
+                (array) $request->json()->all(),
                 $signature
             );
 

@@ -18,22 +18,25 @@ class RampService
     }
 
     /**
-     * Get a quote for a ramp transaction.
+     * Get all quotes from aggregated providers.
      *
-     * @return array{fiat_amount: float, crypto_amount: float, exchange_rate: float, fee: float, fee_currency: string, provider: string}
+     * @return array{quotes: array<int, array<string, mixed>>, provider: string, valid_until: string}
      */
-    public function getQuote(string $type, string $fiatCurrency, float $fiatAmount, string $cryptoCurrency): array
+    public function getQuotes(string $type, string $fiatCurrency, float $fiatAmount, string $cryptoCurrency): array
     {
         $this->validateRampParams($type, $fiatCurrency, $fiatAmount, $cryptoCurrency);
 
-        $quote = $this->provider->getQuote($type, $fiatCurrency, $fiatAmount, $cryptoCurrency);
-        $quote['provider'] = $this->provider->getName();
+        $quotes = $this->provider->getQuotes($type, $fiatCurrency, $fiatAmount, $cryptoCurrency);
 
-        return $quote;
+        return [
+            'quotes'      => $quotes,
+            'provider'    => $this->provider->getName(),
+            'valid_until' => now()->addSeconds(60)->toIso8601String(),
+        ];
     }
 
     /**
-     * Create a ramp session.
+     * Create a ramp session using a selected quote.
      */
     public function createSession(
         User $user,
@@ -42,6 +45,7 @@ class RampService
         float $fiatAmount,
         string $cryptoCurrency,
         string $walletAddress,
+        ?string $quoteId = null,
     ): RampSession {
         $this->validateRampParams($type, $fiatCurrency, $fiatAmount, $cryptoCurrency);
 
@@ -51,6 +55,7 @@ class RampService
             'fiat_amount'     => $fiatAmount,
             'crypto_currency' => $cryptoCurrency,
             'wallet_address'  => $walletAddress,
+            'quote_id'        => $quoteId,
         ]);
 
         $session = RampSession::create([
@@ -60,11 +65,12 @@ class RampService
             'fiat_currency'       => $fiatCurrency,
             'fiat_amount'         => $fiatAmount,
             'crypto_currency'     => $cryptoCurrency,
+            'wallet_address'      => $walletAddress,
             'status'              => RampSession::STATUS_PENDING,
             'provider_session_id' => $providerResult['session_id'],
             'metadata'            => [
-                'redirect_url'  => $providerResult['redirect_url'],
-                'widget_config' => $providerResult['widget_config'],
+                'checkout_url' => $providerResult['checkout_url'],
+                'provider'     => $providerResult['metadata'] ?? [],
             ],
         ]);
 
@@ -83,8 +89,10 @@ class RampService
      */
     public function getSessionStatus(RampSession $session): RampSession
     {
-        if (in_array($session->status, [RampSession::STATUS_PENDING, RampSession::STATUS_PROCESSING], true)
-            && $session->provider_session_id) {
+        if (
+            in_array($session->status, [RampSession::STATUS_PENDING, RampSession::STATUS_PROCESSING], true)
+            && $session->provider_session_id
+        ) {
             $providerStatus = $this->provider->getSessionStatus($session->provider_session_id);
 
             $session->update([
@@ -106,11 +114,11 @@ class RampService
     {
         $validator = $this->provider->getWebhookValidator();
 
-        if (! $validator(json_encode($payload), $signature)) {
+        if (! $validator((string) json_encode($payload), $signature)) {
             throw new RuntimeException('Invalid webhook signature');
         }
 
-        $sessionId = $payload['session_id'] ?? $payload['id'] ?? null;
+        $sessionId = $payload['session_id'] ?? $payload['partnerContext'] ?? $payload['id'] ?? null;
         if (! $sessionId) {
             Log::warning('Ramp webhook missing session_id', ['provider' => $provider]);
 
@@ -127,7 +135,28 @@ class RampService
             return;
         }
 
-        $status = $payload['status'] ?? 'processing';
+        // Verify the webhook provider matches the session provider
+        if ($session->provider !== $provider) {
+            Log::warning('Ramp webhook provider mismatch', [
+                'expected'   => $session->provider,
+                'received'   => $provider,
+                'session_id' => $session->id,
+            ]);
+
+            return;
+        }
+
+        // Idempotency: don't overwrite terminal states
+        if (in_array($session->status, [RampSession::STATUS_COMPLETED, RampSession::STATUS_FAILED], true)) {
+            Log::info('Ramp webhook skipped — session already terminal', [
+                'session_id' => $session->id,
+                'status'     => $session->status,
+            ]);
+
+            return;
+        }
+
+        $status = $this->normalizeWebhookStatus($payload['status'] ?? 'processing');
         $session->update([
             'status'        => $status,
             'crypto_amount' => $payload['crypto_amount'] ?? $session->crypto_amount,
@@ -175,5 +204,18 @@ class RampService
         if ($fiatAmount < $min || $fiatAmount > $max) {
             throw new RuntimeException("Amount must be between \${$min} and \${$max}.");
         }
+    }
+
+    /**
+     * Normalize webhook status to known session status constants.
+     */
+    private function normalizeWebhookStatus(string $status): string
+    {
+        return match (strtolower($status)) {
+            'completed', 'success', 'done' => RampSession::STATUS_COMPLETED,
+            'failed', 'error', 'cancelled', 'expired' => RampSession::STATUS_FAILED,
+            'pending', 'new', 'created' => RampSession::STATUS_PENDING,
+            default => RampSession::STATUS_PROCESSING,
+        };
     }
 }

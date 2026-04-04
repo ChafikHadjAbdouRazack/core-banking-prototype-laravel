@@ -93,7 +93,7 @@ return [
     |--------------------------------------------------------------------------
     */
     'batch' => [
-        'schedule'       => env('FRAUD_BATCH_SCHEDULE', 'hourly'),
+        'schedule'       => env('FRAUD_BATCH_SCHEDULE', '0 * * * *'),
         'chunk_size'     => (int) env('FRAUD_BATCH_CHUNK_SIZE', 100),
         'lookback_hours' => (int) env('FRAUD_BATCH_LOOKBACK_HOURS', 24),
     ],

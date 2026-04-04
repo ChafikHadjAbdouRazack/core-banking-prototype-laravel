@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Domain\Fraud\Models\FraudCase;
 use App\Models\User;
 
+uses(Tests\TestCase::class);
 uses(Illuminate\Foundation\Testing\RefreshDatabase::class);
 
 describe('GraphQL Fraud API', function () {

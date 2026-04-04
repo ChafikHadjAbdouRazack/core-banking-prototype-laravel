@@ -6,11 +6,13 @@ use App\Domain\CrossChain\Enums\BridgeProvider;
 use App\Domain\CrossChain\Enums\BridgeStatus;
 use App\Domain\CrossChain\Enums\CrossChainNetwork;
 use App\Domain\CrossChain\Services\Adapters\CircleCctpBridgeAdapter;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
-    $this->adapter = new CircleCctpBridgeAdapter();
+    $this->adapter = new CircleCctpBridgeAdapter(new AbiEncoder(), new EthRpcClient());
 });
 
 describe('CircleCctpBridgeAdapter', function () {

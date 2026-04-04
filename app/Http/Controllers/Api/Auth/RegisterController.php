@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Actions\Fortify\CreateNewUser;
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\HasApiScopes;
@@ -18,6 +19,11 @@ use OpenApi\Attributes as OA;
 class RegisterController extends Controller
 {
     use HasApiScopes;
+
+    public function __construct(
+        private readonly BiometricJWTService $biometricJWTService,
+    ) {
+    }
 
     /**
      * Register a new user.
@@ -77,10 +83,24 @@ class RegisterController extends Controller
                 'email'                => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password'             => ['required', 'string', 'min:8', 'confirmed'],
                 'is_business_customer' => ['sometimes', 'boolean'],
+                'device_attestation'   => ['nullable', 'string', 'max:4096'],
+                'device_type'          => ['nullable', 'string', 'in:ios,android'],
             ]
         );
 
+        // Verify device attestation if provided and enabled
+        if ($request->filled('device_attestation') && config('mobile.attestation.enabled')) {
+            $verified = $this->biometricJWTService->verifyDeviceAttestation(
+                $request->input('device_attestation'),
+                $request->input('device_type', 'android')
+            );
+            if (! $verified) {
+                return response()->json(['success' => false, 'message' => 'Device attestation failed'], 403);
+            }
+        }
+
         // Use the same CreateNewUser action as Fortify for consistency
+        // Pass isApiRegistration=true to bypass the Fortify web registration gate
         $creator = new CreateNewUser();
         $user = $creator->create(
             [
@@ -90,7 +110,8 @@ class RegisterController extends Controller
                 'password_confirmation' => $request->password_confirmation,
                 'is_business_customer'  => $validated['is_business_customer'] ?? false,
                 'terms'                 => true, // For API, we assume terms are accepted
-            ]
+            ],
+            isApiRegistration: true,
         );
 
         // Create access/refresh token pair

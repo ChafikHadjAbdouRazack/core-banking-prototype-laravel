@@ -16,9 +16,17 @@ use Carbon\Carbon;
 use DateTimeImmutable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class DemoLendingService
 {
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            throw new RuntimeException(static::class . ' cannot be used in production');
+        }
+    }
+
     /**
      * Submit a loan application with auto-approval for demo.
      */

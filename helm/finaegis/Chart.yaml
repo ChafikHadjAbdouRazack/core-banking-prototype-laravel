@@ -2,8 +2,8 @@ apiVersion: v2
 name: finaegis
 description: FinAegis Core Banking Platform Helm Chart
 type: application
-version: 0.1.0
-appVersion: "2.1.0"
+version: 1.8.0
+appVersion: "7.8.2"
 
 keywords:
   - fintech

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Wallet\MobileWalletController;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Tests\UnitTestCase;
 
 uses(UnitTestCase::class);
@@ -44,6 +45,7 @@ function walletUserRequest(string $uri = '/api/v1/wallet/tokens', string $method
     }
     $user = Mockery::mock(User::class)->makePartial();
     $user->id = 1;
+    $user->uuid = 'test-uuid-' . uniqid();
     $request->setUserResolver(fn () => $user);
 
     return $request;
@@ -103,6 +105,30 @@ describe('MobileWalletController tokens', function (): void {
 });
 
 describe('MobileWalletController balances', function (): void {
+    beforeEach(function (): void {
+        config(['cache.default' => 'array']);
+        if (! Schema::hasTable('blockchain_addresses')) {
+            Schema::create('blockchain_addresses', function ($table): void {
+                $table->id();
+                $table->uuid('uuid')->unique();
+                $table->string('user_uuid')->index();
+                $table->string('chain');
+                $table->string('address');
+                $table->text('public_key');
+                $table->string('derivation_path')->nullable();
+                $table->string('label')->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['chain', 'address']);
+            });
+        }
+    });
+
+    afterEach(function (): void {
+        Schema::dropIfExists('blockchain_addresses');
+    });
+
     it('queries balances across smart accounts', function (): void {
         $account = (object) [
             'account_address' => '0xabc123',
@@ -144,6 +170,30 @@ describe('MobileWalletController balances', function (): void {
 });
 
 describe('MobileWalletController state', function (): void {
+    beforeEach(function (): void {
+        config(['cache.default' => 'array']);
+        if (! Schema::hasTable('blockchain_addresses')) {
+            Schema::create('blockchain_addresses', function ($table): void {
+                $table->id();
+                $table->uuid('uuid')->unique();
+                $table->string('user_uuid')->index();
+                $table->string('chain');
+                $table->string('address');
+                $table->text('public_key');
+                $table->string('derivation_path')->nullable();
+                $table->string('label')->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['chain', 'address']);
+            });
+        }
+    });
+
+    afterEach(function (): void {
+        Schema::dropIfExists('blockchain_addresses');
+    });
+
     it('returns aggregated wallet state', function (): void {
         $account = (object) [
             'account_address' => '0xabc123',
@@ -152,6 +202,8 @@ describe('MobileWalletController state', function (): void {
         ];
         $this->smartAccountService->shouldReceive('getUserAccounts')->andReturn(new Collection([$account]));
         $this->smartAccountService->shouldReceive('getSupportedNetworks')->andReturn(['polygon', 'base']);
+        $this->balanceService->shouldReceive('isTokenSupported')->andReturn(true);
+        $this->balanceService->shouldReceive('getBalance')->andReturn('100.50');
 
         $controller = makeWalletController($this);
 
@@ -166,6 +218,29 @@ describe('MobileWalletController state', function (): void {
 });
 
 describe('MobileWalletController addresses', function (): void {
+    beforeEach(function (): void {
+        if (! Schema::hasTable('blockchain_addresses')) {
+            Schema::create('blockchain_addresses', function ($table): void {
+                $table->id();
+                $table->uuid('uuid')->unique();
+                $table->string('user_uuid')->index();
+                $table->string('chain');
+                $table->string('address');
+                $table->text('public_key');
+                $table->string('derivation_path')->nullable();
+                $table->string('label')->nullable();
+                $table->boolean('is_active')->default(true);
+                $table->json('metadata')->nullable();
+                $table->timestamps();
+                $table->unique(['chain', 'address']);
+            });
+        }
+    });
+
+    afterEach(function (): void {
+        Schema::dropIfExists('blockchain_addresses');
+    });
+
     it('lists user addresses per network', function (): void {
         $account = (object) [
             'account_address' => '0xdef456',
@@ -261,7 +336,7 @@ describe('MobileWalletController send', function (): void {
         $controller = makeWalletController($this);
 
         $request = walletUserRequest('/api/v1/wallet/transactions/send', 'POST', [
-            'to'      => '0xrecipient',
+            'to'      => '0x1234567890abcdef1234567890abcdef12345678',
             'token'   => 'USDC',
             'amount'  => '25.00',
             'network' => 'polygon',
@@ -282,7 +357,7 @@ describe('MobileWalletController send', function (): void {
         $controller = makeWalletController($this);
 
         $request = walletUserRequest('/api/v1/wallet/transactions/send', 'POST', [
-            'to'      => '0xrecipient',
+            'to'      => '0x1234567890abcdef1234567890abcdef12345678',
             'token'   => 'USDC',
             'amount'  => '25.00',
             'network' => 'polygon',

@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api\Documentation;
 use OpenApi\Attributes as OA;
 
 #[OA\Info(
-    version: '5.1.5',
-    title: 'FinAegis Core Banking API',
-    description: 'Open Source Core Banking as a Service - A modern, scalable, and secure core banking platform built with Laravel 12, featuring 41 DDD domains, event sourcing, CQRS, cross-chain bridges, DeFi protocol integration, privacy-preserving identity, RegTech compliance, Banking-as-a-Service, and AI-powered analytics.',
-    contact: new OA\Contact(email: 'support@finaegis.org', name: 'FinAegis Support'),
+    version: '7.7.0',
+    title: 'Zelta API',
+    description: 'Core banking API — stablecoin-powered virtual cards, non-custodial wallet, AI agent card issuance, ISO 20022, Open Banking, US Payment Rails, Interledger, and Microfinance. Built with Laravel 12, featuring 56 DDD domains, event sourcing, CQRS, and privacy-preserving architecture.',
+    contact: new OA\Contact(email: 'support@finaegis.org', name: 'Zelta Support'),
     license: new OA\License(name: 'Apache 2.0', url: 'https://www.apache.org/licenses/LICENSE-2.0.html'),
 )]
 #[OA\Server(url: L5_SWAGGER_CONST_HOST, description: 'API Server')] // @phpstan-ignore constant.notFound
@@ -48,6 +48,9 @@ use OpenApi\Attributes as OA;
 #[OA\Tag(name: 'Mobile Wallet', description: 'Mobile wallet: token balances, transaction history, address management, and transfers')]
 #[OA\Tag(name: 'Treasury', description: 'Treasury management: liquidity forecasting, alerts, and workflow orchestration')]
 #[OA\Tag(name: 'Lending', description: 'P2P lending: loan applications, payments, early settlement, and loan management')]
+#[OA\Tag(name: 'SMS', description: 'SMS messaging: send messages, check rates, delivery status, and service info')]
+#[OA\Tag(name: 'Machine Payments', description: 'Machine Payments Protocol (MPP): multi-rail HTTP 402 payments with Stripe, USDC, Lightning, and x402')]
+#[OA\Tag(name: 'SMS Webhooks', description: 'SMS delivery report webhooks from VertexSMS')]
 class OpenApiDoc
 {
 }

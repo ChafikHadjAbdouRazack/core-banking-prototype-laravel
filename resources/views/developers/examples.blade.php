@@ -1,12 +1,12 @@
 @extends('layouts.public')
 
-@section('title', 'Code Examples - FinAegis')
+@section('title', 'Code Examples - ' . config('brand.name', 'Zelta'))
 
 @section('seo')
     @include('partials.seo', [
-        'title' => 'Code Examples - FinAegis',
-        'description' => 'Working examples and integration patterns for common use cases with the FinAegis API.',
-        'keywords' => 'FinAegis API examples, code samples, integration patterns, developer examples',
+        'title' => 'Code Examples - ' . config('brand.name', 'Zelta'),
+        'description' => 'Working examples and integration patterns for common use cases with the ' . config('brand.name', 'Zelta') . ' API.',
+        'keywords' => config('brand.name', 'Zelta') . ' API examples, code samples, integration patterns, developer examples',
     ])
 @endsection
 
@@ -86,7 +86,7 @@
                     Code Examples
                 </h1>
                 <p class="text-xl md:text-2xl text-green-100 max-w-3xl mx-auto">
-                    Working examples and integration patterns for common use cases with the FinAegis API.
+                    Working examples and integration patterns for common use cases with the {{ config('brand.name', 'Zelta') }} API.
                 </p>
             </div>
         </div>
@@ -240,11 +240,12 @@
                             <!-- JavaScript -->
                             <div id="create-js" class="tab-content active animate-fade-in">
                                 <x-code-block language="javascript">
-import { FinAegis } from '@finaegis/sdk';
+// Install: npm install ./sdks/javascript (from monorepo)
+import { {{ config('brand.name', 'Zelta') }} } from '@zelta/sdk';
 
-const client = new FinAegis({
-  apiKey: process.env.FINAEGIS_API_KEY,
-  baseURL: 'https://api.finaegis.org/v2'
+const client = new {{ config('brand.name', 'Zelta') }}({
+  apiKey: process.env.ZELTA_API_KEY,
+  baseURL: '{{ config('app.url') }}/api/v2'
 });
 
 async function createAccountAndCheckBalance() {
@@ -283,12 +284,13 @@ createAccountAndCheckBalance();
                             <!-- Python -->
                             <div id="create-py" class="tab-content animate-fade-in">
                                 <x-code-block language="python">
-from finaegis import FinAegis
+# Install: pip install ./sdks/python (from monorepo)
+from zelta import {{ config('brand.name', 'Zelta') }}
 import os
 
-client = FinAegis(
-    api_key=os.environ['FINAEGIS_API_KEY'],
-    base_url='https://api.finaegis.org/v2'
+client = {{ config('brand.name', 'Zelta') }}(
+    api_key=os.environ['ZELTA_API_KEY'],
+    base_url='{{ config('app.url') }}/api/v2'
 )
 
 def create_account_and_check_balance():
@@ -324,13 +326,16 @@ create_account_and_check_balance()
                             <!-- PHP -->
                             <div id="create-php" class="tab-content animate-fade-in">
                                 <x-code-block language="php">
+{!! '<?php' !!}
+
+// Install: composer require zelta/payment-sdk --repository='{"type":"path","url":"packages/zelta-sdk"}'
 require_once 'vendor/autoload.php';
 
-use FinAegis\Client;
+use Zelta\PaymentSDK\Client;
 
 $client = new Client([
-    'apiKey' => $_ENV['FINAEGIS_API_KEY'],
-    'baseURL' => 'https://api.finaegis.org/v2'
+    'apiKey' => $_ENV['ZELTA_API_KEY'],
+    'baseURL' => '{{ config('app.url') }}/api/v2'
 ]);
 
 function createAccountAndCheckBalance($client) {
@@ -344,17 +349,17 @@ function createAccountAndCheckBalance($client) {
                 'purpose' => 'savings'
             ]
         ]);
-        
+
         echo "Account created: {$account->uuid}\n";
-        
+
         // Get account balances
         $balances = $client->accounts->getBalances($account->uuid);
-        
+
         echo "Current balances:\n";
         foreach ($balances->data->balances as $balance) {
             echo "{$balance->asset_code}: {$balance->available_balance}\n";
         }
-        
+
         return $account;
     } catch (Exception $e) {
         echo "Error: {$e->getMessage()}\n";
@@ -370,7 +375,7 @@ createAccountAndCheckBalance($client);
                             <div id="create-curl" class="tab-content animate-fade-in">
                                 <x-code-block language="bash">
 # Create a new account
-curl -X POST https://api.finaegis.org/v2/accounts \
+curl -X POST {{ config('app.url') }}/api/v2/accounts \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -394,7 +399,7 @@ curl -X POST https://api.finaegis.org/v2/accounts \
 }
 
 # Get account balances
-curl -X GET https://api.finaegis.org/v2/accounts/acct_1234567890abcdef/balances \
+curl -X GET {{ config('app.url') }}/api/v2/accounts/acct_1234567890abcdef/balances \
   -H "Authorization: Bearer YOUR_API_KEY"
                                 </x-code-block>
                             </div>
@@ -609,11 +614,11 @@ getAccountTransactions('acct_1234567890', {
                             <div id="list-curl" class="tab-content animate-fade-in">
                                 <x-code-block language="bash">
 # Get all transactions for an account
-curl -X GET "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions" \
+curl -X GET "{{ config('app.url') }}/api/v2/accounts/acct_1234567890/transactions" \
   -H "Authorization: Bearer YOUR_API_KEY"
 
 # Get transactions with filters
-curl -X GET "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?\
+curl -X GET "{{ config('app.url') }}/api/v2/accounts/acct_1234567890/transactions?\
 limit=20&\
 page=1&\
 type=withdrawal&\
@@ -664,10 +669,10 @@ sort=-created_at" \
     "to": 20
   },
   "links": {
-    "first": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=1",
-    "last": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=5",
+    "first": "{{ config('app.url') }}/api/v2/accounts/acct_1234567890/transactions?page=1",
+    "last": "{{ config('app.url') }}/api/v2/accounts/acct_1234567890/transactions?page=5",
     "prev": null,
-    "next": "https://api.finaegis.org/v2/accounts/acct_1234567890/transactions?page=2"
+    "next": "{{ config('app.url') }}/api/v2/accounts/acct_1234567890/transactions?page=2"
   }
 }
                                 </x-code-block>
@@ -763,7 +768,7 @@ convertAndTransfer(
                     <div class="bg-white rounded-xl shadow-lg overflow-hidden">
                         <div class="bg-gray-50 px-6 py-4 border-b">
                             <h3 class="text-xl font-semibold text-gray-900">Setting Up Webhook Endpoints</h3>
-                            <p class="text-gray-600 mt-1">Handle real-time events from FinAegis</p>
+                            <p class="text-gray-600 mt-1">Handle real-time events from {{ config('brand.name', 'Zelta') }}</p>
                         </div>
                         
                         <div class="p-6">
@@ -777,7 +782,7 @@ const app = express();
 
 // Middleware to verify webhook signatures
 function verifyWebhookSignature(req, res, next) {
-  const signature = req.headers['x-finaegis-signature'];
+  const signature = req.headers['x-zelta-signature'];
   const payload = JSON.stringify(req.body);
   const secret = process.env.WEBHOOK_SECRET;
   
@@ -794,7 +799,7 @@ function verifyWebhookSignature(req, res, next) {
 }
 
 // Webhook endpoint
-app.post('/webhooks/finaegis', 
+app.post('/webhooks/zelta',
   express.json(),
   verifyWebhookSignature,
   (req, res) => {
@@ -856,7 +861,7 @@ async function handleWorkflowCompleted(workflow) {
 // Configure webhook endpoints
 async function setupWebhooks() {
   const webhook = await client.webhooks.create({
-    url: 'https://yourapp.com/webhooks/finaegis',
+    url: 'https://yourapp.com/webhooks/zelta',
     events: [
       'transfer.completed',
       'transfer.failed',
@@ -921,10 +926,11 @@ async function testWebhook(webhookId) {
                             <!-- JavaScript -->
                             <div id="ai-chat-js" class="tab-content active animate-fade-in">
                                 <x-code-block language="javascript">
-import { FinAegisAI } from '@finaegis/ai-sdk';
+// Install: npm install ./sdks/javascript (from monorepo)
+import { {{ config('brand.name', 'Zelta') }}AI } from '@zelta/sdk';
 
-const aiClient = new FinAegisAI({
-  apiKey: process.env.FINAEGIS_API_KEY,
+const aiClient = new {{ config('brand.name', 'Zelta') }}AI({
+  apiKey: process.env.ZELTA_API_KEY,
   conversationId: 'conv_' + Math.random().toString(36).substr(2, 9)
 });
 
@@ -1007,12 +1013,14 @@ async function streamingChat() {
                             <!-- Python -->
                             <div id="ai-chat-py" class="tab-content animate-fade-in">
                                 <x-code-block language="python">
-from finaegis_ai import FinAegisAI
+# Install: pip install ./sdks/python (from monorepo)
+from zelta import {{ config('brand.name', 'Zelta') }}AI
 import asyncio
+import os
 import uuid
 
-ai_client = FinAegisAI(
-    api_key=os.environ['FINAEGIS_API_KEY'],
+ai_client = {{ config('brand.name', 'Zelta') }}AI(
+    api_key=os.environ['ZELTA_API_KEY'],
     conversation_id=f'conv_{uuid.uuid4().hex[:9]}'
 )
 
@@ -1131,7 +1139,7 @@ asyncio.run(banking_conversation())
   },
   "metadata": {
     "processing_time_ms": 342,
-    "model_version": "finaegis-ai-v2.5",
+    "model_version": "zelta-ai-v2",
     "mcp_tools_available": 12,
     "workflow_id": "wf_banking_assist_789"
   }
@@ -1306,7 +1314,8 @@ handleCustomerRequest('cust_123',
                             <div id="mcp-register-js" class="tab-content active animate-fade-in">
                                 <x-code-block language="javascript">
 // Register custom MCP tools for banking operations
-import { MCPServer } from '@finaegis/mcp-sdk';
+// Install: npm install ./sdks/javascript (from monorepo)
+import { MCPServer } from '@zelta/sdk';
 
 const mcpServer = new MCPServer({
   name: 'banking-tools',
@@ -1469,8 +1478,8 @@ console.log('MCP Banking Tools Server started on port 3001');
                             <div id="mcp-usage-js" class="tab-content animate-fade-in">
                                 <x-code-block language="javascript">
 // Using MCP tools in AI conversations
-const aiClient = new FinAegisAI({
-  apiKey: process.env.FINAEGIS_API_KEY,
+const aiClient = new {{ config('brand.name', 'Zelta') }}AI({
+  apiKey: process.env.ZELTA_API_KEY,
   mcp_servers: [
     {
       url: 'http://localhost:3001',
@@ -1578,10 +1587,10 @@ aiClient.on('tool_executed', (event) => {
                             <div id="mcp-manifest" class="tab-content animate-fade-in">
                                 <x-code-block language="json">
 {
-  "name": "finaegis-banking-tools",
+  "name": "zelta-banking-tools",
   "version": "1.0.0",
-  "description": "MCP tools for FinAegis banking operations",
-  "author": "FinAegis",
+  "description": "MCP tools for {{ config('brand.name', 'Zelta') }} banking operations",
+  "author": "{{ config('brand.name', 'Zelta') }}",
   "license": "MIT",
   "server": {
     "command": "node",
@@ -1836,7 +1845,7 @@ processLoanApplication('cust_456', {
                             <div id="bridge-curl" class="tab-content active animate-fade-in">
                                 <x-code-block language="bash">
 # Step 1: Get a bridge quote
-curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/quote \
+curl -X POST {{ config('app.url') }}/api/v1/crosschain/bridge/quote \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1848,7 +1857,7 @@ curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/quote \
   }'
 
 # Step 2: Initiate the bridge transfer using the quote_id
-curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/initiate \
+curl -X POST {{ config('app.url') }}/api/v1/crosschain/bridge/initiate \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -1864,11 +1873,12 @@ curl -X POST https://api.finaegis.org/api/v1/crosschain/bridge/initiate \
                             <!-- JavaScript -->
                             <div id="bridge-js" class="tab-content animate-fade-in">
                                 <x-code-block language="javascript">
-import { FinAegis } from '@finaegis/sdk';
+// Install: npm install ./sdks/javascript (from monorepo)
+import { {{ config('brand.name', 'Zelta') }} } from '@zelta/sdk';
 
-const client = new FinAegis({
-  apiKey: process.env.FINAEGIS_API_KEY,
-  baseURL: 'https://api.finaegis.org'
+const client = new {{ config('brand.name', 'Zelta') }}({
+  apiKey: process.env.ZELTA_API_KEY,
+  baseURL: '{{ config('app.url') }}/api'
 });
 
 async function bridgeTokens(sourceChain, destChain, token, amount) {
@@ -1915,12 +1925,13 @@ bridgeTokens('ethereum', 'polygon', 'USDC', '1000.00');
                             <!-- Python -->
                             <div id="bridge-py" class="tab-content animate-fade-in">
                                 <x-code-block language="python">
-from finaegis import FinAegis
+# Install: pip install ./sdks/python (from monorepo)
+from zelta import {{ config('brand.name', 'Zelta') }}
 import os
 
-client = FinAegis(
-    api_key=os.environ['FINAEGIS_API_KEY'],
-    base_url='https://api.finaegis.org'
+client = {{ config('brand.name', 'Zelta') }}(
+    api_key=os.environ['ZELTA_API_KEY'],
+    base_url='{{ config('app.url') }}/api'
 )
 
 def bridge_tokens(source_chain, dest_chain, token, amount):
@@ -2049,7 +2060,7 @@ bridge_tokens('ethereum', 'polygon', 'USDC', '1000.00')
                             <div id="swap-curl" class="tab-content active animate-fade-in">
                                 <x-code-block language="bash">
 # Step 1: Get a swap quote with DEX aggregation
-curl -X POST https://api.finaegis.org/api/v1/defi/swap/quote \
+curl -X POST {{ config('app.url') }}/api/v1/defi/swap/quote \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2062,7 +2073,7 @@ curl -X POST https://api.finaegis.org/api/v1/defi/swap/quote \
   }'
 
 # Step 2: Execute the swap with the best route
-curl -X POST https://api.finaegis.org/api/v1/defi/swap/execute \
+curl -X POST {{ config('app.url') }}/api/v1/defi/swap/execute \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2236,7 +2247,7 @@ swap_tokens('ethereum', 'WETH', 'USDC', '2.5')
                                     <p class="text-gray-600 mt-1">Validate FATF Travel Rule compliance before executing cross-border or virtual asset transfers</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">v2.8</span>
+                                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">v2</span>
                                     <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
                                 </div>
                             </div>
@@ -2255,7 +2266,7 @@ swap_tokens('ethereum', 'WETH', 'USDC', '2.5')
                             <div id="travel-curl" class="tab-content active animate-fade-in">
                                 <x-code-block language="bash">
 # Run a Travel Rule compliance check before a transfer
-curl -X POST https://api.finaegis.org/api/v1/regtech/travel-rule/check \
+curl -X POST {{ config('app.url') }}/api/v1/regtech/travel-rule/check \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2263,7 +2274,7 @@ curl -X POST https://api.finaegis.org/api/v1/regtech/travel-rule/check \
     "originator": {
       "name": "Alice Johnson",
       "account_number": "acct_1234567890",
-      "institution_name": "FinAegis",
+      "institution_name": "{{ config('brand.name', 'Zelta') }}",
       "institution_country": "US"
     },
     "beneficiary": {
@@ -2293,7 +2304,7 @@ async function checkTravelRuleCompliance(transferData) {
       originator: {
         name: 'Alice Johnson',
         account_number: transferData.fromAccount,
-        institution_name: 'FinAegis',
+        institution_name: config('brand.name', 'Zelta'),
         institution_country: 'US'
       },
       beneficiary: {
@@ -2355,7 +2366,7 @@ def check_travel_rule_compliance(transfer_data):
             originator={
                 'name': 'Alice Johnson',
                 'account_number': transfer_data['from_account'],
-                'institution_name': 'FinAegis',
+                'institution_name': config('brand.name', 'Zelta'),
                 'institution_country': 'US'
             },
             beneficiary={
@@ -2461,7 +2472,7 @@ check_travel_rule_compliance({
                                     <p class="text-gray-600 mt-1">Onboard a new partner organization onto the Banking-as-a-Service platform with API keys and SDK access</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">v2.9</span>
+                                    <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">v2</span>
                                     <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
                                 </div>
                             </div>
@@ -2480,7 +2491,7 @@ check_travel_rule_compliance({
                             <div id="partner-curl" class="tab-content active animate-fade-in">
                                 <x-code-block language="bash">
 # Onboard a new BaaS partner
-curl -X POST https://api.finaegis.org/api/v1/partner/onboard \
+curl -X POST {{ config('app.url') }}/api/v1/partner/onboard \
   -H "Authorization: Bearer YOUR_ADMIN_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2489,7 +2500,7 @@ curl -X POST https://api.finaegis.org/api/v1/partner/onboard \
     "tier": "growth",
     "modules": ["accounts", "transfers", "compliance", "crosschain"],
     "sdk_languages": ["typescript", "python"],
-    "webhook_url": "https://acmefintech.com/webhooks/finaegis",
+    "webhook_url": "https://acmefintech.com/webhooks/zelta",
     "ip_whitelist": ["203.0.113.0/24"],
     "rate_limit_override": 5000,
     "metadata": {
@@ -2541,7 +2552,7 @@ onboardPartner({
   tier: 'growth',
   modules: ['accounts', 'transfers', 'compliance', 'crosschain'],
   sdkLanguages: ['typescript', 'python'],
-  webhookUrl: 'https://acmefintech.com/webhooks/finaegis',
+  webhookUrl: 'https://acmefintech.com/webhooks/zelta',
   ipWhitelist: ['203.0.113.0/24'],
   rateLimit: 5000,
   metadata: {
@@ -2590,7 +2601,7 @@ onboard_partner({
     'tier': 'growth',
     'modules': ['accounts', 'transfers', 'compliance', 'crosschain'],
     'sdk_languages': ['typescript', 'python'],
-    'webhook_url': 'https://acmefintech.com/webhooks/finaegis',
+    'webhook_url': 'https://acmefintech.com/webhooks/zelta',
     'ip_whitelist': ['203.0.113.0/24'],
     'rate_limit': 5000,
     'metadata': {
@@ -2625,24 +2636,24 @@ onboard_partner({
       {
         "language": "typescript",
         "version": "3.0.0",
-        "package_name": "@finaegis/sdk",
-        "download_url": "https://sdk.finaegis.org/packages/typescript/finaegis-sdk-3.0.0.tgz",
-        "docs_url": "https://docs.finaegis.org/sdk/typescript"
+        "package_name": "@zelta/sdk",
+        "download_url": "{{ config('app.url') }}/developers/sdks/packages/typescript/zelta-sdk-2.0.0.tgz",
+        "docs_url": "{{ config('app.url') }}/developers/sdk/typescript"
       },
       {
         "language": "python",
         "version": "3.0.0",
-        "package_name": "finaegis-sdk",
-        "download_url": "https://sdk.finaegis.org/packages/python/finaegis-sdk-3.0.0.tar.gz",
-        "docs_url": "https://docs.finaegis.org/sdk/python"
+        "package_name": "zelta-sdk",
+        "download_url": "{{ config('app.url') }}/developers/sdks/packages/python/zelta-sdk-2.0.0.tar.gz",
+        "docs_url": "{{ config('app.url') }}/developers/sdk/python"
       }
     ],
     "rate_limits": {
       "requests_per_minute": 5000,
       "burst_limit": 500
     },
-    "sandbox_url": "https://sandbox.finaegis.org",
-    "dashboard_url": "https://partners.finaegis.org/acme-fintech",
+    "sandbox_url": "{{ config('app.url') }}",
+    "dashboard_url": "{{ config('app.url') }}/acme-fintech",
     "created_at": "2026-01-15T12:00:00Z",
     "onboarding_checklist": {
       "api_key_generated": true,
@@ -2674,7 +2685,7 @@ onboard_partner({
                                     <p class="text-gray-600 mt-1">Query transactions using natural language -- the AI engine translates to structured filters</p>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span class="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">v2.8</span>
+                                    <span class="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">v2</span>
                                     <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">POST</span>
                                     <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-medium">AI</span>
                                 </div>
@@ -2694,7 +2705,7 @@ onboard_partner({
                             <div id="aitx-curl" class="tab-content active animate-fade-in">
                                 <x-code-block language="bash">
 # Query transactions with natural language
-curl -X POST https://api.finaegis.org/api/v1/ai/transactions \
+curl -X POST {{ config('app.url') }}/api/v1/ai/transactions \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -2897,11 +2908,11 @@ query_transactions_with_ai(
                     
                     <div class="p-6">
                         <x-code-block language="javascript" title="Complete Error Handling Implementation">
-class FinAegisWrapper {
+class {{ config('brand.name', 'Zelta') }}Wrapper {
   constructor(apiKey, options = {}) {
-    this.client = new FinAegis({
+    this.client = new {{ config('brand.name', 'Zelta') }}({
       apiKey,
-      baseURL: options.baseURL || 'https://api.finaegis.org/v2'
+      baseURL: options.baseURL || '{{ config('app.url') }}/api/v2'
     });
     
     this.retryOptions = {
@@ -2974,7 +2985,7 @@ class FinAegisWrapper {
 }
 
 // Usage example
-const finAegis = new FinAegisWrapper(process.env.FINAEGIS_API_KEY, {
+const finAegis = new {{ config('brand.name', 'Zelta') }}Wrapper(process.env.ZELTA_API_KEY, {
   environment: 'production',
   maxRetries: 3,
   backoffMultiplier: 2,
@@ -3037,7 +3048,7 @@ async function robustTransfer(fromAccount, toAccount, amount) {
     <section class="py-16 bg-gradient-to-br from-green-600 to-blue-600 text-white">
         <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl md:text-4xl font-bold mb-4">Start Building Today</h2>
-            <p class="text-xl text-green-100 mb-8">Use these examples as a starting point for your FinAegis integration.</p>
+            <p class="text-xl text-green-100 mb-8">Use these examples as a starting point for your {{ config('brand.name', 'Zelta') }} integration.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-8 py-3 bg-white text-green-600 rounded-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg">
                     Get API Keys

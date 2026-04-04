@@ -2535,7 +2535,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on App\\Models\\User\|null\.$#'
 			identifier: property.nonObject
-			count: 1
+			count: 2
 			path: app/Http/Controllers/OpenBankingDepositController.php
 
 		-

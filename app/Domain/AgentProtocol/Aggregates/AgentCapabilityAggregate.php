@@ -182,9 +182,9 @@ class AgentCapabilityAggregate extends AggregateRoot
             fn ($value) => $value !== null
         );
 
-            if (empty($updates)) {
-                throw new InvalidArgumentException('No updates provided');
-            }
+        if (empty($updates)) {
+            throw new InvalidArgumentException('No updates provided');
+        }
 
             $this->recordThat(new CapabilityUpdated(
                 capabilityId: $this->capabilityId,

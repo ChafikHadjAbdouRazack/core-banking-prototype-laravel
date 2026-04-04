@@ -12,6 +12,8 @@ use Filament\Tables\Table;
 
 class CgoNotificationResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = CgoNotification::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-sparkles';

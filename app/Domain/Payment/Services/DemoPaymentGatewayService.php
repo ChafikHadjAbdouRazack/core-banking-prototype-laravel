@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domain\Payment\Services;
 
+use App\Domain\Payment\Contracts\PaymentServiceInterface;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\PaymentMethod as CashierPaymentMethod;
+use RuntimeException;
 use Stripe\PaymentIntent;
 
 /**
@@ -20,6 +22,15 @@ class DemoPaymentGatewayService extends PaymentGatewayService
      * Store for demo payment intents to simulate real behavior.
      */
     private static array $demoIntents = [];
+
+    public function __construct(PaymentServiceInterface $paymentService)
+    {
+        parent::__construct($paymentService);
+
+        if (app()->environment('production')) {
+            throw new RuntimeException(static::class . ' cannot be used in production');
+        }
+    }
 
     /**
      * Create a demo payment intent without calling Stripe.

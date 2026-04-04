@@ -10,15 +10,22 @@ use App\Domain\AI\MCP\Tools\Account\CreateAccountTool;
 use App\Domain\AI\MCP\Tools\Account\DepositTool;
 use App\Domain\AI\MCP\Tools\Account\WithdrawTool;
 use App\Domain\AI\MCP\Tools\AgentProtocol\AgentEscrowTool;
+use App\Domain\AI\MCP\Tools\AgentProtocol\AgentMandateTool;
 use App\Domain\AI\MCP\Tools\AgentProtocol\AgentPaymentTool;
 use App\Domain\AI\MCP\Tools\AgentProtocol\AgentReputationTool;
+use App\Domain\AI\MCP\Tools\AgentProtocol\AgentVdcTool;
 use App\Domain\AI\MCP\Tools\Compliance\AmlScreeningTool;
 use App\Domain\AI\MCP\Tools\Compliance\KycTool;
 use App\Domain\AI\MCP\Tools\Exchange\LiquidityPoolTool;
 use App\Domain\AI\MCP\Tools\Exchange\QuoteTool;
 use App\Domain\AI\MCP\Tools\Exchange\TradeTool;
+use App\Domain\AI\MCP\Tools\MachinePay\MppDiscoveryTool;
+use App\Domain\AI\MCP\Tools\MachinePay\MppPaymentTool;
 use App\Domain\AI\MCP\Tools\Payment\PaymentStatusTool;
 use App\Domain\AI\MCP\Tools\Payment\TransferTool;
+use App\Domain\AI\MCP\Tools\SMS\SmsSendTool;
+use App\Domain\AI\MCP\Tools\VisaCli\VisaCliCardsTool;
+use App\Domain\AI\MCP\Tools\VisaCli\VisaCliPaymentTool;
 use App\Domain\AI\MCP\Tools\X402\X402PaymentTool;
 use Exception;
 use Illuminate\Support\ServiceProvider;
@@ -64,6 +71,21 @@ class MCPToolServiceProvider extends ServiceProvider
 
         // x402 Payment Tools
         X402PaymentTool::class,
+
+        // Visa CLI Payment Tools
+        VisaCliPaymentTool::class,
+        VisaCliCardsTool::class,
+
+        // Machine Payments Protocol Tools
+        MppPaymentTool::class,
+        MppDiscoveryTool::class,
+
+        // AP2 Mandate Tools
+        AgentMandateTool::class,
+        AgentVdcTool::class,
+
+        // SMS Tools
+        SmsSendTool::class,
     ];
 
     /**

@@ -20,6 +20,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class BasketAssetResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = BasketAsset::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';

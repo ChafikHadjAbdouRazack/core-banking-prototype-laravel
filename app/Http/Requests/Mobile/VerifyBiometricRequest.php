@@ -31,9 +31,11 @@ class VerifyBiometricRequest extends BaseMobileRequest
     public function rules(): array
     {
         return [
-            'device_id' => ['required', 'string'],
-            'challenge' => ['required', 'string'],
-            'signature' => ['required', 'string'],
+            'device_id'          => ['required', 'string'],
+            'challenge'          => ['required', 'string'],
+            'signature'          => ['required', 'string'],
+            'device_attestation' => ['nullable', 'string', 'max:4096'],
+            'device_type'        => ['nullable', 'string', 'in:ios,android'],
         ];
     }
 

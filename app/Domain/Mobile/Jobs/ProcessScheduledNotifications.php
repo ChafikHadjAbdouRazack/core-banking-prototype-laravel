@@ -51,7 +51,9 @@ class ProcessScheduledNotifications implements ShouldQueue
      */
     public function handle(PushNotificationService $service): void
     {
-        $this->verifyTenantContext();
+        if ($this->requiresTenantContext()) {
+            $this->verifyTenantContext();
+        }
 
         $count = $service->processScheduledNotifications();
 

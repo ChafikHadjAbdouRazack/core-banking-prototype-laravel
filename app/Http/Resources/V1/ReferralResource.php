@@ -17,13 +17,14 @@ class ReferralResource extends JsonResource
     {
         return [
             'id'      => $this->id,
-            'referee' => $this->whenLoaded('referee', fn () => [
+            'referee' => $this->whenLoaded('referee', fn () => $this->referee !== null ? [
                 'id'   => $this->referee->id,
                 'name' => $this->referee->name,
-            ]),
-            'status'       => $this->status,
-            'completed_at' => $this->completed_at?->toIso8601String(),
-            'created_at'   => $this->created_at->toIso8601String(),
+            ] : null),
+            'status'        => $this->status,
+            'reward_amount' => (int) config('relayer.sponsorship.default_free_tx', 5),
+            'completed_at'  => $this->completed_at?->toIso8601String(),
+            'created_at'    => $this->created_at->toIso8601String(),
         ];
     }
 }

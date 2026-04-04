@@ -14,6 +14,8 @@ use App\Domain\DeFi\Services\Connectors\UniswapV3Connector;
 use App\Domain\DeFi\Services\SwapAggregatorService;
 use App\Domain\DeFi\Services\SwapRouterService;
 use App\Http\Controllers\Api\CrossChain\CrossChainController;
+use App\Infrastructure\Web3\AbiEncoder;
+use App\Infrastructure\Web3\EthRpcClient;
 use Illuminate\Http\Request;
 
 uses(Tests\TestCase::class);
@@ -36,7 +38,7 @@ beforeEach(function () {
 
     $aggregator = new SwapAggregatorService();
     $aggregator->registerConnector(new DemoSwapConnector());
-    $aggregator->registerConnector(new UniswapV3Connector());
+    $aggregator->registerConnector(new UniswapV3Connector(new AbiEncoder(), new EthRpcClient()));
     $swapRouter = new SwapRouterService($aggregator);
 
     $saga = new CrossChainSwapSaga($this->bridgeOrchestrator, $swapRouter, $this->bridgeTracker);

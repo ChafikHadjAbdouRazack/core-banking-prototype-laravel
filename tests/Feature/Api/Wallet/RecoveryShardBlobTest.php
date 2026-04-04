@@ -34,7 +34,7 @@ class RecoveryShardBlobTest extends TestCase
             ->postJson('/api/v1/wallet/recovery-shard-backup', [
                 'device_id'            => 'device_001',
                 'backup_provider'      => 'icloud',
-                'encrypted_shard_hash' => hash('sha256', $shardData),
+                'encrypted_shard_hash' => '0x' . hash('sha256', $shardData),
                 'shard_version'        => 'v1',
                 'encrypted_shard'      => $shardData,
             ]);

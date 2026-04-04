@@ -54,7 +54,7 @@ Route::prefix('v1/relayer')->name('mobile.relayer.')
         Route::get('/supported-tokens', [MobileRelayerController::class, 'supportedTokens'])
             ->middleware('api.rate_limit:query')
             ->name('supported-tokens');
-        Route::get('/paymaster-data', [MobileRelayerController::class, 'paymasterData'])
+        Route::match(['get', 'post'], '/paymaster-data', [MobileRelayerController::class, 'paymasterData'])
             ->middleware('api.rate_limit:query')
             ->name('paymaster-data');
         Route::get('/networks/{network}/status', [MobileRelayerController::class, 'networkStatus'])

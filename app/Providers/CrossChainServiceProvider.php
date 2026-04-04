@@ -51,7 +51,7 @@ class CrossChainServiceProvider extends ServiceProvider
 
             // Register production adapters when enabled
             if (config('crosschain.wormhole.enabled', false)) {
-                $orchestrator->registerAdapter(new WormholeBridgeAdapter());
+                $orchestrator->registerAdapter($app->make(WormholeBridgeAdapter::class));
             }
 
             if (config('crosschain.layerzero.enabled', false)) {
@@ -63,7 +63,7 @@ class CrossChainServiceProvider extends ServiceProvider
             }
 
             if (config('crosschain.circle_cctp.enabled', false)) {
-                $orchestrator->registerAdapter(new CircleCctpBridgeAdapter());
+                $orchestrator->registerAdapter($app->make(CircleCctpBridgeAdapter::class));
             }
 
             return $orchestrator;

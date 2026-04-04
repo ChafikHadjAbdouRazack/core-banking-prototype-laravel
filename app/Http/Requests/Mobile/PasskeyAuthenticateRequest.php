@@ -7,7 +7,10 @@ namespace App\Http\Requests\Mobile;
 /**
  * Form request for verifying passkey/WebAuthn authentication.
  *
- * @property string $device_id
+ * device_id is optional: when absent, the device is looked up by credential_id
+ * (standard WebAuthn flow where the RP identifies the key by credential).
+ *
+ * @property string|null $device_id
  * @property string $challenge       The challenge string issued by the server
  * @property string $credential_id   Base64url-encoded credential ID
  * @property string $authenticator_data  Base64url-encoded authenticator data
@@ -27,12 +30,14 @@ class PasskeyAuthenticateRequest extends BaseMobileRequest
     public function rules(): array
     {
         return [
-            'device_id'          => ['required', 'string'],
+            'device_id'          => ['nullable', 'string'],
             'challenge'          => ['required', 'string'],
             'credential_id'      => ['required', 'string'],
             'authenticator_data' => ['required', 'string'],
             'client_data_json'   => ['required', 'string'],
             'signature'          => ['required', 'string'],
+            'device_attestation' => ['nullable', 'string', 'max:4096'],
+            'device_type'        => ['nullable', 'string', 'in:ios,android'],
         ];
     }
 
@@ -42,7 +47,6 @@ class PasskeyAuthenticateRequest extends BaseMobileRequest
     public function messages(): array
     {
         return [
-            'device_id.required'          => 'Device ID is required.',
             'challenge.required'          => 'Challenge is required.',
             'credential_id.required'      => 'Credential ID is required.',
             'authenticator_data.required' => 'Authenticator data is required.',

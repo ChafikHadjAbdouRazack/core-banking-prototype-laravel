@@ -23,22 +23,13 @@ return [
             'enabled' => true,
         ],
 
-        'moonpay' => [
-            'driver'      => 'moonpay',
-            'api_key'     => env('MOONPAY_API_KEY'),
-            'secret_key'  => env('MOONPAY_SECRET_KEY'),
-            'webhook_key' => env('MOONPAY_WEBHOOK_KEY'),
-            'base_url'    => env('MOONPAY_BASE_URL', 'https://api.moonpay.com'),
-            'enabled'     => (bool) env('MOONPAY_ENABLED', false),
-        ],
-
-        'transak' => [
-            'driver'      => 'transak',
-            'api_key'     => env('TRANSAK_API_KEY'),
-            'api_secret'  => env('TRANSAK_API_SECRET'),
-            'webhook_key' => env('TRANSAK_WEBHOOK_KEY'),
-            'base_url'    => env('TRANSAK_BASE_URL', 'https://api.transak.com'),
-            'enabled'     => (bool) env('TRANSAK_ENABLED', false),
+        'onramper' => [
+            'driver'               => 'onramper',
+            'api_key'              => env('ONRAMPER_API_KEY'),
+            'secret_key'           => env('ONRAMPER_SECRET_KEY'),
+            'base_url'             => env('ONRAMPER_BASE_URL', 'https://api.onramper.com'),
+            'success_redirect_url' => env('ONRAMPER_SUCCESS_REDIRECT_URL'),
+            'enabled'              => (bool) env('ONRAMPER_ENABLED', false),
         ],
     ],
 
@@ -62,4 +53,5 @@ return [
         'max_fiat_amount' => (float) env('RAMP_MAX_AMOUNT', 10000.00),
         'daily_limit'     => (float) env('RAMP_DAILY_LIMIT', 50000.00),
     ],
+
 ];

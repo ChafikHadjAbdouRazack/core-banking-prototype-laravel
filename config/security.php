@@ -27,7 +27,7 @@ return [
         'ws_endpoint'  => env('CSP_WS_ENDPOINT', 'wss://ws.finaegis.org'),
 
         // Additional connect sources (comma-separated)
-        'connect_sources' => env('CSP_CONNECT_SOURCES', 'https://www.google-analytics.com,https://*.google-analytics.com,https://stats.g.doubleclick.net,https://*.doubleclick.net,https://www.googletagmanager.com'),
+        'connect_sources' => env('CSP_CONNECT_SOURCES', 'https://www.google-analytics.com,https://*.google-analytics.com,https://region1.google-analytics.com,https://stats.g.doubleclick.net,https://*.doubleclick.net,https://www.googletagmanager.com'),
     ],
 
     /*

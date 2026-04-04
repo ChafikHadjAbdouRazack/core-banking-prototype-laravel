@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\CrossChain\Contracts\BridgeAdapterInterface;
 use App\Domain\CrossChain\Enums\BridgeProvider;
 use App\Domain\CrossChain\Enums\BridgeStatus;
@@ -12,6 +13,7 @@ use App\Domain\CrossChain\Services\BridgeOrchestratorService;
 use App\Domain\CrossChain\ValueObjects\BridgeQuote;
 use App\Domain\CrossChain\ValueObjects\BridgeRoute;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Cache;
 
 uses(Tests\TestCase::class);
 
@@ -149,6 +151,20 @@ describe('BridgeOrchestratorService', function () {
 
     it('initiates bridge transfer successfully', function () {
         $quote = createBridgeQuote(BridgeProvider::DEMO);
+        $userUuid = 'test-user-uuid-001';
+
+        // Seed server-side quote cache (Finding #3 requirement)
+        config(['cache.default' => 'array']);
+        Cache::put("bridge_quote:{$quote->quoteId}", $quote->toArray(), 60);
+
+        // Register a verified sender address for this user (Finding #10 requirement)
+        BlockchainAddress::create([
+            'user_uuid'  => $userUuid,
+            'chain'      => 'ethereum',
+            'address'    => '0xSender',
+            'public_key' => '0xpubkey',
+            'is_active'  => true,
+        ]);
 
         $adapter = createMockAdapter(BridgeProvider::DEMO);
         $adapter->shouldReceive('initiateBridge')->andReturn([
@@ -159,7 +175,7 @@ describe('BridgeOrchestratorService', function () {
 
         $this->service->registerAdapter($adapter);
 
-        $result = $this->service->initiateBridge($quote, '0xSender', '0xRecipient');
+        $result = $this->service->initiateBridge($quote->quoteId, '0xSender', '0xRecipient', $userUuid);
 
         expect($result['transaction_id'])->toBe('tx-123');
         expect($result['status'])->toBe(BridgeStatus::INITIATED);
@@ -170,10 +186,14 @@ describe('BridgeOrchestratorService', function () {
             expiresAt: CarbonImmutable::now()->subMinute(),
         );
 
+        // Seed server-side quote cache (Finding #3 requirement)
+        config(['cache.default' => 'array']);
+        Cache::put("bridge_quote:{$expiredQuote->quoteId}", $expiredQuote->toArray(), 60);
+
         $adapter = createMockAdapter(BridgeProvider::DEMO);
         $this->service->registerAdapter($adapter);
 
-        $this->service->initiateBridge($expiredQuote, '0xSender', '0xRecipient');
+        $this->service->initiateBridge($expiredQuote->quoteId, '0xSender', '0xRecipient', 'any-user-uuid');
     })->throws(BridgeTransactionFailedException::class, 'expired');
 
     it('checks bridge transaction status', function () {

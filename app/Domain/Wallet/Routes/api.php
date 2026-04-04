@@ -123,6 +123,9 @@ Route::prefix('v1/wallet')->name('mobile.wallet.')
         Route::get('/state', [MobileWalletController::class, 'state'])
             ->middleware('api.rate_limit:query')
             ->name('state');
+        Route::get('/home', [MobileWalletController::class, 'state'])
+            ->middleware('api.rate_limit:query')
+            ->name('home');
         Route::get('/addresses', [MobileWalletController::class, 'addresses'])
             ->middleware('api.rate_limit:query')
             ->name('addresses');
@@ -155,4 +158,9 @@ Route::prefix('v1/wallet')->name('mobile.wallet.')
             ->name('recovery-shard-backup.retrieve');
         Route::delete('/recovery-shard-backup', [RecoveryShardController::class, 'destroy'])
             ->name('recovery-shard-backup.destroy');
+
+        // Recovery key reconstruction (v7.2.0)
+        Route::post('/recovery/reconstruct', [RecoveryShardController::class, 'reconstruct'])
+            ->middleware('transaction.rate_limit:blockchain')
+            ->name('recovery.reconstruct');
     });

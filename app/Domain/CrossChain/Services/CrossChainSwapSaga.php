@@ -36,12 +36,14 @@ class CrossChainSwapSaga
     public function executeBridge(
         CrossChainSwapQuote $quote,
         string $walletAddress,
+        string $userUuid,
     ): array {
         try {
             $result = $this->bridgeOrchestrator->initiateBridge(
-                $quote->bridgeQuote,
+                $quote->bridgeQuote->quoteId,
                 $walletAddress,
                 $walletAddress,
+                $userUuid,
             );
 
             $this->transactionTracker->recordTransaction(

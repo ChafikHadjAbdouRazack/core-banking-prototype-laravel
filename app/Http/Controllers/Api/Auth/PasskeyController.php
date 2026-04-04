@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Auth;
 
 use App\Domain\Mobile\Exceptions\BiometricBlockedException;
 use App\Domain\Mobile\Models\MobileDevice;
+use App\Domain\Mobile\Services\BiometricJWTService;
 use App\Domain\Mobile\Services\MobileDeviceService;
 use App\Domain\Mobile\Services\PasskeyAuthenticationService;
 use App\Http\Controllers\Controller;
@@ -21,6 +22,7 @@ class PasskeyController extends Controller
     public function __construct(
         private readonly PasskeyAuthenticationService $passkeyService,
         private readonly MobileDeviceService $deviceService,
+        private readonly BiometricJWTService $biometricJWTService,
     ) {
     }
 
@@ -290,7 +292,15 @@ class PasskeyController extends Controller
     )]
     public function authenticate(PasskeyAuthenticateRequest $request): JsonResponse
     {
-        $device = $this->deviceService->findByDeviceId($request->device_id);
+        // Standard WebAuthn: look up device by credential_id (no device_id needed).
+        // Legacy flow: look up by device_id directly.
+        if ($request->device_id) {
+            $device = $this->deviceService->findByDeviceId($request->device_id);
+        } else {
+            $device = MobileDevice::where('passkey_credential_id', $request->credential_id)
+                ->where('passkey_enabled', true)
+                ->first();
+        }
 
         if (! $device) {
             return response()->json([
@@ -331,6 +341,23 @@ class PasskeyController extends Controller
                     'message' => 'Passkey verification failed. Please try again.',
                 ],
             ], 401);
+        }
+
+        // Verify device attestation if provided and enabled
+        if ($request->filled('device_attestation') && config('mobile.attestation.enabled')) {
+            $verified = $this->biometricJWTService->verifyDeviceAttestation(
+                $request->input('device_attestation'),
+                $request->input('device_type', 'android')
+            );
+            if (! $verified) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => [
+                        'code'    => 'ATTESTATION_FAILED',
+                        'message' => 'Device attestation failed.',
+                    ],
+                ], 403);
+            }
         }
 
         return response()->json([

@@ -6,17 +6,25 @@ namespace App\Domain\Ramp\Providers;
 
 use App\Domain\Ramp\Contracts\RampProviderInterface;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class MockRampProvider implements RampProviderInterface
 {
+    public function __construct()
+    {
+        if (app()->environment('production')) {
+            throw new RuntimeException('Mock ramp provider must not be used in production.');
+        }
+    }
+
     public function createSession(array $params): array
     {
         $sessionId = 'mock_' . Str::uuid()->toString();
 
         return [
-            'session_id'    => $sessionId,
-            'redirect_url'  => null,
-            'widget_config' => [
+            'session_id'   => $sessionId,
+            'checkout_url' => null,
+            'metadata'     => [
                 'provider'   => 'mock',
                 'session_id' => $sessionId,
                 'type'       => $params['type'],
@@ -50,9 +58,8 @@ class MockRampProvider implements RampProviderInterface
         ];
     }
 
-    public function getQuote(string $type, string $fiatCurrency, float $fiatAmount, string $cryptoCurrency): array
+    public function getQuotes(string $type, string $fiatCurrency, float $fiatAmount, string $cryptoCurrency): array
     {
-        // Mock exchange rates
         $rates = [
             'USDC' => 1.0,
             'USDT' => 1.0,
@@ -61,22 +68,36 @@ class MockRampProvider implements RampProviderInterface
         ];
 
         $rate = $rates[$cryptoCurrency] ?? 1.0;
-        $fee = $fiatAmount * 0.015; // 1.5% fee
-        $netAmount = $fiatAmount - $fee;
-        $cryptoAmount = $netAmount * $rate;
 
         return [
-            'fiat_amount'   => $fiatAmount,
-            'crypto_amount' => round($cryptoAmount, 8),
-            'exchange_rate' => $rate,
-            'fee'           => round($fee, 2),
-            'fee_currency'  => $fiatCurrency,
+            [
+                'provider_name'   => 'MockProvider A',
+                'quote_id'        => 'mock_quote_a_' . Str::random(8),
+                'fiat_amount'     => $fiatAmount,
+                'crypto_amount'   => round(($fiatAmount - $fiatAmount * 0.015) * $rate, 8),
+                'exchange_rate'   => $rate,
+                'fee'             => round($fiatAmount * 0.015, 2),
+                'network_fee'     => 0.0,
+                'fee_currency'    => $fiatCurrency,
+                'payment_methods' => ['credit_card', 'bank_transfer'],
+            ],
+            [
+                'provider_name'   => 'MockProvider B',
+                'quote_id'        => 'mock_quote_b_' . Str::random(8),
+                'fiat_amount'     => $fiatAmount,
+                'crypto_amount'   => round(($fiatAmount - $fiatAmount * 0.025) * $rate, 8),
+                'exchange_rate'   => $rate,
+                'fee'             => round($fiatAmount * 0.020, 2),
+                'network_fee'     => round($fiatAmount * 0.005, 2),
+                'fee_currency'    => $fiatCurrency,
+                'payment_methods' => ['credit_card'],
+            ],
         ];
     }
 
     public function getWebhookValidator(): callable
     {
-        return fn (string $payload, string $signature): bool => true;
+        return fn (string $payload, string $signature): bool => $signature !== '';
     }
 
     public function getName(): string

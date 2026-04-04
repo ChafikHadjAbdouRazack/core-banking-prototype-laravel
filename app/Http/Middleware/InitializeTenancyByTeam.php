@@ -47,13 +47,31 @@ class InitializeTenancyByTeam
 
     /**
      * Whether to allow requests without tenant context (default: false for security).
+     *
+     * Private to prevent external mutation — use setAllowWithoutTenant() instead.
      */
-    public static bool $allowWithoutTenant = false;
+    private static bool $allowWithoutTenant = false;
 
     /**
      * Rate limit: max attempts per minute for tenant lookups.
      */
     public static int $rateLimitAttempts = 60;
+
+    /**
+     * Controlled setter for the allowWithoutTenant flag.
+     *
+     * Logs a warning whenever tenant enforcement is relaxed so the change is
+     * always visible in the audit trail.
+     */
+    public static function setAllowWithoutTenant(bool $allow): void
+    {
+        if ($allow) {
+            Log::warning('Tenant enforcement temporarily disabled', [
+                'caller' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1] ?? [],
+            ]);
+        }
+        self::$allowWithoutTenant = $allow;
+    }
 
     public function __construct(
         protected Tenancy $tenancy,
@@ -141,7 +159,7 @@ class InitializeTenancyByTeam
             }
 
             // Default behavior: return 403 unless explicitly allowed
-            if (! static::$allowWithoutTenant) {
+            if (! self::$allowWithoutTenant) {
                 return $this->tenantRequiredResponse($request);
             }
         }

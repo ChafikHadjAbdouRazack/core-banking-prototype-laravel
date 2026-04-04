@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Domain\Ramp\Clients\OnramperClient;
 use App\Domain\Ramp\Contracts\RampProviderInterface;
 use App\Domain\Ramp\Providers\MockRampProvider;
+use App\Domain\Ramp\Providers\OnramperProvider;
 use App\Domain\Ramp\Services\RampService;
 use Illuminate\Support\ServiceProvider;
 
@@ -18,11 +20,16 @@ class RampServiceProvider extends ServiceProvider
             'ramp'
         );
 
-        $this->app->bind(RampProviderInterface::class, function () {
+        $this->app->singleton(OnramperClient::class, function () {
+            return new OnramperClient();
+        });
+
+        $this->app->bind(RampProviderInterface::class, function ($app) {
             $provider = config('ramp.default_provider', 'mock');
 
             return match ($provider) {
-                default => new MockRampProvider(),
+                'onramper' => new OnramperProvider($app->make(OnramperClient::class)),
+                default    => new MockRampProvider(),
             };
         });
 

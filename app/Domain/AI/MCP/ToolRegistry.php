@@ -39,7 +39,7 @@ class ToolRegistry
         }
         $this->categories->get($category)->push($tool);
 
-        Log::info('MCP Tool registered', [
+        Log::debug('MCP Tool registered', [
             'name'        => $name,
             'category'    => $category,
             'description' => $tool->getDescription(),

@@ -49,8 +49,7 @@ describe('MobileTrustCertController current', function (): void {
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
-            ->and($data['data']['trust_level'])->toBe('unknown')
-            ->and($data['data']['certificate'])->toBeNull();
+            ->and($data['data'])->toBeNull();
     });
 
     it('returns certificate info when user has certificate', function (): void {
@@ -95,11 +94,11 @@ describe('MobileTrustCertController requirements', function (): void {
             ->and(count($data['data']))->toBe(5);
 
         $levels = array_column($data['data'], 'level');
-        expect($levels)->toContain('unknown')
-            ->and($levels)->toContain('basic')
-            ->and($levels)->toContain('verified')
-            ->and($levels)->toContain('high')
-            ->and($levels)->toContain('ultimate');
+        expect($levels)->toContain(0)
+            ->and($levels)->toContain(1)
+            ->and($levels)->toContain(2)
+            ->and($levels)->toContain(3)
+            ->and($levels)->toContain(4);
     });
 
     it('includes limits for each trust level', function (): void {
@@ -108,9 +107,10 @@ describe('MobileTrustCertController requirements', function (): void {
         $response = $controller->requirements();
         $data = $response->getData(true);
 
-        $verified = collect($data['data'])->firstWhere('level', 'verified');
-        expect($verified['limits'])->toHaveKeys(['daily', 'monthly', 'single'])
-            ->and($verified['requirements'])->toHaveKeys(['email_verified', 'identity_verified']);
+        $verified = collect($data['data'])->firstWhere('level', 2);
+        expect($verified)->toHaveKeys(['dailyLimit', 'monthlyLimit', 'documents'])
+            ->and($verified['requirements'])->toBeArray()
+            ->and($verified['documents'])->toContain('id_front');
     });
 });
 
@@ -122,8 +122,8 @@ describe('MobileTrustCertController requirementsByLevel', function (): void {
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
-            ->and($data['data']['level'])->toBe('high')
-            ->and($data['data']['requirements'])->toHaveKey('kyc_completed');
+            ->and($data['data']['level'])->toBe(3)
+            ->and($data['data']['documents'])->toContain('source_of_funds');
     });
 
     it('returns 404 for invalid trust level', function (): void {
@@ -141,8 +141,8 @@ describe('MobileTrustCertController requirementsByLevel', function (): void {
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
-            ->and($data['data']['level'])->toBe('basic')
-            ->and($data['data']['numeric_value'])->toBe(1);
+            ->and($data['data']['level'])->toBe(1)
+            ->and($data['data']['name'])->toBe('Basic');
     });
 
     it('maps all numeric levels correctly', function (): void {
@@ -155,7 +155,7 @@ describe('MobileTrustCertController requirementsByLevel', function (): void {
             $data = $response->getData(true);
 
             expect($data['success'])->toBeTrue()
-                ->and($data['data']['level'])->toBe($name);
+                ->and($data['data']['level'])->toBe((int) $numeric);
         }
     });
 

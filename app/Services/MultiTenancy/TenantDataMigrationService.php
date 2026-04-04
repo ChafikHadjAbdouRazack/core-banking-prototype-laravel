@@ -27,6 +27,27 @@ use stdClass;
 class TenantDataMigrationService
 {
     /**
+     * Whitelist of allowed table names for migration.
+     *
+     * Only tables in this list may be registered or migrated,
+     * preventing SQL injection or accidental migration of sensitive tables.
+     *
+     * @var array<int, string>
+     */
+    protected array $allowedTables = [
+        'accounts',
+        'transactions',
+        'transfers',
+        'balances',
+        'ledger_entries',
+        'payment_methods',
+        'invoices',
+        'invoice_items',
+        'webhooks',
+        'notifications',
+    ];
+
+    /**
      * Tables that should be migrated to tenant databases.
      *
      * @var array<string, array{source: string, target: string, key: string, team_column: string|null}>
@@ -71,12 +92,55 @@ class TenantDataMigrationService
      * Register additional tables for migration.
      *
      * @param array{source: string, target: string, key: string, team_column: string|null} $config
+     *
+     * @throws RuntimeException If the table name is not in the whitelist
      */
     public function registerTable(string $name, array $config): self
     {
+        $this->validateTableName($name);
+        $this->validateTableName($config['source']);
+        $this->validateTableName($config['target']);
+
         $this->migratableTables[$name] = $config;
 
         return $this;
+    }
+
+    /**
+     * Get the whitelist of allowed table names.
+     *
+     * @return array<int, string>
+     */
+    public function getAllowedTables(): array
+    {
+        return $this->allowedTables;
+    }
+
+    /**
+     * Add a table name to the whitelist.
+     */
+    public function addAllowedTable(string $tableName): self
+    {
+        if (! in_array($tableName, $this->allowedTables, true)) {
+            $this->allowedTables[] = $tableName;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Validate that a table name is in the allowed whitelist.
+     *
+     * @throws RuntimeException If the table name is not allowed
+     */
+    protected function validateTableName(string $tableName): void
+    {
+        if (! in_array($tableName, $this->allowedTables, true)) {
+            throw new RuntimeException(
+                "Table '{$tableName}' is not in the allowed migration whitelist. "
+                . 'Allowed tables: ' . implode(', ', $this->allowedTables)
+            );
+        }
     }
 
     /**
@@ -113,6 +177,13 @@ class TenantDataMigrationService
         foreach ($tablesToMigrate as $tableName) {
             if (! isset($this->migratableTables[$tableName])) {
                 $result['errors'][] = "Unknown table: {$tableName}";
+
+                continue;
+            }
+
+            // Validate table name against whitelist
+            if (! in_array($tableName, $this->allowedTables, true)) {
+                $result['errors'][] = "Table not in allowed whitelist: {$tableName}";
 
                 continue;
             }

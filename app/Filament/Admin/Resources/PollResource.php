@@ -22,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class PollResource extends Resource
 {
+    use \App\Filament\Admin\Traits\RespectsModuleVisibility;
+
     protected static ?string $model = Poll::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';

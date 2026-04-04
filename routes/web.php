@@ -62,6 +62,8 @@ if (config('brand.show_promo_pages')) {
         return view('about');
     })->name('about');
 
+    Route::get('/changelog', fn () => view('changelog'))->name('changelog');
+
     Route::get('/platform', function () {
         return view('platform.index');
     })->name('platform');
@@ -87,8 +89,10 @@ if (config('brand.show_promo_pages')) {
         return view('features.index');
     })->name('features');
 
+    Route::get('/features/gcu', fn () => redirect()->route('gcu', [], 301))->name('features.gcu');
+
     Route::get('/features/{feature}', function ($feature) {
-        $validFeatures = ['gcu', 'multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol', 'plugin-marketplace'];
+        $validFeatures = ['multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol', 'visa-cli', 'virtuals-protocol', 'plugin-marketplace', 'machine-payments', 'agent-protocol', 'zelta-cli', 'iso20022', 'open-banking', 'payment-rails', 'interledger', 'ledger', 'microfinance', 'developer-experience'];
 
         if (! in_array($feature, $validFeatures)) {
             abort(404);
@@ -126,12 +130,18 @@ if (config('brand.show_promo_pages')) {
         return view('compliance');
     })->name('compliance');
 
+    // Plugin Marketplace (public browsing)
+    Route::get('/marketplace', [App\Http\Controllers\PluginMarketplaceWebController::class, 'index'])->name('marketplace.index');
+    Route::get('/marketplace/{vendor}/{name}', [App\Http\Controllers\PluginMarketplaceWebController::class, 'show'])
+        ->where(['vendor' => '[a-zA-Z0-9_-]+', 'name' => '[a-zA-Z0-9_-]+'])
+        ->name('marketplace.show');
+
     Route::get('/developers', function () {
         return view('developers.index');
     })->name('developers');
 
     Route::get('/developers/{section}', function ($section) {
-        $validSections = ['api-docs', 'sdks', 'examples', 'webhooks', 'postman'];
+        $validSections = ['api-docs', 'sdks', 'examples', 'webhooks', 'postman', 'plugins', 'graphql', 'event-streaming', 'mcp-tools', 'sandbox'];
 
         if (! in_array($section, $validSections)) {
             abort(404);
@@ -219,7 +229,15 @@ if (config('brand.show_promo_pages')) {
     Route::post('/blog/subscribe', $redirectHome)->name('blog.subscribe');
     Route::post('/support/contact', $redirectHome)->name('support.contact.submit');
     Route::post('/financial-institutions/submit', $redirectHome)->name('financial-institutions.submit');
+    Route::get('/marketplace', $redirectHome)->name('marketplace.index');
+    Route::get('/marketplace/{vendor}/{name}', $redirectHome)->where(['vendor' => '[a-zA-Z0-9_-]+', 'name' => '[a-zA-Z0-9_-]+'])->name('marketplace.show');
 }
+
+// User invitation acceptance (public — rate-limited to prevent token brute-force)
+Route::middleware('throttle:5,1')->group(function () {
+    Route::get('/invitation/accept', [App\Http\Controllers\InvitationController::class, 'show'])->name('invitation.show');
+    Route::post('/invitation/accept', [App\Http\Controllers\InvitationController::class, 'accept'])->name('invitation.accept');
+});
 
 Route::get('/legal/terms', function () {
     return view('legal.terms');
@@ -232,6 +250,43 @@ Route::get('/legal/privacy', function () {
 Route::get('/legal/cookies', function () {
     return view('legal.cookies');
 })->name('legal.cookies');
+
+// Apple App Site Association — enables passkey AutoFill + Universal Links on iOS 16+
+Route::get('/.well-known/apple-app-site-association', function () {
+    return response()->json([
+        'webcredentials' => [
+            'apps' => [config('mobile.apple_team_id', 'REPLACE_TEAM_ID') . '.com.zelta.wallet'],
+        ],
+        'applinks' => [
+            'apps'    => [],
+            'details' => [
+                [
+                    'appID' => config('mobile.apple_team_id', 'REPLACE_TEAM_ID') . '.com.zelta.wallet',
+                    'paths' => ['/pay/*', '/verify/*'],
+                ],
+            ],
+        ],
+    ], 200, ['Content-Type' => 'application/json']);
+})->name('well-known.apple-app-site-association');
+
+// Android Digital Asset Links — enables passkey + App Links on Android 9+
+Route::get('/.well-known/assetlinks.json', function () {
+    return response()->json([
+        [
+            'relation' => [
+                'delegate_permission/common.handle_all_urls',
+                'delegate_permission/common.get_login_creds',
+            ],
+            'target' => [
+                'namespace'                => 'android_app',
+                'package_name'             => 'com.zelta.wallet',
+                'sha256_cert_fingerprints' => array_filter([
+                    config('mobile.android_sha256_fingerprint', ''),
+                ]),
+            ],
+        ],
+    ], 200, ['Content-Type' => 'application/json']);
+})->name('well-known.assetlinks');
 
 Route::get('/status', [StatusController::class, 'index'])->name('status');
 
@@ -785,6 +840,18 @@ Route::group([
 
     Route::get('/docs/asset/{asset}', '\L5Swagger\Http\Controllers\SwaggerAssetController@index')
         ->name('l5-swagger.default.asset');
+});
+
+// ---------------------------------------------------------------------------
+// Foodo Insights — Restaurant Analytics Dashboard (demo / prototype)
+// ---------------------------------------------------------------------------
+Route::prefix('foodo')->group(function () {
+    Route::get('/', [App\Http\Controllers\Foodo\FoodoDashboardController::class, 'index'])->name('foodo.dashboard');
+    Route::get('/chat', [App\Http\Controllers\Foodo\FoodoChatController::class, 'index'])->name('foodo.chat');
+    Route::post('/chat/message', [App\Http\Controllers\Foodo\FoodoChatController::class, 'send'])->name('foodo.chat.send');
+    Route::get('/dish/demo', [App\Http\Controllers\Foodo\FoodoDishAnalysisController::class, 'demo'])->name('foodo.dish.demo');
+    Route::get('/dish/{id}', [App\Http\Controllers\Foodo\FoodoDishAnalysisController::class, 'show'])->name('foodo.dish');
+    Route::post('/dish/{id}/verify', [App\Http\Controllers\Foodo\FoodoDishAnalysisController::class, 'verify'])->name('foodo.dish.verify');
 });
 
 // SEO routes - Sitemap and Robots.txt
