@@ -12,7 +12,7 @@ use Illuminate\Console\Command;
 /**
  * Backfill Solana addresses for all existing users.
  *
- * Creates BlockchainAddress records so that helius:sync can register
+ * Creates BlockchainAddress records so that solana:sync can register
  * them with the Helius webhook. Safe to run multiple times — uses
  * firstOrCreate to skip already-registered addresses.
  */
@@ -81,7 +81,7 @@ class SolanaBackfillCommand extends Command
         });
 
         $this->info("Done. Created: {$created}, Already existed: {$skipped}.");
-        $this->info('Run `php artisan helius:sync` to push addresses to Helius webhook.');
+        $this->info('Run `php artisan solana:sync` to push addresses to Helius webhook.');
 
         return self::SUCCESS;
     }

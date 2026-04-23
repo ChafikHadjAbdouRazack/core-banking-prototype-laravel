@@ -25,59 +25,90 @@ class VertexSmsDlrController extends Controller
         path: '/api/v1/webhooks/vertexsms/dlr',
         operationId: 'vertexSmsDlr',
         summary: 'VertexSMS delivery report webhook',
-        description: 'Receives SMS delivery status updates from VertexSMS. Verifies HMAC-SHA256 signature from X-VertexSMS-Signature header.',
+        description: 'Receives SMS delivery status updates from VertexSMS. Accepts either a URL-token (`?t=...`) or an HMAC-SHA256 signature (`X-VertexSMS-Signature` header) for authentication.',
         tags: ['SMS Webhooks'],
     )]
     #[OA\RequestBody(
         required: true,
         content: new OA\JsonContent(
-            required: ['message_id', 'status'],
+            required: ['id', 'status'],
             properties: [
-                new OA\Property(property: 'message_id', type: 'string'),
-                new OA\Property(property: 'status', type: 'string', enum: ['sent', 'delivered', 'failed']),
-                new OA\Property(property: 'delivered_at', type: 'string', nullable: true),
+                new OA\Property(property: 'id', type: 'string', description: 'VertexSMS message ID (as returned from POST /sms)'),
+                new OA\Property(property: 'status', type: 'integer', enum: [1, 2, 3, 16], description: '1=delivered, 2=undelivered, 3=Viber seen, 16=expired'),
+                new OA\Property(property: 'error', type: 'integer', description: '0 when delivered, otherwise Vertex error code'),
+                new OA\Property(property: 'mcc', type: 'string', nullable: true, description: 'Mobile Country Code'),
+                new OA\Property(property: 'mnc', type: 'string', nullable: true, description: 'Mobile Network Code'),
             ],
         ),
     )]
     #[OA\Response(response: 200, description: 'Delivery report accepted')]
-    #[OA\Response(response: 401, description: 'Invalid webhook signature')]
-    #[OA\Response(response: 422, description: 'Missing message_id')]
+    #[OA\Response(response: 401, description: 'Invalid webhook signature or URL token')]
+    #[OA\Response(response: 422, description: 'Missing or invalid message id')]
     public function handle(Request $request): JsonResponse
     {
-        // Verify signature
-        $signature = $request->header('X-VertexSMS-Signature', '');
-
-        if (! is_string($signature)) {
-            $signature = '';
-        }
-
-        if (! $this->client->verifyWebhookSignature($request->getContent(), $signature)) {
-            Log::warning('VertexSMS DLR: Invalid webhook signature', [
-                'ip' => $request->ip(),
+        if (! $this->authenticate($request)) {
+            Log::warning('VertexSMS DLR: Authentication failed', [
+                'ip'            => $request->ip(),
+                'has_token'     => $request->query('t') !== null,
+                'has_signature' => $request->headers->has('X-VertexSMS-Signature'),
             ]);
 
-            return response()->json(['error' => 'Invalid signature'], 401);
+            return response()->json(['error' => 'Unauthenticated webhook'], 401);
         }
 
-        $messageId = (string) $request->input('message_id', '');
-        $status = (string) $request->input('status', '');
-        $deliveredAt = $request->input('delivered_at');
+        $messageId = (string) ($request->input('id') ?? $request->input('message_id', ''));
 
         if ($messageId === '') {
-            return response()->json(['error' => 'Missing message_id'], 422);
+            return response()->json(['error' => 'Missing id'], 422);
         }
+
+        $rawStatus = $request->input('status');
+        $errorCode = $request->input('error');
+        $mcc = $request->input('mcc');
+        $mnc = $request->input('mnc');
+
+        $deliveredAt = $request->input('delivered_at');
 
         Log::info('VertexSMS DLR: Received', [
             'message_id' => $messageId,
-            'status'     => $status,
+            'raw_status' => $rawStatus,
+            'error'      => $errorCode,
         ]);
 
         $this->smsService->handleDeliveryReport([
             'message_id'   => $messageId,
-            'status'       => $status,
-            'delivered_at' => is_string($deliveredAt) ? $deliveredAt : null,
+            'raw_status'   => $rawStatus,
+            'delivered_at' => is_string($deliveredAt) && $deliveredAt !== '' ? $deliveredAt : null,
+            'error_code'   => is_numeric($errorCode) ? (int) $errorCode : null,
+            'mcc'          => is_string($mcc) && $mcc !== '' ? $mcc : null,
+            'mnc'          => is_string($mnc) && $mnc !== '' ? $mnc : null,
         ]);
 
         return response()->json(['received' => true]);
+    }
+
+    /**
+     * Accept either a valid URL token (`?t=<token>`) OR a valid HMAC
+     * `X-VertexSMS-Signature` header.
+     */
+    private function authenticate(Request $request): bool
+    {
+        $providedToken = (string) ($request->query('t') ?? '');
+        $tokenResult = $this->client->verifyDlrUrlToken($providedToken);
+
+        if ($tokenResult === true) {
+            return true;
+        }
+
+        // Token configured but mismatched — do NOT fall through to HMAC in
+        // production; that would defeat the point of having the token.
+        if ($tokenResult === false && app()->environment('production')) {
+            return false;
+        }
+
+        return $this->client->verifyWebhookSignature(
+            $request->getContent(),
+            (string) $request->header('X-VertexSMS-Signature', ''),
+        );
     }
 }

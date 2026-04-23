@@ -2,20 +2,16 @@
 
 Manage payments, SMS, wallets, and API monetization from the terminal. Built for humans and AI agents.
 
+> **Mirror repo notice** — if you're viewing this at `github.com/FinAegis/cli`, that repo is a read-only split of `packages/zelta-cli/` from the [FinAegis core banking monorepo](https://github.com/FinAegis/core-banking-prototype-laravel). Please file issues and PRs against the monorepo.
+
 ## Install
 
 ```bash
-# curl (recommended)
-curl -fsSL https://cli.zelta.app/install.sh | bash
-
-# npm
-npm install -g @zelta/cli
-
-# Homebrew
-brew install zelta-app/tap/zelta
+# npm (recommended, requires PHP 8.4+ on PATH)
+npm install -g @finaegis/cli
 
 # Composer
-composer global require zelta/cli
+composer global require finaegis/cli
 ```
 
 ## Quick Start
@@ -52,9 +48,9 @@ zelta pay:stats --json --period day | jq -e '.failed == 0'
 
 ## Documentation
 
-- [Zelta CLI Feature Page](https://zelta.app/features/zelta-cli)
-- [Developer Docs](https://zelta.app/developers)
-- [x402 Protocol](https://zelta.app/features/x402-protocol)
+- [Zelta CLI Feature Page](https://finaegis.org/features/zelta-cli)
+- [Developer Docs](https://finaegis.org/developers)
+- [x402 Protocol](https://finaegis.org/features/x402-protocol)
 
 ## License
 

@@ -5,6 +5,416 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.10.10] - 2026-04-20
+
+Post-release review of v7.10.8 surfaced dead code, supply-chain gaps, and wasted workflow steps that `continue-on-error: true` had been hiding. This release fixes them in a single sweep. Multi-agent review across code reuse, quality, efficiency, and packaging lenses.
+
+### Removed
+- **Homebrew formula** — `packages/zelta-cli/Formula/zelta.rb` had `sha256 "PLACEHOLDER_SHA256"` and pointed to a tap repo that never existed. `brew install finaegis/tap/zelta` could not work. Removed formula + stub `update-homebrew` job in `cli-release.yml` + the README install line.
+- **Shell installer** — `packages/zelta-cli/install.sh` downloaded `zelta-${OS}-${ARCH}` binaries the pipeline has never produced (only `zelta.phar`). `curl | bash` would 404. Canonical install is `npm install -g @finaegis/cli`.
+
+### Changed
+- `packages/zelta-cli/composer.json` — dropped the `type: path` repository override and `minimum-stability: dev`. `finaegis/payment-sdk` is now on Packagist with a stable tag (v1.0.1), so `^1.0` resolves cleanly. Consumers of the Packagist mirror no longer see a broken path-repo entry.
+- `sdks/javascript/package.json` — bumped to 1.0.3. Fixed stale repo URL (pointed at nonexistent `finaegis-js`), added `homepage`, `bugs`, `directory` subpath, and `publishConfig.provenance: true`.
+
+### Fixed (supply chain + correctness)
+- `cli-release.yml` — pinned Box to 4.7.0 with SHA-256 verification (was `releases/latest/download/box.phar`, mutable attack surface)
+- `monorepo-split.yml` — pinned `splitsh/lite` v1.0.1 with SHA-256 verification; `persist-credentials: false` on `actions/checkout` replaces the inline `-c credential.helper=` workaround from #941 and removes the debug `echo "length=${#PAT}"` line
+- `cli-release.yml` + `sdk-javascript-release.yml` — `npm publish --provenance` for sigstore attestation (requires `id-token: write`)
+- `@finaegis/cli` tarball — now ships LICENSE; `bin/zelta` preflight-checks for `php` on PATH with a friendly error; package.json declares `homepage`, `bugs`, `engines`, `os`, and a `directory` subpath within the monorepo
+- `sdks/javascript/LICENSE` — was listed in `files` whitelist but the file didn't exist; added
+
+### Improved (efficiency + polish)
+- `sdk-release.yml` + `sdk-php-release.yml` — these workflows only POST to Packagist. Dropped the wasted PHP setup + `composer install` steps (~45s per release). Curl now uses `-fsS` so HTTP failures surface.
+- `sdk-javascript-release.yml` — added `cache: 'npm'` + proper `npm ci` guard
+- `monorepo-split.yml` — added `paths:` filter so main-push splits only fire on actual distribution-subdir changes
+- Three mirror subdir READMEs — added "read-only mirror" notice so developers landing at `github.com/FinAegis/{payment-sdk,cli,php-sdk}` from Packagist know where to file issues
+
+### Deferred (tracked for later)
+- SHA-pinning every third-party GitHub Action
+- PyPI Trusted Publisher (OIDC) migration
+- `sdks/python/setup.py` → `pyproject.toml`
+- Collapsing `monorepo-split.yml` 3-way matrix into one job
+- Extracting a `notify-packagist` composite action
+
+---
+
+## [7.10.9] - 2026-04-19
+
+### Changed
+- **Website + docs sync for v7.10.8** — Version badges, developer-portal "Released" banner, FAQ, changelog page, VERSION_ROADMAP, and per-feature docs now reference v7.10.8 and the newly public registry install commands
+
+### Notes
+- Pure documentation release — no runtime, API, or dependency changes
+
+---
+
+## [7.10.8] - 2026-04-19
+
+**Public SDK distribution.** Every SDK and the CLI now install from public registries. Prior `@zelta/*` references were aspirational — the npm `@zelta` scope was owned by a third party, so nothing actually shipped. This release rebuilds distribution under the `@finaegis` scope we control and wires up the Symfony/Laravel-style split-mirror pattern so Packagist can read the three PHP packages out of the monorepo.
+
+### Added
+- **Public registry packages (first real releases):**
+  - `npm install -g @finaegis/cli` — PHAR bundled, requires PHP 8.4+
+  - `npm install @finaegis/sdk` — JavaScript/TypeScript SDK
+  - `pip install finaegis` — Python SDK
+  - `composer require finaegis/payment-sdk` — x402 + MPP payment SDK (PHP)
+  - `composer require finaegis/php-sdk` — banking API SDK (PHP)
+- `.github/workflows/monorepo-split.yml` — splitsh/lite-based auto-mirror of `packages/zelta-{sdk,cli}/` and `sdks/php/` into dedicated Packagist-readable repos on every `main` push and release tag
+- `.github/workflows/sdk-{javascript,python,php}-release.yml` — tag-triggered registry publishing for each SDK
+- Mirror repos created: `github.com/FinAegis/payment-sdk`, `github.com/FinAegis/cli`, `github.com/FinAegis/php-sdk`
+
+### Changed
+- **npm scope migration**: `@zelta/cli` → `@finaegis/cli`, `@zelta/sdk` → `@finaegis/sdk` (third-party owns `@zelta` on npm). Brand name "Zelta" unchanged in UI
+- **Packagist vendor migration**: `zelta/payment-sdk` → `finaegis/payment-sdk`, `zelta/cli` → `finaegis/cli`
+- Developer portal (examples, sdks pages) + partner docs now show real public install commands instead of monorepo path dependencies
+- `sdk-release.yml` / `sdk-php-release.yml` Packagist notifications target the split-mirror URLs
+
+### Fixed
+- `cli-release.yml` — replaced decade-old Box 2 installer with direct PHAR download from `box-project/box` (#937)
+- `cli-release.yml` — PHAR bundles `vendor/` (was only `app/` + `config/`; Symfony Console missing at runtime) (#939)
+- `cli-release.yml` — npm `version` field is valid semver (was raw tag name like `cli-v0.2.1`) (#936)
+- `cli-release.yml` — PHAR artifact is now uploaded from `build-phar` and downloaded in `publish-npm` so the published tarball actually contains the binary (#936)
+- `monorepo-split.yml` — pinned `splitsh/lite` to v1.0.1 (v2.0.0 shipped no binaries) (#940)
+- `monorepo-split.yml` — bypassed `actions/checkout`'s credential helper so URL-embedded PAT works for cross-repo push (#941)
+- `sdks/javascript/src/types.ts` — `PaginatedResponse<T>.links` no longer violates parent `ApiResponse<T[]>.links` type (#936)
+- `packages/zelta-sdk/composer.json` — dropped hardcoded `version: 1.0.0` field; Packagist reads from git tags (#942)
+- `packages/zelta-cli/composer.json` — `minimum-stability: dev` + `prefer-stable: true` so the path-repo `finaegis/payment-sdk` resolves when no stable tag is indexed yet (#943)
+
+### Notes
+- Zero breaking changes to library APIs. PSR-4 namespaces (`Zelta\\`, `FinAegis\\`), CLI binary name (`zelta`), and user-facing brand ("Zelta CLI", "Zelta SDK") are unchanged
+- New repo secret required for split workflow: `MIRROR_PAT` — fine-grained PAT with `Contents: write` on the three mirror repos
+- `NPM_TOKEN` must be an npm **Automation** token (classic tokens 403 under 2FA)
+
+---
+
+## [7.10.7] - 2026-04-15
+
+### Changed
+- **Safe-Major Composer Trio** — Upgraded `laravel/tinker` v2→v3, `resend/resend-php` v0→v1, `darkaonline/l5-swagger` v10→v11 (PRs #922–#923)
+- swagger-php v5 strictness fix: moved misattached `#[OA\Get]` annotation on `X402StatusController::supported()`
+
+### Fixed
+- Pre-existing OpenAPI duplicate `@OA\Response(response: 200)` on `wellKnown()` surfaced by swagger-php v5
+
+---
+
+## [7.10.6] - 2026-04-14
+
+### Changed
+- **Composer Dependency Sweep** — 230 packages upgraded within existing semver ranges (PR #919)
+- Notable: `laravel/framework` 12.55→12.56, `phpstan` 2.1.42→2.1.47, `php-cs-fixer` 3.94→3.95, `aws/aws-sdk-php` 3.373→3.379
+- php-cs-fixer 3.95.1 repo-wide reformat (65 files, whitespace-only)
+
+### Fixed
+- 6 PHPStan errors surfaced by Larastan 3.9.5 rule tightening (dead null coalesces, Collection invariance, `toThrow()` typing)
+
+---
+
+## [7.10.5] - 2026-04-14
+
+### Changed
+- **npm Dependency Sweep** — Semver-safe `npm update` + lockfile dedup (~500 lines removed) (PR #918)
+- Notable: `autoprefixer` 10.4→10.5, `postcss` 8.5.8→8.5.9, `@ledgerhq/hw-transport-webusb` 6.32→6.33
+
+### Fixed
+- Cleared remaining moderate npm audit advisory (`follow-redirects` transitive dedup)
+
+---
+
+## [7.10.4] - 2026-04-14
+
+### Fixed
+- **Frontend Security Patch** — Bumped `axios` ^1.13→^1.15 closing 5 critical SSRF advisories (GHSA-3p68-rc4w-qgx5) (PR #916)
+- Bumped `vite` ^6.4.1→^6.4.2 closing 1 high path traversal advisory
+- Both packages are dev-only; no runtime code changes
+
+---
+
+## [7.10.3] - 2026-04-14
+
+### Fixed
+- **Onboarding Welcome Modal Fix** — Removed broken `startTour()` stub that threw `TypeError` on every new registration (PR #914)
+- Stripped dead "Take Tour" header button and `startOnboarding()` `.catch` fallback
+
+---
+
+## [7.10.2] - 2026-04-13
+
+### Fixed
+- **Deployment Pipeline Fix** — First deployable release since v7.10.0 (PR #905)
+- Deploy workflow OOM: unit tests now run in batched PHP processes via `bin/pest-batch`
+- `BackpressureHandlerTest` isolation: use array cache driver in pre-deployment validation
+- `.env.example` / `.env.zelta.example` dotenv parse errors (unquoted whitespace values)
+
+---
+
+## [7.10.1] - 2026-04-13
+
+### Added
+- **Stripe Bridge Ramp** — Working Stripe Crypto Onramp integration replacing scaffolding from v7.10.0 (PR #903)
+- Platform-generic `RampProviderInterface` with `normalizeWebhookPayload()` and signature validation
+- Lazy `RampProviderRegistry` with factory closures
+- Parameterized provider-contract test suite (6 tests per provider)
+- Non-custody regression test (zero ledger/transaction row growth on ramp webhook)
+
+### Fixed
+- Stripe Crypto Onramp signature verification (`t=<ts>,v1=<hmac>` parsing with HMAC-SHA256)
+- Race-safe webhook processing (`DB::transaction()` + `lockForUpdate()` + terminal-state idempotency)
+- Real session status fetch (was returning hardcoded `pending`)
+- Provider-aware capability validation (BTC through Stripe returns 422 naming the active provider)
+
+### Removed
+- Legacy `StripeBridgeWebhookController` and its 9 dead tests
+
+---
+
+## [7.10.0] - 2026-04-08
+
+### Added
+- **Webhook Architecture Refactor** — Per-user DB-stored webhook endpoints with encrypted signing keys (PR #902)
+- `AlchemyWebhookManager`: auto-provisions per-user Alchemy webhooks with 100K address sharding
+- `SmartAccountObserver`: auto-registers EVM addresses on SmartAccount creation
+- Async webhook processing via `ProcessAlchemyWebhookJob` and `ProcessHeliusWebhookJob`
+- `evm:sync-webhooks` command for bulk EVM address sync
+- **Card Pre-Order Waitlist** — POST join (race-safe with `lockForUpdate`) + GET status
+- **Paid KYC Verification** — 3 payment methods (wallet deduction, Stripe card, IAP) with `VerificationPayment` audit table
+- `RequireKycVerification` middleware blocking Level 0 users from financial endpoints
+- **Stripe Bridge Ramp** — Replaces Onramper for fiat on/off-ramp
+
+### Changed
+- Provider separation: Alchemy handles EVM only, Helius handles Solana only
+- Unique `(tx_hash, chain)` constraint, Cache-based per-tx dedup, spam filtering, reorg detection
+- All financial amounts in Ramp domain converted to `bcmath`
+- `stripe_client_secret` encrypted at rest via Laravel `encrypted` cast
+
+---
+
+## [7.9.0] - 2026-04-04
+
+### Added
+- **Solana Wallet Integration** — Balances wired to `/wallet/balances` and `/wallet/state` endpoints
+- Helius webhook stores Solana transactions in activity feed
+- FCM push notifications for Solana transaction events
+- Alchemy Solana RPC migration (`AlchemyWebhookSyncService` for Solana address management)
+- `solana:sync` command with `--provider` flag (replaces `helius:sync`)
+- Pre-warm balance cache, transaction backfill command, `/wallet/home` route
+
+### Changed
+- Extracted `HeliusTransactionProcessor` for cleaner webhook handling
+- Extracted shared Solana constants (`SolanaTokens`, `SolanaCacheKeys`)
+- SEO overhaul across all public-facing pages (meta descriptions, branding, schema.org)
+
+### Fixed
+- 181 pre-existing PHPStan Level 8 errors resolved
+- RFC 4122 UUID generation for MariaDB compatibility
+- Duplicate processing prevention per address in Helius webhook
+- Helius API key restored as query param (their API requires it)
+
+---
+
+## [7.8.4] - 2026-04-01
+
+### Added
+- **GoPlus Address Screening** — Authenticated mode with `app_key`/`app_secret` for on-chain risk scoring
+- Multi-layer address screening: OFAC SDN list + GoPlus API for Solana and EVM addresses
+
+### Fixed
+- Missing schema.org markup and breadcrumbs on subproduct pages
+- Shared layout cleanup: broken social links, branding, redundant config calls
+- Code example fixes: double `/api/api/` URLs, `<?php` HTML escaping, env var names
+- Blade `@yield` / `@section`/`@show` SEO default fix
+- Tenant context verification skipped for global Mobile jobs
+
+---
+
+## [7.8.3] - 2026-04-01
+
+### Fixed
+- **Log Spam** — MCP tool, custodian, and exchange rate provider registration logs demoted from `info` to `debug`
+- **Blade Compile Error** — `@hasSection('seo')` with `<x-schema>` components caused ParseError; replaced with `@yield('seo', default)`
+
+---
+
+## [7.8.2] - 2026-04-01
+
+### Fixed
+- API user registration no longer blocked by Fortify web registration gate (mobile users can always register)
+- CRON expression: `fraud.batch.schedule` changed from `'hourly'` to `'0 * * * *'`
+- Log rotation: stack channel defaults to `daily` with 14-day retention
+- CORS: `X-Tenant-ID` added to allowed headers
+- Migration FK fix: `consents.tpp_id` type uuid→string to match `tpp_registrations` FK
+- PHPStan `numeric-string` type in `PaymentRailRouter`
+
+### Changed
+- **Developer Portal** — Honest SDK install commands, standardized `@zelta/sdk` naming, consolidated rate limits, OpenAPI spec link, Hello World quick start
+
+---
+
+## [7.8.1] - 2026-03-31
+
+### Added
+- **Public Changelog** — `/changelog` page with reverse-chronological release timeline (v7.0.0–v7.8.0)
+
+### Changed
+- GCU page migrated to `layouts.public` with unified navy/teal brand palette
+- Platform page: removed 14 duplicate module cards, replaced with "56 Domain Modules" CTA
+- `/features/gcu` now 301 redirects to `/gcu`
+- Sitemap and footer updated
+
+---
+
+## [7.8.0] - 2026-03-31
+
+### Added
+- **7 New Domains** — ISO 20022 Message Engine, Open Banking PSD2, ISO 8583 Card Network Processor, US Payment Rails (ACH/Fedwire/RTP/FedNow), Interledger Protocol, Double-Entry Ledger, Microfinance Suite
+- SEPA Direct Debit/Credit Transfer, intelligent payment routing with ML-style scoring
+- Developer Experience: sandbox provisioning, webhook testing, API key management
+- 7 new feature detail pages with professional copywriting
+- All 15 STRIDE threat model findings resolved (security hardening)
+- Production readiness: Helm chart v1.7.0, benchmark commands, env review
+- Device attestation wiring, recovery shard improvements, card PATCH route
+
+### Changed
+- PHPCS v4.0.1 compatibility
+- Domain count raised to 56, GraphQL schemas to 43
+- ~500 new tests across 7 domains
+
+### Fixed
+- npm audit clean, Railgun bridge patched
+- Professional copywriting pass on headlines, CTAs, meta descriptions
+- SDK install commands fixed, compliance language updated
+
+---
+
+## [6.7.0] - 2026-03-26
+
+### Added
+- **A2A Protocol** — Agent Card at `/.well-known/agent.json` with 5 skills, streaming + push notifications
+- Task lifecycle: `tasks/send`, `tasks/get`, `tasks/{id}/cancel`, `tasks/list` with 6-state machine
+- SDK Packagist workflow (tag `sdk-v1.0.0` to publish `zelta/payment-sdk`)
+- API Sandbox at `/developers/sandbox` with pre-built test examples
+- 7 smoke tests for critical page loads and API health
+
+---
+
+## [6.6.0] - 2026-03-26
+
+### Added
+- **Zelta CLI v0.2.0** — 25 commands across 8 resource groups (payments, SMS, API management)
+- **Zelta Payment SDK** — Composer-installable package with transparent x402/MPP auto-retry
+- **Solana HSM Signer** — Ed25519 hardware signing + verifier for production x402 payments
+- **WebSocket Payment Gate** — Paid channel subscriptions with `ws.payment` middleware
+- Protocol-specific subdomain routing (`x402.api.*` / `mpp.api.*`)
+- `.well-known/x402-configuration` discovery endpoint
+- CLI distribution pipeline: PHAR build, npm `@zelta/cli`, Homebrew, GitHub release
+- SMS demo seeding + mobile rewards auto-creation
+
+---
+
+## [6.5.0] - 2026-03-24
+
+### Added
+- **VertexSMS Integration** — SMS service with dynamic EUR→USDC pricing, DLR webhook handler
+- MPP-gated `POST /api/v1/sms/send` — agents pay per-SMS via any rail (USDC, Stripe, Lightning)
+- x402 USDC rail adapter bridging Coinbase x402 into MPP
+- MCP tool `sms.send` for AI agent discovery
+- Stripe Connect support for direct settlement to service providers
+- Settlement reconciliation reports by rail and country
+- AP2 SMS mandates for enterprise campaigns
+- **Mobile Launch Readiness** — Quest auto-completion triggers, Apple App Attest, Google Play Integrity, JIT Funding wiring
+
+### Fixed
+- DLR handler: `DB::transaction` + `lockForUpdate` + forward-only state machine
+- E.164 phone number validation, zero-rate pricing guard
+
+---
+
+## [6.4.3] - 2026-03-24
+
+### Fixed
+- **Swagger 403** — `public/docs/` directory conflicted with L5-Swagger `/docs` route; moved Postman collections to `public/postman/`
+- Regenerated api-docs.json (2.7MB)
+
+---
+
+## [6.4.2] - 2026-03-23
+
+### Added
+- **HyperSwitch Payment Orchestration** — Full REST API client for 150+ payment processors
+- `HyperSwitchPaymentService` with deposit/refund and customer mapping
+- `HyperSwitchWebhookController` with HMAC-SHA512 verification
+- Config: `config/hyperswitch.php` (sandbox + production, routing strategy)
+
+---
+
+## [6.4.1] - 2026-03-23
+
+### Added
+- **Helius Webhook Auto-Sync** — `HeliusWebhookSyncService` auto-registers new Solana addresses
+- `BlockchainAddressObserver` with async (queued) dispatch
+- `Cache::lock` for concurrent address additions
+- Reserved address blocklist (System Program, Token Program, USDC mint)
+- `helius:sync` command for bulk address sync
+
+### Fixed
+- Missing `module.json` for 5 domains (Ramp, Referral, Rewards, VirtualsAgent, VisaCli)
+
+---
+
+## [6.4.0] - 2026-03-23
+
+### Added
+- **Machine Payments Protocol (MPP)** — New `MachinePay` domain with Stripe SPT, Tempo, Lightning, Card rails
+- `MppPaymentGateMiddleware` with `WWW-Authenticate: Payment` / `Authorization: Payment` headers
+- HMAC-SHA256 challenge binding, RFC 9457 error responses
+- 2 MCP tools (`mpp.payment`, `mpp.discovery`)
+- **AP2 Mandates** — Cart, Intent, Payment mandates with Verifiable Digital Credentials (SD-JWT-VC)
+- `AP2PaymentBridgeService` wrapping x402 + MPP as payment methods
+- **Solana Launch** — `solana:mainnet` + `solana:devnet` in X402Network enum, Helius webhook for balance monitoring
+- Legal positioning: platform disclaimers, non-custodial language
+
+### Changed
+- Transaction-level locking on settlement idempotency
+- HMAC key separation (derived keys, never reuse app key)
+- Admin-only resource monetization, blocked sensitive paths
+- 7 dependabot PRs merged
+
+---
+
+## [6.0.0] - 2026-03-17
+
+### Added
+- **Developer Portal** — Plugin development guide, GraphQL API docs, Redis Streams docs, MCP/AI Agent tools docs
+- **Plugin Marketplace** — Public browse/search/filter, detail pages with permissions and security reviews, 2 example plugins
+- **Domain Completeness** — Webhook encrypted secrets + HMAC signing, Newsletter campaign lifecycle, Activity service, Contact ticket workflow, Performance KPI reports
+- 4 sub-product detail pages (Exchange, Lending, Stablecoins, Treasury) rebranded to Zelta
+
+### Changed
+- Complete Zelta rebrand across 71 blade templates (353 replacements)
+- New OG images, favicons (14 sizes), SEO metadata, JSON-LD schemas
+- RPC caching (~90% Alchemy reduction) + WebSocket balance events
+
+### Fixed
+- HMAC bypass, email injection, LIKE injection, URL validation
+- Flaky `UserOperationSigningServiceTest`
+
+---
+
+## [5.14.0] - 2026-03-15
+
+### Added
+- **RPC Optimization** — Cache `eth_blockNumber`, `eth_gasPrice`, `getMaxPriorityFeePerGas` with 15s TTL (~90% Alchemy call reduction)
+- **WebSocket Balance Events** — Push-based balance updates replacing 60s mobile polling (`wallet.balance_updated`, `wallet.state_changed`, `privacy.balance_updated`)
+- **Alchemy Address Activity Webhook** — `POST /api/webhooks/alchemy/address-activity` with HMAC-SHA256 verification for near-instant balance notifications
+- Plugin development guide at `/developers/plugins`
+
+### Changed
+- Balance cache TTL increased from 30s to 120s
+- `MobileWalletController` fixed to use `WalletBalanceProviderInterface`
+
+---
+
 ## [5.12.0] - 2026-03-09
 
 ### Added

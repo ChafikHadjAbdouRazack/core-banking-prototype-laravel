@@ -1,0 +1,29 @@
+name: FinAegis PHP SDK Release
+
+on:
+  push:
+    tags:
+      - 'php-sdk-v*'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Notify Packagist
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Packagist
+        env:
+          PACKAGIST_USERNAME: ${{ secrets.PACKAGIST_USERNAME }}
+          PACKAGIST_TOKEN: ${{ secrets.PACKAGIST_TOKEN }}
+        run: |
+          curl -fsS -X POST "https://packagist.org/api/update-package?username=${PACKAGIST_USERNAME}&apiToken=${PACKAGIST_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{"repository":{"url":"https://github.com/FinAegis/php-sdk"}}'
+
+      - name: Summary
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/php-sdk-v}"
+          echo "## FinAegis PHP SDK v${VERSION} Published" >> "$GITHUB_STEP_SUMMARY"
+          echo "Install: \`composer require finaegis/php-sdk\`" >> "$GITHUB_STEP_SUMMARY"

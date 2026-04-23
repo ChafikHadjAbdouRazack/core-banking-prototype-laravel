@@ -1,7 +1,7 @@
 # FinAegis Core Banking Platform
 
 [![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-7.7.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-7.10.10-blue.svg)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
@@ -39,7 +39,7 @@ FinAegis provides the foundation for building digital banking applications. The 
 | API monetization | x402 protocol: HTTP-native micropayments with USDC on Base (v5.2.0) |
 | Privacy protocol | RAILGUN SDK integration: shield/unshield/transfer with Merkle proofs (v5.6.0) |
 | Mobile gamification | Rewards system: quests, XP/levels, points shop, streaks (v5.7.0) |
-| Fiat on/off ramp | Onramper aggregator with provider-agnostic session management (v5.12.0) |
+| Fiat on/off ramp | Stripe Bridge with async webhook processing and provider-agnostic session management (v5.12.0) |
 | Design system v2 | Complete frontend overhaul with consistent typography, dark heroes (v5.12.0) |
 | Developer ecosystem | Plugin marketplace, developer portal, 3 official SDKs (v6.0.0) |
 | Post-quantum cryptography | ML-KEM-768, ML-DSA-65, hybrid encryption with key rotation (v6.1.0) |
@@ -49,7 +49,7 @@ FinAegis provides the foundation for building digital banking applications. The 
 | Machine payments | MPP multi-rail (Stripe, USDC, Lightning), AP2 mandates, x402 Solana (v6.4.0) |
 | Payment orchestration | HyperSwitch 150+ connectors, smart routing, failover (v6.4.2) |
 | Mobile launch readiness | Quest auto-triggers, device attestation, JIT funding, rewards (v6.5.0) |
-| SMS multi-rail payments | VertexSMS integration, MPP-gated SMS, MCP tool for AI agents (v6.5.0) |
+| SMS multi-rail payments | VertexSMS integration, MPP-gated SMS, MCP tool for AI agents (v7.10.7) |
 | Learning modern architecture | Complete DDD + CQRS + Event Sourcing example |
 
 ---
@@ -75,7 +75,7 @@ php artisan performance:report       # Generate performance baseline
 
 ## GraphQL API (v4.0.0-v4.3.0)
 
-FinAegis provides a schema-first GraphQL API via [Lighthouse PHP](https://lighthouse-php.com/) covering 36 domains:
+FinAegis provides a schema-first GraphQL API via [Lighthouse PHP](https://lighthouse-php.com/) covering 45 domains:
 
 ```bash
 # Available at /graphql
@@ -383,7 +383,7 @@ See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details
 |-------|------------|
 | **Backend** | Laravel 12, PHP 8.4+ |
 | **Event Sourcing** | Spatie Event Sourcing with Event Store v2 (domain routing, upcasting) |
-| **GraphQL** | Lighthouse PHP (schema-first, 36 domains, subscriptions) |
+| **GraphQL** | Lighthouse PHP (schema-first, 45 domains, subscriptions) |
 | **Workflows** | Laravel Workflow (Waterline) |
 | **Multi-Tenancy** | stancl/tenancy v3.9 |
 | **Database** | MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+ |

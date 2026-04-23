@@ -52,7 +52,7 @@ These quests fire automatically — no manual trigger needed:
 
 ---
 
-## Fiat Ramp (Onramper — Ready Now)
+## Fiat Ramp (Stripe Bridge — Ready Now)
 
 ### Endpoints
 
@@ -83,7 +83,7 @@ These quests fire automatically — no manual trigger needed:
   "data": {
     "id": "uuid",
     "status": "pending",
-    "checkout_url": "https://widget.onramper.com/...",
+    "checkout_url": "https://checkout.stripe.com/...",
     "amount": 100,
     "currency": "EUR"
   }

@@ -5,13 +5,13 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="finaegis",
-    version="1.0.0",
+    version="1.0.1",
     author="FinAegis",
     author_email="sdk@finaegis.org",
     description="Official Python SDK for the FinAegis API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/FinAegis/finaegis-python",
+    url="https://finaegis.org/developers",
     packages=find_packages(),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -46,8 +46,9 @@ setup(
         ]
     },
     project_urls={
-        "Bug Reports": "https://github.com/FinAegis/finaegis-python/issues",
-        "Source": "https://github.com/FinAegis/finaegis-python",
-        "Documentation": "https://docs.finaegis.org/sdks/python",
+        "Homepage": "https://finaegis.org",
+        "Documentation": "https://finaegis.org/developers",
+        "Source": "https://github.com/FinAegis/core-banking-prototype-laravel/tree/main/sdks/python",
+        "Bug Reports": "https://github.com/FinAegis/core-banking-prototype-laravel/issues",
     },
 )

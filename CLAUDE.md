@@ -13,6 +13,11 @@ php artisan serve                    # Start server
 npm run dev                          # Vite dev server
 php artisan l5-swagger:generate      # API docs
 
+# Solana operations
+php artisan solana:backfill                    # Register addresses for existing users
+php artisan solana:sync                          # Push addresses to Helius webhook
+php artisan solana:backfill-transactions       # Fetch historical tx from Helius API
+
 # User & Admin management
 php artisan user:create --admin      # Create user (--admin for admin role)
 php artisan user:promote user@email  # Promote existing user to admin
@@ -68,11 +73,34 @@ namespace App\Domain\Exchange\Services;
 | XML parsing | Always pass `LIBXML_NONET` to `SimpleXMLElement` when parsing external input (XXE prevention) |
 | PHPCS version | CI uses PHPCS v4.0.1 — run `./vendor/bin/phpcs` locally to match before pushing |
 | PHPStan `numeric-string` | bcmath requires `numeric-string` type — use `bcadd($val, '0', 4)` to normalize, not `(float)` cast |
+| `assert()` as auth guard | Use `if (!$user instanceof User) return 401` — `assert()` compiled out with `zend.assertions=-1` |
+| MariaDB UUID columns | Must be RFC 4122 (version=4 nibble, variant=10xx bits) — raw hashes rejected |
+| Webhook auth bypass | Use `app()->environment('local', 'testing')` — never `return true` for non-prod |
+| Solana addresses | Case-sensitive — never `strtolower()` (unlike EVM which lowercases) |
+| Helius API key | Must be query param `?api-key=` — does NOT support Authorization header |
+| Webhook metadata | Whitelist fields via `array_intersect_key()` — never store raw `$tx` payload |
 
 ```bash
 gh pr checks <PR_NUMBER>              # Check PR status
 gh run view <RUN_ID> --log-failed     # View failed logs
 ```
+
+## Distribution Packages
+
+Brand in UI stays "Zelta" — only distribution package identifiers use the `@finaegis` scope (the `@zelta` npm scope was already taken). PSR-4 namespaces (`Zelta\\`) and CLI bin name (`zelta`) are unchanged.
+
+| Registry | Package | Tag trigger |
+|---|---|---|
+| npm | `@finaegis/cli` | `cli-v*` |
+| npm | `@finaegis/sdk` | `js-sdk-v*` |
+| npm | `@finaegis/payment-sdk` | (future) |
+| Packagist | `finaegis/payment-sdk` | `sdk-v*` |
+| Packagist | `finaegis/php-sdk` | `php-sdk-v*` |
+| PyPI | `finaegis` | `py-sdk-v*` |
+
+Required repo secrets for release workflows: `NPM_TOKEN` (must be npm **Automation** token — classic tokens get 403 under 2FA), `PYPI_TOKEN`, `PACKAGIST_USERNAME`, `PACKAGIST_TOKEN`, `MIRROR_PAT` (fine-grained PAT with Contents:write on `FinAegis/payment-sdk`, `FinAegis/cli`, `FinAegis/php-sdk`).
+
+Packagist sources the three PHP packages from **split-mirror repos**, not the monorepo — Packagist only reads root `composer.json`. The `monorepo-split.yml` workflow auto-pushes `packages/zelta-sdk/`, `packages/zelta-cli/`, `sdks/php/` into their respective mirrors on every `main` push and release tag (via `splitsh/lite`). Mirror tags use a stripped prefix: `sdk-v1.0.1` → mirror tag `v1.0.1`.
 
 ## Notes
 
@@ -91,3 +119,10 @@ gh run view <RUN_ID> --log-failed     # View failed logs
 - New domains: update domain count in public views (welcome, about, pricing, developers) and CLAUDE.md
 - New domains: add env vars to `.env.production.example` and `.env.zelta.example`
 - Use Serena memories for deep architectural context when needed
+- Solana constants: `SolanaTokens::KNOWN_MINTS` and `SolanaCacheKeys::balance()` in `app/Domain/Wallet/Constants/`
+- Solana webhook: always uses Helius (`HeliusWebhookSyncService`), Alchemy handles EVM only
+- Solana tx processor: `HeliusTransactionProcessor` handles all Solana transaction parsing
+- Webhook controllers: Helius handles Solana, Alchemy handles EVM — both send FCM push via `PushNotificationService`
+- Alchemy webhook signing keys: stored in `webhook_endpoints` table (managed by `AlchemyWebhookManager`), not env vars
+- Test tables: use `Tests\Traits\CreatesSolanaTestTables` trait for in-memory SQLite schema in webhook/wallet tests
+- Parallel agent merges: always check for duplicate `use` imports after merging agent branches

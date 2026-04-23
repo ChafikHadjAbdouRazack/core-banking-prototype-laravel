@@ -2,10 +2,12 @@
 
 Transparent x402 and MPP payment handling for PHP applications.
 
+> **Mirror repo notice** — if you're viewing this at `github.com/FinAegis/payment-sdk`, that repo is a read-only split of `packages/zelta-sdk/` from the [FinAegis core banking monorepo](https://github.com/FinAegis/core-banking-prototype-laravel). Please file issues and PRs against the monorepo.
+
 ## Installation
 
 ```bash
-composer require zelta/payment-sdk
+composer require finaegis/payment-sdk
 ```
 
 ## Quick Start
@@ -36,7 +38,7 @@ echo $result->paid;       // true
 
 ## Documentation
 
-Full documentation is available at [zelta.app/developers](https://zelta.app/developers).
+Full documentation is available at [finaegis.org/developers](https://finaegis.org/developers).
 
 ## License
 

@@ -12,10 +12,10 @@ use App\Http\Controllers\Api\Wallet\MobileWalletController;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
+use Tests\Traits\CreatesSolanaTestTables;
 use Tests\UnitTestCase;
 
-uses(UnitTestCase::class);
+uses(UnitTestCase::class, CreatesSolanaTestTables::class);
 
 beforeEach(function (): void {
     $this->balanceService = Mockery::mock(WalletBalanceService::class);
@@ -107,26 +107,11 @@ describe('MobileWalletController tokens', function (): void {
 describe('MobileWalletController balances', function (): void {
     beforeEach(function (): void {
         config(['cache.default' => 'array']);
-        if (! Schema::hasTable('blockchain_addresses')) {
-            Schema::create('blockchain_addresses', function ($table): void {
-                $table->id();
-                $table->uuid('uuid')->unique();
-                $table->string('user_uuid')->index();
-                $table->string('chain');
-                $table->string('address');
-                $table->text('public_key');
-                $table->string('derivation_path')->nullable();
-                $table->string('label')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->json('metadata')->nullable();
-                $table->timestamps();
-                $table->unique(['chain', 'address']);
-            });
-        }
+        $this->createSolanaTestTables();
     });
 
     afterEach(function (): void {
-        Schema::dropIfExists('blockchain_addresses');
+        $this->dropSolanaTestTables();
     });
 
     it('queries balances across smart accounts', function (): void {
@@ -172,26 +157,11 @@ describe('MobileWalletController balances', function (): void {
 describe('MobileWalletController state', function (): void {
     beforeEach(function (): void {
         config(['cache.default' => 'array']);
-        if (! Schema::hasTable('blockchain_addresses')) {
-            Schema::create('blockchain_addresses', function ($table): void {
-                $table->id();
-                $table->uuid('uuid')->unique();
-                $table->string('user_uuid')->index();
-                $table->string('chain');
-                $table->string('address');
-                $table->text('public_key');
-                $table->string('derivation_path')->nullable();
-                $table->string('label')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->json('metadata')->nullable();
-                $table->timestamps();
-                $table->unique(['chain', 'address']);
-            });
-        }
+        $this->createSolanaTestTables();
     });
 
     afterEach(function (): void {
-        Schema::dropIfExists('blockchain_addresses');
+        $this->dropSolanaTestTables();
     });
 
     it('returns aggregated wallet state', function (): void {
@@ -219,26 +189,11 @@ describe('MobileWalletController state', function (): void {
 
 describe('MobileWalletController addresses', function (): void {
     beforeEach(function (): void {
-        if (! Schema::hasTable('blockchain_addresses')) {
-            Schema::create('blockchain_addresses', function ($table): void {
-                $table->id();
-                $table->uuid('uuid')->unique();
-                $table->string('user_uuid')->index();
-                $table->string('chain');
-                $table->string('address');
-                $table->text('public_key');
-                $table->string('derivation_path')->nullable();
-                $table->string('label')->nullable();
-                $table->boolean('is_active')->default(true);
-                $table->json('metadata')->nullable();
-                $table->timestamps();
-                $table->unique(['chain', 'address']);
-            });
-        }
+        $this->createSolanaTestTables();
     });
 
     afterEach(function (): void {
-        Schema::dropIfExists('blockchain_addresses');
+        $this->dropSolanaTestTables();
     });
 
     it('lists user addresses per network', function (): void {

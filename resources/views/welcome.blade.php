@@ -5,7 +5,7 @@
 @section('seo')
     @include('partials.seo', [
         'title' => config('brand.name', 'Zelta') . ' - Open Source Core Banking Infrastructure',
-        'description' => 'Open-source core banking platform with 56 modules: payments, lending, compliance, and DeFi. ISO 20022, PSD2, ACH, SEPA. MIT licensed, built with Laravel.',
+        'description' => 'Open-source core banking platform with 56 modules: payments, lending, compliance, and DeFi. ISO 20022, PSD2, ACH, SEPA. Apache-2.0 licensed, built with Laravel.',
         'keywords' => config('brand.name', 'Zelta') . ', open source banking, core banking infrastructure, GCU, ISO 20022, PSD2, open banking, ACH, SEPA, Interledger, microfinance, event sourcing, DeFi, RegTech, banking API, Laravel fintech',
     ])
 
@@ -32,7 +32,7 @@
                     <svg class="w-4 h-4 text-fa-teal" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
-                    Open Source &middot; MIT Licensed &middot; 56 Domains
+                    Open Source &middot; Apache-2.0 Licensed &middot; 56 Domains
                 </div>
 
                 <!-- Heading -->
@@ -81,7 +81,7 @@
                 <div class="animate-on-scroll">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold mb-6">
                         <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                        MIT Licensed
+                        Apache-2.0
                     </div>
                     <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-6">
                         What Is {{ config('brand.name', 'Zelta') }}?
@@ -327,7 +327,7 @@
                     ['value' => '56', 'label' => 'Domain Modules'],
                     ['value' => '45', 'label' => 'GraphQL Schemas'],
                     ['value' => '1,400+', 'label' => 'API Routes'],
-                    ['value' => 'MIT', 'label' => 'Licensed'],
+                    ['value' => 'Apache-2.0', 'label' => 'Licensed'],
                 ] as $stat)
                     <div class="text-center">
                         <div class="font-display text-4xl lg:text-5xl font-extrabold text-gradient mb-2">{{ $stat['value'] }}</div>

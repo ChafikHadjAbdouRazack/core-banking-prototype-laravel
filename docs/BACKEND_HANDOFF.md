@@ -192,13 +192,13 @@ These were fixed entirely on the mobile side with normalizers:
 
 ---
 
-## 10. On/Off Ramp — Onramper API Integration (NEW)
+## 10. On/Off Ramp — Stripe Bridge Integration (NEW)
 
-> **PR #722 + #723** — API-first Onramper integration. Mobile owns the UI (currency picker, quote comparison). Onramper is used purely as a data API — only the checkout URL opens in a browser for payment/KYC.
+> **PR #722 + #723** — API-first Stripe Bridge integration. Mobile owns the UI (currency picker, quote comparison). Stripe Bridge is used purely as a data API — only the checkout URL opens in a browser for payment/KYC.
 
 ### Provider
-**Onramper** — fiat-to-crypto aggregator (30+ providers, 190+ countries, 800+ assets).
-Docs: https://docs.onramper.com
+**Stripe Bridge** — fiat-to-crypto ramp with async webhook processing.
+Docs: https://docs.stripe.com/crypto/onramp
 
 ### Endpoints
 
@@ -226,7 +226,7 @@ Docs: https://docs.onramper.com
 ```json
 {
   "data": {
-    "provider": "onramper",
+    "provider": "stripe_bridge",
     "fiat_currencies": ["USD", "EUR", "GBP"],
     "crypto_currencies": ["USDC", "USDT", "ETH", "BTC"],
     "modes": ["buy", "sell"],
@@ -272,7 +272,7 @@ Returns quotes from **all available providers** so mobile can render a compariso
         "payment_methods": ["credit_card"]
       }
     ],
-    "provider": "onramper",
+    "provider": "stripe_bridge",
     "valid_until": "2026-03-05T17:00:00+00:00"
   }
 }
@@ -297,7 +297,7 @@ Returns quotes from **all available providers** so mobile can render a compariso
 {
   "data": {
     "id": "uuid",
-    "provider": "onramper",
+    "provider": "stripe_bridge",
     "type": "on",
     "type_label": "Buy Crypto",
     "fiat_currency": "USD",
@@ -306,7 +306,7 @@ Returns quotes from **all available providers** so mobile can render a compariso
     "crypto_amount": null,
     "status": "pending",
     "status_label": "Pending",
-    "checkout_url": "https://onramper.com/checkout?id=tx_789",
+    "checkout_url": "https://checkout.stripe.com/c/pay/cs_tx_789",
     "created_at": "2026-03-05T16:00:00+00:00",
     "updated_at": "2026-03-05T16:00:00+00:00"
   }

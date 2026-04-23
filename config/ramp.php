@@ -31,6 +31,12 @@ return [
             'success_redirect_url' => env('ONRAMPER_SUCCESS_REDIRECT_URL'),
             'enabled'              => (bool) env('ONRAMPER_ENABLED', false),
         ],
+
+        'stripe_bridge' => [
+            'driver'         => 'stripe_bridge',
+            'enabled'        => (bool) env('STRIPE_BRIDGE_ENABLED', false),
+            'webhook_secret' => env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
+        ],
     ],
 
     /*
@@ -39,6 +45,11 @@ return [
     |--------------------------------------------------------------------------
     */
 
+    /*
+     * Mock-provider fallback defaults only. Production providers return
+     * their own supported currency lists via RampProviderInterface::getSupportedCurrencies().
+     * RampService::validateRampParams() reads from the provider, not from here.
+     */
     'supported_fiat'   => ['USD', 'EUR', 'GBP'],
     'supported_crypto' => ['USDC', 'USDT', 'ETH', 'BTC'],
 

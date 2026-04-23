@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Domain\Wallet\Contracts\KeyManagementServiceInterface;
@@ -45,6 +47,11 @@ class WalletServiceProvider extends ServiceProvider
         // Auto-sync Solana addresses to Helius webhook monitoring
         \App\Domain\Account\Models\BlockchainAddress::observe(
             \App\Domain\Wallet\Observers\BlockchainAddressObserver::class,
+        );
+
+        // Auto-sync EVM SmartAccount addresses to Alchemy webhook monitoring
+        \App\Domain\Relayer\Models\SmartAccount::observe(
+            \App\Domain\Wallet\Observers\SmartAccountObserver::class,
         );
     }
 }

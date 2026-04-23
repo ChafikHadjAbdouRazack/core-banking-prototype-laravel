@@ -225,7 +225,7 @@
                 
                 <div class="mt-8 pt-8 border-t border-gray-200 text-center">
                     <p class="text-slate-500">
-                        <span class="font-semibold">License:</span> MIT Open Source License
+                        <span class="font-semibold">License:</span> Apache-2.0 Open Source License
                     </p>
                 </div>
             </div>

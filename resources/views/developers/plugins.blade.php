@@ -109,7 +109,7 @@
   "display_name": "Payment Analytics",
   "description": "Real-time payment analytics and reporting dashboard",
   "author": "My Company",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "entry_point": "ServiceProvider",
   "permissions": [
     "database:read",
@@ -402,7 +402,7 @@ php artisan plugin:list</pre>
                     <tr><td class="px-4 py-2"><code class="code-font">display_name</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">Human-readable name (defaults to name)</td></tr>
                     <tr><td class="px-4 py-2"><code class="code-font">description</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">Plugin description</td></tr>
                     <tr><td class="px-4 py-2"><code class="code-font">author</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">Author name</td></tr>
-                    <tr><td class="px-4 py-2"><code class="code-font">license</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">License type (default: MIT)</td></tr>
+                    <tr><td class="px-4 py-2"><code class="code-font">license</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">License type (default: Apache-2.0)</td></tr>
                     <tr><td class="px-4 py-2"><code class="code-font">entry_point</code></td><td class="px-4 py-2 text-slate-500">string</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">ServiceProvider class name (default: ServiceProvider)</td></tr>
                     <tr><td class="px-4 py-2"><code class="code-font">permissions</code></td><td class="px-4 py-2 text-slate-500">string[]</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">Required permissions (see table above)</td></tr>
                     <tr><td class="px-4 py-2"><code class="code-font">dependencies</code></td><td class="px-4 py-2 text-slate-500">object</td><td class="px-4 py-2 text-slate-400">No</td><td class="px-4 py-2 text-slate-600">Semver constraints: <code class="code-font">{"vendor/name": "^1.0"}</code></td></tr>

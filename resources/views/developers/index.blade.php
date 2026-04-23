@@ -137,7 +137,7 @@
                 <div class="text-center">
                     <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm mb-6">
                         <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
-                        <span>v7.9.0 Documentation — 56 Domains, 1,400+ Routes, GraphQL + REST + x402</span>
+                        <span>v7.10.8 Documentation — 56 Domains, 1,400+ Routes, GraphQL + REST + x402</span>
                     </div>
                     <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">
                         Build with 1,400+ API Routes
@@ -177,8 +177,8 @@
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
-                    <span class="font-medium">v7.9.0 Released:</span>
-                    <span class="ml-2">Solana wallet integration, Helius transaction monitoring, Alchemy webhook support, FCM push notifications. 56 DDD domains, 1,400+ API routes, GraphQL (45 domains), ISO 20022, ISO 8583, multi-rail payments, x402 Protocol.</span>
+                    <span class="font-medium">v7.10.8 Released:</span>
+                    <span class="ml-2">Public SDK distribution — CLI, JS/TS, Python, and PHP SDKs now install from npm, PyPI, and Packagist in one command. 56 DDD domains, 1,400+ API routes, GraphQL (45 domains), ISO 20022, ISO 8583, x402 Protocol.</span>
                 </div>
             </div>
         </section>
@@ -284,7 +284,7 @@
                                 <div id="code-step3">
                                     <div><span class="text-gray-500"># Verify the API is running (no auth needed)</span></div>
                                     <div><span class="text-gray-500">$</span> <span class="text-green-400">curl</span> <span class="text-yellow-400">http://localhost:8000/api/health</span></div>
-                                    <div><span class="text-gray-500"># {"status":"ok","version":"7.9.0"}</span></div>
+                                    <div><span class="text-gray-500"># {"status":"ok","version":"7.10.8"}</span></div>
                                     <div class="mt-2"><span class="text-gray-500"># Make an authenticated request</span></div>
                                     <div><span class="text-gray-500">$</span> <span class="text-green-400">curl</span> <span class="text-blue-400">-H</span> <span class="text-yellow-400">"Authorization: Bearer YOUR_API_KEY"</span> <span class="text-gray-400">\</span></div>
                                     <div>  <span class="text-yellow-400">http://localhost:8000/api/v2/accounts</span></div>
@@ -600,6 +600,25 @@
                             </div>
                         </a>
 
+                        <!-- SMS -->
+                        <a href="{{ route('developers.show', 'api-docs') }}#sms" class="group block">
+                            <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center text-white mr-3">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-slate-900">SMS</h4>
+                                        <span class="text-xs text-slate-400">4 endpoints &middot; MPP gated</span>
+                                    </div>
+                                </div>
+                                <p class="text-slate-500 text-sm mb-3">Send SMS via VertexSMS with multi-rail payment gating (USDC, Stripe, Lightning). Delivery tracking, per-country rates, and MCP tool support.</p>
+                                <span class="text-orange-600 text-sm font-medium group-hover:text-orange-700">View endpoints &rarr;</span>
+                            </div>
+                        </a>
+
                         <!-- x402 Protocol -->
                         <a href="{{ route('developers.show', 'api-docs') }}#x402" class="group block">
                             <div class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-all hover:-translate-y-1 h-full">
@@ -737,7 +756,8 @@
                             <p class="text-slate-500 text-sm text-center">
                                 Explore payment features: <a href="/features/x402-protocol" class="text-blue-600 hover:text-blue-800 font-medium">x402 Protocol</a> &middot;
                                 <a href="/features/machine-payments" class="text-blue-600 hover:text-blue-800 font-medium">Machine Payments</a> &middot;
-                                <a href="/features/zelta-cli" class="text-blue-600 hover:text-blue-800 font-medium">Zelta CLI</a>
+                                <a href="/features/zelta-cli" class="text-blue-600 hover:text-blue-800 font-medium">Zelta CLI</a> &middot;
+                                <a href="{{ route('developers.show', 'api-docs') }}#sms" class="text-blue-600 hover:text-blue-800 font-medium">SMS API</a>
                             </p>
                         </div>
 
@@ -846,7 +866,7 @@
                         </p>
                     </div>
                     <div>
-                        <div class="text-4xl md:text-5xl font-bold mb-2">MIT</div>
+                        <div class="text-4xl md:text-5xl font-bold mb-2">Apache-2.0</div>
                         <p class="text-indigo-200 flex items-center justify-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>

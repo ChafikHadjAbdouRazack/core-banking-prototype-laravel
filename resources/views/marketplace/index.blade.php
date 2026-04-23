@@ -140,7 +140,7 @@
                 <!-- Footer -->
                 <div class="flex items-center justify-between text-xs text-slate-500">
                     <span>v{{ $plugin->version }}</span>
-                    <span>{{ $plugin->license ?? 'MIT' }}</span>
+                    <span>{{ $plugin->license ?? 'Apache-2.0' }}</span>
                     @if($plugin->author)
                     <span>by {{ $plugin->author }}</span>
                     @endif

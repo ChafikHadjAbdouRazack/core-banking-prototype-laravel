@@ -1,4 +1,4 @@
-# Security Audit Scope — FinAegis/Zelta v7.9.0
+# Security Audit Scope — FinAegis/Zelta v7.10.0
 
 **Prepared**: 2026-03-29
 **Platform**: PHP 8.4 / Laravel 12 / MySQL 8 / Redis
@@ -52,7 +52,7 @@ Core banking platform with 56 domain modules, payment processing (x402/MPP/AP2),
 - **Stablecoin reserve management** with event sourcing
 - **Treasury management** with portfolio event sourcing
 - **Lending** with loan aggregates, repayment schedules
-- **On/off ramp**: Onramper integration with webhook verification
+- **On/off ramp**: Stripe Bridge integration with async webhook processing
 - **Batch processing** with event sourcing
 - **CGO operations** (Chief Growth Officer analytics)
 

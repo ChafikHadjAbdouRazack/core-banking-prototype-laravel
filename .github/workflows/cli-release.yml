@@ -7,11 +7,18 @@ on:
 
 permissions:
   contents: write
+  id-token: write  # required for npm provenance
+
+env:
+  BOX_VERSION: '4.7.0'
+  BOX_SHA256: '3d390eeaec33288098fe83f8a54c60cc575cb6be295f38ff4482b4b4f26f8d52'
 
 jobs:
   build-phar:
     name: Build PHAR Binary
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
 
@@ -22,15 +29,21 @@ jobs:
           tools: composer
           extensions: json, mbstring, sodium
 
+      - name: Extract version
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/cli-v}" >> "$GITHUB_OUTPUT"
+
       - name: Install dependencies
         working-directory: packages/zelta-cli
         run: composer install --no-dev --optimize-autoloader
 
-      - name: Download Box
+      - name: Download Box (pinned + checksum-verified)
         run: |
-          curl -LSs https://box-project.github.io/box2/installer.php | php
-          mv box.phar /usr/local/bin/box
-          chmod +x /usr/local/bin/box
+          curl -fsSL "https://github.com/box-project/box/releases/download/${BOX_VERSION}/box.phar" -o /tmp/box.phar
+          echo "${BOX_SHA256}  /tmp/box.phar" | sha256sum -c -
+          sudo mv /tmp/box.phar /usr/local/bin/box
+          sudo chmod +x /usr/local/bin/box
+          box --version
 
       - name: Build PHAR
         working-directory: packages/zelta-cli
@@ -42,12 +55,15 @@ jobs:
         working-directory: packages/zelta-cli
         run: php builds/zelta.phar list
 
-      - name: Extract version
-        id: version
-        run: echo "version=${GITHUB_REF#refs/tags/cli-v}" >> $GITHUB_OUTPUT
+      - name: Upload PHAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zelta-phar
+          path: packages/zelta-cli/builds/zelta.phar
+          retention-days: 7
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: "Zelta CLI v${{ steps.version.outputs.version }}"
           body: |
@@ -55,8 +71,10 @@ jobs:
 
             ### Install
             ```bash
-            curl -fsSL https://cli.zelta.app/install.sh | bash
+            npm install -g @finaegis/cli
             ```
+
+            Requires PHP 8.4+ on PATH.
 
             ### What's included
             - 25 commands across 8 resource groups
@@ -72,6 +90,9 @@ jobs:
     name: Publish npm Package
     runs-on: ubuntu-latest
     needs: build-phar
+    permissions:
+      contents: read
+      id-token: write  # sigstore provenance
     steps:
       - uses: actions/checkout@v4
 
@@ -81,55 +102,84 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Create npm wrapper
+      - name: Download PHAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: zelta-phar
+          path: packages/zelta-cli/npm-package
+
+      - name: Assemble npm package
         working-directory: packages/zelta-cli
+        env:
+          PKG_VERSION: ${{ needs.build-phar.outputs.version }}
         run: |
           mkdir -p npm-package/bin
-          cat > npm-package/package.json << 'NPMEOF'
+          cat > npm-package/package.json << NPMEOF
           {
-            "name": "@zelta/cli",
-            "version": "${{ github.ref_name }}",
-            "description": "Zelta CLI — manage payments, SMS, wallets, and APIs from the terminal",
+            "name": "@finaegis/cli",
+            "version": "${PKG_VERSION}",
+            "description": "Zelta CLI — manage payments, SMS, wallets, and APIs from the terminal. Requires PHP 8.4+ on PATH.",
             "license": "Apache-2.0",
             "bin": {
               "zelta": "./bin/zelta"
             },
-            "scripts": {
-              "postinstall": "node install.js"
-            },
+            "files": [
+              "bin/",
+              "zelta.phar",
+              "README.md",
+              "LICENSE"
+            ],
             "repository": {
               "type": "git",
-              "url": "https://github.com/FinAegis/core-banking-prototype-laravel.git"
+              "url": "https://github.com/FinAegis/core-banking-prototype-laravel.git",
+              "directory": "packages/zelta-cli"
             },
-            "keywords": ["cli", "payments", "x402", "mpp", "fintech"]
+            "homepage": "https://zelta.app/features/zelta-cli",
+            "bugs": {
+              "url": "https://github.com/FinAegis/core-banking-prototype-laravel/issues"
+            },
+            "engines": {
+              "node": ">=18"
+            },
+            "os": ["darwin", "linux", "win32"],
+            "publishConfig": {
+              "access": "public",
+              "provenance": true
+            },
+            "keywords": ["cli", "payments", "x402", "mpp", "fintech", "sms", "wallet", "agent"]
           }
           NPMEOF
           cat > npm-package/bin/zelta << 'BINEOF'
           #!/usr/bin/env node
-          const { execFileSync } = require('child_process');
+          const { execFileSync, spawnSync } = require('child_process');
           const path = require('path');
+          const fs = require('fs');
+
+          const phar = path.join(__dirname, '..', 'zelta.phar');
+          if (!fs.existsSync(phar)) {
+            console.error('Error: zelta.phar missing from package — reinstall @finaegis/cli');
+            process.exit(1);
+          }
+
+          // Friendly preflight for the #1 install problem.
+          const phpCheck = spawnSync('php', ['-v'], { stdio: 'ignore' });
+          if (phpCheck.error || phpCheck.status !== 0) {
+            console.error('Error: PHP 8.4+ is required on PATH. Install from https://php.net/');
+            process.exit(127);
+          }
+
           try {
-            execFileSync('php', [path.join(__dirname, '..', 'zelta.phar'), ...process.argv.slice(2)], { stdio: 'inherit' });
+            execFileSync('php', [phar, ...process.argv.slice(2)], { stdio: 'inherit' });
           } catch (e) {
             process.exit(e.status || 1);
           }
           BINEOF
           chmod +x npm-package/bin/zelta
+          cp README.md npm-package/README.md
+          cp ../../LICENSE npm-package/LICENSE
 
-      - name: Publish to npm
+      - name: Publish to npm (with provenance)
         working-directory: packages/zelta-cli/npm-package
-        run: npm publish --access public
+        run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        continue-on-error: true
-
-  update-homebrew:
-    name: Update Homebrew Tap
-    runs-on: ubuntu-latest
-    needs: build-phar
-    steps:
-      - name: Trigger Homebrew tap update
-        run: |
-          echo "Homebrew tap update would be triggered here."
-          echo "Requires: zelta-app/homebrew-tap repository with Formula/zelta.rb"
-        continue-on-error: true

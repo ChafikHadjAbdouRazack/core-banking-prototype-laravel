@@ -1,0 +1,13 @@
+# Default owners for everything
+* @YOzaz
+
+# CI/CD and infrastructure
+.github/ @YOzaz
+helm/ @YOzaz
+docker/ @YOzaz
+
+# Domain modules
+app/Domain/ @YOzaz
+
+# Public-facing views
+resources/views/ @YOzaz

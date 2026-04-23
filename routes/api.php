@@ -187,6 +187,11 @@ Route::prefix('webhooks/ondato')->middleware(['api.rate_limit:webhook'])->group(
     Route::post('/identification', [App\Http\Controllers\Api\OndatoWebhookController::class, 'identification']);
 });
 
+// Stripe KYC payment webhook (signature-verified, no auth)
+Route::post('webhooks/stripe/kyc', [App\Http\Controllers\Api\Webhook\StripeKycWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.stripe.kyc');
+
 // Extended monitoring endpoints with authentication
 Route::prefix('monitoring')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/metrics-json', [App\Http\Controllers\Api\MonitoringController::class, 'metrics']);
@@ -259,7 +264,7 @@ Route::prefix('v1/banners')->name('api.v1.banners.')
 
 // v5.13.0 — On/Off Ramp
 Route::prefix('v1/ramp')->name('api.v1.ramp.')
-    ->middleware(['auth:sanctum'])
+    ->middleware(['auth:sanctum', 'require.kyc'])
     ->group(function () {
         Route::get('/supported', [App\Http\Controllers\Api\V1\RampController::class, 'supported'])->middleware('api.rate_limit:query')->name('supported');
         Route::get('/quotes', [App\Http\Controllers\Api\V1\RampController::class, 'quotes'])->middleware('api.rate_limit:query')->name('quotes');
@@ -309,6 +314,12 @@ Route::prefix('v1/sponsorship')->name('api.v1.sponsorship.')
     ->group(function () {
         Route::get('/status', [App\Http\Controllers\Api\V1\SponsorshipController::class, 'status'])->name('status');
     });
+
+// Card pre-order waitlist
+Route::prefix('v1/cards/waitlist')->name('api.v1.cards.waitlist.')->middleware(['auth:sanctum'])->group(function () {
+    Route::post('/', [App\Http\Controllers\Api\V1\CardWaitlistController::class, 'join'])->name('join');
+    Route::get('/status', [App\Http\Controllers\Api\V1\CardWaitlistController::class, 'status'])->name('status');
+});
 
 /*
 |--------------------------------------------------------------------------

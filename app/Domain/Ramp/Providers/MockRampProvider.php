@@ -49,16 +49,18 @@ class MockRampProvider implements RampProviderInterface
     public function getSupportedCurrencies(): array
     {
         return [
-            ['fiat' => 'USD', 'crypto' => 'USDC'],
-            ['fiat' => 'USD', 'crypto' => 'USDT'],
-            ['fiat' => 'USD', 'crypto' => 'ETH'],
-            ['fiat' => 'EUR', 'crypto' => 'USDC'],
-            ['fiat' => 'EUR', 'crypto' => 'ETH'],
-            ['fiat' => 'GBP', 'crypto' => 'USDC'],
+            'fiatCurrencies'   => ['USD', 'EUR', 'GBP'],
+            'cryptoCurrencies' => ['USDC', 'USDT', 'ETH', 'BTC'],
+            'modes'            => ['on', 'off'],
+            'limits'           => [
+                'minAmount'  => (int) config('ramp.limits.min_fiat_amount', 10),
+                'maxAmount'  => (int) config('ramp.limits.max_fiat_amount', 10000),
+                'dailyLimit' => (int) config('ramp.limits.daily_limit', 50000),
+            ],
         ];
     }
 
-    public function getQuotes(string $type, string $fiatCurrency, float $fiatAmount, string $cryptoCurrency): array
+    public function getQuotes(string $type, string $fiatCurrency, string $fiatAmount, string $cryptoCurrency): array
     {
         $rates = [
             'USDC' => 1.0,
@@ -69,14 +71,17 @@ class MockRampProvider implements RampProviderInterface
 
         $rate = $rates[$cryptoCurrency] ?? 1.0;
 
+        // Mock provider uses float arithmetic for demo calculations only
+        $amount = (float) $fiatAmount;
+
         return [
             [
                 'provider_name'   => 'MockProvider A',
                 'quote_id'        => 'mock_quote_a_' . Str::random(8),
-                'fiat_amount'     => $fiatAmount,
-                'crypto_amount'   => round(($fiatAmount - $fiatAmount * 0.015) * $rate, 8),
+                'fiat_amount'     => $amount,
+                'crypto_amount'   => round(($amount - $amount * 0.015) * $rate, 8),
                 'exchange_rate'   => $rate,
-                'fee'             => round($fiatAmount * 0.015, 2),
+                'fee'             => round($amount * 0.015, 2),
                 'network_fee'     => 0.0,
                 'fee_currency'    => $fiatCurrency,
                 'payment_methods' => ['credit_card', 'bank_transfer'],
@@ -84,11 +89,11 @@ class MockRampProvider implements RampProviderInterface
             [
                 'provider_name'   => 'MockProvider B',
                 'quote_id'        => 'mock_quote_b_' . Str::random(8),
-                'fiat_amount'     => $fiatAmount,
-                'crypto_amount'   => round(($fiatAmount - $fiatAmount * 0.025) * $rate, 8),
+                'fiat_amount'     => $amount,
+                'crypto_amount'   => round(($amount - $amount * 0.025) * $rate, 8),
                 'exchange_rate'   => $rate,
-                'fee'             => round($fiatAmount * 0.020, 2),
-                'network_fee'     => round($fiatAmount * 0.005, 2),
+                'fee'             => round($amount * 0.020, 2),
+                'network_fee'     => round($amount * 0.005, 2),
                 'fee_currency'    => $fiatCurrency,
                 'payment_methods' => ['credit_card'],
             ],
@@ -97,7 +102,27 @@ class MockRampProvider implements RampProviderInterface
 
     public function getWebhookValidator(): callable
     {
-        return fn (string $payload, string $signature): bool => $signature !== '';
+        return fn (string $rawBody, string $signatureHeader): bool => $signatureHeader !== '';
+    }
+
+    public function getWebhookSignatureHeader(): string
+    {
+        return 'X-Mock-Signature';
+    }
+
+    public function normalizeWebhookPayload(array $payload): ?array
+    {
+        $sessionId = (string) ($payload['session_id'] ?? '');
+        if ($sessionId === '') {
+            return null;
+        }
+
+        return [
+            'session_id'    => $sessionId,
+            'status'        => \App\Models\RampSession::STATUS_COMPLETED,
+            'crypto_amount' => isset($payload['crypto_amount']) ? (string) $payload['crypto_amount'] : null,
+            'raw'           => $payload,
+        ];
     }
 
     public function getName(): string

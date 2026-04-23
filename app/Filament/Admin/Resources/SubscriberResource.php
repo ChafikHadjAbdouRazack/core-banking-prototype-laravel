@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources;
 
 use App\Domain\Newsletter\Models\Subscriber;
@@ -43,16 +45,7 @@ class SubscriberResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\Select::make('source')
                                     ->required()
-                                    ->options(
-                                        [
-                                            Subscriber::SOURCE_BLOG       => 'Blog',
-                                            Subscriber::SOURCE_CGO        => 'CGO Early Access',
-                                            Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                            Subscriber::SOURCE_FOOTER     => 'Footer',
-                                            Subscriber::SOURCE_CONTACT    => 'Contact Form',
-                                            Subscriber::SOURCE_PARTNER    => 'Partner Application',
-                                        ]
-                                    ),
+                                    ->options(Subscriber::sourceLabels()),
                                 Forms\Components\Select::make('status')
                                     ->required()
                                     ->options(
@@ -128,15 +121,7 @@ class SubscriberResource extends Resource
                         ->badge()
                         ->searchable()
                         ->formatStateUsing(
-                            fn (string $state): string => match ($state) {
-                                Subscriber::SOURCE_BLOG       => 'Blog',
-                                Subscriber::SOURCE_CGO        => 'CGO Early Access',
-                                Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                Subscriber::SOURCE_FOOTER     => 'Footer',
-                                Subscriber::SOURCE_CONTACT    => 'Contact Form',
-                                Subscriber::SOURCE_PARTNER    => 'Partner Application',
-                                default                       => $state,
-                            }
+                            fn (string $state): string => Subscriber::sourceLabels()[$state] ?? $state
                         ),
                     Tables\Columns\TextColumn::make('status')
                         ->badge()
@@ -177,16 +162,7 @@ class SubscriberResource extends Resource
                         ->default(Subscriber::STATUS_ACTIVE),
                     SelectFilter::make('source')
                         ->multiple()
-                        ->options(
-                            [
-                                Subscriber::SOURCE_BLOG       => 'Blog',
-                                Subscriber::SOURCE_CGO        => 'CGO Early Access',
-                                Subscriber::SOURCE_INVESTMENT => 'Investment',
-                                Subscriber::SOURCE_FOOTER     => 'Footer',
-                                Subscriber::SOURCE_CONTACT    => 'Contact Form',
-                                Subscriber::SOURCE_PARTNER    => 'Partner Application',
-                            ]
-                        ),
+                        ->options(Subscriber::sourceLabels()),
                     Tables\Filters\Filter::make('confirmed')
                         ->query(fn (Builder $query): Builder => $query->whereNotNull('confirmed_at')),
                 ]

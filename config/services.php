@@ -73,9 +73,11 @@ return [
     ],
 
     'stripe' => [
-        'key'            => env('STRIPE_KEY'),
-        'secret'         => env('STRIPE_SECRET'),
-        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'key'                   => env('STRIPE_KEY'),
+        'secret'                => env('STRIPE_SECRET'),
+        'webhook_secret'        => env('STRIPE_WEBHOOK_SECRET'),
+        'kyc_webhook_secret'    => env('STRIPE_KYC_WEBHOOK_SECRET'),
+        'bridge_webhook_secret' => env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
     ],
 
     /*
@@ -262,10 +264,7 @@ return [
     ],
 
     'alchemy' => [
-        'notify_token'      => env('ALCHEMY_NOTIFY_TOKEN'),
-        'solana_webhook_id' => env('ALCHEMY_SOLANA_WEBHOOK_ID'),
+        'notify_token' => env('ALCHEMY_NOTIFY_TOKEN'),
     ],
-
-    'solana_webhook_provider' => env('SOLANA_WEBHOOK_PROVIDER', 'helius'),
 
 ];

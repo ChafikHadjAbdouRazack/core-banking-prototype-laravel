@@ -3084,5 +3084,157 @@ Findings #1-2 fixed in v7.1.1, findings #3-15 fixed in this release:
 - Duplicate processing prevention per address in Helius webhook
 - Helius API key restored as query param (their API requires it)
 
-*Document Version: 7.9.0*
-*Updated: April 4, 2026 (v7.9.0 Solana Balances, Helius Webhooks & SEO Overhaul)*
+---
+
+## Version 7.10.0 — Webhook Architecture Refactor + Mobile Backend Handover ✅ COMPLETED
+
+**Release Date**: April 7, 2026
+**PR**: #902
+**Theme**: Webhook infrastructure hardening, paid KYC, Stripe Bridge ramp, and mobile backend handover
+
+### Delivered Features
+- Webhook Infrastructure: Per-user DB-stored webhooks (AlchemyWebhookManager), encrypted signing keys, 100K address sharding, SmartAccountObserver auto-registration
+- Webhook Hardening: Async queue processing (ProcessAlchemyWebhookJob, ProcessHeliusWebhookJob), unique (tx_hash, chain) constraint, Cache-based dedup, spam filter, reorg detection
+- Card Waitlist: POST join (race-safe with lockForUpdate) + GET status endpoints
+- Paid KYC Verification: 3 payment methods (wallet deduction, Stripe card, IAP), VerificationPayment audit table, StripeKycWebhookController
+- RequireKycVerification Middleware: Blocks Level 0 users from financial endpoints
+- Stripe Bridge Ramp: Replaces Onramper — StripeBridgeService, generic RampWebhookController (provider-agnostic), async webhook processing
+- Security: bcmath for all fiat amounts, encrypted stripe_client_secret, webhook replay protection, IAP production gate
+- Pre-existing fixes: LedgerDriverInterface binding, CrossChain test auth, PimlicoBundler enum count
+
+### Stats
+- 66 files changed, +4,739/-1,441 lines, 5 migrations, 2 queue jobs, 4 controllers, 1 middleware
+
+---
+
+## Version 7.10.1 — Stripe Bridge Ramp Hardening (RELEASED)
+
+**Release Date**: April 13, 2026
+**Theme**: Production-grade Stripe Crypto Onramp integration and platform-generic ramp abstraction
+
+### Delivered Features
+- Working Stripe Crypto Onramp signature verification (HMAC-SHA256 with `t=<ts>,v1=<hmac>` parsing)
+- Race-safe webhook processing with `DB::transaction()` + `lockForUpdate()` + terminal-state idempotency
+- Platform-generic `RampProviderInterface` with `normalizeWebhookPayload()` and signature validation
+- Lazy `RampProviderRegistry` with factory closures (no fake credentials needed for inactive providers)
+- Parameterized provider-contract test suite + non-custody regression test
+- Removed legacy `StripeBridgeWebhookController` (single `/api/v1/ramp/webhook/{provider}` entry point)
+
+---
+
+## Version 7.10.2 — Deployment Pipeline Fix (RELEASED)
+
+**Release Date**: April 13, 2026
+**Theme**: First deployable release since v7.10.0
+
+### Delivered Features
+- Deploy workflow OOM fix: unit tests now run in batched PHP processes via `bin/pest-batch`
+- `BackpressureHandlerTest` isolation: array cache driver in pre-deployment validation
+- `.env.example` / `.env.zelta.example` dotenv parse errors fixed (unquoted whitespace values)
+- No runtime code changes — CI infrastructure only
+
+---
+
+## Version 7.10.3 — Onboarding Welcome Modal Fix (RELEASED)
+
+**Release Date**: April 14, 2026
+**Theme**: Unblock new-user registration by removing broken tour stub
+
+### Delivered Features
+- Removed broken `startTour()` JS stub that threw `TypeError` on every new registration
+- Stripped dead "Take Tour" header button and `startOnboarding()` `.catch` fallback
+- Blade-only fix — no backend, migration, or config changes
+
+---
+
+## Version 7.10.4 — Frontend Security Patch (RELEASED)
+
+**Release Date**: April 14, 2026
+**Theme**: Close critical and high npm audit findings in devDependencies
+
+### Delivered Features
+- Bumped `axios` ^1.13→^1.15 closing 5 critical SSRF advisories (GHSA-3p68-rc4w-qgx5)
+- Bumped `vite` ^6.4.1→^6.4.2 closing 1 high path traversal advisory
+- Both packages are dev/build-time only — no runtime code changes
+- Audit: Critical 5→0, High 1→0
+
+---
+
+## Version 7.10.5 — npm Dependency Sweep (RELEASED)
+
+**Release Date**: April 14, 2026
+**Theme**: Semver-safe npm update and lockfile dedup
+
+### Delivered Features
+- `npm update` within existing `package.json` ranges, lockfile shrank ~500 lines
+- Notable: `autoprefixer` 10.4→10.5, `postcss` 8.5.8→8.5.9, `@ledgerhq/hw-transport-webusb` 6.32→6.33
+- Cleared remaining moderate npm audit advisory (`follow-redirects` transitive dedup)
+- Audit: Moderate 1→0
+
+---
+
+## Version 7.10.6 — Composer Dependency Sweep (RELEASED)
+
+**Release Date**: April 14, 2026
+**Theme**: 230 semver-safe Composer package upgrades
+
+### Delivered Features
+- 230 packages upgraded within existing `composer.json` ranges (zero range edits)
+- Notable: `laravel/framework` 12.55→12.56, `phpstan` 2.1.42→2.1.47, `php-cs-fixer` 3.94→3.95, `aws/aws-sdk-php` 3.373→3.379
+- 6 PHPStan errors fixed (surfaced by Larastan 3.9.5 rule tightening)
+- php-cs-fixer 3.95.1 repo-wide reformat (65 files, whitespace-only)
+- Zero security advisories
+
+---
+
+## Version 7.10.8 — Public SDK Distribution (RELEASED)
+
+**Release Date**: April 19, 2026
+**Theme**: Every SDK and the CLI now install from public registries for the first time
+
+### Delivered Features
+- Public registry install commands (first real releases): `npm install -g @finaegis/cli`, `npm install @finaegis/sdk`, `pip install finaegis`, `composer require finaegis/payment-sdk`, `composer require finaegis/php-sdk`
+- npm scope migration `@zelta/*` → `@finaegis/*` (the `@zelta` scope was owned by a third party on npm, so prior references were aspirational). Brand name "Zelta" unchanged in UI; PSR-4 namespaces (`Zelta\\`, `FinAegis\\`) and CLI binary name (`zelta`) unchanged
+- Packagist vendor migration `zelta/*` → `finaegis/*` for the two PHP packages
+- New `.github/workflows/monorepo-split.yml` using splitsh/lite to auto-mirror `packages/zelta-{sdk,cli}/` and `sdks/php/` into dedicated Packagist-readable repos (`github.com/FinAegis/{payment-sdk,cli,php-sdk}`) on every main push and release tag
+- CLI release workflow hardened: Box 2 installer replaced with direct PHAR download from box-project/box (#937), PHAR now bundles `vendor/` so Symfony Console is present at runtime (#939), npm version field is valid semver (#936), PHAR artifact now plumbed correctly between `build-phar` and `publish-npm` so the npm tarball actually contains the binary (#936), splitsh/lite pinned to v1.0.1 (#940), cross-repo PAT push fixed (#941)
+- Zero breaking API changes — library method signatures, return types, and public interfaces unchanged
+
+---
+
+## Version 7.10.7 — Safe-Major Composer Trio (RELEASED)
+
+**Release Date**: April 15, 2026
+**Theme**: Three deferred major-version Composer upgrades judged safe to take
+
+### Delivered Features
+- `laravel/tinker` v2→v3 (dev REPL, requires PHP 8.4 — already there)
+- `resend/resend-php` v0→v1 (stable release, bounded to Resend mail adapter)
+- `darkaonline/l5-swagger` v10→v11 (pulls in swagger-php v5, dev tooling)
+- Fixed pre-existing OpenAPI annotation misattachment in `X402StatusController` (surfaced by swagger-php v5 strictness)
+- Zero security advisories, zero runtime behaviour changes
+
+---
+
+## Future / Unscheduled
+
+Items below are designed but not yet scheduled. They await demand signals (typically a second partner asking for the same capability) before engineering commits.
+
+### MPP Wholesale / Aggregator Model
+
+**Spec:** [`docs/superpowers/specs/2026-04-18-mpp-wholesale-aggregator-model.md`](superpowers/specs/2026-04-18-mpp-wholesale-aggregator-model.md)
+**Trigger:** Second commercial partner asks for wholesale API access
+
+Lets partners consume Zelta APIs wholesale and resell under their own billing relationship. Partner gets one API key + negotiated per-unit pricing; their customers never see Zelta branding or create Zelta accounts. ~80% of infrastructure already exists in `FinancialInstitutionPartner`; estimated 1-2 weeks engineering when prioritized.
+
+### MPP White-Label Embed Model
+
+**Spec:** [`docs/superpowers/specs/2026-04-18-mpp-whitelabel-embed-model.md`](superpowers/specs/2026-04-18-mpp-whitelabel-embed-model.md)
+**Trigger:** Multiple partners ask for branded end-user checkouts, OR a strategic platform partnership requires white-label
+
+Embeddable JS widget that renders Zelta's 402 payment flow inside the partner's own UI with their branding. Partner's end users get multi-rail payments (USDC/Stripe/Lightning) without leaving the partner's site. Requires publishable keys, widget engineering, CDN infrastructure. Estimated 4-6 weeks engineering.
+
+---
+
+*Document Version: 7.10.8*
+*Updated: April 19, 2026 (v7.10.8 public SDK distribution release)*

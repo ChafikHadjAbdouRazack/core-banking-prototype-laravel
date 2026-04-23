@@ -57,7 +57,7 @@
                         </div>
                         <ul class="space-y-3 mb-8 text-sm text-slate-600">
                             <li class="list-check">Full source code access</li>
-                            <li class="list-check">MIT License</li>
+                            <li class="list-check">Apache-2.0 License</li>
                             <li class="list-check">All 56 domain modules</li>
                             <li class="list-check">ISO 20022, Open Banking, Payment Rails</li>
                             <li class="list-check">Ledger, Microfinance, Interledger</li>
@@ -140,7 +140,7 @@
                 <div class="space-y-4">
                     @php
                         $faqs = [
-                            ['q' => 'Is the community edition really free?', 'a' => 'Yes! Our community edition is completely free and open source under the MIT license. You can use it for any purpose, including commercial projects.'],
+                            ['q' => 'Is the community edition really free?', 'a' => 'Yes! Our community edition is completely free and open source under the Apache 2.0 license. You can use it for any purpose, including commercial projects.'],
                             ['q' => "What's included in the Cloud Platform?", 'a' => 'The Cloud Platform includes managed hosting, automatic updates, daily backups, 99.9% uptime SLA, and priority support. We handle all the infrastructure so you can focus on your business.'],
                             ['q' => 'Can I switch between plans?', 'a' => "Yes. You can start with the Community Edition and upgrade to Cloud or Enterprise at any time. We provide migration tooling and support to ensure a seamless transition."],
                             ['q' => 'Do you offer discounts for non-profits?', 'a' => 'Yes, we offer special pricing for non-profit organizations and educational institutions. Contact our sales team for more information.'],

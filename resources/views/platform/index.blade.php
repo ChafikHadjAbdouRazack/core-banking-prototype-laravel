@@ -5,8 +5,8 @@
 @section('seo')
     @include('partials.seo', [
         'title' => config('brand.name', 'Zelta') . ' Platform - Open Banking for Developers',
-        'description' => 'Zelta Platform: open-source core banking with 56 DDD domains, ISO 20022, PSD2, multi-rail payments, and cross-chain DeFi. MIT licensed, built for developers.',
-        'keywords' => config('brand.name', 'Zelta') . ' platform, banking infrastructure, open source banking, developer API, ISO 20022, PSD2, payment rails, Interledger, microfinance, ledger, MIT license, core banking API, fintech development, DDD, event sourcing',
+        'description' => 'Zelta Platform: open-source core banking with 56 DDD domains, ISO 20022, PSD2, multi-rail payments, and cross-chain DeFi. Apache-2.0 licensed, built for developers.',
+        'keywords' => config('brand.name', 'Zelta') . ' platform, banking infrastructure, open source banking, developer API, ISO 20022, PSD2, payment rails, Interledger, microfinance, ledger, Apache-2.0 license, core banking API, fintech development, DDD, event sourcing',
     ])
 
     {{-- Schema.org Markup --}}
@@ -82,13 +82,13 @@
                     const bank = new {{ config('brand.name', 'Zelta') }}();
                 </div>
                 <div class="code-font text-blue-400 text-sm opacity-20 absolute top-40 right-20 transform -rotate-12 hidden lg:block">
-                    $ npm install @zelta/sdk
+                    $ npm install @finaegis/sdk
                 </div>
                 <div class="code-font text-purple-400 text-sm opacity-20 absolute bottom-40 left-1/4 hidden lg:block">
-                    pip install zelta==latest
+                    pip install finaegis
                 </div>
                 <div class="code-font text-yellow-400 text-sm opacity-20 absolute bottom-20 right-1/3 transform rotate-6 hidden lg:block">
-                    composer require zelta/sdk
+                    composer require finaegis/payment-sdk
                 </div>
             </div>
             
@@ -173,7 +173,7 @@
                         <!-- Quick stats -->
                         <div class="grid grid-cols-3 gap-4 mt-12">
                             <div>
-                                <div class="text-2xl font-bold text-green-400 code-font">MIT</div>
+                                <div class="text-2xl font-bold text-green-400 code-font">Apache-2.0</div>
                                 <div class="text-sm text-gray-500">License</div>
                             </div>
                             <div>
@@ -431,7 +431,7 @@
                 <!-- GitHub Stats -->
                 <div class="grid grid-cols-3 gap-8 mt-12 max-w-2xl mx-auto">
                     <div>
-                        <div class="text-3xl font-bold">MIT</div>
+                        <div class="text-3xl font-bold">Apache-2.0</div>
                         <div class="text-gray-400">License</div>
                     </div>
                     <div>
