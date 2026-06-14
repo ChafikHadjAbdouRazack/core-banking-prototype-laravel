@@ -38,8 +38,17 @@ class SchemaMarkupTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
-        $response->assertSee('"@type": "SoftwareApplication"', false);
-        $response->assertSee('"name": "FinAegis Core Banking Platform"', false);
+        // SchemaHelper::softwareApplication() now emits a MobileApplication
+        // schema named after the brand (truth-pass, PRs #1112/#1113).
+        $response->assertSee('"@type": "MobileApplication"', false);
+        $response->assertSee('"name": "' . config('brand.name') . '"', false);
+        $response->assertSee('"@type": "BreadcrumbList"', false);
+
+        // Brand-aware truth fix: the Zelta Play Store installUrl must only
+        // appear when the brand actually IS Zelta (tests run as FinAegis).
+        if (config('brand.name') !== 'Zelta') {
+            $response->assertDontSee('play.google.com/store/apps/details?id=com.zelta.wallet', false);
+        }
     }
 
     #[Test]
@@ -59,7 +68,10 @@ class SchemaMarkupTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('<script type="application/ld+json">', false);
-        $response->assertSee('"@type": "SoftwareApplication"', false);
+        // SchemaHelper::softwareApplication() now emits a MobileApplication
+        // schema named after the brand (truth-pass, PRs #1112/#1113).
+        $response->assertSee('"@type": "MobileApplication"', false);
+        $response->assertSee('"@type": "BreadcrumbList"', false);
     }
 
     #[Test]

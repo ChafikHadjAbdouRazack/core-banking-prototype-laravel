@@ -113,6 +113,12 @@ class SitemapController extends Controller
                 'changefreq' => 'monthly',
                 'priority'   => '0.5',
             ],
+            [
+                'url'        => $baseUrl . '/legal/delete-account',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.5',
+            ],
         ];
 
         // Promo/marketing pages — only when SHOW_PROMO_PAGES=true (e.g. finaegis.org)
@@ -339,6 +345,12 @@ class SitemapController extends Controller
                 'lastmod'    => $now,
                 'changefreq' => 'monthly',
                 'priority'   => '0.7',
+            ],
+            [
+                'url'        => $baseUrl . '/features/mcp',
+                'lastmod'    => $now,
+                'changefreq' => 'monthly',
+                'priority'   => '0.8',
             ],
             [
                 'url'        => $baseUrl . '/security',

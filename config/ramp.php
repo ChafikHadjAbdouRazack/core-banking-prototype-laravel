@@ -32,10 +32,23 @@ return [
             'enabled'              => (bool) env('ONRAMPER_ENABLED', false),
         ],
 
-        'stripe_bridge' => [
-            'driver'         => 'stripe_bridge',
-            'enabled'        => (bool) env('STRIPE_BRIDGE_ENABLED', false),
-            'webhook_secret' => env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
+        // Stripe Crypto Onramp (hosted card-payment checkout).
+        // Previously misnamed `stripe_bridge` — see ADR-0005.
+        // Disabled by default in v1; reactivated only as a v1.1 fallback
+        // if Bridge.xyz bank-rail activation lags.
+        'stripe_crypto_onramp' => [
+            'driver'         => 'stripe_crypto_onramp',
+            'enabled'        => (bool) (env('STRIPE_CRYPTO_ONRAMP_ENABLED') ?? env('STRIPE_BRIDGE_ENABLED', false)),
+            'webhook_secret' => env('STRIPE_CRYPTO_ONRAMP_WEBHOOK_SECRET') ?? env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
+        ],
+
+        // Bridge.xyz — primary v1 fiat ↔ stablecoin rail. Credentials live
+        // under `kyc.providers.bridge.*` in config/kyc.php (single source of
+        // truth for both ramp and KYC flows). This block exists for the
+        // RampProviderRegistry to list `bridge` as a known driver.
+        'bridge' => [
+            'driver'  => 'bridge',
+            'enabled' => (bool) env('BRIDGE_ENABLED', true),
         ],
     ],
 

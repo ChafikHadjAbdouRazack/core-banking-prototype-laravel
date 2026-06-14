@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Mobile\Services;
 
+use App\Domain\AccountProvisioning\Enums\BypassType;
+use App\Domain\AccountProvisioning\Services\AccountFlagsService;
 use App\Domain\Mobile\Contracts\BiometricJWTServiceInterface;
 use App\Domain\Mobile\Exceptions\BiometricJWTException;
 use App\Domain\Mobile\Models\MobileDevice;
@@ -57,8 +59,9 @@ class BiometricJWTService implements BiometricJWTServiceInterface
 
     private int $ttlSeconds;
 
-    public function __construct()
-    {
+    public function __construct(
+        private readonly AccountFlagsService $flags,
+    ) {
         $this->secret = $this->getSecret();
         $this->ttlSeconds = (int) config('mobile.biometric_jwt.ttl_seconds', self::DEFAULT_TTL_SECONDS);
     }
@@ -219,10 +222,49 @@ class BiometricJWTService implements BiometricJWTServiceInterface
     }
 
     /**
+     * Verify device attestation for a specific authenticated user.
+     *
+     * Short-circuits to true when the user has an active review-account flag
+     * with bypass_device_attestation=true. Otherwise delegates to
+     * verifyDeviceAttestation(). The bypass emits a structured log line via
+     * AccountFlagsService::hasReviewBypass().
+     */
+    public function verifyDeviceAttestationForUser(User $user, string $attestation, string $deviceType): bool
+    {
+        if ($this->flags->hasReviewBypass($user, BypassType::DEVICE_ATTESTATION)) {
+            return true;
+        }
+
+        return $this->verifyDeviceAttestation($attestation, $deviceType);
+    }
+
+    /**
      * Verify device attestation (Apple App Attest / Google Play Integrity).
      *
      * When MOBILE_ATTESTATION_ENABLED=true, delegates to the platform-specific
      * verifier. Falls back to demo mode (length check) when disabled.
+     *
+     * MUST FIX BEFORE FLIPPING MOBILE_ATTESTATION_ENABLED=true:
+     *   The iOS branch passes empty string as challenge to AppleAttestationVerifier.
+     *   AppleAttestationVerifier::verify() then looks for SHA-256("") inside the
+     *   attestation, which won't match anything mobile sends. iOS verification
+     *   will always fail until this is wired up.
+     *
+     *   The mobile client sends the challenge alongside the attestation
+     *   (32-byte random hex per call as of 2026-04-26). To fix:
+     *     1. Add `device_challenge` to LoginController / RegisterController /
+     *        MobileController / PasskeyController validation rules.
+     *     2. Plumb it through verifyDeviceAttestationForUser() →
+     *        verifyDeviceAttestation() (new $challenge param) →
+     *        AppleAttestationVerifier::verify($attestation, $challenge).
+     *     3. For Android, pass the challenge as the nonce to Play Integrity's
+     *        decrypt request inside GoogleIntegrityVerifier (currently no
+     *        challenge handling at all).
+     *
+     *   Coordinate with the mobile team before flipping — see the conversation
+     *   thread on PR #321 (FinAegis/finaegis-mobile) and the App Attest /
+     *   Play Integrity handshake design notes the mobile dev shared on
+     *   2026-04-26.
      */
     public function verifyDeviceAttestation(string $attestation, string $deviceType): bool
     {
@@ -233,6 +275,7 @@ class BiometricJWTService implements BiometricJWTServiceInterface
         // Production attestation when enabled
         if (config('mobile.attestation.enabled', false)) {
             return match ($deviceType) {
+                // FIXME: empty challenge — see method docblock; must wire mobile-supplied challenge before flag flip.
                 'ios'     => app(AppleAttestationVerifier::class)->verify($attestation, ''),
                 'android' => app(GoogleIntegrityVerifier::class)->verify($attestation),
                 default   => false,

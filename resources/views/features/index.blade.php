@@ -5,7 +5,7 @@
 @section('seo')
     @include('partials.seo', [
         'title' => 'Features - Modern Banking Platform | ' . config('brand.name', 'Zelta'),
-        'description' => 'Explore ' . config('brand.name', 'Zelta') . '\'s 56 banking modules: GCU governance, ISO 20022, PSD2 Open Banking, multi-rail payments, DeFi, ledger, microfinance, and developer tools.',
+        'description' => 'Explore ' . config('brand.name', 'Zelta') . '\'s 61 banking modules: GCU governance, ISO 20022, PSD2 Open Banking, multi-rail payments, DeFi, ledger, microfinance, and developer tools.',
         'keywords' => config('brand.name', 'Zelta') . ' features, GCU, ISO 20022, PSD2, open banking, payment rails, ACH, SEPA, Interledger, ledger, microfinance, cross-chain, DeFi, privacy, x402, RegTech, BaaS',
     ])
 
@@ -40,7 +40,7 @@
                 @include('partials.breadcrumb', ['items' => [['name' => 'Features', 'url' => url('/features')]]])
                 <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">Every Banking Capability. <span class="text-gradient">One Codebase.</span></h1>
                 <p class="text-lg text-slate-400 max-w-2xl mx-auto">
-                    56 production-ready modules spanning payments, lending, compliance, DeFi, AI, and developer tools — so you ship products, not infrastructure.
+                    61 production-ready modules spanning payments, lending, compliance, DeFi, AI, and developer tools — so you ship products, not infrastructure.
                 </p>
             </div>
         </div>
@@ -191,6 +191,22 @@
                     </p>
                     <a href="{{ route('features.show', 'multi-asset') }}" class="text-purple-600 font-medium hover:text-purple-700">
                         Explore assets →
+                    </a>
+                </div>
+
+                <!-- MCP-native banking -->
+                <div class="card-feature">
+                    <div class="w-14 h-14 bg-emerald-100 rounded-lg flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">MCP-native banking <span class="ml-1 text-xs font-bold text-emerald-600 align-middle">NEW</span></h3>
+                    <p class="text-slate-500 mb-4">
+                        Connect Claude, Cursor, or any agent to move money, exchange, send SMS, and more — through one OAuth-protected endpoint.
+                    </p>
+                    <a href="{{ route('features.show', 'mcp') }}" class="text-emerald-600 font-medium hover:text-emerald-700">
+                        Explore MCP →
                     </a>
                 </div>
 
@@ -363,10 +379,10 @@
                     </div>
                     <div class="flex items-center gap-2 mb-3">
                         <h3 class="text-xl font-semibold">AI Framework</h3>
-                        <span class="inline-flex items-center px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">24 Tools</span>
+                        <span class="inline-flex items-center px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">{{ count(config('mcp.tools')) }} Tools</span>
                     </div>
                     <p class="text-slate-500 mb-4">
-                        6 specialized agents, 24 MCP tools, ML anomaly detection, Temporal workflow orchestration, and multi-agent consensus engine.
+                        6 specialized agents, 12 OAuth-scoped MCP tools, ML anomaly detection, Temporal workflow orchestration, and multi-agent consensus engine.
                     </p>
                     <a href="{{ route('features.show', 'ai-framework') }}" class="text-purple-600 font-medium hover:text-purple-700">
                         Explore AI →
@@ -503,7 +519,7 @@
                     </div>
                     <div class="flex items-center gap-2 mb-3">
                         <h3 class="text-xl font-semibold">Zelta CLI</h3>
-                        <span class="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full font-medium">v0.2.0</span>
+                        <span class="inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full font-medium">v0.2.9</span>
                     </div>
                     <p class="text-slate-500 mb-4">
                         Manage payments, SMS, wallets, and API monetization from the terminal. Built for humans and AI agents with dual output: tables or JSON.

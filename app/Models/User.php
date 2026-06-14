@@ -4,12 +4,15 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Domain\Account\Models\Account;
+use App\Domain\Account\Models\BlockchainAddress;
+use App\Domain\Account\Models\BlockchainTransaction;
 use App\Domain\Account\Models\Transaction;
 use App\Domain\Banking\Models\BankAccountModel;
 use App\Domain\Banking\Models\UserBankPreference;
 use App\Domain\Cgo\Models\CgoInvestment;
 use App\Domain\Compliance\Models\KycDocument;
 use App\Domain\User\Values\UserRoles;
+use App\Domain\Wallet\Models\WalletSendRecord;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -35,12 +38,18 @@ class User extends Authenticatable implements FilamentUser
     use HasApiTokens;
     use HasFactory;
     use HasProfilePhoto;
-    use HasTeams;
     use HasUuids;
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use HasRoles;
     use Billable;
+
+    // spatie/laravel-permission 7.4+ added a `teams()` method on HasRoles that
+    // collides with Jetstream's HasTeams::teams. Spatie's team-aware permission
+    // mode is disabled in config/permission.php, so Jetstream wins the method
+    // name and the unused Spatie variant is hidden.
+    use HasTeams, HasRoles {
+        HasTeams::teams insteadof HasRoles;
+    }
 
     /**
      * Get the columns that should receive a unique identifier.
@@ -65,6 +74,9 @@ class User extends Authenticatable implements FilamentUser
         'oauth_provider',
         'oauth_id',
         'avatar',
+        'privy_user_id',
+        'privy_linked_at',
+        'timezone',
         'kyc_status',
         'kyc_submitted_at',
         'kyc_approved_at',
@@ -87,6 +99,10 @@ class User extends Authenticatable implements FilamentUser
         'sponsored_tx_limit',
         'referral_code',
         'referred_by',
+        // Plan B Slice 4 — cue queue columns (Backend-Q8)
+        'pro_marketing_opt_out',
+        'lifetime_spend_cents',
+        'kyc_completed_at',
     ];
 
     /**
@@ -120,6 +136,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at'          => 'datetime',
             'password'                   => 'hashed',
+            'privy_linked_at'            => 'datetime',
             'kyc_submitted_at'           => 'datetime',
             'kyc_approved_at'            => 'datetime',
             'kyc_expires_at'             => 'datetime',
@@ -135,6 +152,10 @@ class User extends Authenticatable implements FilamentUser
             'free_tx_until'              => 'datetime',
             'sponsored_tx_used'          => 'integer',
             'sponsored_tx_limit'         => 'integer',
+            // Plan B Slice 4 — cue queue columns (Backend-Q8)
+            'pro_marketing_opt_out' => 'boolean',
+            'lifetime_spend_cents'  => 'integer',
+            'kyc_completed_at'      => 'datetime',
         ];
     }
 
@@ -184,6 +205,45 @@ class User extends Authenticatable implements FilamentUser
     public function primaryAccount()
     {
         return $this->account()->first();
+    }
+
+    /**
+     * Get the account flag row (reviewer/demo provisioning bypasses).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Domain\AccountProvisioning\Models\AccountFlag, $this>
+     */
+    public function accountFlag(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(\App\Domain\AccountProvisioning\Models\AccountFlag::class);
+    }
+
+    /**
+     * Resolve the user's effective KYC level as an integer, applying any
+     * active AccountFlag override. When no flag override is present, the
+     * real `kyc_level` ENUM column (none/basic/enhanced/full) is mapped
+     * to its numeric tier (0/1/2/3).
+     */
+    public function effectiveKycLevel(): int
+    {
+        $service = app(\App\Domain\AccountProvisioning\Services\AccountFlagsService::class);
+        $override = $service->kycOverrideLevel($this);
+
+        if ($override !== null) {
+            return $override;
+        }
+
+        $raw = $this->kyc_level ?? 0;
+
+        if (is_int($raw)) {
+            return $raw;
+        }
+
+        return match ($raw) {
+            'basic'    => 1,
+            'enhanced' => 2,
+            'full'     => 3,
+            default    => 0,
+        };
     }
 
     /**
@@ -296,6 +356,43 @@ class User extends Authenticatable implements FilamentUser
             'uuid', // Local key on users table
             'uuid' // Local key on accounts table
         );
+    }
+
+    /**
+     * The user's non-custodial wallet addresses — one row per chain.
+     *
+     * @return HasMany<BlockchainAddress, $this>
+     */
+    public function blockchainAddresses(): HasMany
+    {
+        return $this->hasMany(BlockchainAddress::class, 'user_uuid', 'uuid');
+    }
+
+    /**
+     * Every on-chain transaction mirrored across the user's wallet addresses.
+     *
+     * @return HasManyThrough<BlockchainTransaction, BlockchainAddress, $this>
+     */
+    public function blockchainTransactions(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            BlockchainTransaction::class,
+            BlockchainAddress::class,
+            'user_uuid',    // Foreign key on blockchain_addresses → users
+            'address_uuid', // Foreign key on blockchain_address_transactions → blockchain_addresses
+            'uuid',         // Local key on users
+            'uuid'          // Local key on blockchain_addresses
+        );
+    }
+
+    /**
+     * The user's outbound wallet sends (prepare/submit flow), all networks.
+     *
+     * @return HasMany<WalletSendRecord, $this>
+     */
+    public function walletSendRecords(): HasMany
+    {
+        return $this->hasMany(WalletSendRecord::class, 'user_id');
     }
 
     /**

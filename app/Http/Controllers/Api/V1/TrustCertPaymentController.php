@@ -17,29 +17,6 @@ use Illuminate\Support\Str;
 class TrustCertPaymentController extends Controller
 {
     /**
-     * Verification fee schedule by trust level (numeric).
-     *
-     * @var array<int, numeric-string>
-     */
-    private const LEVEL_FEES = [
-        1 => '4.99',
-        2 => '4.99',
-        3 => '9.99',
-        4 => '9.99',
-    ];
-
-    /**
-     * IAP product IDs for each level.
-     *
-     * @var array<int, string>
-     */
-    public const IAP_PRODUCT_IDS = [
-        1 => 'kyc_verification_level_1',
-        2 => 'kyc_verification_level_2',
-        3 => 'kyc_verification_level_3',
-    ];
-
-    /**
      * Method 1: Pay with wallet balance (USDC internal ledger deduction).
      */
     public function payWallet(string $applicationId, Request $request): JsonResponse
@@ -47,6 +24,10 @@ class TrustCertPaymentController extends Controller
         $user = $request->user();
         if (! $user instanceof \App\Models\User) {
             return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        if ($disabled = $this->feesDisabledResponse()) {
+            return $disabled;
         }
 
         $application = $this->findApplication($user->id, $applicationId);
@@ -113,6 +94,10 @@ class TrustCertPaymentController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
+        if ($disabled = $this->feesDisabledResponse()) {
+            return $disabled;
+        }
+
         $application = $this->findApplication($user->id, $applicationId);
         if (! $application) {
             return response()->json([
@@ -141,13 +126,16 @@ class TrustCertPaymentController extends Controller
             ], 503);
         }
 
+        $successUrl = (string) config('services.stripe.kyc_success_url');
+        $cancelUrl = (string) config('services.stripe.kyc_cancel_url');
+
         // Create Stripe Checkout Session
         $response = Http::withToken($stripeSecret)
             ->asForm()
             ->post('https://api.stripe.com/v1/checkout/sessions', [
                 'mode'                                          => 'payment',
-                'success_url'                                   => 'zelta://kyc-payment-success?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url'                                    => 'zelta://kyc-payment-cancel',
+                'success_url'                                   => $successUrl,
+                'cancel_url'                                    => $cancelUrl,
                 'line_items[0][price_data][currency]'           => 'usd',
                 'line_items[0][price_data][product_data][name]' => 'KYC Verification - Level ' . ucfirst($level),
                 'line_items[0][price_data][unit_amount]'        => (string) ((int) bcmul($fee, '100', 0)),
@@ -197,6 +185,10 @@ class TrustCertPaymentController extends Controller
         $user = $request->user();
         if (! $user instanceof \App\Models\User) {
             return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        if ($disabled = $this->feesDisabledResponse()) {
+            return $disabled;
         }
 
         $request->validate([
@@ -280,7 +272,32 @@ class TrustCertPaymentController extends Controller
 
         $numericLevel = $levelMap[$targetLevel] ?? 1;
 
-        return self::LEVEL_FEES[$numericLevel] ?? '4.99';
+        return self::getVerificationFee($numericLevel) ?? '0.00';
+    }
+
+    /**
+     * Whether paid verification is currently enabled. When false, verification
+     * is free and the pay endpoints are closed.
+     */
+    public static function feesEnabled(): bool
+    {
+        return (bool) config('trustcert.verification_fees.enabled', false);
+    }
+
+    /**
+     * Guard for the pay endpoints: a 403 response when verification fees are
+     * disabled (verification is free — there is nothing to pay), else null.
+     */
+    private function feesDisabledResponse(): ?JsonResponse
+    {
+        if (self::feesEnabled()) {
+            return null;
+        }
+
+        return response()->json([
+            'error'   => 'ERR_CERT_403',
+            'message' => 'Verification is currently free — no payment is required.',
+        ], 403);
     }
 
     /**
@@ -391,12 +408,25 @@ class TrustCertPaymentController extends Controller
     }
 
     /**
-     * Get verification fee for a given numeric trust level.
+     * Get the verification fee for a numeric trust level.
      *
-     * Used by MobileTrustCertController to add verificationFee to requirements response.
+     * Used by MobileTrustCertController to add verificationFee to the
+     * requirements response. Returns '0.00' for every chargeable level when
+     * verification fees are disabled (the launch default), so the mobile
+     * "fee = 0 -> no payment step" path applies. Returns null for levels
+     * with no fee-schedule entry (e.g. unknown).
+     *
+     * @return numeric-string|null
      */
     public static function getVerificationFee(int $numericLevel): ?string
     {
-        return self::LEVEL_FEES[$numericLevel] ?? null;
+        /** @var array<int, numeric-string> $schedule */
+        $schedule = (array) config('trustcert.verification_fees.level_fees', []);
+
+        if (! isset($schedule[$numericLevel])) {
+            return null;
+        }
+
+        return self::feesEnabled() ? $schedule[$numericLevel] : '0.00';
     }
 }

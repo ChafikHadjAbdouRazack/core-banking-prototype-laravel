@@ -45,6 +45,16 @@ class AppServiceProvider extends ServiceProvider
                 return null;
             }
         });
+
+        // Register AccountFlagsService as request-scoped so the per-request cache
+        // persists across a single HTTP request or console command, but is reset
+        // between requests / queue jobs / Octane workers (avoids stale state).
+        $this->app->scoped(\App\Domain\AccountProvisioning\Services\AccountFlagsService::class);
+
+        // Default Guzzle client for outbound HTTP from domain services that
+        // type-hint the PSR/Guzzle ClientInterface (e.g. PrivyJwtVerifier).
+        // Tests bind their own mock via the container.
+        $this->app->bind(\GuzzleHttp\ClientInterface::class, \GuzzleHttp\Client::class);
     }
 
     /**
@@ -52,6 +62,30 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Plan B Backend-Q1: pin the Stripe API version in a single config key
+        // (config/services.php:stripe.api_version, env STRIPE_API_VERSION) so
+        // Cashier (subscription path) and any future Stripe Bridge clients use
+        // the same version. Override the StripeClient container binding so
+        // any caller that resolves it via the container honours the pinned
+        // version unless they explicitly override.
+        $stripeApiVersion = (string) config('services.stripe.api_version');
+        if ($stripeApiVersion !== '') {
+            $this->app->bind(\Stripe\StripeClient::class, function ($app, array $parameters = []) use ($stripeApiVersion) {
+                /** @var array<string, mixed> $config */
+                $config = isset($parameters['config']) && is_array($parameters['config']) ? $parameters['config'] : [];
+
+                if (! isset($config['stripe_version'])) {
+                    $config['stripe_version'] = $stripeApiVersion;
+                }
+
+                if (! isset($config['api_key'])) {
+                    $config['api_key'] = (string) config('cashier.secret');
+                }
+
+                return new \Stripe\StripeClient($config);
+            });
+        }
+
         // L5-Swagger: inject the analyser at generation time (not in config) so
         // config:cache / optimize works. Object instances are not serializable.
         $this->app->resolving(\L5Swagger\GeneratorFactory::class, function () {
@@ -101,5 +135,40 @@ class AppServiceProvider extends ServiceProvider
             config(['app.rate_limits.api' => config('demo.rate_limits.api', 60)]);
             config(['app.rate_limits.transactions' => config('demo.rate_limits.transactions', 10)]);
         }
+
+        // Register MCP-supported OAuth scopes with Passport. Without this, the OAuth
+        // server rejects an /oauth/authorize call carrying any of our custom scopes
+        // (accounts:read, payments:write, sms:send, ...) with `invalid_scope` before
+        // the consent view is ever rendered.
+        $mcpScopes = (array) config('mcp.scopes', []);
+        if ($mcpScopes !== []) {
+            \Laravel\Passport\Passport::tokensCan($mcpScopes);
+        }
+
+        // Override Passport's default authorization view with the branded MCP consent
+        // screen. The closure receives Passport's view parameters (client, user, scopes,
+        // request, authToken). We forward the parameter bag to our controller so it can
+        // emit Passport's `authToken` as the form's hidden `auth_token` field — without
+        // it the approve/deny POST is rejected with InvalidAuthTokenException.
+        \Laravel\Passport\Passport::authorizationView(function (array $parameters): \Symfony\Component\HttpFoundation\Response {
+            /** @var \App\Domain\MCP\Auth\ConsentScreenController $controller */
+            $controller = app(\App\Domain\MCP\Auth\ConsentScreenController::class);
+            $view = $controller(request(), $parameters);
+
+            return response($view->render());
+        });
+
+        // Plan B Slice 4 — Cue queue event listeners (Backend-Q8).
+        // OnboardingCompleted → EnqueueProTrialReminderD1 (24h delay)
+        // SubscriptionTrialStarted → three trial-ending delayed jobs
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Domain\Subscription\Events\OnboardingCompleted::class,
+            \App\Domain\Subscription\Listeners\OnboardingCompletedListener::class,
+        );
+
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Domain\Subscription\Events\SubscriptionTrialStarted::class,
+            \App\Domain\Subscription\Listeners\SubscriptionTrialStartedListener::class,
+        );
     }
 }

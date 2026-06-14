@@ -57,7 +57,9 @@ class SchemaHelperTest extends TestCase
         $this->assertArrayHasKey('contactPoint', $schema);
         $this->assertEquals('ContactPoint', $schema['contactPoint']['@type']);
         $this->assertArrayHasKey('knowsAbout', $schema);
-        $this->assertContains('Agentic Payments', $schema['knowsAbout']);
+        $this->assertContains('Non-Custodial Wallets', $schema['knowsAbout']);
+        $this->assertContains('Agent-Callable Payment API', $schema['knowsAbout']);
+        $this->assertEquals('Non-Custodial Wallets', $schema['knowsAbout'][0]);
     }
 
     #[Test]
@@ -86,8 +88,18 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('https://schema.org', $schema['@context']);
         $this->assertEquals('MobileApplication', $schema['@type']);
         $this->assertEquals($brand, $schema['name']);
-        $this->assertEquals('iOS, Android', $schema['operatingSystem']);
+        $this->assertEquals('Android', $schema['operatingSystem']);
         $this->assertEquals('FinanceApplication', $schema['applicationCategory']);
+
+        // installUrl points at the Zelta wallet's Play Store listing — it is
+        // emitted only under the Zelta brand (demo brands omit it so a
+        // FinAegis-named schema never links the Zelta store entry).
+        if ($brand === 'Zelta') {
+            $this->assertArrayHasKey('installUrl', $schema);
+            $this->assertStringContainsString('play.google.com', $schema['installUrl']);
+        } else {
+            $this->assertArrayNotHasKey('installUrl', $schema);
+        }
         $this->assertArrayHasKey('offers', $schema);
         $this->assertIsArray($schema['offers']);
         $this->assertCount(1, $schema['offers']);
@@ -110,8 +122,6 @@ class SchemaHelperTest extends TestCase
         $this->assertEquals('Digital Currency', $schema['category']);
         $this->assertArrayHasKey('offers', $schema);
         $this->assertEquals('1.00', $schema['offers']['price']);
-        $this->assertArrayHasKey('aggregateRating', $schema);
-        $this->assertEquals('4.8', $schema['aggregateRating']['ratingValue']);
     }
 
     #[Test]

@@ -9,7 +9,7 @@ declare(strict_types=1);
  * Built for humans and AI agents.
  *
  * Usage:
- *   zelta auth login --key zk_live_xxx
+ *   zelta auth login --key <api-token>     (Sanctum personal access token)
  *   zelta auth logout
  *   zelta auth token --unmask
  *   zelta pay list
@@ -18,7 +18,11 @@ declare(strict_types=1);
  *   zelta sms send --to +370xxx --message "Hello"
  *   zelta sms status <messageId>
  *   zelta wallet balance
- *   zelta wallet send --to 0x... --amount 10 --token USDC --yes
+ *   zelta wallet transactions --limit 20
+ *   zelta wallet intent <intentId>
+ *   zelta ramp status
+ *   zelta ramp kyc-link
+ *   zelta subscription status
  *   zelta limits list
  *   zelta agents discover --capability payment
  *   zelta sdk generate typescript --output ./sdk
@@ -52,17 +56,24 @@ use ZeltaCli\Commands\Pay\ListCommand as PayListCommand;
 use ZeltaCli\Commands\Pay\SendCommand as PaySendCommand;
 use ZeltaCli\Commands\Pay\StatsCommand;
 use ZeltaCli\Commands\Pay\StatusCommand as PayStatusCommand;
+use ZeltaCli\Commands\Ramp\KycLinkCommand as RampKycLinkCommand;
+use ZeltaCli\Commands\Ramp\StatusCommand as RampStatusCommand;
 use ZeltaCli\Commands\Sdk\GenerateCommand;
 use ZeltaCli\Commands\Sms\RatesCommand;
 use ZeltaCli\Commands\Sms\SendCommand;
 use ZeltaCli\Commands\Sms\StatusCommand as SmsStatusCommand;
+use ZeltaCli\Commands\Subscription\StatusCommand as SubscriptionStatusCommand;
 use ZeltaCli\Commands\Wallet\BalanceCommand;
-use ZeltaCli\Commands\Wallet\SendCommand as WalletSendCommand;
+use ZeltaCli\Commands\Wallet\IntentCommand as WalletIntentCommand;
 use ZeltaCli\Commands\Wallet\TokensCommand;
+use ZeltaCli\Commands\Wallet\TransactionsCommand as WalletTransactionsCommand;
 use ZeltaCli\Commands\ConfigCommand;
 use ZeltaCli\Commands\WhoamiCommand;
 
-$app = new Application('Zelta CLI', '0.2.0');
+// Single source of truth for the CLI version — see config/zelta.php.
+$zeltaConfig = require __DIR__ . '/config/zelta.php';
+
+$app = new Application('Zelta CLI', is_string($zeltaConfig['version'] ?? null) ? $zeltaConfig['version'] : '0.0.0');
 
 // Auth
 $app->add(new LoginCommand());
@@ -81,10 +92,18 @@ $app->add(new SendCommand());
 $app->add(new RatesCommand());
 $app->add(new SmsStatusCommand());
 
-// Wallet
+// Wallet (read-only: sends are non-custodial and signed on-device)
 $app->add(new BalanceCommand());
-$app->add(new WalletSendCommand());
+$app->add(new WalletTransactionsCommand());
+$app->add(new WalletIntentCommand());
 $app->add(new TokensCommand());
+
+// Ramp (bank-rail deposits via Bridge.xyz — setup is per-user, one-time)
+$app->add(new RampStatusCommand());
+$app->add(new RampKycLinkCommand());
+
+// Subscription (read-only: plan changes happen in the app / web checkout)
+$app->add(new SubscriptionStatusCommand());
 
 // Limits
 $app->add(new LimitsListCommand());

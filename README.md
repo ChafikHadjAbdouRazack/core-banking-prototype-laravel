@@ -1,7 +1,7 @@
 # FinAegis Core Banking Platform
 
-[![CI Pipeline](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/finaegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
-[![Version](https://img.shields.io/badge/version-7.10.10-blue.svg)](CHANGELOG.md)
+[![CI Pipeline](https://github.com/FinAegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml/badge.svg)](https://github.com/FinAegis/core-banking-prototype-laravel/actions/workflows/ci-pipeline.yml)
+[![Version](https://img.shields.io/github/v/release/FinAegis/core-banking-prototype-laravel?sort=semver&label=release)](CHANGELOG.md)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D8.4-8892BF.svg)](https://php.net/)
 [![Laravel Version](https://img.shields.io/badge/Laravel-12.x-FF2D20.svg)](https://laravel.com/)
@@ -12,6 +12,8 @@
 
 FinAegis provides the foundation for building digital banking applications. The **Global Currency Unit (GCU)** serves as a complete reference implementation demonstrating how to build basket currencies, governance systems, and democratic financial instruments on this platform.
 
+> **FinAegis vs Zelta:** *FinAegis* is this open-source core-banking platform. *Zelta* is the hosted product and mobile wallet built on top of it — so production and hosted surfaces (for example the MCP server at `mcp.zelta.app`) carry the Zelta brand.
+
 [Live Demo](https://finaegis.org) | [Documentation](docs/README.md) | [Quick Start](#quick-start) | [Contributing](CONTRIBUTING.md)
 
 ---
@@ -20,7 +22,7 @@ FinAegis provides the foundation for building digital banking applications. The 
 
 | Challenge | FinAegis Solution |
 |-----------|-------------------|
-| Building financial systems from scratch | 56 production-ready domain modules |
+| Building financial systems from scratch | 61 domain modules |
 | Audit trail requirements | Event sourcing with domain-specific event tables |
 | Complex multi-step transactions | Saga pattern with automatic compensation |
 | Regulatory compliance | Built-in KYC/AML, SOC 2, PCI DSS, GDPR (v3.5.0) |
@@ -30,10 +32,10 @@ FinAegis provides the foundation for building digital banking applications. The 
 | Privacy-preserving transactions | ZK-KYC, Merkle trees, ERC-4337 gas abstraction (v2.4.0-v2.6.0) |
 | Multi-jurisdiction RegTech | MiFID II, MiCA, FATF Travel Rule, 4-jurisdiction adapters (v2.8.0) |
 | Cross-chain & DeFi | Bridge protocols, DEX aggregation, yield optimization (v3.0.0) |
-| Modular plugin architecture | 56 domains with manifests, enable/disable, dependency resolution (v3.2.0) |
+| Modular plugin architecture | 61 domains with manifests, enable/disable, dependency resolution (v3.2.0) |
 | Compliance certification | SOC 2 Type II, PCI DSS readiness, multi-region deployment (v3.5.0) |
 | GraphQL API | Schema-first Lighthouse PHP, 45 domains, subscriptions (v4.0.0+) |
-| Event Store v2 | Domain routing (56 domains), upcasting, migration tooling (v4.0.0) |
+| Event Store v2 | Domain routing (61 domains), upcasting, migration tooling (v4.0.0) |
 | Plugin Marketplace | Manager, loader, sandbox, security scanner (v4.0.0) |
 | Event streaming | Redis Streams publisher/consumer, live dashboard (v5.0.0) |
 | API monetization | x402 protocol: HTTP-native micropayments with USDC on Base (v5.2.0) |
@@ -47,9 +49,13 @@ FinAegis provides the foundation for building digital banking applications. The 
 | Distributed tracing | OpenTelemetry, Zipkin, Jaeger, per-request trace propagation (v6.2.0) |
 | AI agent commerce | A2A messaging, DID identity, escrow, reputation framework (v6.3.0) |
 | Machine payments | MPP multi-rail (Stripe, USDC, Lightning), AP2 mandates, x402 Solana (v6.4.0) |
-| Payment orchestration | HyperSwitch 150+ connectors, smart routing, failover (v6.4.2) |
+| Payment orchestration (experimental, opt-in) | HyperSwitch routing for card deposits behind `HYPERSWITCH_ENABLED` (off by default — Stripe is the default rail); webhook-credited deposit completion (v6.4.2, wired in #1118) |
 | Mobile launch readiness | Quest auto-triggers, device attestation, JIT funding, rewards (v6.5.0) |
 | SMS multi-rail payments | VertexSMS integration, MPP-gated SMS, MCP tool for AI agents (v7.10.7) |
+| Public MCP server | OAuth-secured Model Context Protocol server at `mcp.zelta.app`, `@finaegis/mcp` npm wrapper (v7.11.0) |
+| Non-custodial wallet | Privy passkey/device-key signing, sponsored EVM + Solana sends, prepare/submit flow (v7.12.0) |
+| Mobile subscriptions | Apple App Store + Google Play IAP verification, pseudonymised receipts, revenue outbox (v7.13.0) |
+| Fiat ↔ stablecoin ramp | Bridge.xyz bank-rail on-ramp, virtual accounts, USDC on Polygon, asymmetric webhook verification (v7.15.0) |
 | Learning modern architecture | Complete DDD + CQRS + Event Sourcing example |
 
 ---
@@ -59,7 +65,7 @@ FinAegis provides the foundation for building digital banking applications. The 
 FinAegis uses a modular plugin system where each domain is a self-contained module:
 
 ```bash
-php artisan domain:list              # List all 56 domain modules with status
+php artisan domain:list              # List all 61 domain modules with status
 php artisan module:enable exchange   # Enable a module
 php artisan module:disable exchange  # Disable a module (preserves data)
 php artisan domain:verify exchange   # Verify module health
@@ -88,7 +94,7 @@ curl -X POST http://localhost:8000/graphql \
   -d '{"query": "{ accounts { id name balance currency } }"}'
 ```
 
-- **45 domain schemas** — Account, AgentProtocol, AI, Asset, Banking, Basket, Batch, CardIssuance, Cgo, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, FinancialInstitution, Fraud, Governance, Interledger, ISO20022, KeyManagement, Ledger, Lending, MachinePay, Microfinance, Mobile, MobilePayment, OpenBanking, Payment, PaymentRails, Plugin, Privacy, Product, RegTech, Regulatory, Relayer, Rewards, SMS, Stablecoin, Treasury, TrustCert, User, Wallet, X402
+- **45 schema imports** — 43 domain schemas (Account, AgentProtocol, AI, Asset, Banking, Basket, Exchange, Compliance, Governance, Lending, Treasury, Wallet, X402, …) plus `directives` and `subscriptions`; see [`graphql/schema.graphql`](graphql/schema.graphql) for the authoritative list
 - **Subscriptions** — Real-time updates via WebSocket (account updates, wallet changes, compliance alerts, order matching)
 - **DataLoaders** — N+1 query prevention with batched loading
 - **Security** — `@guard(with: ["sanctum"])`, query cost analysis, introspection control
@@ -147,7 +153,7 @@ GCU shows how to build complex financial products using FinAegis primitives.
 </tr>
 </table>
 
-See [ADR-004: GCU Basket Design](docs/ADR/ADR-004-gcu-basket-design.md) for architecture details.
+See [ADR-0010: GCU Basket Design](docs/adr/0010-gcu-basket-design.md) for architecture details.
 
 ---
 
@@ -158,7 +164,7 @@ See [ADR-004: GCU Basket Design](docs/ADR/ADR-004-gcu-basket-design.md) for arch
 No external dependencies - everything runs locally:
 
 ```bash
-git clone https://github.com/finaegis/core-banking-prototype-laravel.git
+git clone https://github.com/FinAegis/core-banking-prototype-laravel.git
 cd core-banking-prototype-laravel
 composer install
 cp .env.demo .env
@@ -176,7 +182,7 @@ Visit `http://localhost:8000` with demo credentials:
 ### Full Installation
 
 ```bash
-git clone https://github.com/finaegis/core-banking-prototype-laravel.git
+git clone https://github.com/FinAegis/core-banking-prototype-laravel.git
 cd core-banking-prototype-laravel
 composer install && npm install
 cp .env.example .env
@@ -237,7 +243,7 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 |--------|-------------|
 | **Exchange** | Order matching, liquidity pools, AMM, external connectors, WebSocket streaming |
 | **Stablecoin** | Multi-collateral minting, burning, liquidation |
-| **Wallet** | Multi-chain (BTC, ETH, Polygon, BSC), Hardware wallets (Ledger, Trezor), Multi-sig (M-of-N) |
+| **Wallet** | Non-custodial EVM sends (Polygon, Base, Arbitrum) + Solana; USDC receive on Solana/Tron; Ledger/Trezor hardware-wallet integration |
 | **Basket (GCU)** | Weighted currency basket, NAV calculation, rebalancing |
 
 ### Platform Services
@@ -303,12 +309,12 @@ See [Domain Management Guide](docs/06-DEVELOPMENT/DOMAIN_MANAGEMENT.md) for deta
 - **Event Sourcing** - Domain-specific event tables with Event Store v2, replay, and upcasting (v4.0.0)
 - **CQRS** - Separated read/write models for optimal performance
 - **Saga Pattern** - Distributed transactions with automatic rollback
-- **DDD** - 56 bounded contexts with clear boundaries
+- **DDD** - 61 bounded contexts with clear boundaries
 - **Multi-Tenancy** - Team-based data isolation with stancl/tenancy v3.9
 - **GraphQL** - Schema-first Lighthouse PHP across 45 domains with subscriptions (v4.0.0+)
 - **Event Streaming** - Redis Streams publisher/consumer with live dashboard (v5.0.0)
 
-See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
+See [Architecture Decision Records](docs/adr/) for detailed design rationale.
 
 ---
 
@@ -317,11 +323,11 @@ See [Architecture Decision Records](docs/ADR/) for detailed design rationale.
 | Category | Links |
 |----------|-------|
 | **Getting Started** | [Quick Start](#quick-start) · [User Guides](docs/05-USER-GUIDES/) |
-| **Architecture** | [Overview](docs/02-ARCHITECTURE/) · [ADRs](docs/ADR/) · [Roadmap](docs/ARCHITECTURAL_ROADMAP.md) |
+| **Architecture** | [Overview](docs/02-ARCHITECTURE/) · [ADRs](docs/adr/) · [Roadmap](docs/ARCHITECTURAL_ROADMAP.md) |
 | **API** | [REST Reference](docs/04-API/REST_API_REFERENCE.md) · [OpenAPI](/api/documentation) · [GraphQL](/graphql-playground) |
 | **Version History** | [Changelog](CHANGELOG.md) · [Version Roadmap](docs/VERSION_ROADMAP.md) |
 | **Development** | [Contributing](CONTRIBUTING.md) · [Dev Guides](docs/06-DEVELOPMENT/) |
-| **Reference** | [GCU Design](docs/ADR/ADR-004-gcu-basket-design.md) · [Event Sourcing](docs/ADR/ADR-001-event-sourcing.md) |
+| **Reference** | [GCU Design](docs/adr/0010-gcu-basket-design.md) · [Event Sourcing](docs/adr/0007-event-sourcing.md) |
 
 ---
 
@@ -373,7 +379,19 @@ helm upgrade --install finaegis ./helm/finaegis \
 - Prometheus ServiceMonitor for observability
 - Network Policies for pod isolation
 
-See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details.
+See [Infrastructure & Deployment Guide](docs/06-DEVELOPMENT/INFRASTRUCTURE.md) for details.
+
+---
+
+## MCP (Model Context Protocol)
+
+Connect Claude Desktop, Cursor, or Continue.dev to your Zelta account:
+
+```bash
+npx -y @finaegis/mcp
+```
+
+Or use the remote URL directly: `https://mcp.zelta.app/mcp`. See [docs/13-AI-FRAMEWORK/03-MCP-Quickstart.md](docs/13-AI-FRAMEWORK/03-MCP-Quickstart.md).
 
 ---
 
@@ -389,7 +407,7 @@ See [Kubernetes Deployment Guide](docs/06-DEVELOPMENT/KUBERNETES.md) for details
 | **Database** | MySQL 8.0+ / MariaDB 10.3+ / PostgreSQL 13+ |
 | **Cache/Queue/Streaming** | Redis (cache, queues, Streams), Laravel Horizon |
 | **Real-time** | Soketi (Pusher-compatible), Laravel Echo, Redis Streams |
-| **Testing** | Pest PHP (parallel, 886 test files, 6,500+ tests), PHPStan Level 8 |
+| **Testing** | Pest PHP (parallel, 1,170+ test files, 4,900+ tests), PHPStan Level 8 |
 | **Admin** | Filament v3 |
 | **Frontend** | Livewire, Tailwind CSS |
 | **Deployment** | Docker, Kubernetes (Helm), Istio |
@@ -406,14 +424,14 @@ This is a **demonstration platform** showcasing modern banking architecture. Use
 - Contributing to open-source fintech
 - Studying GCU as a basket currency reference
 
-**Production Readiness**: The codebase includes production-grade infrastructure (CQRS, event sourcing, multi-tenancy, GraphQL API, event streaming, 50%+ test coverage, PHPStan Level 8, 6,300+ tests). However, **a security audit and compliance review are required** before any production deployment. See [Security Policy](SECURITY.md) for vulnerability reporting.
+**Production Readiness**: The codebase includes production-grade infrastructure (CQRS, event sourcing, multi-tenancy, GraphQL API, event streaming, 50%+ test coverage, PHPStan Level 8, 4,900+ tests). However, **a security audit and compliance review are required** before any production deployment. See [Security Policy](SECURITY.md) for vulnerability reporting.
 
 ---
 
 ## Community
 
-- [GitHub Discussions](https://github.com/finaegis/core-banking-prototype-laravel/discussions) - Questions & Ideas
-- [GitHub Issues](https://github.com/finaegis/core-banking-prototype-laravel/issues) - Bug Reports
+- [GitHub Discussions](https://github.com/FinAegis/core-banking-prototype-laravel/discussions) - Questions & Ideas
+- [GitHub Issues](https://github.com/FinAegis/core-banking-prototype-laravel/issues) - Bug Reports
 - [Security Policy](SECURITY.md) - Vulnerability Reporting
 - [Code of Conduct](CODE_OF_CONDUCT.md) - Community Guidelines
 - [Changelog](CHANGELOG.md) - Version History

@@ -61,6 +61,26 @@ class SecurityHeaders
      */
     private function getContentSecurityPolicy(Request $request): string
     {
+        // OAuth authorization endpoints: the consent form posts to /oauth/authorize
+        // and the server then 302s to the client's registered redirect_uri. Modern
+        // browsers apply form-action to the entire redirect chain, so a strict
+        // 'self' policy blocks the loopback redirect that RFC 8252 native apps
+        // (Claude Desktop, Cursor, etc. via @finaegis/mcp) rely on. We trust
+        // Passport's own redirect_uri validation against oauth_clients here.
+        if ($request->is('oauth/*')) {
+            return implode('; ', [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline'",
+                "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
+                "img-src 'self' data: blob: https:",
+                "font-src 'self' https://fonts.bunny.net",
+                "connect-src 'self'",
+                "form-action 'self' http://127.0.0.1:* http://[::1]:* https:",
+                "base-uri 'self'",
+                "frame-ancestors 'none'",
+            ]);
+        }
+
         // Swagger UI requires relaxed CSP (CDN assets + unsafe-eval for JSON rendering)
         if ($request->is('api/documentation*') || $request->is('docs*')) {
             return implode('; ', [
@@ -86,6 +106,20 @@ class SecurityHeaders
         $connectSources = explode(',', config('security.csp.connect_sources', ''));
         $apiEndpoint = config('security.csp.api_endpoint', '');
         $wsEndpoint = config('security.csp.ws_endpoint', '');
+
+        // Auto-inject GA-required hosts whenever a GA tag is configured. Operators
+        // shouldn't need to keep CSP_SCRIPT_SOURCES manually in sync with brand.ga_id
+        // — and forgetting to do so silently breaks pageview tracking on prod.
+        if (config('brand.ga_id')) {
+            $scriptSources = $this->mergeUnique($scriptSources, ['https://www.googletagmanager.com']);
+            $connectSources = $this->mergeUnique($connectSources, [
+                'https://www.google-analytics.com',
+                'https://*.google-analytics.com',
+                'https://www.googletagmanager.com',
+                'https://stats.g.doubleclick.net',
+                'https://*.doubleclick.net',
+            ]);
+        }
 
         // Build production policies (unsafe-eval only for admin panel / Alpine.js)
         $evalDirective = $needsUnsafeEval ? "'unsafe-eval' " : '';
@@ -139,6 +173,26 @@ class SecurityHeaders
         }
 
         return implode('; ', $policies);
+    }
+
+    /**
+     * Merge two CSP source lists into a deduplicated, trimmed result.
+     *
+     * @param  list<string>  $existing
+     * @param  list<string>  $additions
+     * @return list<string>
+     */
+    private function mergeUnique(array $existing, array $additions): array
+    {
+        $merged = [];
+        foreach ([...$existing, ...$additions] as $value) {
+            $value = trim($value);
+            if ($value !== '' && ! in_array($value, $merged, true)) {
+                $merged[] = $value;
+            }
+        }
+
+        return $merged;
     }
 
     /**

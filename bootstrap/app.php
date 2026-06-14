@@ -11,12 +11,27 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\View;
 
-return Application::configure(basePath: dirname(__DIR__))
+// Auto-discover Artisan commands from every domain's Console/Commands directory.
+// Without this, classes like banks:check-alerts and liquidity:update-market-making
+// are defined but never registered — the scheduler then logs "namespace not found"
+// every minute. Laravel's default discovery only scans app/Console/Commands.
+$domainCommandPaths = [];
+foreach (glob(__DIR__ . '/../app/Domain/*/Console/Commands', GLOB_ONLYDIR) ?: [] as $path) {
+    $domainCommandPaths[] = $path;
+}
+
+// Allow worktree test environments to override the base path via APP_BASE_PATH env var.
+// This is a no-op in production (env var not set); worktree shimmed vendor/autoload.php sets it.
+$_appBasePath = $_ENV['APP_BASE_PATH'] ?? $_SERVER['APP_BASE_PATH'] ?? null;
+
+return Application::configure(basePath: is_string($_appBasePath) ? $_appBasePath : dirname(__DIR__))
+    ->withCommands($domainCommandPaths)
     ->withRouting(
         using: function () {
             $host = request()->getHost();
             $isApiSubdomain = str_starts_with($host, 'api.');
             $isProtocolSubdomain = str_starts_with($host, 'x402.') || str_starts_with($host, 'mpp.');
+            $isMcpSubdomain = str_starts_with($host, 'mcp.');
 
             // Health check route — must be registered inside `using` callback
             // because Laravel skips buildRoutingCallback when `using` is provided
@@ -40,10 +55,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ), status: $exception ? 500 : 200);
             });
 
-            // Always load console routes
-            Route::group([], base_path('routes/console.php'));
-
-            if ($isProtocolSubdomain) {
+            if ($isMcpSubdomain) {
+                // MCP subdomain — minimal middleware stack (no CSRF, no Sanctum, no web session)
+                Route::middleware(['api'])
+                    ->group(base_path('app/Domain/MCP/Routes/api.php'));
+            } elseif ($isProtocolSubdomain) {
                 // For x402.* or mpp.* subdomains, load API routes without /api prefix
                 // and auto-apply the protocol payment gate middleware via ProtocolSubdomainMiddleware
                 Route::middleware(['api', 'protocol.subdomain'])
@@ -100,13 +116,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.apikey'            => App\Http\Middleware\AuthenticateApiKey::class,
             'auth.api_or_sanctum'    => App\Http\Middleware\AuthenticateApiOrSanctum::class,
             'idempotency'            => App\Http\Middleware\IdempotencyMiddleware::class,
-            'webhook.signature'      => App\Http\Middleware\ValidateWebhookSignature::class,
-            'validate.key.access'    => App\Http\Middleware\ValidateKeyAccess::class,
-            'demo'                   => App\Http\Middleware\DemoMode::class,
-            'scope'                  => App\Http\Middleware\CheckApiScope::class,
-            'check.blocked.ip'       => App\Http\Middleware\CheckBlockedIp::class,
-            'ip.blocking'            => App\Http\Middleware\IpBlocking::class,
-            'require.2fa.admin'      => App\Http\Middleware\RequireTwoFactorForAdmin::class,
+            // Plan B v1.3.0: required-header, DB-backed idempotency. Distinct
+            // from the legacy `idempotency` alias above (cache-backed, optional
+            // header). New Plan B mutating endpoints opt in via this alias.
+            'idempotency.required' => App\Http\Middleware\IdempotencyKey::class,
+            'webhook.signature'    => App\Http\Middleware\ValidateWebhookSignature::class,
+            'validate.key.access'  => App\Http\Middleware\ValidateKeyAccess::class,
+            'demo'                 => App\Http\Middleware\DemoMode::class,
+            'scope'                => App\Http\Middleware\CheckApiScope::class,
+            'check.blocked.ip'     => App\Http\Middleware\CheckBlockedIp::class,
+            'ip.blocking'          => App\Http\Middleware\IpBlocking::class,
+            'require.2fa.admin'    => App\Http\Middleware\RequireTwoFactorForAdmin::class,
             // Agent Protocol authentication middleware
             'auth.agent'       => App\Http\Middleware\AuthenticateAgentDID::class,
             'agent.scope'      => App\Http\Middleware\CheckAgentScope::class,
@@ -137,6 +157,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'ws.payment' => App\Http\Middleware\WebSocketPaymentGateMiddleware::class,
             // Protocol subdomain auto-detection (v6.5.0)
             'protocol.subdomain' => App\Http\Middleware\ProtocolSubdomainMiddleware::class,
+            // MCP OAuth bearer guard (v7.11.0)
+            'mcp.oauth' => App\Domain\MCP\Auth\McpOAuthGuard::class,
         ]);
 
         // Prepend CORS middleware to handle it before other middleware

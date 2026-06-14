@@ -7,14 +7,14 @@
 
     @php $brand = config('brand.name'); @endphp
 
-    <title>{{ $brand }} — Agentic Payments | Get Your Card to Spend Anywhere</title>
+    <title>{{ $brand }} — Non-custodial stablecoin wallet · Virtual cards · Passkey sign-in</title>
 
     @include('partials.favicon')
 
     @include('partials.seo', [
-        'title' => $brand . ' — Agentic Payments',
-        'description' => 'Agentic payments — stablecoin-powered virtual cards for you and your AI agents. Non-custodial security, tap-to-pay crypto, and privacy built in.',
-        'keywords' => $brand . ', agentic payments, AI agent card, stablecoin card, virtual card, crypto payments, non-custodial wallet, tap to pay crypto, privacy payments',
+        'title' => $brand . ' — Stablecoins. Tap to pay. No seed phrase.',
+        'description' => 'Non-custodial stablecoin wallet with passkey sign-in, virtual Visa & Mastercard cards, bank-rail deposits, and an agent-callable API. Six networks (Solana, Tron, Polygon, Base, Arbitrum, Ethereum). Open testing on Android.',
+        'keywords' => $brand . ', stablecoin wallet, virtual card, USDC card, passkey wallet, non-custodial wallet, tap to pay, agentic payments, MCP wallet',
     ])
 
     {{-- Fonts: Space Grotesk, JetBrains Mono, DM Sans --}}
@@ -55,6 +55,7 @@
         }
         .py-16 { padding-top: 4rem; padding-bottom: 4rem; }
         .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
 
         /* ── Brutalist utilities ── */
         .bru-border { border: 3px solid #0a0a0a; }
@@ -159,7 +160,7 @@
     <a href="#main-content" class="skip-to-content">Skip to content</a>
 
     @php
-    $navLinks = ['Features' => '#features', 'Security' => '#security', 'FAQ' => '#faq'];
+    $navLinks = ['Get the App' => '#get-the-app', 'Features' => '#features', 'AI' => '#agentic', 'Security' => '#security', 'FAQ' => '#faq'];
     @endphp
 
     {{-- ═══════════════════════════════════════════════════════════════
@@ -221,44 +222,55 @@
             {{-- Left text --}}
             <div class="anim-fade-in-left">
                 <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black leading-[0.95] font-heading tracking-tighter">
-                    Secure Stablecoin <span class="text-z-purple">Payments</span>
+                    No seed phrase. <span class="text-z-purple">Tap to pay.</span> Truly yours.
                 </h1>
 
                 <p class="mt-6 text-lg md:text-xl max-w-lg font-medium font-body text-text-sec">
-                    The stablecoin wallet that shields your on-chain tracks, ships virtual Visa cards,
-                    gives your AI agents a spending budget, and never asks you to trust a third party with your keys.
+                    {{ $brand }} is the stablecoin wallet that signs in with Face ID, spends through virtual cards
+                    anywhere in the world, and never asks you to trust anyone with your keys. Now in open testing on Android.
                 </p>
 
                 <div class="mt-8 flex flex-wrap gap-4">
-                    <a href="#cta"
+                    <a href="#get-the-app"
                        class="btn-hover rounded-full px-8 py-3.5 text-base font-bold bru-card bg-acid text-obsidian">
-                        Get Early Access
+                        Install on Android &rarr;
                     </a>
-                    <a href="#features"
+                    <a href="#cta"
                        class="btn-hover rounded-full px-8 py-3.5 text-base font-bold bru-card bg-white text-obsidian">
-                        How It Works
+                        Notify me when iOS launches
                     </a>
                 </div>
 
                 {{-- App store badges --}}
                 <div class="mt-8">
-                    <p class="mb-3 text-[10px] uppercase tracking-[0.3em] font-mono text-text-muted">Coming Soon to Mobile</p>
+                    <p class="mb-3 text-[10px] uppercase tracking-[0.3em] font-mono text-text-muted">Get the App</p>
                     <div class="flex gap-3">
-                        @foreach([['label' => 'App Store', 'sub' => 'Download on the'], ['label' => 'Google Play', 'sub' => 'Get it on']] as $store)
-                        <div class="flex h-10 items-center gap-2 rounded-lg px-4 cursor-not-allowed opacity-50"
-                             style="border: 2px solid rgba(10,10,10,0.12); background: rgba(255,255,255,0.5);">
+                        {{-- Apple: planned --}}
+                        <a href="#cta"
+                           class="flex h-10 items-center gap-2 rounded-lg px-4 opacity-70 hover:opacity-100 transition-opacity"
+                           style="border: 2px solid rgba(10,10,10,0.25); background: rgba(255,255,255,0.6);"
+                           title="iOS planned — get notified when TestFlight opens"
+                           aria-label="iOS planned — notify me when TestFlight opens">
                             <div>
-                                <p class="text-[8px] text-text-muted">{{ $store['sub'] }}</p>
-                                <p class="text-xs font-semibold text-text-sec">{{ $store['label'] }}</p>
+                                <p class="text-[8px] uppercase tracking-wider text-text-muted">iOS</p>
+                                <p class="text-xs font-semibold text-text-sec">Planned &middot; Notify me</p>
                             </div>
-                        </div>
-                        @endforeach
+                        </a>
+                        {{-- Android: live, links to two-step section below --}}
+                        <a href="#get-the-app"
+                           class="flex h-10 items-center gap-2 rounded-lg px-4 bru-border hs-4 bg-obsidian text-white"
+                           aria-label="Join the Android open testing — how to install Zelta on Android">
+                            <div>
+                                <p class="text-[8px] uppercase tracking-wider opacity-70">Get it on</p>
+                                <p class="text-xs font-bold">Google Play (beta)</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            {{-- Right — phone mockup --}}
-            <div class="relative flex justify-center anim-fade-in-right" aria-hidden="true" role="img" aria-label="{{ $brand }} mobile app preview showing wallet balance, transactions, and security status">
+            {{-- Right — phone mockup. aria-hidden because the hero copy already conveys what the app does; the mockup is decorative reinforcement. --}}
+            <div class="relative flex justify-center anim-fade-in-right" aria-hidden="true">
 
                 {{-- Floating stickers (desktop only) --}}
                 @php
@@ -347,7 +359,7 @@
                                                 <span class="font-body text-sm font-medium text-text-sec">Total Balance</span>
                                                 <div class="flex items-center rounded-full bg-mint bru-border" style="gap: 4px; padding: 3px 8px;">
                                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="#0a0a0a" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5Z"/></svg>
-                                                    <span class="font-mono text-[11px] font-bold">PROTECTED</span>
+                                                    <span class="font-mono text-[11px] font-bold">PASSKEY</span>
                                                 </div>
                                             </div>
                                             <div class="flex items-baseline gap-1">
@@ -384,7 +396,7 @@
                                 <div class="flex flex-col" style="gap: 12px;">
                                     <span class="font-heading tracking-tighter text-xl font-bold">Security Status</span>
                                     <div class="flex" style="gap: 12px;">
-                                        @foreach([['icon' => '/icons/shield.svg', 'title' => 'Shielded', 'sub' => 'Privacy Active'], ['icon' => '/icons/shield-check.svg', 'title' => 'Verified', 'sub' => 'On-chain Identity']] as $card)
+                                        @foreach([['icon' => '/icons/fingerprint.svg', 'title' => 'Passkey', 'sub' => 'Face ID Active'], ['icon' => '/icons/shield-check.svg', 'title' => 'Verified', 'sub' => 'On-chain Identity']] as $card)
                                         <div class="flex items-center flex-1 bg-white bru-card" style="gap: 12px; padding: 14px; border-radius: 14px;">
                                             <div class="overflow-hidden bru-border flex-shrink-0" style="width: 44px; height: 44px; border-radius: 10px;">
                                                 <img src="{{ $card['icon'] }}" alt="{{ $card['title'] }}" class="w-full h-full">
@@ -408,10 +420,10 @@
                                     <div class="overflow-hidden bg-white bru-card" style="border-radius: 16px;">
                                         @php
                                         $transactions = [
-                                            ['svg' => '/icons/credit-card.svg', 'name' => 'Merchant Payment', 'date' => 'Today 3:41 PM', 'amount' => '-$42.50', 'pos' => false, 'shielded' => true],
-                                            ['svg' => '/icons/arrow-up-right.svg', 'name' => 'Transfer to Wallet', 'date' => 'Yesterday 2:15 PM', 'amount' => '-$14.99', 'pos' => false, 'shielded' => false],
-                                            ['svg' => '/icons/arrow-down-left.svg', 'name' => 'USDC Received', 'date' => 'Yesterday 11:30 AM', 'amount' => '+$500.00', 'pos' => true, 'shielded' => false],
-                                            ['svg' => '/icons/credit-card.svg', 'name' => 'Starbolt Coffee', 'date' => 'Mar 5 9:20 AM', 'amount' => '-$12.00', 'pos' => false, 'shielded' => true],
+                                            ['svg' => '/icons/credit-card.svg', 'name' => 'Merchant Payment', 'date' => 'Today 3:41 PM', 'amount' => '-$42.50', 'pos' => false, 'network' => 'Solana'],
+                                            ['svg' => '/icons/arrow-up-right.svg', 'name' => 'Transfer to Wallet', 'date' => 'Yesterday 2:15 PM', 'amount' => '-$14.99', 'pos' => false, 'network' => 'Polygon'],
+                                            ['svg' => '/icons/arrow-down-left.svg', 'name' => 'USDC Received', 'date' => 'Yesterday 11:30 AM', 'amount' => '+$500.00', 'pos' => true, 'network' => 'Base'],
+                                            ['svg' => '/icons/credit-card.svg', 'name' => 'Starbolt Coffee', 'date' => 'Mar 5 9:20 AM', 'amount' => '-$12.00', 'pos' => false, 'network' => 'Arbitrum'],
                                         ];
                                         @endphp
                                         @foreach($transactions as $i => $tx)
@@ -430,12 +442,7 @@
                                                 </div>
                                                 <div class="flex flex-col items-end flex-shrink-0 gap-0.5">
                                                     <span class="text-sm font-semibold {{ $tx['pos'] ? 'text-z-green' : 'text-obsidian' }}" style="font-variant-numeric: tabular-nums;">{{ $tx['amount'] }}</span>
-                                                    @if($tx['shielded'])
-                                                    <div class="flex items-center gap-0.5">
-                                                        <svg width="10" height="10" viewBox="0 0 24 24" fill="#10b981" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5Z"/></svg>
-                                                        <span class="font-mono text-[10px] text-z-green">Protected</span>
-                                                    </div>
-                                                    @endif
+                                                    <span class="font-mono text-[10px] text-text-muted">{{ $tx['network'] }}</span>
                                                 </div>
                                             </div>
                                             @if($i < count($transactions) - 1)
@@ -491,6 +498,141 @@
 
 
     {{-- ═══════════════════════════════════════════════════════════════
+         GET THE APP — Android open testing
+
+         All layout-critical rules are scoped to #get-the-app via the
+         <style> block below — independent of the pre-compiled Tailwind
+         CSS, so cache drift on app-landing.css can't break the section.
+    ═══════════════════════════════════════════════════════════════ --}}
+    @php
+        $androidUtm = 'utm_source=zelta_landing&utm_medium=cta&utm_campaign=android_open_test';
+        $androidOptInUrl = 'https://play.google.com/apps/testing/com.zelta.wallet?' . $androidUtm;
+        $androidInstallUrl = 'https://play.google.com/store/apps/details?id=com.zelta.wallet&' . $androidUtm;
+    @endphp
+
+    <style>
+        #get-the-app { background: linear-gradient(160deg, #a8f0c4 0%, #c0f5d6 45%, #c8a8f0 100%); }
+        #get-the-app .gta-inner { position: relative; z-index: 10; max-width: 64rem; margin: 0 auto; }
+        #get-the-app .gta-header { text-align: center; margin-bottom: 3rem; }
+        @media (min-width: 768px) { #get-the-app .gta-header { margin-bottom: 3.5rem; } }
+        #get-the-app .gta-eyebrow { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.375rem 1rem; border-radius: 9999px; background: #0a0a0a; color: #fff; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 1.5rem; transform: rotate(-1.5deg); }
+        #get-the-app .gta-eyebrow .dot { width: 0.5rem; height: 0.5rem; border-radius: 9999px; background: #ccff00; }
+        #get-the-app .gta-title { font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 900; letter-spacing: -0.04em; line-height: 0.95; font-size: clamp(2.25rem, 6vw, 3.75rem); margin: 0; }
+        #get-the-app .gta-title .accent { color: #7000ff; }
+        #get-the-app .gta-lead { margin-top: 1.25rem; max-width: 38rem; margin-left: auto; margin-right: auto; font-size: 1rem; color: #444; font-weight: 500; }
+        @media (min-width: 768px) { #get-the-app .gta-lead { font-size: 1.125rem; } }
+        #get-the-app .gta-card { display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: stretch; background: #fff; border: 3px solid #0a0a0a; box-shadow: 8px 8px 0 #0a0a0a; border-radius: 1.5rem; padding: 1.75rem; }
+        @media (min-width: 768px) { #get-the-app .gta-card { grid-template-columns: 1fr auto 1fr; gap: 1.5rem; padding: 2.5rem; } }
+        #get-the-app .gta-step { display: flex; flex-direction: column; min-width: 0; }
+        #get-the-app .gta-step-head { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; }
+        #get-the-app .gta-num { display: inline-flex; width: 2.25rem; height: 2.25rem; align-items: center; justify-content: center; border: 3px solid #0a0a0a; border-radius: 0.75rem; font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 900; font-size: 1.125rem; flex-shrink: 0; }
+        #get-the-app .gta-num-1 { background: #ccff00; }
+        #get-the-app .gta-num-2 { background: #c8a8f0; }
+        #get-the-app .gta-step-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #888; }
+        #get-the-app .gta-step-title { font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; font-size: 1.5rem; margin: 0; }
+        @media (min-width: 768px) { #get-the-app .gta-step-title { font-size: 1.75rem; } }
+        #get-the-app .gta-step-body { margin: 0.5rem 0 0; font-size: 0.95rem; color: #444; flex: 1; }
+        #get-the-app .gta-cta { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; align-self: flex-start; margin-top: 1.5rem; padding: 0.95rem 1.5rem; border: 3px solid #0a0a0a; border-radius: 9999px; background: #0a0a0a; color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none; box-shadow: 6px 6px 0 #0a0a0a; transition: transform 0.15s, box-shadow 0.15s; }
+        #get-the-app .gta-cta:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 #0a0a0a; }
+        #get-the-app .gta-cta:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0a0a0a; }
+        #get-the-app .gta-play { display: inline-flex; align-self: flex-start; margin-top: 1.5rem; padding: 0.5rem 0.75rem; background: #0a0a0a; border: 3px solid #0a0a0a; border-radius: 0.75rem; box-shadow: 6px 6px 0 #0a0a0a; transition: transform 0.15s, box-shadow 0.15s; }
+        #get-the-app .gta-play:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 #0a0a0a; }
+        #get-the-app .gta-play:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 #0a0a0a; }
+        #get-the-app .gta-play img { display: block; height: 44px; width: auto; }
+        #get-the-app .gta-arrow { display: flex; align-items: center; justify-content: center; padding: 0.5rem 0; }
+        @media (min-width: 768px) { #get-the-app .gta-arrow { padding: 0 0.5rem; } }
+        #get-the-app .gta-arrow .down { color: #0a0a0a; }
+        #get-the-app .gta-arrow .right { display: none; color: #0a0a0a; }
+        @media (min-width: 768px) {
+            #get-the-app .gta-arrow .down { display: none; }
+            #get-the-app .gta-arrow .right { display: block; }
+        }
+        #get-the-app .gta-ios { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 2rem; text-align: center; }
+        @media (min-width: 480px) { #get-the-app .gta-ios { flex-direction: row; gap: 0.75rem; } }
+        #get-the-app .gta-ios-pill { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: 3px solid #0a0a0a; border-radius: 9999px; background: rgba(255,255,255,0.7); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 700; }
+        #get-the-app .gta-ios-link { font-size: 0.9rem; font-weight: 700; color: #0a0a0a; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+        #get-the-app .gta-ios-link:hover { color: #7000ff; }
+    </style>
+
+    <section id="get-the-app" class="relative px-5 py-20 md:py-28 overflow-hidden">
+
+        {{-- Decorative phone sticker (desktop only) --}}
+        <div aria-hidden="true" style="position: absolute; top: 6%; right: 5%; transform: rotate(12deg); pointer-events: none; user-select: none;" class="hidden md:block">
+            <div style="width: 72px; height: 72px; border: 3px solid #0a0a0a; border-radius: 1rem; box-shadow: 3px 3px 0 #0a0a0a; overflow: hidden; background: #fff;">
+                <img src="/icons/smartphone.svg" alt="" style="width: 100%; height: 100%;">
+            </div>
+        </div>
+
+        <div class="gta-inner">
+
+            {{-- Header --}}
+            <header class="gta-header">
+                <div class="gta-eyebrow">
+                    <span class="dot animate-pulse"></span>
+                    Live · Android Open Beta
+                </div>
+                <h2 class="gta-title">
+                    Get {{ $brand }} on <span class="accent">Android</span> today.
+                </h2>
+                <p class="gta-lead">
+                    Open testing is live. Two quick steps — both required, even on desktop — and you're in.
+                </p>
+            </header>
+
+            {{-- Install card --}}
+            <div class="gta-card">
+
+                {{-- Step 1: Become a tester --}}
+                <div class="gta-step">
+                    <div class="gta-step-head">
+                        <span class="gta-num gta-num-1">1</span>
+                        <span class="gta-step-label">Step one</span>
+                    </div>
+                    <h3 class="gta-step-title">Become a tester.</h3>
+                    <p class="gta-step-body">
+                        Tap once on any device — phone or desktop. Without this, the Play listing shows &ldquo;Item not found&rdquo;.
+                    </p>
+                    <a href="{{ $androidOptInUrl }}" target="_blank" rel="noopener noreferrer" class="gta-cta">
+                        Join the Android beta
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H8M17 7v9"/></svg>
+                    </a>
+                </div>
+
+                {{-- Connector arrow (purely decorative) --}}
+                <div class="gta-arrow" aria-hidden="true">
+                    <svg class="down" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12l7 7 7-7"/></svg>
+                    <svg class="right" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+
+                {{-- Step 2: Install from Google Play --}}
+                <div class="gta-step">
+                    <div class="gta-step-head">
+                        <span class="gta-num gta-num-2">2</span>
+                        <span class="gta-step-label">Step two</span>
+                    </div>
+                    <h3 class="gta-step-title">Install from Google Play.</h3>
+                    <p class="gta-step-body">
+                        After joining, open Google Play on your Android phone and install {{ $brand }}.
+                    </p>
+                    <a href="{{ $androidInstallUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Get {{ $brand }} on Google Play" class="gta-play">
+                        <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Get it on Google Play" loading="lazy">
+                    </a>
+                </div>
+            </div>
+
+            {{-- iOS waitlist row --}}
+            <div class="gta-ios">
+                <span class="gta-ios-pill">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    iOS · TestFlight coming soon
+                </span>
+                <a href="#cta" class="gta-ios-link">Notify me when it opens &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+
+    {{-- ═══════════════════════════════════════════════════════════════
          MARQUEE
     ═══════════════════════════════════════════════════════════════ --}}
     <section class="relative py-4 overflow-hidden bg-obsidian"
@@ -498,15 +640,14 @@
         <div class="flex whitespace-nowrap" style="animation: z-marquee 20s linear infinite;">
             @for($dup = 0; $dup < 2; $dup++)
             <span class="text-white text-xl md:text-2xl font-black uppercase tracking-wider font-heading tracking-tighter pr-8">
-                SECURE STABLECOINS <span class="text-acid">&#9670;</span> SHIELD PRIVACY
+                NO SEED PHRASE <span class="text-acid">&#9670;</span> TAP TO PAY
                 <span class="text-acid">&#9670;</span> VIRTUAL CARDS
-                <span class="text-acid">&#9670;</span> AI AGENT BUDGETS
-                <span class="text-acid">&#9670;</span> ZERO TRACE
-                <span class="text-acid">&#9670;</span> x402 + MPP PAYMENTS
-                <span class="text-acid">&#9670;</span> TRUSTCERT IDENTITY
-                <span class="text-acid">&#9670;</span> SPLIT KEY SECURITY
-                <span class="text-acid">&#9670;</span> AGENTIC PAYMENTS
+                <span class="text-acid">&#9670;</span> BANK-RAIL DEPOSITS
+                <span class="text-acid">&#9670;</span> SIX NETWORKS
+                <span class="text-acid">&#9670;</span> AI-CALLABLE
                 <span class="text-acid">&#9670;</span> NON-CUSTODIAL
+                <span class="text-acid">&#9670;</span> ANDROID OPEN BETA
+                <span class="text-acid">&#9670;</span> PASSKEY-NATIVE
                 <span class="text-acid">&#9670;</span>
             </span>
             @endfor
@@ -554,14 +695,14 @@
             $featurePanels = [
                 [
                     'id' => 'core', 'bg' => 'bg-z-blue', 'active' => true,
-                    'title' => 'Your Keys, Split Three Ways',
-                    'desc' => 'Your private key is split into 3 encrypted shards. No single device or server ever holds the full key.',
+                    'title' => 'Your Passkey is Your Wallet',
+                    'desc' => 'Sign in with Face ID or fingerprint. No 12-word phrase to lose, no shards to manage. Your wallet lives in your device\'s Secure Enclave and recovers through your passkey.',
                     'type' => 'shard-flow',
                 ],
                 [
                     'id' => 'pay', 'bg' => 'bg-z-pink', 'active' => false,
                     'title' => 'Pay with Your Card',
-                    'desc' => 'Spin up virtual Visa cards instantly. Spend stablecoins at any merchant worldwide — they see a normal card payment, not a crypto wallet.',
+                    'desc' => 'Spin up virtual cards (Visa &amp; Mastercard) instantly. Spend stablecoins at any merchant worldwide — they see a normal card payment, not a crypto wallet.',
                     'type' => 'card-mockup',
                 ],
                 [
@@ -574,7 +715,8 @@
                 [
                     'id' => 'shield', 'bg' => 'bg-lavender', 'active' => false,
                     'title' => 'Shield Your Transactions',
-                    'desc' => 'Zero-knowledge proofs (ZK-SNARKs) make your balance invisible on-chain. Nobody can trace your spending or total holdings. When compliance is needed, generate a Proof of Innocence — prove your funds are clean without revealing your history.',
+                    'badge' => 'Coming Q3 2026',
+                    'desc' => 'Zero-knowledge proofs (ZK-SNARKs) will make your balance invisible on-chain. Generate a Proof of Innocence when compliance is needed — prove your funds are clean without revealing your history. Launching after public beta.',
                     'type' => 'icon-trio',
                     'icons' => ['/icons/ghost.svg', '/icons/incognito.svg', '/icons/globe.svg'],
                 ],
@@ -587,8 +729,8 @@
                 ],
                 [
                     'id' => 'identity', 'bg' => 'bg-z-green', 'active' => false,
-                    'title' => 'TrustCert Identity',
-                    'desc' => 'Blockchain-verified credentials issued as Soulbound Tokens. Basic (ID), Verified (address), Enhanced (source of funds). Higher levels unlock larger limits and fiat off-ramps. Verifiable by third parties without exposing your personal data.',
+                    'title' => 'Zelta Trust Identity',
+                    'desc' => 'Verified credentials issued as on-chain attestations. Basic (ID + selfie), Verified (proof of address), High (source of funds). Higher levels unlock larger limits and fiat off-ramps. Verifiable by third parties without exposing your personal data.',
                     'type' => 'icon-trio',
                     'icons' => ['/icons/user.svg', '/icons/shield-check.svg', '/icons/checkmark.svg'],
                 ],
@@ -603,6 +745,9 @@
                  id="panel-{{ $panel['id'] }}" role="tabpanel" aria-labelledby="tab-{{ $panel['id'] }}">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     <div>
+                        @if(!empty($panel['badge']))
+                        <span class="inline-block mb-3 px-3 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-full bru-border bg-white text-obsidian">{{ $panel['badge'] }}</span>
+                        @endif
                         <h3 class="text-2xl md:text-3xl font-black mb-2 font-heading tracking-tighter">{{ $panel['title'] }}</h3>
                         <p class="text-base text-text-sec">{{ $panel['desc'] }}</p>
                     </div>
@@ -630,7 +775,7 @@
                             <p class="text-white text-lg font-bold mt-1 tracking-widest font-mono">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4291</p>
                             <div class="flex justify-between mt-4">
                                 <span class="text-white/40 text-xs">Valid thru 12/28</span>
-                                <span class="text-white/40 text-xs uppercase">Visa</span>
+                                <span class="text-white/40 text-xs uppercase">Visa &middot; MC</span>
                             </div>
                         </div>
                     </div>
@@ -638,7 +783,7 @@
                     <div class="flex gap-4 justify-center">
                         @foreach($panel['icons'] as $src)
                         <div class="w-[72px] h-[72px] md:w-[88px] md:h-[88px] rounded-full overflow-hidden bru-border hs-4">
-                            <img src="{{ $src }}" alt="" class="h-full w-full" loading="lazy">
+                            <img src="{{ $src }}" alt="" class="h-full w-full" loading="lazy" aria-hidden="true">
                         </div>
                         @endforeach
                     </div>
@@ -650,15 +795,18 @@
             {{-- 2-column sub-cards --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @foreach([
-                    ['icon' => '/icons/credit-card.svg', 'title' => 'Virtual Visa Cards', 'desc' => 'Generate virtual Visa cards backed by your stablecoin balance. Add to Apple Pay or Google Pay. Merchants see a normal card payment — not a crypto wallet.'],
-                    ['icon' => '/icons/incognito.svg', 'title' => 'ZK Privacy Shield', 'desc' => 'Shield and unshield stablecoins with zero-knowledge proofs. Your on-chain balance becomes invisible. Generate Proof of Innocence for compliance without revealing history.'],
+                    ['icon' => '/icons/credit-card.svg', 'title' => 'Virtual Cards', 'desc' => 'Generate Visa and Mastercard virtual cards backed by your stablecoin balance. Add to Apple Pay or Google Pay. Merchants see a normal card payment — not a crypto wallet.'],
+                    ['icon' => '/icons/incognito.svg', 'title' => 'ZK Privacy Shield', 'badge' => 'Coming Q3 2026', 'desc' => 'Shield and unshield stablecoins with zero-knowledge proofs so your on-chain balance becomes invisible. Generate Proof of Innocence for compliance without revealing history. Launching after public beta.'],
                     ['icon' => '/icons/lock.svg', 'title' => 'x402 Agent Payments', 'desc' => 'Give AI agents a spending allowance. Daily budgets, per-transaction caps, and biometric approval for over-limit requests. Your agents pay for APIs autonomously — within your rules.'],
-                    ['icon' => '/icons/globe.svg', 'title' => 'Multi-Network', 'desc' => 'Base, Polygon, Arbitrum, Ethereum, and Solana. One wallet address for EVM chains, sub-cent fees across all networks. ERC-4337 means you never need ETH for gas.'],
+                    ['icon' => '/icons/globe.svg', 'title' => 'Six Networks', 'desc' => 'Solana, Tron, Polygon, Base, Arbitrum, and Ethereum. One wallet address for EVM chains. Sub-cent fees on L2s and Solana. Pay gas in USDC — no ETH required.'],
                 ] as $subCard)
                 <div class="p-8 bg-white bru-card rounded-[2rem]">
                     <div class="rounded-full overflow-hidden mb-4 bru-card-sm" style="width: 56px; height: 56px;">
-                        <img src="{{ $subCard['icon'] }}" alt="" class="h-full w-full" loading="lazy">
+                        <img src="{{ $subCard['icon'] }}" alt="" class="h-full w-full" loading="lazy" aria-hidden="true">
                     </div>
+                    @if(!empty($subCard['badge']))
+                    <span class="inline-block mb-3 px-3 py-1 text-[10px] font-bold uppercase tracking-wider font-mono rounded-full bru-border bg-acid text-obsidian">{{ $subCard['badge'] }}</span>
+                    @endif
                     <h3 class="text-xl md:text-2xl font-black mb-2 font-heading tracking-tighter">{{ $subCard['title'] }}</h3>
                     <p class="text-base text-text-sec">{{ $subCard['desc'] }}</p>
                 </div>
@@ -675,10 +823,10 @@
         <div class="mx-auto max-w-6xl">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 @foreach([
-                    ['value' => '5', 'label' => 'Networks', 'sub' => 'Polygon · Base · Arbitrum · Ethereum · Solana'],
-                    ['value' => 'ZK', 'label' => 'Privacy', 'sub' => 'Zero-Knowledge Proofs'],
-                    ['value' => '$0', 'label' => 'Gas Fees', 'sub' => 'ERC-4337 Abstraction'],
-                    ['value' => '3', 'label' => 'Pay Protocols', 'sub' => 'x402 · MPP · AP2'],
+                    ['value' => '6', 'label' => 'Networks', 'sub' => 'Solana · Tron · Polygon · Base · Arbitrum · Ethereum'],
+                    ['value' => '€5', 'label' => 'Cards Deposit', 'sub' => 'Refundable · Visa &amp; Mastercard'],
+                    ['value' => 'No ETH', 'label' => 'Needed', 'sub' => 'Pay gas in USDC'],
+                    ['value' => 'MCP', 'label' => 'Agent-Callable', 'sub' => '12 OAuth tools'],
                 ] as $stat)
                 <div class="text-center">
                     <p class="text-3xl md:text-4xl font-black text-acid font-heading tracking-tighter">{{ $stat['value'] }}</p>
@@ -687,6 +835,105 @@
                 </div>
                 @endforeach
             </div>
+        </div>
+    </section>
+
+
+    {{-- ═══════════════════════════════════════════════════════════════
+         AGENTIC — USE ZELTA FROM YOUR AI
+    ═══════════════════════════════════════════════════════════════ --}}
+    <section id="agentic" class="px-5 py-20 md:py-28 bg-white relative overflow-hidden">
+
+        {{-- Decorative blob --}}
+        <div class="absolute pointer-events-none select-none" style="top: 10%; right: -10%; width: 28rem; height: 28rem; background: radial-gradient(circle, rgba(204,255,0,0.18) 0%, transparent 70%); filter: blur(40px);" aria-hidden="true"></div>
+
+        <div class="relative z-10 mx-auto max-w-6xl">
+
+            {{-- Header --}}
+            <div class="text-center mb-12 md:mb-16">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-acid bru-border text-sm font-bold mb-6" style="transform: rotate(-1deg);">
+                    <span class="w-2 h-2 rounded-full bg-obsidian animate-pulse"></span>
+                    NEW · v7.11
+                </div>
+                <h2 class="text-4xl sm:text-5xl md:text-6xl font-black mb-5 font-heading tracking-tighter">
+                    Use {{ $brand }} from <span class="text-z-purple">your AI</span>
+                </h2>
+                <p class="text-lg md:text-xl max-w-2xl mx-auto text-text-sec font-medium">
+                    Connect Claude, Cursor, ChatGPT — any MCP-compatible agent — to your wallet. Send payments, check balances, get spending analysis with a prompt. You set the daily cap; you confirm every move.
+                </p>
+            </div>
+
+            {{-- Three steps --}}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+                {{-- Step 1 --}}
+                <div class="relative bg-mint bru-card-lg rounded-3xl p-7">
+                    <div class="absolute -top-5 -left-3 w-14 h-14 rounded-2xl bg-obsidian text-white font-black flex items-center justify-center text-3xl bru-border" style="transform: rotate(-6deg);">
+                        1
+                    </div>
+                    <h3 class="font-black font-heading tracking-tight text-2xl mt-3 mb-3">Sign in</h3>
+                    <p class="text-base font-medium text-text-sec mb-5">
+                        Email-only, passwordless. One minute, no credit card.
+                    </p>
+                    <div class="bg-white rounded-2xl bru-border p-3 font-mono text-xs text-text-sec">
+                        you@example.com
+                    </div>
+                </div>
+
+                {{-- Step 2 --}}
+                <div class="relative bg-bg-tertiary bru-card-lg rounded-3xl p-7" style="transform: translateY(8px);">
+                    <div class="absolute -top-5 -left-3 w-14 h-14 rounded-2xl bg-z-purple text-obsidian font-black flex items-center justify-center text-3xl bru-border" style="transform: rotate(4deg);">
+                        2
+                    </div>
+                    <h3 class="font-black font-heading tracking-tight text-2xl mt-3 mb-3">Add to your AI</h3>
+                    <p class="text-base font-medium text-text-sec mb-5">
+                        Three lines of config in Claude Desktop, Cursor, or Continue.dev.
+                    </p>
+                    <div class="bg-obsidian rounded-2xl p-3 font-mono text-xs text-acid">
+                        url: mcp.zelta.app/mcp
+                    </div>
+                </div>
+
+                {{-- Step 3 --}}
+                <div class="relative bg-acid bru-card-lg rounded-3xl p-7">
+                    <div class="absolute -top-5 -left-3 w-14 h-14 rounded-2xl bg-white text-obsidian font-black flex items-center justify-center text-3xl bru-border" style="transform: rotate(-3deg);">
+                        3
+                    </div>
+                    <h3 class="font-black font-heading tracking-tight text-2xl mt-3 mb-3">Authorize</h3>
+                    <p class="text-base font-medium text-text-sec mb-5">
+                        Pick scopes, set a daily cap, you're done. Token persists per client.
+                    </p>
+                    <div class="flex items-center gap-2 text-xs font-bold text-text-sec">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        DONE — TRY A PROMPT
+                    </div>
+                </div>
+
+            </div>
+
+            {{-- CTA + reassurance --}}
+            <div class="flex flex-col items-center gap-6">
+                <a href="{{ url('/connect') }}" class="btn-hover rounded-full px-10 py-4 text-lg font-black bg-obsidian text-white bru-card font-heading tracking-tight">
+                    Connect to Claude →
+                </a>
+                <div class="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm font-medium text-text-sec">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-z-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        OAuth 2.1 — you approve scopes
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-z-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        Daily spending cap
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-z-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        Revoke any time
+                    </span>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -701,13 +948,14 @@
             <div class="flex flex-col gap-4">
                 @php
                 $faqs = [
-                    ['q' => 'What is ' . $brand . '?', 'a' => $brand . ' is a technology platform providing a user interface for services offered by independent third-party providers. ' . $brand . ' does not offer, hold, or transmit funds, crypto-assets, or provide financial, custodial, or regulated services. All wallet functionality is non-custodial — private keys remain under exclusive user control. Financial services are provided by third-party licensed providers.'],
-                    ['q' => 'Is ' . $brand . ' a custodial wallet?', 'a' => 'No. ' . $brand . ' is fully non-custodial. Your private key is split into three encrypted shards using Shamir\'s Secret Sharing. One lives in your device\'s Secure Enclave, one in our HSM infrastructure, and one is an optional cloud backup. Any two of three are needed to sign — no single point of failure. A recovery phrase is generated at setup as an emergency backup. You are responsible for storing it securely.'],
-                    ['q' => 'How does transaction shielding work?', 'a' => $brand . ' uses zero-knowledge proofs (ZK-SNARKs) to shield your stablecoin balance from public view. Your transactions become unlinkable on-chain — nobody can trace your spending habits or total balance. When compliance is needed, generate a Proof of Innocence: a cryptographic certificate proving your funds are clean, without revealing your history.'],
-                    ['q' => 'Do I pay gas fees?', 'a' => 'No. ' . $brand . ' uses ERC-4337 Account Abstraction so you never need to hold ETH. Gas fees are either sponsored or paid in the stablecoin you\'re spending. You think in dollars, not in gwei.'],
-                    ['q' => 'What is TrustCert?', 'a' => 'TrustCert is ' . $brand . '\'s identity verification system, issued as non-transferable Soulbound Tokens on-chain. Three tiers: Basic (email + phone), Verified (ID + address), Enhanced (full KYB + source of funds). Higher tiers unlock larger spending limits and fiat off-ramps. Certificates are verifiable by third parties without exposing your personal data.'],
-                    ['q' => 'Can AI agents use ' . $brand . '?', 'a' => 'Yes. ' . $brand . ' supports three payment protocols: x402 (USDC micropayments), MPP (Stripe, Lightning, stablecoins), and AP2 mandates (Google\'s agent authorization). Agents pay for APIs, SMS, cloud services, and datasets autonomously — constrained by daily budgets and per-transaction caps that you control.'],
-                    ['q' => 'Which networks are supported?', 'a' => $brand . ' supports Base, Polygon, Arbitrum, Ethereum, and Solana. EVM networks share a single wallet address with sub-cent transaction fees. Solana offers the fastest settlement (~400ms). Switch networks anytime.'],
+                    ['q' => 'What does ' . $brand . ' actually do?', 'a' => $brand . ' is a non-custodial stablecoin wallet that signs in with your passkey, lets you spend with virtual Visa or Mastercard cards anywhere, deposits and withdraws over bank rails, and exposes a 12-tool agent API so AI assistants can pay on your behalf within limits you set. Six networks supported (Solana, Tron, Polygon, Base, Arbitrum, Ethereum). No seed phrase. Open testing on Android now.'],
+                    ['q' => 'Is ' . $brand . ' a custodial wallet?', 'a' => 'No. ' . $brand . ' is fully non-custodial. Wallets are powered by Privy embedded wallets — a passkey-controlled smart account on EVM (Polygon, Base, Arbitrum, Ethereum) and a device-bound ed25519 keypair on Solana. Private keys never leave the device or Privy\'s secure infrastructure. Every transaction is signed locally by your passkey or device key; ' . $brand . ' only ever sees public addresses and pre-signed payloads. There is no seed phrase to memorize — your passkey is your account, backed by your device\'s Secure Enclave / Keystore and recoverable through Privy\'s cross-device passkey sync.'],
+                    ['q' => 'Is on-chain privacy (ZK shielding) available today?', 'a' => 'Not yet. Zero-knowledge transaction shielding and Proof of Innocence are on the roadmap for Q3 2026, after public beta. When it ships, you\'ll be able to make your stablecoin balance invisible on-chain and generate compliance proofs without revealing your history. Today\'s wallet is fully functional without it — privacy is an additive layer, not a prerequisite.'],
+                    ['q' => 'Do I pay gas fees?', 'a' => 'No ETH required. ' . $brand . ' uses ERC-4337 Account Abstraction — gas is either sponsored by us or paid in the stablecoin you\'re spending. You think in dollars, not in gwei. Sub-cent fees on Polygon, Base, Arbitrum, and Solana.'],
+                    ['q' => 'What is Zelta Trust identity?', 'a' => $brand . ' Trust is our identity verification layer, issued as on-chain attestations. Three consumer tiers: Basic (government-issued ID + selfie), Verified (proof of address), High (source of funds). Higher levels unlock larger spending limits and fiat off-ramps. Verifiable by third parties without exposing your personal data.'],
+                    ['q' => 'Can AI agents use ' . $brand . '?', 'a' => 'Yes — natively. ' . $brand . ' exposes a public Model Context Protocol (MCP) server at mcp.zelta.app with 12 OAuth-scoped tools covering balances, payments, exchange, on/off-ramp, transaction history, and SMS. Behind that, three agentic payment rails are wired in: x402 (USDC micropayments), MPP (multi-rail discovery via Stripe / Lightning / cards), and AP2 (Google agent mandates). Agents operate inside daily budgets and per-transaction caps you control, and you can revoke at any time.'],
+                    ['q' => 'How do I connect Claude or another AI to my ' . $brand . ' wallet?', 'a' => 'Sign in to ' . $brand . ', click Connect to Claude (or paste mcp.zelta.app into your client\'s MCP settings), pick the scopes you want, and set a daily spending cap. The agent gets a token bound to those limits — it can never exceed them, and you can revoke at any time. Works with Claude, Cursor, ChatGPT, Continue.dev, and any other MCP-aware client.'],
+                    ['q' => 'Which networks are supported?', 'a' => $brand . ' supports six networks: Solana, Tron, Polygon, Base, Arbitrum, and Ethereum. EVM networks share a single wallet address. Sub-cent fees on L2s and Solana. Solana offers the fastest settlement (~400ms). Switch networks anytime.'],
                 ];
                 @endphp
                 @foreach($faqs as $i => $faq)
@@ -739,19 +987,22 @@
     <section id="cta" class="relative px-5 py-20 md:py-28 overflow-hidden bg-acid">
         <div class="relative z-10 mx-auto max-w-3xl text-center">
             <h2 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 font-heading tracking-tighter" style="transform: rotate(-2deg);">
-                Ready to Go Off-Grid?
+                Don&apos;t miss what&apos;s next.
             </h2>
-            <p class="text-lg md:text-xl mb-10 max-w-xl mx-auto text-text-sec">
-                Drop your email and we&apos;ll send you an invite when the beta launches. No spam, just alpha.
+            <p class="text-lg md:text-xl mb-3 max-w-xl mx-auto text-text-sec font-semibold">
+                Android is open right now &mdash; <a href="#get-the-app" class="underline decoration-2 underline-offset-4 hover:text-z-purple">install on Google Play</a>.
+            </p>
+            <p class="text-base md:text-lg mb-10 max-w-xl mx-auto text-text-sec">
+                Drop your email to be first to know when we ship iOS, ZK Privacy, and the AI Agents console. No spam, no marketing &mdash; just product launches.
             </p>
 
-            <form id="early-access-form" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" aria-label="Early access signup">
+            <form id="early-access-form" class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" aria-label="Product launch waitlist signup">
                 <label for="ea-email" class="sr-only">Email address</label>
                 <input type="email" id="ea-email" name="email" required placeholder="your@email.com"
                        class="flex-1 px-6 py-4 text-base outline-none placeholder:text-black/30 bg-white bru-border hs-4 rounded-full">
                 <button type="submit"
                         class="btn-hover px-8 py-4 text-base font-bold rounded-full text-white bg-obsidian bru-border hs-4">
-                    Get Early Access
+                    Notify me
                 </button>
             </form>
 
@@ -804,7 +1055,7 @@
         {{-- Legal disclaimer --}}
         <div class="relative z-10 mx-auto max-w-6xl mt-8 pt-6" style="border-top: 2px solid #e5e5e5;">
             <p class="text-xs opacity-30 leading-relaxed max-w-4xl">
-                {{ $brand }} is a technology platform providing a user interface for services offered by independent third-party providers. {{ $brand }} does not offer, hold, or transmit funds or provide financial, custodial, or regulated services. All wallet functionality is non-custodial &mdash; private keys remain under exclusive user control. Financial services are provided by third-party licensed providers. All investments carry risks, including total loss. The user is responsible for their recovery phrase.
+                {{ $brand }} is a technology platform providing a user interface for services offered by independent third-party providers. {{ $brand }} does not offer, hold, or transmit funds or provide financial, custodial, or regulated services. All wallet functionality is non-custodial &mdash; private keys remain under exclusive user control. Financial services are provided by third-party licensed providers. All investments carry risks, including total loss. The user is responsible for safeguarding their passkeys and any device-bound credentials used to authorize transactions.
             </p>
         </div>
 

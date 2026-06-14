@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GCUController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\Web\InvestorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,36 @@ Route::get('/', function () {
 Route::get('/app', function () {
     return view('app');
 })->name('app.landing');
+
+// Public consumer-facing MCP onboarding flow. Available on production
+// (zelta.app) and demo alike — the agentic-payments brand voice fits
+// both surfaces and we want a single canonical "connect to AI" page.
+Route::get('/connect', function () {
+    return view('connect');
+})->name('connect');
+
+// Public investor lead-capture page for the FinAegis legal-entity raise.
+// Brand exception: the page itself reads "FinAegis" because investors
+// invest in the entity, not the Zelta product. Header/footer/nav stay
+// Zelta — only the body copy here is FinAegis-branded.
+Route::get('/invest', [InvestorController::class, 'show'])->name('invest.show');
+Route::post('/invest', [InvestorController::class, 'submit'])
+    ->middleware('throttle:5,1440')   // 5 submissions per 24h per IP
+    ->name('invest.submit');
+Route::get('/invest/thanks', [InvestorController::class, 'thanks'])->name('invest.thanks');
+Route::get('/invest/data-room', [InvestorController::class, 'dataRoom'])->name('invest.data-room');
+
+// Privy email-OTP web login (gated by MCP_WEB_PRIVY_LOGIN). The matching
+// GET /login view is registered by Fortify::loginView() in the service
+// provider when the flag is on. POST routes are always registered so the
+// URLs are stable across envs; if the feature flag is off the legacy
+// Jetstream login form continues to work and these endpoints are unused.
+Route::post('/login/privy/send', [App\Http\Controllers\Web\PrivyWebAuthController::class, 'sendCode'])
+    ->middleware('throttle:6,1')
+    ->name('login.privy.send');
+Route::post('/login/privy/verify', [App\Http\Controllers\Web\PrivyWebAuthController::class, 'verifyCode'])
+    ->middleware('throttle:10,1')
+    ->name('login.privy.verify');
 
 // WebSocket endpoint with origin validation
 Route::get('/ws', function (Request $request) {
@@ -92,7 +123,7 @@ if (config('brand.show_promo_pages')) {
     Route::get('/features/gcu', fn () => redirect()->route('gcu', [], 301))->name('features.gcu');
 
     Route::get('/features/{feature}', function ($feature) {
-        $validFeatures = ['multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol', 'visa-cli', 'virtuals-protocol', 'plugin-marketplace', 'machine-payments', 'agent-protocol', 'zelta-cli', 'iso20022', 'open-banking', 'payment-rails', 'interledger', 'ledger', 'microfinance', 'developer-experience'];
+        $validFeatures = ['multi-asset', 'settlements', 'governance', 'bank-integration', 'api', 'crosschain-defi', 'privacy-identity', 'mobile-payments', 'regtech-compliance', 'baas-platform', 'ai-framework', 'multi-tenancy', 'x402-protocol', 'visa-cli', 'virtuals-protocol', 'plugin-marketplace', 'machine-payments', 'agent-protocol', 'zelta-cli', 'iso20022', 'open-banking', 'payment-rails', 'interledger', 'ledger', 'microfinance', 'developer-experience', 'mcp'];
 
         if (! in_array($feature, $validFeatures)) {
             abort(404);
@@ -250,6 +281,10 @@ Route::get('/legal/privacy', function () {
 Route::get('/legal/cookies', function () {
     return view('legal.cookies');
 })->name('legal.cookies');
+
+Route::get('/legal/delete-account', function () {
+    return view('legal.delete-account');
+})->name('legal.delete-account');
 
 // Apple App Site Association — enables passkey AutoFill + Universal Links on iOS 16+
 Route::get('/.well-known/apple-app-site-association', function () {
@@ -854,6 +889,26 @@ Route::prefix('foodo')->group(function () {
     Route::post('/dish/{id}/verify', [App\Http\Controllers\Foodo\FoodoDishAnalysisController::class, 'verify'])->name('foodo.dish.verify');
 });
 
+// Public payment receipt page — shareable, no auth (keyed on an unguessable
+// 64-char share_token). This is the target of the `sharePayload` link
+// returned by POST /api/v1/transactions/{txId}/receipt.
+Route::get('/receipt/{shareToken}', [App\Http\Controllers\Web\ReceiptController::class, 'show'])
+    ->middleware('throttle:60,1')
+    ->name('receipt.show');
+
 // SEO routes - Sitemap and Robots.txt
 Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [App\Http\Controllers\SitemapController::class, 'robots'])->name('robots');
+
+Route::get('/.well-known/oauth-authorization-server', App\Domain\MCP\Discovery\AuthorizationServerMetadataController::class)
+    ->middleware(['throttle:mcp.discovery'])
+    ->name('mcp.discovery.authorization-server');
+
+// RFC 7591 DCR is by design unauthenticated and called by external clients
+// that have no Laravel session, so they cannot carry a CSRF token. Inheriting
+// the `web` group's VerifyCsrfToken middleware (because this route lives in
+// routes/web.php) returns 419 to every legitimate request. Strip CSRF here.
+Route::post('/oauth/register', App\Domain\MCP\Auth\DynamicClientRegistrationController::class)
+    ->middleware(['api', 'throttle:5,1'])
+    ->withoutMiddleware([App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('mcp.oauth.register');

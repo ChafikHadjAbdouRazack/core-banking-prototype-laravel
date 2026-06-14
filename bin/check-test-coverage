@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# CI test-coverage guard
+#
+# Fails when a top-level directory under tests/ is not claimed by any CI job.
+# This is the backstop for the drift that let ~45% of the suite silently fall
+# out of PR CI (directory batches were enumerated by hand and new directories
+# were never added).
+#
+# When you add a new top-level directory under tests/:
+#   1. Wire it into a CI workflow (or confirm a pest-rest catch-all picks it up).
+#   2. Add it to CLAIMED below with a comment saying which job runs it.
+#
+# Subdirectories of Unit/ and Feature/ are covered automatically by the
+# bin/pest-rest catch-all batches and need no entry here.
+
+set -euo pipefail
+
+# Directory -> claimed by (job or reason). Non-test support dirs are listed
+# explicitly too, so every entry here is a conscious decision.
+declare -A CLAIMED=(
+    [Unit]="03-test-suite.yml unit-tests (explicit batches + pest-rest catch-all)"
+    [Feature]="03-test-suite.yml feature-tests matrix (explicit shards + pest-rest catch-all)"
+    [Domain]="03-test-suite.yml integration-tests (testsuite Integration)"
+    [Console]="03-test-suite.yml integration-tests (testsuite Integration)"
+    [Integration]="03-test-suite.yml integration-tests (testsuite Integration)"
+    [MultiConnection]="03-test-suite.yml multi-connection-tests"
+    [Security]="04-security-tests.yml (explicit subdir steps + pest-rest catch-all for loose/new tests)"
+    [Performance]="05-performance.yml"
+    [Actions]="03-test-suite.yml unit-tests components batch"
+    [Filament]="03-test-suite.yml unit-tests components batch"
+    [Http]="03-test-suite.yml unit-tests components batch"
+    [Infrastructure]="03-test-suite.yml unit-tests components batch"
+    [Models]="03-test-suite.yml unit-tests components batch"
+    [Providers]="03-test-suite.yml unit-tests components batch"
+    [Values]="03-test-suite.yml unit-tests components batch"
+    [View]="03-test-suite.yml unit-tests components batch"
+    [Smoke]="03-test-suite.yml unit-tests components batch"
+    [Behat]="behat context/support code — executed by the behat-tests job via behat.yml"
+    [Browser]="Laravel Dusk — not run in CI (needs Chrome); run locally with php artisan dusk"
+    [Fixtures]="test fixtures, not executable tests"
+    [Traits]="shared test traits, not executable tests"
+    [k6]="k6 load scripts — executed by 05-performance.yml load-tests job"
+)
+
+FAIL=0
+for dir in tests/*/; do
+    name=$(basename "$dir")
+    if [ -z "${CLAIMED[$name]:-}" ]; then
+        echo "::error::tests/$name is not claimed by any CI job. Wire it into a workflow and add it to bin/check-test-coverage."
+        FAIL=1
+    fi
+done
+
+# Loose test files directly under tests/ would also be invisible to the batches.
+shopt -s nullglob
+LOOSE=(tests/*Test.php)
+shopt -u nullglob
+if [ ${#LOOSE[@]} -gt 0 ]; then
+    echo "::error::Loose test files directly under tests/ are not run by any CI batch: ${LOOSE[*]}"
+    FAIL=1
+fi
+
+# --- Catch-all enforcement for directories run by explicit subpath ----------
+# Some test directories are executed by listing their subdirectories one-by-one
+# in a workflow (rather than handing the whole directory to pest). Those jobs
+# silently drop loose *Test.php files and newly-added subdirectories — exactly
+# how tests/Security/ComprehensiveSecurityTest.php went un-run for a long time.
+# For each such directory, require an exclusion-computed catch-all
+# (./bin/pest-rest <dir>) in its workflow so that class of drift cannot recur.
+declare -A SUBPATH_RUN=(
+    [tests/Security]=".github/workflows/04-security-tests.yml"
+)
+for parent in "${!SUBPATH_RUN[@]}"; do
+    wf="${SUBPATH_RUN[$parent]}"
+    if [ ! -f "$wf" ]; then
+        echo "::error::$wf (catch-all guard for $parent/) is missing."
+        FAIL=1
+    elif ! grep -q "pest-rest $parent" "$wf"; then
+        echo "::error::$wf runs $parent/ by explicit subpath but has no './bin/pest-rest $parent' catch-all — loose or newly-added tests under $parent/ would silently not run."
+        FAIL=1
+    fi
+done
+
+if [ $FAIL -eq 0 ]; then
+    echo "All $(find tests -mindepth 1 -maxdepth 1 -type d | wc -l) top-level tests/ directories are claimed by a CI job."
+fi
+
+exit $FAIL

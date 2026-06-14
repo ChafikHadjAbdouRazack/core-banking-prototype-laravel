@@ -30,6 +30,24 @@ class HeliusWebhookSyncService
 
     private const LOCK_TIMEOUT = 15;
 
+    /**
+     * Fields Helius accepts on PUT /v0/webhooks/{id}.
+     *
+     * The GET response includes server-managed fields (`webhookID`, `project`,
+     * `wallet`, `lastEnabledAt`, etc.) that Helius rejects with 400 on PUT.
+     * We whitelist instead of blacklist so future-added server fields don't
+     * silently break sync.
+     */
+    private const PUT_ALLOWED_FIELDS = [
+        'webhookURL',
+        'transactionTypes',
+        'accountAddresses',
+        'webhookType',
+        'authHeader',
+        'txnStatus',
+        'encoding',
+    ];
+
     /** @var array<string> Solana system/program addresses that must never be monitored */
     private const RESERVED_ADDRESSES = [
         '11111111111111111111111111111111',
@@ -103,6 +121,8 @@ class HeliusWebhookSyncService
 
     /**
      * Sync all Solana addresses from the database to Helius.
+     *
+     * Returns the count of addresses pushed on success, 0 on failure.
      */
     public function syncAllAddresses(): int
     {
@@ -123,7 +143,9 @@ class HeliusWebhookSyncService
             ->values()
             ->all();
 
-        $this->updateWebhookAddresses($webhookId, $apiKey, $addresses);
+        if (! $this->updateWebhookAddresses($webhookId, $apiKey, $addresses)) {
+            return 0;
+        }
 
         Log::info('Helius: Synced all Solana addresses', ['count' => count($addresses)]);
 
@@ -161,17 +183,45 @@ class HeliusWebhookSyncService
     /**
      * Update the webhook with a new address list.
      *
+     * Helius's PUT /v0/webhooks/{id} replaces the entire webhook config — it
+     * does NOT support partial updates. Sending only accountAddresses fails
+     * with 400 ("Webhook URL is required", "Transaction types must be an
+     * array", etc.). So we GET the current config, swap accountAddresses,
+     * and PUT the whole object back.
+     *
+     * Helius requires `api-key` as a query parameter — it does not accept
+     * the key in the JSON body or in an Authorization header.
+     *
      * @param array<string> $addresses
      */
     private function updateWebhookAddresses(string $webhookId, string $apiKey, array $addresses): bool
     {
         $uniqueAddresses = array_values(array_unique($addresses));
 
-        $response = Http::timeout(15)
-            ->put("https://api.helius.xyz/v0/webhooks/{$webhookId}", [
-                'accountAddresses' => $uniqueAddresses,
-                'api-key'          => $apiKey,
+        $current = Http::timeout(15)
+            ->withQueryParameters(['api-key' => $apiKey])
+            ->get("https://api.helius.xyz/v0/webhooks/{$webhookId}");
+
+        if (! $current->successful()) {
+            Log::error('Helius: Failed to fetch current webhook config for update', [
+                'status' => $current->status(),
+                'body'   => $current->body(),
             ]);
+
+            return false;
+        }
+
+        /** @var array<string, mixed> $config */
+        $config = (array) $current->json();
+
+        // Helius rejects unknown/server-managed fields on PUT. Whitelist only
+        // the fields documented as accepted, plus our updated address list.
+        $config = array_intersect_key($config, array_flip(self::PUT_ALLOWED_FIELDS));
+        $config['accountAddresses'] = $uniqueAddresses;
+
+        $response = Http::timeout(15)
+            ->withQueryParameters(['api-key' => $apiKey])
+            ->put("https://api.helius.xyz/v0/webhooks/{$webhookId}", $config);
 
         if (! $response->successful()) {
             Log::error('Helius: Failed to update webhook addresses', [

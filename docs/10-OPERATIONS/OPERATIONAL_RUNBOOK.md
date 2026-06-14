@@ -119,14 +119,14 @@ php artisan tinker --execute="echo DB::connection()->getPdo() ? 'OK' : 'FAIL';"
 #### 2. Financial Reconciliation
 
 ```bash
-# Run daily reconciliation
-php artisan reconcile:daily
+# Run daily reconciliation (real command; the scheduler also runs this — see routes/console.php)
+php artisan reconciliation:daily
 
-# Check for discrepancies
-php artisan reconcile:report --date=today
+# Check for discrepancies — no separate report command; reconciliation:daily logs/surfaces
+# discrepancies itself. Review its output and storage/logs for flagged accounts (manual).
 
-# Verify event sourcing integrity
-php artisan event-sourcing:verify --domain=account
+# Verify projector / event-sourcing health (real command)
+php artisan projector:health
 ```
 
 #### 3. Compliance Checks
@@ -198,13 +198,15 @@ curl -X POST https://events.pagerduty.com/v2/enqueue \
 
 ```bash
 # Check system status
-php artisan health:check --all
+php artisan system:health-check --deep
 
 # Check recent deployments
 git log --oneline -10
 
-# Check error spikes
-php artisan logs:error-summary --last=1h
+# Check error spikes — no automated command; grep the structured logs (manual procedure)
+grep -c '"level":"error"' storage/logs/laravel.log
+grep '"level":"error"' storage/logs/laravel.log | tail -50
+# Kubernetes: kubectl logs deployment/finaegis-app -n finaegis --since=1h | grep -i error | sort | uniq -c | sort -rn
 
 # Check infrastructure
 kubectl get events -n finaegis --sort-by='.lastTimestamp'
@@ -257,7 +259,7 @@ php artisan horizon
 php artisan up
 
 # Verify all systems operational
-php artisan health:check --all
+php artisan system:health-check --deep
 
 # Run smoke tests
 ./vendor/bin/pest tests/Feature/SmokeTest.php
@@ -498,7 +500,7 @@ php artisan horizon &
 **Post-Maintenance:**
 ```bash
 # 1. Verify system health
-php artisan health:check --all
+php artisan system:health-check --deep
 
 # 2. Run smoke tests
 ./vendor/bin/pest tests/Feature/SmokeTest.php
@@ -646,8 +648,8 @@ gunzip database.sql.gz
 # Import to new database
 mysql -h $NEW_DB_HOST -u root -p < database.sql
 
-# Verify data integrity
-php artisan db:verify-integrity
+# Verify data integrity — verify the transaction hash chain (real command)
+php artisan app:verify-transaction-hashes
 ```
 
 #### Step 3: Application Deployment
@@ -672,22 +674,42 @@ curl -s https://finaegis.example.com/health
 # Run integration tests
 ./vendor/bin/pest tests/Feature/DisasterRecoveryTest.php
 
-# Verify financial integrity
-php artisan reconcile:full --alert-on-discrepancy
+# Verify financial integrity — run the daily reconciliation (real command; --force re-runs even if done today)
+php artisan reconciliation:daily --force
 ```
 
 ### Backup Verification
 
+> Scheduled DB backups run via **spatie/laravel-backup**: `backup:run --only-db`
+> daily at 01:30 UTC and `backup:clean` at 02:30 UTC (`routes/console.php`,
+> production-only, `Log::critical` on failure → Slack via the LOG stack).
+> There is no `backup:verify` command — the real commands are:
+>
+> - `php artisan backup:list` — show every backup on the destination disk(s) with size + age
+> - `php artisan backup:monitor` — health-check backups against `config/backup.php`
+>   `monitor_backups` (max age 1 day, max storage); non-zero output = unhealthy
+>
+> Destination disk is `BACKUP_DISK` (default `local`; production must use `s3` —
+> see the Production Readiness Checklist §9). Restoration is still a manual drill:
+
 ```bash
-# Monthly backup restoration test
+# Daily/weekly verification (real artisan commands)
+php artisan backup:list
+php artisan backup:monitor
+
+# Monthly backup restoration test (manual procedure)
 # 1. Spin up test environment
 docker-compose -f docker-compose.test.yml up -d
 
-# 2. Restore backup
-gunzip < monthly_backup.sql.gz | mysql -h localhost -P 3307 -u root -p
+# 2. Fetch the latest backup zip from the BACKUP_DISK destination
+#    (spatie zips contain db-dumps/mysql-<database>.sql), then restore:
+unzip -p latest_backup.zip db-dumps/*.sql | mysql -h localhost -P 3307 -u root -p
 
-# 3. Run verification queries
-php artisan backup:verify --connection=test
+# 3. Run verification queries against the restored copy (manual SQL — adjust to your data):
+#    confirm row counts and the latest transaction timestamp look sane, then spot-check
+#    the transaction hash chain on the restored connection:
+php artisan app:verify-transaction-hashes      # run against the restored DB connection
+mysql -h localhost -P 3307 -u root -p -e "SELECT MAX(created_at) FROM transactions;"
 
 # 4. Tear down test environment
 docker-compose -f docker-compose.test.yml down -v

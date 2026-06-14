@@ -2,12 +2,17 @@
 
 declare(strict_types=1);
 
-use App\Domain\MobilePayment\Models\PaymentIntent;
+use App\Domain\Account\Models\BlockchainAddress;
 use App\Domain\MobilePayment\Services\ActivityFeedService;
-use App\Domain\MobilePayment\Services\PaymentIntentService;
 use App\Domain\MobilePayment\Services\TransactionDetailService;
 use App\Domain\Relayer\Services\SmartAccountService;
 use App\Domain\Relayer\Services\WalletBalanceService;
+use App\Domain\Wallet\Services\PrivyAddressRegistrar;
+use App\Domain\Wallet\Services\Send\EvmUserOpPreparer;
+use App\Domain\Wallet\Services\Send\EvmUserOpSubmitter;
+use App\Domain\Wallet\Services\Send\SolanaSendPreparer;
+use App\Domain\Wallet\Services\Send\SolanaSendSubmitter;
+use App\Domain\Wallet\Services\SponsorshipCostTracker;
 use App\Http\Controllers\Api\Wallet\MobileWalletController;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -22,7 +27,13 @@ beforeEach(function (): void {
     $this->smartAccountService = Mockery::mock(SmartAccountService::class);
     $this->activityFeedService = Mockery::mock(ActivityFeedService::class);
     $this->transactionDetailService = Mockery::mock(TransactionDetailService::class);
-    $this->paymentIntentService = Mockery::mock(PaymentIntentService::class);
+    $this->privyAddressRegistrar = Mockery::mock(PrivyAddressRegistrar::class);
+    $this->solanaSendPreparer = Mockery::mock(SolanaSendPreparer::class);
+    $this->solanaSendSubmitter = Mockery::mock(SolanaSendSubmitter::class);
+    $this->evmUserOpPreparer = Mockery::mock(EvmUserOpPreparer::class);
+    $this->evmUserOpSubmitter = Mockery::mock(EvmUserOpSubmitter::class);
+    $this->sponsorshipCostTracker = Mockery::mock(SponsorshipCostTracker::class);
+    $this->sponsorshipCostTracker->shouldReceive('isDailyBudgetExhausted')->andReturn(false);
 });
 
 function makeWalletController($test): MobileWalletController
@@ -32,7 +43,12 @@ function makeWalletController($test): MobileWalletController
         $test->smartAccountService,
         $test->activityFeedService,
         $test->transactionDetailService,
-        $test->paymentIntentService,
+        $test->privyAddressRegistrar,
+        $test->solanaSendPreparer,
+        $test->solanaSendSubmitter,
+        $test->evmUserOpPreparer,
+        $test->evmUserOpSubmitter,
+        $test->sponsorshipCostTracker,
     );
 }
 
@@ -196,24 +212,56 @@ describe('MobileWalletController addresses', function (): void {
         $this->dropSolanaTestTables();
     });
 
-    it('lists user addresses per network', function (): void {
-        $account = (object) [
-            'account_address' => '0xdef456',
-            'network'         => 'base',
-            'is_deployed'     => false,
-            'created_at'      => now(),
-        ];
-        $this->smartAccountService->shouldReceive('getUserAccounts')->andReturn(new Collection([$account]));
+    it('lists Privy-registered addresses for the user', function (): void {
+        // The test user_uuid must match what walletUserRequest generates per-call.
+        // We capture it by issuing the request first, then seeding rows for that uuid.
+        $request = walletUserRequest('/api/v1/wallet/addresses');
+        $user = $request->user();
+        if (! $user instanceof User) {
+            throw new RuntimeException('Test setup did not produce a user.');
+        }
+        $userUuid = $user->uuid;
 
+        BlockchainAddress::create([
+            'user_uuid'  => $userUuid,
+            'chain'      => 'polygon',
+            'address'    => '0x742d35cc6634c0532925a3b844bc454e4438f44e',
+            'public_key' => '0x742d35cc6634c0532925a3b844bc454e4438f44e',
+            'is_active'  => true,
+            'metadata'   => ['provider' => 'privy', 'wallet_kind' => 'privy_smart_account'],
+        ]);
+        BlockchainAddress::create([
+            'user_uuid'  => $userUuid,
+            'chain'      => 'solana',
+            'address'    => 'EfkncjQTojTB6m9DqoyBqizLLwZgLu1uwg3Y3FqE6f7Z',
+            'public_key' => 'EfkncjQTojTB6m9DqoyBqizLLwZgLu1uwg3Y3FqE6f7Z',
+            'is_active'  => true,
+            'metadata'   => ['provider' => 'privy', 'wallet_kind' => 'privy_embedded_solana'],
+        ]);
+
+        $controller = makeWalletController($this);
+
+        $response = $controller->addresses($request);
+        $data = $response->getData(true);
+
+        expect($data['success'])->toBeTrue()
+            ->and($data['data'])->toHaveCount(2);
+
+        $byNetwork = collect($data['data'])->keyBy('network');
+        expect($byNetwork['polygon']['address'])->toBe('0x742d35cc6634c0532925a3b844bc454e4438f44e')
+            ->and($byNetwork['polygon']['type'])->toBe('smart_account')
+            ->and($byNetwork['solana']['address'])->toBe('EfkncjQTojTB6m9DqoyBqizLLwZgLu1uwg3Y3FqE6f7Z')
+            ->and($byNetwork['solana']['type'])->toBe('keypair');
+    });
+
+    it('returns an empty list when the user has registered no addresses yet', function (): void {
         $controller = makeWalletController($this);
 
         $response = $controller->addresses(walletUserRequest('/api/v1/wallet/addresses'));
         $data = $response->getData(true);
 
         expect($data['success'])->toBeTrue()
-            ->and($data['data'])->toBeArray()
-            ->and($data['data'][0])->toHaveKeys(['address', 'network', 'deployed', 'created_at'])
-            ->and($data['data'][0]['address'])->toBe('0xdef456');
+            ->and($data['data'])->toBe([]);
     });
 });
 
@@ -268,62 +316,6 @@ describe('MobileWalletController transactionDetail', function (): void {
     });
 });
 
-describe('MobileWalletController send', function (): void {
-    it('creates and submits a payment intent', function (): void {
-        $intentMock = Mockery::mock(PaymentIntent::class)->makePartial();
-        $intentMock->public_id = 'pi-abc';
-
-        $resultMock = Mockery::mock(PaymentIntent::class)->makePartial();
-        $resultMock->shouldReceive('toApiResponse')->andReturn([
-            'intentId' => 'pi-abc',
-            'status'   => 'SUBMITTED',
-            'tx'       => ['hash' => '0xdeadbeef'],
-        ]);
-
-        $this->paymentIntentService->shouldReceive('create')
-            ->once()
-            ->andReturn($intentMock);
-        $this->paymentIntentService->shouldReceive('submit')
-            ->with('pi-abc', 1, 'wallet')
-            ->once()
-            ->andReturn($resultMock);
-
-        $controller = makeWalletController($this);
-
-        $request = walletUserRequest('/api/v1/wallet/transactions/send', 'POST', [
-            'to'      => '0x1234567890abcdef1234567890abcdef12345678',
-            'token'   => 'USDC',
-            'amount'  => '25.00',
-            'network' => 'polygon',
-        ]);
-
-        $response = $controller->send($request);
-        $data = $response->getData(true);
-
-        expect($response->getStatusCode())->toBe(201)
-            ->and($data['success'])->toBeTrue()
-            ->and($data['data'])->toHaveKey('status');
-    });
-
-    it('returns 422 on send failure', function (): void {
-        $this->paymentIntentService->shouldReceive('create')
-            ->andThrow(new RuntimeException('Insufficient balance'));
-
-        $controller = makeWalletController($this);
-
-        $request = walletUserRequest('/api/v1/wallet/transactions/send', 'POST', [
-            'to'      => '0x1234567890abcdef1234567890abcdef12345678',
-            'token'   => 'USDC',
-            'amount'  => '25.00',
-            'network' => 'polygon',
-        ]);
-
-        $response = $controller->send($request);
-
-        expect($response->getStatusCode())->toBe(422);
-    });
-});
-
 describe('Wallet routes', function (): void {
     it('has wallet tokens route defined', function (): void {
         $route = app('router')->getRoutes()->getByName('mobile.wallet.tokens');
@@ -340,8 +332,18 @@ describe('Wallet routes', function (): void {
         expect($route)->not->toBeNull();
     });
 
-    it('has wallet transactions send route defined', function (): void {
-        $route = app('router')->getRoutes()->getByName('mobile.wallet.transactions.send');
+    it('has wallet transactions prepare route defined', function (): void {
+        $route = app('router')->getRoutes()->getByName('mobile.wallet.transactions.prepare');
+        expect($route)->not->toBeNull();
+    });
+
+    it('has wallet transactions submit route defined', function (): void {
+        $route = app('router')->getRoutes()->getByName('mobile.wallet.transactions.submit');
+        expect($route)->not->toBeNull();
+    });
+
+    it('has wallet addresses register route defined', function (): void {
+        $route = app('router')->getRoutes()->getByName('mobile.wallet.addresses.register');
         expect($route)->not->toBeNull();
     });
 });

@@ -73,11 +73,51 @@ return [
     ],
 
     'stripe' => [
-        'key'                   => env('STRIPE_KEY'),
-        'secret'                => env('STRIPE_SECRET'),
-        'webhook_secret'        => env('STRIPE_WEBHOOK_SECRET'),
-        'kyc_webhook_secret'    => env('STRIPE_KYC_WEBHOOK_SECRET'),
-        'bridge_webhook_secret' => env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
+        'key'                => env('STRIPE_KEY'),
+        'secret'             => env('STRIPE_SECRET'),
+        'webhook_secret'     => env('STRIPE_WEBHOOK_SECRET'),
+        'kyc_webhook_secret' => env('STRIPE_KYC_WEBHOOK_SECRET'),
+        // Stripe Crypto Onramp webhook secret. Reads the new env var first;
+        // falls back to STRIPE_BRIDGE_WEBHOOK_SECRET (deprecated) so deployed
+        // .env files keep working until they roll forward. Config key name
+        // (`bridge_webhook_secret`) preserved to avoid a wider rename of
+        // call sites in StripeCryptoOnrampProvider; remove in v1.1.
+        'bridge_webhook_secret' => env('STRIPE_CRYPTO_ONRAMP_WEBHOOK_SECRET') ?? env('STRIPE_BRIDGE_WEBHOOK_SECRET'),
+
+        // Plan B Backend-Q1: single config key consumed by Cashier and any future
+        // Stripe Bridge clients. AppServiceProvider::boot wires the StripeClient
+        // container binding to use this version.
+        'api_version' => env('STRIPE_API_VERSION', '2025-04-30.basil'),
+
+        // Plan B Backend-Q5: HMAC-SHA256 pepper for trial-card fingerprint hashing.
+        // Single env-var, event-triggered rotation only (rotation = re-hash all
+        // trial_card_fingerprints rows in one transaction).
+        'trial_fingerprint_pepper' => env('TRIAL_FINGERPRINT_PEPPER'),
+
+        // Plan B §1 — subscription Stripe Price IDs (deltas Q17.1).
+        'subscription_prices' => [
+            'monthly_pro' => env('STRIPE_PRICE_MONTHLY_PRO'),
+            'annual_pro'  => env('STRIPE_PRICE_ANNUAL_PRO'),
+        ],
+
+        // Plan B Slice 1 — webhook secret for /webhooks/stripe/subscriptions.
+        // Distinct from the legacy `webhook_secret` (used by CGO) and
+        // `kyc_webhook_secret` (used by KYC Checkout) so each can rotate
+        // independently.
+        'subscription_webhook_secret' => env('STRIPE_SUBSCRIPTION_WEBHOOK_SECRET'),
+
+        // Mobile deep-link return URLs for KYC Checkout. Stripe substitutes
+        // {CHECKOUT_SESSION_ID} on the success URL. Both URLs share a single
+        // 'trustcert/payment-return' route on the mobile side that branches
+        // on the 'status' query param.
+        'kyc_success_url' => env(
+            'STRIPE_KYC_SUCCESS_URL',
+            'zelta://trustcert/payment-return?status=success&session={CHECKOUT_SESSION_ID}'
+        ),
+        'kyc_cancel_url' => env(
+            'STRIPE_KYC_CANCEL_URL',
+            'zelta://trustcert/payment-return?status=cancel'
+        ),
     ],
 
     /*
@@ -265,6 +305,25 @@ return [
 
     'alchemy' => [
         'notify_token' => env('ALCHEMY_NOTIFY_TOKEN'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Plan B Slice 3 — Pricing quote signing
+    |--------------------------------------------------------------------------
+    |
+    | PRICING_QUOTE_PEPPER is used by QuoteSigner (HMAC-SHA256) to provide
+    | tamper-evidence for price_quotes rows. Generate with:
+    |   openssl rand -hex 32
+    |
+    | ROTATION WARNING: rotating this pepper invalidates all live price_quotes
+    | rows. Coordinate rotation with a pricing:purge-quotes --force-all run
+    | or a full quote-TTL drain window.
+    |
+    */
+
+    'pricing' => [
+        'quote_pepper' => env('PRICING_QUOTE_PEPPER', ''),
     ],
 
 ];

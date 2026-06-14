@@ -135,14 +135,14 @@ jobs:
           # at 1G after accumulating Eloquent class definitions, container
           # singletons, and observers across hundreds of tests.
           # Mirrors 03-test-suite.yml's Unit Tests step.
-          chmod +x ./bin/pest-batch
+          chmod +x ./bin/pest-batch ./bin/pest-rest
 
           ./bin/pest-batch tests/Unit/Domain || exit 1
           ./bin/pest-batch tests/Unit/Http tests/Unit/Services || exit 1
 
-          if [ -d "tests/Unit/Filament" ] || [ -d "tests/Unit/Http/Middleware" ]; then
-            ./bin/pest-batch tests/Unit/Filament tests/Unit/Http/Middleware || exit 1
-          fi
+          # Everything else under tests/Unit — computed by exclusion so new
+          # directories are always picked up (mirrors 03-test-suite.yml)
+          ./bin/pest-rest tests/Unit tests/Unit/Domain tests/Unit/Http tests/Unit/Services || exit 1
 
   build-artifacts:
     name: Build Release Artifacts
@@ -274,6 +274,9 @@ jobs:
           
           # Execute deployment commands
           ssh ${DEPLOY_USER}@${DEPLOY_SERVER} << 'ENDSSH'
+            # Fail fast — a failed step must abort the script, not fall
+            # through (previously a failed migration continued to artisan up).
+            set -e
             cd ${DEPLOY_PATH}
             
             # Enable maintenance mode
@@ -299,6 +302,12 @@ jobs:
             
             # Run deployment tasks
             cd current
+            
+            # Production preflight: verify env/config guards (peppers, bypass
+            # flags, webhook credentials, Apple CA pin) BEFORE migrations and
+            # traffic. FAILs only block in the production environment; exits 1
+            # while still safely in maintenance mode.
+            php artisan ops:verify-env
             php artisan migrate --force
             php artisan db:seed --class=ProductionSeeder --force || true
             php artisan config:cache
@@ -408,6 +417,9 @@ jobs:
           
           # Execute deployment commands
           ssh ${DEPLOY_USER}@${DEPLOY_SERVER} << 'ENDSSH'
+            # Fail fast — a failed step must abort the script, not fall
+            # through (previously a failed migration continued to artisan up).
+            set -e
             cd ${DEPLOY_PATH}
             
             # Enable maintenance mode
@@ -436,6 +448,12 @@ jobs:
             
             # Run deployment tasks
             cd current
+            
+            # Production preflight: verify env/config guards (peppers, bypass
+            # flags, webhook credentials, Apple CA pin) BEFORE migrations and
+            # traffic. FAILs only block in the production environment; exits 1
+            # while still safely in maintenance mode.
+            php artisan ops:verify-env
             
             # Run migrations with safety check
             php artisan migrate:status
@@ -506,6 +524,9 @@ jobs:
           echo "::error::Production deployment failed! Initiating rollback..."
 
           ssh ${DEPLOY_USER}@${DEPLOY_SERVER} << 'ENDSSH'
+            # Fail fast — a failed step must abort the script, not fall
+            # through (previously a failed migration continued to artisan up).
+            set -e
             cd ${DEPLOY_PATH}
 
             # Enable maintenance mode
@@ -563,14 +584,37 @@ jobs:
         with:
           script: |
             const tag = context.ref.replace('refs/tags/', '');
-            const release = await github.rest.repos.createRelease({
+            try {
+              await github.rest.repos.getReleaseByTag({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag,
+              });
+              core.info(`Release for tag ${tag} already exists; skipping creation.`);
+              return;
+            } catch (err) {
+              if (err.status !== 404) throw err;
+            }
+            const tags = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            const versionTags = tags.data
+              .map(t => t.name)
+              .filter(name => name.startsWith('v') && name !== tag);
+            const previousTag = versionTags[0] ?? '';
+            const compareUrl = previousTag
+              ? `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/compare/${previousTag}...${tag}`
+              : `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/releases/tag/${tag}`;
+            await github.rest.repos.createRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: tag,
               name: `Release ${tag}`,
-              body: `## What's Changed\n\nFull changelog: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/compare/...${tag}`,
+              body: `## What's Changed\n\nFull changelog: ${compareUrl}`,
               draft: false,
-              prerelease: false
+              prerelease: false,
             });
 
   deployment-summary:

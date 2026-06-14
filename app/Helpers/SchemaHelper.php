@@ -27,14 +27,15 @@ class SchemaHelper
                 'email'       => config('brand.support_email', 'info@finaegis.org'),
                 'url'         => config('app.url') . '/support/contact',
             ],
-            'description'  => $brand . ' — Agentic payments with stablecoin-powered virtual cards. Non-custodial security and privacy built in.',
+            'description'  => $brand . ' — Non-custodial stablecoin wallet with passkey sign-in, virtual Visa & Mastercard cards, bank-rail deposits, and an agent-callable MCP API. Six networks: Solana, Tron, Polygon, Base, Arbitrum, Ethereum.',
             'foundingDate' => '2024',
-            'slogan'       => config('brand.tagline', 'Agentic Payments. Spend Anywhere.'),
+            'slogan'       => config('brand.tagline', 'No seed phrase. Tap to pay. Truly yours.'),
             'knowsAbout'   => [
-                'Agentic Payments',
-                'Stablecoin Cards',
                 'Non-Custodial Wallets',
-                'Privacy Payments',
+                'Stablecoin Cards',
+                'Virtual Visa & Mastercard',
+                'Passkey Authentication',
+                'Agent-Callable Payment API',
                 'Financial Technology',
             ],
         ];
@@ -59,28 +60,42 @@ class SchemaHelper
 
     /**
      * Generate SoftwareApplication schema.
+     *
+     * Brand-aware: the Play Store installUrl + Android-wallet description
+     * describe the Zelta app specifically. Under any other brand (e.g. the
+     * FinAegis demo) the installUrl is omitted and a generic platform
+     * description is used, so demo pages never point at the Zelta listing.
      */
     public static function softwareApplication(): string
     {
         $brand = config('brand.name', 'Zelta');
+        $isZelta = $brand === 'Zelta';
+
         $schema = [
             '@context'            => 'https://schema.org',
             '@type'               => 'MobileApplication',
             'name'                => $brand,
-            'operatingSystem'     => 'iOS, Android',
+            'operatingSystem'     => 'Android',
             'applicationCategory' => 'FinanceApplication',
-            'offers'              => [
-                [
-                    '@type'         => 'Offer',
-                    'price'         => '0',
-                    'priceCurrency' => 'USD',
-                ],
+        ];
+
+        if ($isZelta) {
+            $schema['installUrl'] = 'https://play.google.com/store/apps/details?id=com.zelta.wallet';
+        }
+
+        $schema['offers'] = [
+            [
+                '@type'         => 'Offer',
+                'price'         => '0',
+                'priceCurrency' => 'USD',
             ],
-            'description' => 'Agentic payments — get your personal card or your AI agent a card to spend anywhere. Stablecoin-powered, non-custodial.',
-            'developer'   => [
-                '@type' => 'Organization',
-                'name'  => $brand,
-            ],
+        ];
+        $schema['description'] = $isZelta
+            ? 'Non-custodial stablecoin wallet with passkey sign-in, virtual Visa & Mastercard cards, bank-rail deposits, and an agent-callable MCP API. Six networks (Solana, Tron, Polygon, Base, Arbitrum, Ethereum). In open testing on Android.'
+            : $brand . ' — digital banking and stablecoin platform with multi-asset accounts, payment rails, and developer APIs.';
+        $schema['developer'] = [
+            '@type' => 'Organization',
+            'name'  => $brand,
         ];
 
         return self::generateScript($schema);

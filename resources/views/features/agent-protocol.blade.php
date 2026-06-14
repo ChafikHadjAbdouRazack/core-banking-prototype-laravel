@@ -38,7 +38,7 @@
                 ]])
                 <div class="inline-flex items-center px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-sm text-slate-300 mb-6">
                     <span class="w-2 h-2 bg-cyan-400 rounded-full mr-2"></span>
-                    v7.10.8 &middot; Autonomous Agent Commerce
+                    v7.13.2 &middot; Autonomous Agent Commerce
                 </div>
                 <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white tracking-tight mb-6">
                     Agent Protocol
@@ -485,7 +485,7 @@
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <h3 class="font-bold text-slate-900 mb-2 group-hover:text-purple-700">AI Framework</h3>
-                    <p class="text-sm text-slate-500">6 specialized agents, 24 MCP tools, ML anomaly detection, and Temporal workflow orchestration.</p>
+                    <p class="text-sm text-slate-500">6 specialized agents, 12 OAuth-scoped MCP tools, ML anomaly detection, and Temporal workflow orchestration.</p>
                 </a>
                 <a href="{{ route('features.show', 'machine-payments') }}" class="card-feature !p-6 hover:border-orange-300 transition-colors group">
                     <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">

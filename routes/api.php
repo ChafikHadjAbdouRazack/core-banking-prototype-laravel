@@ -47,17 +47,24 @@ Route::get('/', function () {
     ]);
 })->name('api.root');
 
-// Monitoring endpoints (public - for Prometheus and Kubernetes)
+// Monitoring endpoints. Health probes stay public (Kubernetes liveness/readiness);
+// metrics endpoints are gated (token or IP allowlist) — they expose business metrics.
 Route::prefix('monitoring')->group(function () {
-    Route::get('/metrics', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])->name('monitoring.metrics');
-    Route::get('/prometheus', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])->name('monitoring.prometheus');
+    Route::get('/metrics', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])
+        ->middleware(App\Http\Middleware\MetricsAccessMiddleware::class)
+        ->name('monitoring.metrics');
+    Route::get('/prometheus', [App\Http\Controllers\Api\MonitoringController::class, 'prometheus'])
+        ->middleware(App\Http\Middleware\MetricsAccessMiddleware::class)
+        ->name('monitoring.prometheus');
     Route::get('/health', [App\Http\Controllers\Api\MonitoringController::class, 'health'])->name('monitoring.health');
     Route::get('/ready', [App\Http\Controllers\Api\MonitoringController::class, 'ready'])->name('monitoring.ready');
     Route::get('/alive', [App\Http\Controllers\Api\MonitoringController::class, 'alive'])->name('monitoring.alive');
 });
 
-// Domain metrics endpoints (public - for Prometheus scraping)
-Route::get('/metrics/prometheus', [App\Http\Controllers\Api\MetricsController::class, 'prometheus'])->name('metrics.prometheus');
+// Domain metrics endpoint for Prometheus scraping (gated: token or IP allowlist)
+Route::get('/metrics/prometheus', [App\Http\Controllers\Api\MetricsController::class, 'prometheus'])
+    ->middleware(App\Http\Middleware\MetricsAccessMiddleware::class)
+    ->name('metrics.prometheus');
 Route::get('/health', [App\Http\Controllers\Api\MetricsController::class, 'health'])->name('health.quick');
 
 // WebSocket configuration endpoints (public - for client initialization)
@@ -117,11 +124,6 @@ Route::prefix('auth')->middleware('api.rate_limit:auth')->group(function () {
             Route::post('/verify', [TwoFactorAuthController::class, 'verify']);
             Route::post('/recovery-codes', [TwoFactorAuthController::class, 'regenerateRecoveryCodes']);
         });
-
-        // UserOperation signing with auth shard (v2.6.0)
-        Route::post('/sign-userop', [App\Http\Controllers\Api\Auth\UserOpSigningController::class, 'sign'])
-            ->middleware('throttle:10,1')
-            ->name('api.auth.sign-userop');
 
         // Passkey registration (requires auth)
         Route::post('/passkey/register', [PasskeyController::class, 'register'])
@@ -192,6 +194,89 @@ Route::post('webhooks/stripe/kyc', [App\Http\Controllers\Api\Webhook\StripeKycWe
     ->middleware('api.rate_limit:webhook')
     ->name('api.webhooks.stripe.kyc');
 
+// Plan B Slice 1 — Stripe subscription webhook (separate from /stripe/webhook
+// which handles CGO + KYC). Signature verified inside the controller. Dedup
+// via processed_webhook_events on Stripe `event.id`.
+Route::post('webhooks/stripe/subscriptions', [App\Domain\Subscription\Webhooks\SubscriptionWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.stripe.subscriptions');
+
+// Plan B Slice 2 — IAP webhook receivers (Apple App Store Server Notifications V2
+// + Google Play Real-Time Developer Notifications). No Sanctum auth — the
+// controllers verify Apple JWS / Google Pub/Sub bearer JWT internally. Both
+// MUST return 200 even on processing errors (the stores retry non-2xx
+// indefinitely; the controllers log and acknowledge).
+Route::post('webhooks/apple/notifications', [App\Domain\Subscription\Webhooks\AppleNotificationsWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.apple.notifications');
+
+Route::post('webhooks/google/play', [App\Domain\Subscription\Webhooks\GooglePlayWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.webhooks.google.play');
+
+// Plan B Slice 1 — Subscription module endpoints (Stripe-only); Slice 2 adds
+// the IAP /verify endpoint under the same prefix.
+Route::prefix('v1/subscription')->name('api.v1.subscription.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::get('/me', [App\Domain\Subscription\Http\Controllers\SubscriptionController::class, 'me'])
+            ->name('me');
+
+        Route::middleware(['idempotency.required'])->group(function () {
+            Route::post('/checkout', [App\Domain\Subscription\Http\Controllers\SubscriptionController::class, 'checkout'])
+                ->name('checkout');
+            Route::post('/change-plan', [App\Domain\Subscription\Http\Controllers\SubscriptionController::class, 'changePlan'])
+                ->name('change-plan');
+            Route::post('/cancel', [App\Domain\Subscription\Http\Controllers\SubscriptionController::class, 'cancel'])
+                ->name('cancel');
+            Route::post('/reactivate', [App\Domain\Subscription\Http\Controllers\SubscriptionController::class, 'reactivate'])
+                ->name('reactivate');
+
+            // Slice 2 — mobile P0 endpoint: server-side validate Apple/Google
+            // store receipts and create / update the iap_subscriptions row.
+            // Throttled per-user: receipt verification fans out to Apple/Google
+            // and writes revenue rows — 10/min is ample for legitimate clients.
+            Route::post('/iap/verify', [App\Domain\Subscription\Http\Controllers\IapVerifyController::class, 'verify'])
+                ->middleware('throttle:10,1')
+                ->name('iap.verify');
+        });
+    });
+
+// Plan B Slice 3 — Pricing quote endpoints.
+// POST /api/v1/pricing/quote — idempotency.required is DECIDED (OD-1): both
+//   the idempotency.required middleware and the entity-key dedup coexist per Q2.1.
+// GET  /api/v1/pricing/quote/{quoteId} — read-only; no idempotency middleware.
+Route::prefix('v1/pricing')->name('api.v1.pricing.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::middleware(['idempotency.required'])->group(function () {
+            Route::post('/quote', [App\Domain\Pricing\Http\Controllers\PricingController::class, 'quote'])
+                ->name('quote');
+        });
+
+        Route::get('/quote/{quoteId}', [App\Domain\Pricing\Http\Controllers\PricingController::class, 'show'])
+            ->name('quote.show');
+    });
+
+// Plan B Slice 4 — Cue queue endpoints.
+// GET  /api/v1/me/pending-cues            — list pending cues for authenticated user
+// POST /api/v1/me/cues/{cueId}/dismissed  — dismiss a cue (idempotent, requires Idempotency-Key)
+// POST /api/v1/me/marketing-opt-out       — set pro_marketing_opt_out (PECR compliance)
+Route::prefix('v1/me')->name('api.v1.me.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::get('/pending-cues', [App\Domain\Subscription\Http\Controllers\CueController::class, 'pendingCues'])
+            ->name('pending-cues');
+
+        Route::middleware(['idempotency.required'])->group(function () {
+            Route::post('/cues/{cueId}/dismissed', [App\Domain\Subscription\Http\Controllers\CueController::class, 'dismiss'])
+                ->name('cues.dismiss');
+        });
+
+        Route::post('/marketing-opt-out', [App\Domain\Subscription\Http\Controllers\MarketingOptOutController::class, 'store'])
+            ->name('marketing-opt-out');
+    });
+
 // Extended monitoring endpoints with authentication
 Route::prefix('monitoring')->middleware(['auth:sanctum'])->group(function () {
     Route::get('/metrics-json', [App\Http\Controllers\Api\MonitoringController::class, 'metrics']);
@@ -228,12 +313,12 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'require.2fa.admin'])->group
     });
 });
 
-// UserOperation signing alias — mobile app expects /api/v1/auth/sign-userop (v7.1.0)
+// Privy login — exchange a Privy session JWT for a Sanctum token (public, no auth)
 Route::prefix('v1/auth')
-    ->middleware(['auth:sanctum', 'throttle:10,1'])
+    ->middleware('api.rate_limit:auth')
     ->group(function () {
-        Route::post('/sign-userop', [App\Http\Controllers\Api\Auth\UserOpSigningController::class, 'sign'])
-            ->name('api.v1.auth.sign-userop');
+        Route::post('/privy-login', [LoginController::class, 'privyLogin'])
+            ->name('api.v1.auth.privy-login');
     });
 
 // Passkey/WebAuthn Authentication (v2.7.0) - public assertion flow
@@ -277,6 +362,29 @@ Route::prefix('v1/ramp')->name('api.v1.ramp.')
 Route::post('v1/ramp/webhook/{provider}', [App\Http\Controllers\Api\V1\RampWebhookController::class, 'handle'])
     ->middleware('api.rate_limit:webhook')
     ->name('api.v1.ramp.webhook');
+
+// Bridge.xyz dedicated webhook (no auth, HMAC verified) — handles both
+// customer.kyc_link_* and virtual_account.* / transfer.* events. See
+// docs/BACKEND_HANDOVER_BRIDGE_RAMP.md §3.1. Configure Bridge dashboard
+// to POST here.
+Route::post('v1/webhooks/bridge', [App\Http\Controllers\Api\V1\BridgeWebhookController::class, 'handle'])
+    ->middleware('api.rate_limit:webhook')
+    ->name('api.v1.webhooks.bridge');
+
+// Bridge.xyz setup (KYC + virtual account provisioning) — distinct from
+// /v1/ramp/* because setup is per-user and one-time. No require.kyc middleware
+// here: these endpoints are how you START Bridge KYC. See ADR-0005.
+Route::prefix('v1/user')->name('api.v1.user.')
+    ->middleware(['auth:sanctum'])
+    ->group(function () {
+        Route::get('/bridge-setup-status', [App\Http\Controllers\Api\V1\BridgeSetupController::class, 'status'])
+            ->middleware('api.rate_limit:query')
+            ->name('bridge-setup-status');
+        Route::post('/bridge-kyc-link', [App\Http\Controllers\Api\V1\BridgeSetupController::class, 'kycLink'])
+            ->name('bridge-kyc-link');
+        Route::post('/bridge-va-provision', [App\Http\Controllers\Api\V1\BridgeSetupController::class, 'provisionVirtualAccount'])
+            ->name('bridge-va-provision');
+    });
 
 // v5.14.0 — Alchemy Address Activity Webhook (no auth, HMAC verified)
 Route::post('webhooks/alchemy/address-activity', [App\Http\Controllers\Api\Webhook\AlchemyWebhookController::class, 'handle'])

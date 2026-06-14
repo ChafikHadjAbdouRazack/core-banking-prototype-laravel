@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\V1;
 
 use App\Domain\Ramp\Contracts\RampProviderInterface;
+use App\Domain\Ramp\Exceptions\OfframpNotAvailableException;
+use App\Domain\Ramp\Exceptions\QuoteExpiredException;
 use App\Domain\Ramp\Services\RampService;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\RampSessionResource;
@@ -52,7 +54,7 @@ class RampController extends Controller
                         new OA\Property(property: 'fee_currency', type: 'string', example: 'USD'),
                         new OA\Property(property: 'payment_methods', type: 'array', items: new OA\Items(type: 'string')),
                     ])),
-                    new OA\Property(property: 'provider', type: 'string', example: 'stripe_bridge'),
+                    new OA\Property(property: 'provider', type: 'string', example: 'stripe_crypto_onramp'),
                     new OA\Property(property: 'valid_until', type: 'string', format: 'date-time'),
                 ]),
             ]
@@ -73,7 +75,8 @@ class RampController extends Controller
                 $request->input('type'),
                 strtoupper($request->input('fiat')),
                 (string) $request->input('amount'),
-                strtoupper($request->input('crypto'))
+                strtoupper($request->input('crypto')),
+                $request->user(),
             );
 
             return response()->json(['data' => $result]);
@@ -134,6 +137,18 @@ class RampController extends Controller
             return response()->json([
                 'data' => new RampSessionResource($session),
             ], 201);
+        } catch (QuoteExpiredException $e) {
+            // Specific code so mobile can render "Quote expired, refresh"
+            // instead of a generic toast. Quote's `validUntil` is 60s.
+            return response()->json([
+                'error' => ['code' => 'ERR_RAMP_QUOTE_EXPIRED', 'message' => $e->getMessage()],
+            ], 422);
+        } catch (OfframpNotAvailableException $e) {
+            // Explicit code (not the generic SESSION_ERROR) so mobile can
+            // render a "Sell crypto is coming in v1.1" state. 422, never 500.
+            return response()->json([
+                'error' => ['code' => 'OFFRAMP_NOT_AVAILABLE', 'message' => $e->getMessage()],
+            ], 422);
         } catch (RuntimeException $e) {
             return response()->json([
                 'error' => ['code' => 'SESSION_ERROR', 'message' => $e->getMessage()],
@@ -206,7 +221,7 @@ class RampController extends Controller
         content: new OA\JsonContent(
             properties: [
                 new OA\Property(property: 'data', type: 'object', properties: [
-                    new OA\Property(property: 'provider', type: 'string', example: 'stripe_bridge'),
+                    new OA\Property(property: 'provider', type: 'string', example: 'stripe_crypto_onramp'),
                     new OA\Property(property: 'fiat_currencies', type: 'array', items: new OA\Items(type: 'string'), example: '["USD","EUR","GBP"]'),
                     new OA\Property(property: 'crypto_currencies', type: 'array', items: new OA\Items(type: 'string'), example: '["USDC","USDT","ETH","BTC"]'),
                     new OA\Property(property: 'modes', type: 'array', items: new OA\Items(type: 'object', properties: [

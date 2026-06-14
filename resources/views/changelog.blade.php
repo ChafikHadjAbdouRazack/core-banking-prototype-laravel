@@ -5,7 +5,7 @@
 @section('seo')
     @include('partials.seo', [
         'title' => 'Changelog | ' . config('brand.name', 'Zelta'),
-        'description' => 'Release history for the Zelta core banking platform. Track every feature shipped, bug fixed, and improvement made — v7.0 through v7.10.8.',
+        'description' => 'Release history for the Zelta core banking platform. Track every feature shipped, bug fixed, and improvement made — v7.0 through v7.15.0.',
         'keywords' => 'changelog, release notes, updates, ' . config('brand.name', 'Zelta') . ', version history, core banking',
     ])
 
@@ -43,6 +43,122 @@
 
             @php
                 $releases = [
+                    [
+                        'version' => 'v7.15.0',
+                        'date' => 'June 3, 2026',
+                        'label' => 'Bridge.xyz Fiat Ramp — Bank Transfers, KYC &amp; Virtual Accounts',
+                        'label_color' => 'emerald',
+                        'badge_color' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
+                        'dot_color' => 'bg-emerald-500',
+                        'items' => [
+                            'Bridge.xyz fiat ramp — Bridge.xyz becomes the primary v1 fiat &harr; stablecoin rail: bank transfers in, USDC on Polygon. New <code>bridge_customers</code> persistence, KYC provider adapters under the Compliance domain, and a shared Bridge HTTP client + webhook verifier. A single <code>POST /api/v1/webhooks/bridge</code> endpoint handles both KYC (<code>customer.kyc_link_*</code>) and ramp (<code>virtual_account.activity</code>, <code>transfer.*</code>) events with event-level dedupe via <code>processed_webhook_events</code>. v1 is bank-rail onramp only; offramp, SWIFT, and additional networks land in v1.1. ADR-0005 records why Bridge over Stripe Crypto Onramp.',
+                            'Bridge-hosted KYC and virtual accounts — mobile calls <code>GET /api/v1/user/bridge-setup-status</code> + <code>POST /api/v1/user/bridge-kyc-link</code> (lazy, idempotent Bridge customer creation). On KYC approval a virtual account is auto-provisioned against the user\'s Polygon address — with an observer retry if the address registers later — and a retry endpoint, push deep-link, and quote expiration round out the flow. WebSocket events <code>bridge.kyc.completed</code> / <code>bridge.kyc.rejected</code> / <code>bridge.virtual_account.ready</code> fire on the user\'s private channel with a push-notification fallback on the KYC terminals.',
+                            'Developer-fee markup mechanism (ADR-0006) — a 0.75% Zelta markup flows through Bridge\'s per-customer <code>developer_fee_bps</code> (Free tier = 75 bps, Pro = 0). Tier changes auto-PATCH the Bridge customer via a <code>SubscriptionTierChanged</code> listener; operator commands <code>bridge:sync-dev-fee</code> (batch reconciliation with <code>--dry-run</code>) and <code>bridge:inspect-user</code> cover manual ops.',
+                            'Bridge webhook signature verification — webhooks are verified against Bridge\'s current asymmetric scheme (<code>X-Webhook-Signature: t=&lt;unix_ms&gt;,v0=&lt;base64&gt;</code>, RSA-SHA256 over <code>&lt;t&gt;.&lt;body&gt;</code> with the per-endpoint public key). The legacy HMAC scheme remains as an auto-detected fallback; in production the verifier fails closed when no credential is configured.',
+                            'HyperSwitch wired into the real deposit flow — card deposits can route through <code>HyperSwitchPaymentService</code>, opt-in via <code>HYPERSWITCH_ENABLED</code> (off by default; Stripe remains the default rail). The webhook credits accounts idempotently from the stored intent, and credit failures surface as <code>completion_failed</code> for operator reconciliation instead of being disguised as completed. Closes the long-standing #346.',
+                            'Landing truth-pass — page copy, SEO meta, schema.org data, and MCP claims realigned with the shipped product; README and GitHub presentation refreshed for accuracy; redesigned <code>#get-the-app</code> section with Android open-testing CTAs; fixed a malformed Android install URL, a duplicate footer on <code>/support</code>, and missing <code>noindex</code> + SEO meta on the OAuth consent screen.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.14.1',
+                        'date' => 'May 19, 2026',
+                        'label' => 'Privy Login Hotfix — Personal Team Provisioning',
+                        'label_color' => 'slate',
+                        'badge_color' => 'bg-slate-100 text-slate-700 border-slate-200',
+                        'dot_color' => 'bg-slate-500',
+                        'items' => [
+                            'Fixed a 500 error when signing in with a new email. Signing in at <code>/login</code> with a previously-unused email cleared the email-OTP step, then returned a &ldquo;500 Server Error&rdquo; the instant the freshly-created account reached the dashboard. Privy email-OTP signups — both the web flow and the mobile <code>POST /api/v1/auth/privy-login</code> flow — created the user with a bare <code>User::create()</code> and skipped the Jetstream personal-team provisioning that password signups inherit from <code>CreateNewUser</code>. Team features are enabled, so every team-aware view dereferences <code>currentTeam</code> — a team-less user crashed rendering <code>navigation-menu.blade.php</code>. A new <code>ProvisionsPersonalTeam</code> trait provisions the personal team idempotently on every Privy login (not just signup), which also heals users left team-less by the earlier code path on their next sign-in. (#1088)',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.14.0',
+                        'date' => 'May 18, 2026',
+                        'label' => 'Wallet Transaction Mirror — EVM Deposits, Admin Visibility, Receipts &amp; Dust Filtering',
+                        'label_color' => 'blue',
+                        'badge_color' => 'bg-blue-100 text-blue-700 border-blue-200',
+                        'dot_color' => 'bg-blue-500',
+                        'items' => [
+                            'EVM inbound deposits are now mirrored into transaction history. Previously the Alchemy webhook fired a balance update and a push notification for an inbound USDC/USDT transfer on Polygon, Base, Arbitrum, or Ethereum — then discarded the transaction. The deposit never appeared in <code>GET /api/v1/wallet/transactions</code>: the balance moved but no matching entry was shown. The new <code>EvmTransactionProcessor</code> (the EVM counterpart of <code>HeliusTransactionProcessor</code>) persists every transfer to <code>blockchain_address_transactions</code> and <code>activity_feed_items</code>, bringing EVM to parity with Solana. Outbound sends that already own a feed item via <code>WalletSendRecordObserver</code> keep their audit row but skip the duplicate. A new <code>php artisan evm:backfill-transactions</code> command seeds history that predates the live mirror via the Alchemy Transfers API.',
+                            'Per-user wallet visibility in the admin panel. Support staff had no screen for a customer\'s crypto activity — <code>/admin/accounts</code> is the fiat ledger, and no resource surfaced blockchain data. Opening a user in the admin panel now shows three read-only tabs: <strong>Wallet Addresses</strong> (registered addresses per chain), <strong>Blockchain Transactions</strong> (the cross-chain mirror of on-chain activity, including dust hidden from the customer feed), and <strong>Wallet Sends</strong> (the full send lifecycle with <code>error_code</code> / <code>error_message</code>, so support can see exactly why a transfer failed).',
+                            'Hosted receipt page and downloadable PDF. <code>POST /api/v1/transactions/{txId}/receipt</code> returned a <code>sharePayload</code> link pointing at an unregistered <code>/receipt/{id}</code> route — every share link 404\'d — and <code>pdfUrl</code> was always null because no PDF was ever generated. A new public <code>GET /receipt/{shareToken}</code> renders a branded, <code>noindex</code> receipt page keyed on an unguessable token; <code>ReceiptService</code> renders the same view to a PDF (dompdf) stored on the public disk, so <code>pdfUrl</code> is now a real downloadable file.',
+                            'Solana inbound dust filter. A wallet was hit by address-poisoning spam — six unsolicited 0.00001 SOL transfers — and each one became an activity-feed entry <em>and</em> a push notification. Inbound native-SOL transfers below <code>WALLET_SOLANA_DUST_MIN_INBOUND_SOL</code> (default 0.001 SOL) are now recorded as a <code>BlockchainTransaction</code> for audit but kept out of the activity feed, and the push is suppressed. Token transfers (USDC/USDT) are never filtered.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.13.2',
+                        'date' => 'May 15, 2026',
+                        'label' => 'Mobile Wallet Bug-Fix Patch — Solana Send, Receipts, Privacy Gating',
+                        'label_color' => 'slate',
+                        'badge_color' => 'bg-slate-100 text-slate-700 border-slate-200',
+                        'dot_color' => 'bg-slate-500',
+                        'items' => [
+                            'Wallet send network-casing fix. <code>POST /api/v1/wallet/transactions/prepare</code> previously validated <code>network</code> against a hard-coded <code>in:solana,polygon,base,arbitrum,ethereum</code> list (lowercase only) while the <code>quote</code> endpoint accepted the canonical <code>PaymentNetwork</code> enum values (<code>SOLANA</code> / <code>TRON</code> uppercase, <code>polygon</code> / <code>base</code> / <code>arbitrum</code> / <code>ethereum</code> lowercase). Mobile sending <code>network: "SOLANA"</code> to both endpoints (as it does for quote) was rejected with "selected network is invalid" on prepare, and lowercase <code>"solana"</code> wasn\'t a valid enum case at all. Both endpoints now reference <code>Rule::enum(PaymentNetwork::class)</code> so the wire contract is identical end-to-end. CLAUDE.md gains a pitfall row locking the network-casing + snake/camel field-name conventions for future asset additions.',
+                            'Receipt endpoint now works for Solana inbound transfers and any non-intent activity. <code>POST /api/v1/transactions/{txId}/receipt</code> previously looked up <code>PaymentIntent::where(\'public_id\', $txId)</code>, but Solana inbound USDC and USDT are written directly to <code>activity_feed_items</code> + <code>blockchain_address_transactions</code> by <code>HeliusTransactionProcessor</code> with no <code>PaymentIntent</code> in between. The receipt service now resolves the <code>ActivityFeedItem</code> first (matching the unified ID mobile already gets back from <code>GET /wallet/transactions</code> and <code>GET /transactions/{id}</code>), then either pulls merchant + fee details from the linked <code>PaymentIntent</code> (preserving existing merchant-payment behaviour) or builds the receipt from the activity row + Helius <code>metadata.tx_hash</code> / <code>metadata.fee_usd</code> when no intent exists. <code>payment_intent_id</code> was already nullable in the schema; idempotency keys on <code>(user_id, tx_hash)</code> for non-intent receipts.',
+                            'Privacy merkle-root endpoint now returns a clean 503 instead of a generic 500. <code>GET /api/v1/privacy/merkle-root?network=…</code> or <code>?chain_id=…</code> previously surfaced an uncaught <code>RuntimeException</code> from <code>MerkleTreeService::fetchMerkleRootFromChain</code> when the provider binding wasn\'t operational. The controller now catches and returns <code>HTTP 503 { error: { code: "ERR_PRIVACY_310", message: "Privacy pool is not available on this deployment." } }</code> so mobile\'s shield-feature gating has a stable code to branch on without parsing 500s.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.13.1',
+                        'date' => 'May 15, 2026',
+                        'label' => 'USDT Enablement + Solana Pay QR Spec Fix',
+                        'label_color' => 'slate',
+                        'badge_color' => 'bg-slate-100 text-slate-700 border-slate-200',
+                        'dot_color' => 'bg-slate-500',
+                        'items' => [
+                            'USDT added to the mobile-wallet send and receive surfaces. The <code>PaymentAsset</code> enum gains a USDT case (decimals=6, label "Tether USD"); <code>POST /api/v1/wallet/transactions/quote</code> and <code>GET /api/v1/wallet/receive</code> now accept <code>asset=USDT</code> alongside USDC. The EVM and Solana token registries (<code>EvmTokens</code>, <code>SolanaTokens::KNOWN_MINTS</code>) already had USDT contract addresses and mint wired in since the non-custodial Wallet Send work — only the enum-backed validators were gating it. The hard-coded <code>"in:USDC"</code> validator + "currently only USDC supported" OpenAPI annotation on <code>WalletReceiveController</code> are removed; both validators now reference <code>PaymentAsset::values()</code> so future asset additions auto-track.',
+                            'Solana Pay QR spec compliance. <code>ReceiveAddressService::buildQrValue</code> previously emitted <code>solana:{address}?spl-token=USDC</code> — the <code>spl-token</code> parameter per <a href="https://docs.solanapay.com/spec" target="_blank" rel="noopener" class="underline">solanapay.com/spec</a> must be the SPL mint address, not the symbol. Now resolves <code>USDC</code> → <code>EPjF…Dt1v</code> and <code>USDT</code> → <code>Es9v…NYB</code> via a new <code>SolanaTokens::mintFor()</code> helper. Strict Solana Pay wallets (Phantom, Solflare) will now scan USDC and USDT QRs correctly.',
+                            'Operational follow-up for full USDT enablement on EVM: Pimlico\'s sponsorship policy needs the USDT contract addresses added on polygon, arbitrum, and ethereum mainnets (Polygon <code>0xc213…58e8f</code>, Arbitrum <code>0xfd08…fcbb9</code>, Ethereum <code>0xdac1…31ec7</code>). Without this, <code>pm_sponsorUserOperation</code> will decline to sponsor USDT transfers on EVM. Tracked outside the repo.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.13.0',
+                        'date' => 'May 15, 2026',
+                        'label' => 'Mobile-Driven IAP Subscriptions + Auth Hardening',
+                        'label_color' => 'purple',
+                        'badge_color' => 'bg-purple-100 text-purple-700 border-purple-200',
+                        'dot_color' => 'bg-purple-500',
+                        'items' => [
+                            'In-App Purchase verification — <code>POST /api/v1/subscriptions/iap/verify</code> exchanges an Apple StoreKit 2 JWS or Google Play subscription token for a Zelta subscription record. Idempotent via <code>(provider, original_transaction_id)</code> unique index; Family-Sharing / stale-receipt / cross-account conflicts surface as HTTP 409 with the mobile-aligned <code>ERR_SUB_002 { kind, attemptedSource, existingSubscription }</code> envelope.',
+                            'Apple JWS chain validation — fail-closed verifier pins the trust anchor to Apple Root CA G3 (fingerprint <code>63343ABF…E9179</code>) and performs an ES256 signature check with x5c chain validation, no new vendor deps. Staging-only <code>APPLE_JWS_VERIFICATION_BYPASS</code> is hard-rejected in production.',
+                            'Google Play RTDN ingestion — Cloud Pub/Sub push subscription delivers subscription state transitions through the same <code>processed_webhook_events</code> idempotency path as Apple App Store Server Notifications V2. Receipts are HMAC-pseudonymised by <code>IapReceiptPseudonymiser</code> before persistence or logging.',
+                            'Revenue outbox + event ledger — <code>revenue_outbox_events</code> queues downstream cue grants and analytics; <code>revenue_events</code> is the append-only ledger that survives reconciliation reruns. Trial-card-fingerprint anti-abuse rejects repeat free-trial attempts before they reach the store. GDPR consent payload captured per-purchase via <code>subscription_consent_log</code>.',
+                            'Privy web <code>/login</code> Origin header — <code>PrivyEmailOtpClient</code> now sends <code>Origin: &lt;web origin&gt;</code> (config: <code>privy.web_origin</code>, env: <code>PRIVY_WEB_ORIGIN</code>, falls back to <code>app.url</code>) so Privy\'s REST allowlist accepts server-to-server <code>/passwordless/{init,authenticate}</code> requests. Mobile JWT path is unaffected.',
+                            'Device-takeover guard contract fix — <code>DeviceTakeoverAttemptException</code> declared <code>getHttpStatusCode(): 409</code> since the v2.2.0 security hardening (#348) but had no <code>render()</code> method and no <code>HttpException</code> parent, so the guard fell through to Laravel\'s default handler and emitted a generic 500. <code>POST /api/v1/notifications/register-device</code> now returns <code>{ error: "DEVICE_REGISTERED_TO_DIFFERENT_USER" }</code> with HTTP 409 so mobile can distinguish a takeover-blocked registration from a transient outage.',
+                            'Rewards quest-completion lockdown — the public <code>POST /api/v1/rewards/quests/{id}/complete</code> endpoint and the GraphQL <code>completeQuest</code> mutation are removed. Both credited XP from <code>RewardsService::completeQuest</code> without checking the underlying domain action; any authenticated caller could one-shot ~290 XP + 590 points from the seeded quests. Completion is now reachable only via domain-event listeners. New <code>TriggerQuestOnProfileUpdated</code> listener closes the <code>complete-profile</code> quest gap; new <code>QuestCompleted</code> broadcast fires on <code>private-user.{userId}</code> after successful auto-completion so mobile can show the celebration modal in real time.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.12.0',
+                        'date' => 'May 5, 2026',
+                        'label' => 'Non-Custodial Wallet Send (Privy Embedded Wallets)',
+                        'label_color' => 'teal',
+                        'badge_color' => 'bg-teal-100 text-teal-700 border-teal-200',
+                        'dot_color' => 'bg-teal-500',
+                        'items' => [
+                            'Privy passkey login — <code>POST /api/v1/auth/privy-login</code> exchanges a Privy JWT (verified via JWKS with <code>iss</code> / <code>aud</code> / <code>exp</code> checks) for a Sanctum token. Auto-creates the user on first login via <code>privy_user_id</code> lookup; cross-client account merging works for the same Privy DID across mobile and web.',
+                            'Non-custodial address registration — <code>POST /api/v1/wallet/addresses</code> registers Privy-derived addresses. EVM smart-account address mirrors across polygon / base / arbitrum / ethereum, plus one Solana ed25519 row in <code>blockchain_addresses</code> so existing webhook sync, balance lookups, and tx indexers continue unchanged.',
+                            'Two-step send flow — <code>POST /api/v1/wallet/transactions/prepare</code> returns an unsigned payload (Solana legacy tx message bytes; EVM ERC-4337 v0.6 UserOperation with Pimlico paymaster sponsorship), persists a <code>wallet_send_records</code> row in <code>pending</code> state, honors the <code>Idempotency-Key</code> HTTP header. <code>POST /api/v1/wallet/transactions/submit</code> accepts the device-signed payload and broadcasts via Helius (Solana) or Pimlico bundler (EVM). Wire contract is camelCase end-to-end (<code>quoteId</code>, <code>intentId</code>, <code>evm.ownerPasskeyCredentialId</code>) to match mobile RN/TS request types.',
+                            'Confirmation tracking — <code>HeliusTransactionProcessor</code> flips Solana records to <code>confirmed</code> from the existing webhook. <code>PollEvmWalletSendConfirmations</code> polls the Pimlico bundler for in-flight EVM UserOps every minute.',
+                            'Stripped surface (hard cutover, project not yet live) — the custodial signing endpoint <code>POST /api/v1/auth/sign-userop</code>, the custodial dispatch endpoint <code>POST /api/v1/wallet/transactions/send</code>, and all <code>/api/v1/wallet/recovery-shard-backup/*</code> Shamir endpoints are removed. Privy holds the keys; the device signs every transaction; the backend never sees private key material.',
+                            'Operator commands — <code>php artisan privy:verify-jwt &lt;token&gt;</code> verifies a Privy JWT against the live issuer and dumps claims; <code>php artisan wallet:inspect-user &lt;email&gt;</code> shows Privy linkage + addresses + recent send records read-only.',
+                        ],
+                    ],
+                    [
+                        'version' => 'v7.11.0',
+                        'date' => 'April 30, 2026',
+                        'label' => 'Public MCP Server + Brand Polish',
+                        'label_color' => 'indigo',
+                        'badge_color' => 'bg-indigo-100 text-indigo-700 border-indigo-200',
+                        'dot_color' => 'bg-indigo-500',
+                        'items' => [
+                            'Public MCP server — <code>https://mcp.zelta.app/mcp</code> serves a 12-tool catalog (accounts, payments, exchange, baskets, mcp ramp) over OAuth 2.1 with RFC 7591 dynamic client registration and RFC 9728 protected resource metadata. Designed for Claude Desktop, Cursor, and any spec-compliant AI agent. Spec: <code>docs/superpowers/specs/2026-04-27-mcp-server-design.md</code>.',
+                            '<code>@finaegis/mcp</code> npm wrapper — published stdio bridge for MCP clients that don\'t speak HTTP+SSE directly. Styled OAuth callback pages, file-based token storage by default (no keytar dependency), and a published <code>FinAegis/mcp</code> mirror for clean install.',
+                            'Brand polish on auth surfaces — login page, application logo, and footer no longer hard-code "FinAegis"; production deployments now read <code>config(\'brand.name\')</code> end-to-end. Open-source / Apache-2.0 marketing copy is gated to demo environments.',
+                            'Admin panel hardening — non-admin users hitting <code>/admin</code> now redirect to <code>/dashboard</code> with a flash error instead of a bare 403. Filament widgets gain module-aware visibility (<code>WidgetRespectsModuleVisibility</code> trait), matching the existing resource gating; production deployments can scope the dashboard via <code>ADMIN_MODULES</code>.',
+                            'Production env hygiene — <code>SHOW_PROMO_PAGES=false</code> and <code>ADMIN_MODULES</code> guidance now ship in <code>.env.production.example</code> and <code>.env.zelta.example</code> so customer-facing deployments derived from these templates pick the right scope by default.',
+                            'Auto-discovery for domain console commands — <code>app/Domain/*/Console/Commands/</code> now register automatically via <code>bootstrap/app.php</code>, fixing intermittent "namespace not found" errors during scheduled runs. Ramp tools skip self-registration when only the mock provider is configured.',
+                        ],
+                    ],
                     [
                         'version' => 'v7.10.8',
                         'date' => 'April 19, 2026',

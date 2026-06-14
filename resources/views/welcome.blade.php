@@ -5,7 +5,7 @@
 @section('seo')
     @include('partials.seo', [
         'title' => config('brand.name', 'Zelta') . ' - Open Source Core Banking Infrastructure',
-        'description' => 'Open-source core banking platform with 56 modules: payments, lending, compliance, and DeFi. ISO 20022, PSD2, ACH, SEPA. Apache-2.0 licensed, built with Laravel.',
+        'description' => 'Open-source core banking platform with 61 modules: payments, lending, compliance, DeFi, and a public MCP server for AI agents. ISO 20022, PSD2, ACH, SEPA. Apache-2.0 licensed, built with Laravel.',
         'keywords' => config('brand.name', 'Zelta') . ', open source banking, core banking infrastructure, GCU, ISO 20022, PSD2, open banking, ACH, SEPA, Interledger, microfinance, event sourcing, DeFi, RegTech, banking API, Laravel fintech',
     ])
 
@@ -28,12 +28,18 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-28 lg:pt-28 lg:pb-36">
             <div class="text-center max-w-4xl mx-auto">
                 <!-- Badge -->
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-slate-400 mb-8 animate-fade-in-down">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-sm text-slate-400 mb-4 animate-fade-in-down">
                     <svg class="w-4 h-4 text-fa-teal" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
                     </svg>
-                    Open Source &middot; Apache-2.0 Licensed &middot; 56 Domains
+                    Open Source &middot; Apache-2.0 Licensed &middot; 61 Domains
                 </div>
+
+                <!-- MCP-compatible badge -->
+                <a href="{{ url('/features/mcp') }}" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/30 text-xs font-semibold mb-8 animate-fade-in-down hover:bg-emerald-500/15 transition-colors" style="animation-delay: 0.05s">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Now MCP-compatible — connect Claude Desktop, Cursor, or any agent
+                </a>
 
                 <!-- Heading -->
                 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.08] mb-6 animate-fade-in-up">
@@ -43,7 +49,7 @@
 
                 <!-- Subheading -->
                 <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-in-up" style="animation-delay: 0.15s">
-                    Ship compliant banking products in weeks, not years. 56 production-ready modules cover payments, lending, compliance, and cross-border transfers — so you build features, not infrastructure.
+                    Ship compliant banking products in weeks, not years. 61 production-ready modules cover payments, lending, compliance, and cross-border transfers — so you build features, not infrastructure.
                 </p>
 
                 <!-- CTA Buttons -->
@@ -87,7 +93,7 @@
                         What Is {{ config('brand.name', 'Zelta') }}?
                     </h2>
                     <p class="text-lg text-slate-600 leading-relaxed mb-6">
-                        A production-grade core banking platform built with Laravel and domain-driven design. 56 bounded contexts, event sourcing, CQRS, and every integration pattern a modern fintech needs.
+                        A production-grade core banking platform built with Laravel and domain-driven design. 61 bounded contexts, event sourcing, CQRS, and every integration pattern a modern fintech needs.
                     </p>
                     <div class="space-y-3 mb-8">
                         @foreach([
@@ -148,7 +154,7 @@
     <section id="features" class="py-24 bg-slate-50/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16 animate-on-scroll">
-                <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-4">56 Production-Ready Modules</h2>
+                <h2 class="font-display text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight mb-4">61 Production-Ready Modules</h2>
                 <p class="text-lg text-slate-500 max-w-2xl mx-auto">
                     Every capability you need — payments, lending, compliance, DeFi, privacy, mobile wallets, AI analytics — all in one codebase.
                 </p>
@@ -164,6 +170,7 @@
                         ['route' => 'features.show', 'slug' => 'bank-integration', 'title' => 'Banking API Patterns', 'desc' => 'Open Banking-compliant API patterns with Ondato KYC, Chainalysis sanctions, and Marqeta card issuing.', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'color' => 'red'],
                         ['route' => 'features.show', 'slug' => 'api', 'title' => 'REST, GraphQL & OpenAPI', 'desc' => 'Full REST coverage with OpenAPI specs, GraphQL across 45 domains, real-time subscriptions, and webhooks.', 'icon' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4', 'color' => 'sky'],
                         ['route' => 'ai-framework', 'slug' => null, 'title' => 'AI Agent Protocol', 'desc' => 'Google A2A protocol for autonomous agent commerce. MCP tools, spending limits, and transaction analytics.', 'icon' => 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'color' => 'violet'],
+                        ['route' => 'features.show', 'slug' => 'mcp', 'title' => 'MCP Server', 'desc' => 'Connect Claude Desktop, Cursor, or any MCP client. 12 OAuth-protected banking tools with per-token spending limits and idempotent writes.', 'icon' => 'M13 10V3L4 14h7v7l9-11h-7z', 'color' => 'emerald'],
                         ['route' => 'features.show', 'slug' => 'crosschain-defi', 'title' => 'Cross-Chain & DeFi', 'desc' => 'Bridge across Wormhole, LayerZero, Axelar. EVM + Solana support with DEX aggregation, yield optimization, and multi-chain portfolios.', 'icon' => 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', 'color' => 'orange'],
                         ['route' => 'features.show', 'slug' => 'privacy-identity', 'title' => 'Privacy & Identity', 'desc' => 'ZK-KYC proofs, RAILGUN shielded transfers, W3C verifiable credentials, soulbound tokens, Shamir key mgmt.', 'icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'color' => 'teal'],
                         ['route' => 'features.show', 'slug' => 'mobile-payments', 'title' => 'Mobile Payments', 'desc' => 'Passkey authentication, payment intents, P2P transfers, push notifications, ERC-4337 abstraction, and Solana wallet integration.', 'icon' => 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', 'color' => 'pink'],
@@ -195,7 +202,7 @@
 
             <div class="text-center mt-12 animate-on-scroll">
                 <a href="{{ route('features') }}" class="btn-primary !bg-slate-900 hover:!bg-slate-800 !rounded-lg group">
-                    See All 56 Domains
+                    See All 61 Domains
                     <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 </a>
             </div>
@@ -213,7 +220,7 @@
             <div class="text-center mb-16 animate-on-scroll">
                 <h2 class="font-display text-4xl lg:text-5xl font-bold text-white tracking-tight mb-4">Platform Architecture</h2>
                 <p class="text-lg text-slate-400 max-w-2xl mx-auto">
-                    56 bounded contexts built with DDD, event sourcing, and CQRS. Each module implements specific financial system patterns you can use independently.
+                    61 bounded contexts built with DDD, event sourcing, and CQRS. Each module implements specific financial system patterns you can use independently.
                 </p>
             </div>
 
@@ -324,7 +331,7 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 animate-on-scroll">
                 @foreach([
-                    ['value' => '56', 'label' => 'Domain Modules'],
+                    ['value' => '61', 'label' => 'Domain Modules'],
                     ['value' => '45', 'label' => 'GraphQL Schemas'],
                     ['value' => '1,400+', 'label' => 'API Routes'],
                     ['value' => 'Apache-2.0', 'label' => 'Licensed'],
