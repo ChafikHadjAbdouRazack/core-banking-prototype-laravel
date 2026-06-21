@@ -35384,14 +35384,15 @@
                     {
                         "name": "network",
                         "in": "query",
-                        "description": "Blockchain network (polygon, base, arbitrum)",
+                        "description": "RAILGUN-supported network. GET /networks is the runtime source of truth; RAILGUN does NOT support Base.",
                         "required": true,
                         "schema": {
                             "type": "string",
                             "enum": [
+                                "ethereum",
                                 "polygon",
-                                "base",
-                                "arbitrum"
+                                "arbitrum",
+                                "bsc"
                             ]
                         }
                     }
@@ -35480,9 +35481,10 @@
                                     "network": {
                                         "type": "string",
                                         "enum": [
+                                            "ethereum",
                                             "polygon",
-                                            "base",
-                                            "arbitrum"
+                                            "arbitrum",
+                                            "bsc"
                                         ]
                                     }
                                 },
@@ -35705,9 +35707,10 @@
                                     "network": {
                                         "type": "string",
                                         "enum": [
+                                            "ethereum",
                                             "polygon",
-                                            "base",
-                                            "arbitrum"
+                                            "arbitrum",
+                                            "bsc"
                                         ]
                                     }
                                 },
@@ -36692,6 +36695,81 @@
                     },
                     "401": {
                         "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/privacy/engine-config": {
+            "get": {
+                "tags": [
+                    "Privacy"
+                ],
+                "summary": "On-device RAILGUN engine bootstrap config",
+                "description": "Returns the parameters the on-device RAILGUN engine needs to point at our self-hosted infra (POI node, artifact mirror, RPC). No secrets; RPC URLs are key-safe.",
+                "operationId": "getRailgunEngineConfig",
+                "responses": {
+                    "200": {
+                        "description": "Engine bootstrap config"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/privacy/wallet/register": {
+            "post": {
+                "tags": [
+                    "Privacy"
+                ],
+                "summary": "Register a non-custodial RAILGUN 0zk address",
+                "description": "The device creates the RAILGUN wallet locally and registers only its public 0zk address. No seed material is sent or stored.",
+                "operationId": "registerRailgunWallet",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "railgun_address",
+                                    "network"
+                                ],
+                                "properties": {
+                                    "railgun_address": {
+                                        "type": "string",
+                                        "example": "0zk1q..."
+                                    },
+                                    "network": {
+                                        "type": "string",
+                                        "enum": [
+                                            "ethereum",
+                                            "polygon",
+                                            "arbitrum",
+                                            "bsc"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Registered"
+                    },
+                    "409": {
+                        "description": "Address already registered to another user"
                     },
                     "422": {
                         "description": "Validation error"
