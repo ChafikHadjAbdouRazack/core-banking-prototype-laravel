@@ -154,6 +154,7 @@ class OpsVerifyEnvCommand extends Command
         $this->requireFalse(self::CATEGORY_BYPASSES, 'keymanagement.demo_mode', 'KEY_MANAGEMENT_DEMO_MODE resolves to true (config default is true) — a simulated HSM signs in place of the real cloud HSM. Set KEY_MANAGEMENT_DEMO_MODE=false explicitly.');
         $this->requireFalse(self::CATEGORY_BYPASSES, 'regtech.demo_mode', 'REGTECH_DEMO_MODE resolves to true (config default is true) — regulatory filings/screening run in demo mode. Set REGTECH_DEMO_MODE=false explicitly.');
         $this->requireFalse(self::CATEGORY_BYPASSES, 'ai.demo_mode', 'AI_DEMO_MODE resolves to true (config default is true) — AI services return canned demo output. Set AI_DEMO_MODE=false explicitly.');
+        $this->requireFalse(self::CATEGORY_BYPASSES, 'compliance-certification.soc2.demo_mode', 'SOC2_DEMO_MODE=true — the SOC 2 evidence endpoint returns fabricated audit data stamped as production (collectEvidence() also throws in prod). Set SOC2_DEMO_MODE=false.');
     }
 
     private function checkBridgeWebhookCredentials(): void
@@ -339,6 +340,17 @@ class OpsVerifyEnvCommand extends Command
         $zkRailgun = $zk === 'railgun';
         $merkleRailgun = $merkle === 'railgun';
 
+        // Custody-neutral in production (Wave 0B): ZK_PROVIDER=railgun enables the
+        // CUSTODIAL money path (isRailgunMode → server-side seed derived from
+        // app.key). Forbidden in production regardless of the rest of the stack —
+        // privacy is non-custodial / on-device, and the custodial shield/unshield/
+        // transfer/viewing-key endpoints hard-return 501 in prod.
+        if ($zkRailgun && ($this->laravel->environment('production') || (bool) $this->option('strict'))) {
+            $this->add(self::CATEGORY_CONDITIONAL, 'privacy.railgun.custody', self::FAIL, 'ZK_PROVIDER=railgun enables the custodial RAILGUN path (server-side seed derived from app.key) — forbidden in production. Set ZK_PROVIDER=demo. Privacy is non-custodial/on-device; the custodial shield/unshield/transfer/viewing-key endpoints hard-return 501 in prod regardless.');
+
+            return;
+        }
+
         if (! $zkRailgun && ! $merkleRailgun) {
             $this->add(self::CATEGORY_CONDITIONAL, 'privacy.railgun.providers', self::SKIP, sprintf(
                 'Privacy stack in demo mode (ZK_PROVIDER=%s, MERKLE_PROVIDER=%s) — no real RAILGUN privacy.',
@@ -374,11 +386,11 @@ class OpsVerifyEnvCommand extends Command
     }
 
     /**
-     * Backup destination sanity (WARN-level — never blocks). Cheap config
-     * checks only: the nightly `backup:run --only-db` job (routes/console.php)
-     * writes to the disks in backup.backup.destination.disks; verify the
-     * disks exist in config/filesystems.php and warn when dumps would stay
-     * on the local box. No live S3 call — that's the restore drill's job.
+     * Backup destination sanity. Cheap config checks only: the nightly
+     * `backup:run --only-db` job (routes/console.php) writes to the disks in
+     * backup.backup.destination.disks. A local-ONLY destination in production
+     * FAILs the gate (dumps die with the box — no offsite copy); other issues
+     * (empty/undefined disk) WARN. No live S3 call — that's the restore drill.
      */
     private function checkBackupDestination(): void
     {
@@ -408,7 +420,12 @@ class OpsVerifyEnvCommand extends Command
         }
 
         if ($disks === ['local']) {
-            $this->add(self::CATEGORY_CONDITIONAL, 'backup.destination', self::WARN, 'Backup destination is the local disk only — database dumps never leave the box. Set BACKUP_DISK=s3 (+ bucket credentials) in production and run one restore drill.');
+            // Local-only dumps die with the box (no offsite copy): block a
+            // production deploy; warn (non-blocking) outside production.
+            $result = ($this->laravel->environment('production') || (bool) $this->option('strict'))
+                ? self::FAIL
+                : self::WARN;
+            $this->add(self::CATEGORY_CONDITIONAL, 'backup.destination', $result, 'Backup destination is the local disk only — database dumps never leave the box. Set BACKUP_DISK=s3 (+ bucket credentials) in production and run one restore drill.');
 
             return;
         }

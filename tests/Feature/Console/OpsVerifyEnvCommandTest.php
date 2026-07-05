@@ -39,9 +39,10 @@ function opsVerifyEnvAllGoodConfig(): void
             'fixed_exchange_rates' => false,
             'auto_approve'         => false,
         ],
-        'keymanagement.demo_mode' => false,
-        'regtech.demo_mode'       => false,
-        'ai.demo_mode'            => false,
+        'keymanagement.demo_mode'                 => false,
+        'regtech.demo_mode'                       => false,
+        'ai.demo_mode'                            => false,
+        'compliance-certification.soc2.demo_mode' => false,
 
         // conditional
         'hyperswitch.enabled'              => false,
@@ -49,6 +50,7 @@ function opsVerifyEnvAllGoodConfig(): void
         'services.helius.api_key'          => 'test-helius-key',
         'mobile.attestation.enabled'       => false,
         'privy.web_login_enabled'          => false,
+        'backup.backup.destination.disks'  => ['s3'],
 
         // files — the repo ships storage/app/apple/AppleRootCA-G3.cer, whose
         // sha256 matches the default pinned fingerprint in config/subscription.php.
@@ -91,6 +93,26 @@ it('blocks the deploy in production when the Apple JWS verification bypass is on
 
     $this->artisan('ops:verify-env')
         ->expectsOutputToContain('apple_jws_verification_bypass')
+        ->assertExitCode(1);
+});
+
+it('blocks the deploy in production when SOC2_DEMO_MODE is on (fabricated evidence)', function (): void {
+    opsVerifyEnvAllGoodConfig();
+    config(['compliance-certification.soc2.demo_mode' => true]);
+    app()->detectEnvironment(fn () => 'production');
+
+    $this->artisan('ops:verify-env')
+        ->expectsOutputToContain('compliance-certification.soc2.demo_mode')
+        ->assertExitCode(1);
+});
+
+it('blocks the deploy in production when ZK_PROVIDER=railgun (custodial privacy path)', function (): void {
+    opsVerifyEnvAllGoodConfig();
+    config(['privacy.zk.provider' => 'railgun']);
+    app()->detectEnvironment(fn () => 'production');
+
+    $this->artisan('ops:verify-env')
+        ->expectsOutputToContain('privacy.railgun.custody')
         ->assertExitCode(1);
 });
 
@@ -141,17 +163,28 @@ it('blocks the deploy in production when Bridge is routed but has no credentials
         ->assertExitCode(1);
 });
 
-it('only warns (never blocks) when the backup destination is the local disk', function (): void {
+it('blocks the deploy in production when backups stay on the local disk only', function (): void {
     opsVerifyEnvAllGoodConfig();
     config(['backup.backup.destination.disks' => ['local']]);
     app()->detectEnvironment(fn () => 'production');
 
-    // Note: a single output line only satisfies ONE expectsOutputToContain
-    // (Mockery consumes the first matching expectation), so assert the most
-    // specific substring of the WARN line.
     $this->artisan('ops:verify-env')
         ->expectsOutputToContain('Backup destination is the local disk only')
-        ->assertExitCode(0);
+        ->assertExitCode(1);
+});
+
+it('only warns (never blocks) about a local-only backup disk outside production', function (): void {
+    opsVerifyEnvAllGoodConfig();
+    config(['backup.backup.destination.disks' => ['local']]);
+    // testing env (non-production) → WARN, non-blocking.
+
+    $exitCode = Artisan::call('ops:verify-env', ['--json' => true]);
+    $decoded = json_decode(Artisan::output(), true);
+    $check = collect($decoded['checks'])->firstWhere('name', 'backup.destination');
+
+    expect($exitCode)->toBe(0)
+        ->and($check)->not->toBeNull()
+        ->and($check['result'])->toBe('WARN');
 });
 
 it('only warns (never blocks) when the backup destination disk is not defined in filesystems', function (): void {
@@ -249,35 +282,45 @@ it('skips the privacy provider check when the stack is in demo mode', function (
         ->and($check['result'])->toBe('SKIP');
 });
 
-it('blocks the deploy when ZK_PROVIDER and MERKLE_PROVIDER disagree on railgun', function (): void {
+// Wave 0B: in production the custodial RAILGUN path is forbidden outright
+// (privacy is non-custodial/on-device), so ZK_PROVIDER=railgun blocks with a
+// `privacy.railgun.custody` FAIL that preempts the consistency/secret checks.
+// Those checks remain as non-blocking diagnostics OUTSIDE production.
+
+it('flags inconsistent railgun providers as a non-blocking FAIL outside production', function (): void {
     opsVerifyEnvAllGoodConfig();
     config([
         'privacy.zk.provider'           => 'railgun',
         'privacy.merkle.provider'       => 'demo',
         'privacy.railgun.bridge_secret' => 'a-secret',
     ]);
-    app()->detectEnvironment(fn () => 'production');
+    // Not production/strict → custody rule does not fire; consistency check reports FAIL (non-blocking).
 
-    $this->artisan('ops:verify-env')
-        ->expectsOutputToContain('privacy.railgun.providers')
-        ->assertExitCode(1);
+    $exitCode = Artisan::call('ops:verify-env', ['--json' => true]);
+    $check = collect(json_decode(Artisan::output(), true)['checks'])->firstWhere('name', 'privacy.railgun.providers');
+
+    expect($exitCode)->toBe(0)
+        ->and($check)->not->toBeNull()
+        ->and($check['result'])->toBe('FAIL');
 });
 
-it('blocks the deploy when railgun mode is on but RAILGUN_BRIDGE_SECRET is empty', function (): void {
+it('flags railgun mode without a bridge secret as a non-blocking FAIL outside production', function (): void {
     opsVerifyEnvAllGoodConfig();
     config([
         'privacy.zk.provider'           => 'railgun',
         'privacy.merkle.provider'       => 'railgun',
         'privacy.railgun.bridge_secret' => '',
     ]);
-    app()->detectEnvironment(fn () => 'production');
 
-    $this->artisan('ops:verify-env')
-        ->expectsOutputToContain('RAILGUN_BRIDGE_SECRET')
-        ->assertExitCode(1);
+    $exitCode = Artisan::call('ops:verify-env', ['--json' => true]);
+    $check = collect(json_decode(Artisan::output(), true)['checks'])->firstWhere('name', 'privacy.railgun.providers');
+
+    expect($exitCode)->toBe(0)
+        ->and($check)->not->toBeNull()
+        ->and($check['result'])->toBe('FAIL');
 });
 
-it('passes the privacy provider check when both are railgun with a bridge secret', function (): void {
+it('blocks railgun in production even with a bridge secret (custodial path forbidden)', function (): void {
     opsVerifyEnvAllGoodConfig();
     config([
         'privacy.zk.provider'           => 'railgun',
@@ -287,8 +330,9 @@ it('passes the privacy provider check when both are railgun with a bridge secret
     app()->detectEnvironment(fn () => 'production');
 
     $exitCode = Artisan::call('ops:verify-env', ['--json' => true]);
-    $check = collect(json_decode(Artisan::output(), true)['checks'])->firstWhere('name', 'privacy.railgun.providers');
+    $check = collect(json_decode(Artisan::output(), true)['checks'])->firstWhere('name', 'privacy.railgun.custody');
 
-    expect($exitCode)->toBe(0)
-        ->and($check['result'])->toBe('PASS');
+    expect($exitCode)->toBe(1)
+        ->and($check)->not->toBeNull()
+        ->and($check['result'])->toBe('FAIL');
 });
